@@ -6,6 +6,8 @@
 <title>IDFL Certificate Converter</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
 <style>
 :root{--bg:#0f0f1a;--panel:#1a1a2e;--border:#2d2d4a;--accent:#7c3aed;--accent2:#a78bfa;
 --green:#22c55e;--red:#ef4444;--yellow:#f59e0b;--cyan:#06b6d4;--fg:#e2e8f0;--dim:#64748b;}
@@ -939,6 +941,26 @@ async function run(){
   }finally{
     btn.disabled=false;btn.innerHTML='▶ 変換開始';upd();}
 }
+</script>
+<script>if(window.lucide)lucide.createIcons();</script>
+<script>
+// ハンバーガーメニュー
+(function(){
+    const hamburger = document.getElementById('hamburger');
+    const mobileMenu = document.getElementById('mobileMenu');
+    if (hamburger && mobileMenu) {
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('open');
+            mobileMenu.classList.toggle('open');
+        });
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('open');
+                mobileMenu.classList.remove('open');
+            });
+        });
+    }
+})();
 </script>
 </body>
 </html>
