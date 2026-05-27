@@ -1,0 +1,1125 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>お知らせ・最新情報｜IDFL JAPAN</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        :root {
+            --brand-050: #F5F8FF;
+            --brand-100: #C4DAF5;
+            --brand-200: #9AC0EE;
+            --brand-300: #5A99E0;
+            --brand-400: #2B78D4;
+            --brand-500: #1565C0;
+            --brand-600: #0D55A8;
+            --brand-700: #094590;
+            --brand-800: #063372;
+            --brand-900: #042258;
+            --background: #FFFFFF;
+            --foreground: #042258;
+            --border: rgba(21, 101, 192, 0.13);
+            --gold: #C9A227;
+            --gold-light: #F0D87A;
+
+            /* GOTS official green */
+            --gots-500: #3AAA35;
+            --gots-600: #2D8A29;
+            --gots-050: #EEF8EE;
+            --gots-100: #C8E8C7;
+            /* Q&A purple */
+            --qa-500: #7C3AED;
+            --qa-600: #6D28D9;
+            --qa-050: #F5F3FF;
+            --qa-100: #DDD6FE;
+        }
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Meiryo UI', Meiryo, 'MS PGothic', sans-serif;
+            background: #FFFFFF;
+            color: var(--foreground);
+            margin: 0;
+            line-height: 1.85;
+            font-size: 15px;
+        }
+        h1,h2,h3,h4 { font-weight: 700; color: var(--brand-900); }
+
+        /* ===== NAV ===== */
+        .nav-dropdown {
+            opacity: 0; visibility: hidden;
+            transform: translateY(-8px);
+            transition: opacity .2s, visibility .2s, transform .2s;
+        }
+        .nav-item:hover .nav-dropdown,
+        .nav-item:focus-within .nav-dropdown {
+            opacity: 1; visibility: visible; transform: translateY(0);
+        }
+        .nav-item:hover .nav-chevron { transform: rotate(180deg); }
+        .nav-chevron { transition: transform .2s; }
+
+        /* ===== HERO ===== */
+        .hero-bg {
+            position: relative;
+            overflow: hidden;
+            background:
+                linear-gradient(180deg,
+                    rgba(4,34,88,0.82) 0%,
+                    rgba(6,51,114,0.70) 50%,
+                    rgba(4,34,88,0.88) 100%),
+                url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=2400&q=85');
+            background-size: cover;
+            background-position: center 40%;
+            background-repeat: no-repeat;
+        }
+        .hero-bg::before {
+            content: '';
+            position: absolute; inset: 0;
+            background:
+                radial-gradient(ellipse 60% 70% at 10% 50%, rgba(21,101,192,0.35) 0%, transparent 65%),
+                radial-gradient(ellipse 40% 50% at 90% 20%, rgba(90,153,224,0.12) 0%, transparent 60%);
+        }
+        .hero-content  { position: relative; z-index: 2; }
+
+        /* ===== CATEGORY TABS — pill style matching screenshot ===== */
+        .cat-tabs {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            scrollbar-width: none;
+        }
+        .cat-tabs::-webkit-scrollbar { display: none; }
+        .cat-tab {
+            flex-shrink: 0;
+            padding: 8px 20px;
+            border-radius: 100px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1.5px solid #E2E8F0;
+            background: white;
+            color: #64748B;
+            transition: all .18s;
+            white-space: nowrap;
+            display: flex; align-items: center; gap: 7px;
+        }
+        .cat-tab:hover { border-color: var(--brand-300); color: var(--brand-600); }
+        .cat-tab.active {
+            background: var(--brand-500);
+            color: white;
+            border-color: var(--brand-500);
+        }
+        /* GOTS tab active = GOTS green */
+        .cat-tab[data-cat="gots"].active {
+            background: var(--gots-500);
+            border-color: var(--gots-500);
+        }
+        /* Q&A tab active = purple */
+        .cat-tab[data-cat="qa"].active {
+            background: var(--qa-500);
+            border-color: var(--qa-500);
+        }
+
+        /* ===== CATEGORY dot ===== */
+        .cat-dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        .dot-idfl   { background: var(--gold); }
+        .dot-gots   { background: var(--gots-500); }
+        .dot-te     { background: var(--brand-500); }
+        .dot-fsc    { background: #5A99E0; }
+        .dot-others { background: #94A3B8; }
+        .dot-qa     { background: #7C3AED; }
+
+        /* ===== CATEGORY PILLS on cards ===== */
+        .cat-pill {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 3px 10px;
+            border-radius: 100px;
+            font-size: 11px; font-weight: 700;
+            letter-spacing: .04em;
+        }
+        .pill-idfl   { background: #FDF3D8; color: #9A6F00; }
+        .pill-gots   { background: var(--gots-050); color: var(--gots-600); }
+        .pill-te     { background: #E8F0FC; color: var(--brand-600); }
+        .pill-fsc    { background: #EBF2FB; color: #5A99E0; }
+        .pill-others { background: #F1F5F9; color: #64748B; }
+        .pill-qa     { background: var(--qa-050); color: var(--qa-600); }
+
+        /* ===== FEATURED PINNED CARD (dark navy) ===== */
+        .featured-card {
+            background: var(--brand-900);
+            border-radius: 16px;
+            padding: 36px 40px;
+            color: white;
+            position: relative;
+            overflow: hidden;
+            grid-column: 1 / -1;
+            margin-bottom: 4px;
+        }
+        .featured-card::before {
+            content: '';
+            position: absolute; inset: 0;
+            background: radial-gradient(ellipse 55% 90% at 0% 50%, rgba(21,101,192,0.45) 0%, transparent 70%);
+        }
+        .featured-inner { position: relative; z-index: 2; }
+
+        /* ===== REGULAR NEWS CARD ===== */
+        .news-card {
+            background: white;
+            border: 1px solid #E8EDF5;
+            border-radius: 14px;
+            padding: 24px 26px;
+            transition: transform .22s, box-shadow .22s;
+            display: flex; flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+        .news-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 28px rgba(21,101,192,0.11);
+        }
+        /* left accent bar */
+        .news-card::before {
+            content: '';
+            position: absolute; top: 0; left: 0;
+            width: 4px; height: 100%;
+        }
+        .card-idfl::before   { background: var(--gold); }
+        .card-gots::before   { background: var(--gots-500); }
+        .card-te::before     { background: var(--brand-500); }
+        .card-fsc::before    { background: #5A99E0; }
+        .card-others::before { background: #94A3B8; }
+        .card-qa::before     { background: #7C3AED; }
+
+        /* ===== NEW vs OLD badge ===== */
+        .badge-new {
+            display: inline-flex; align-items: center;
+            background: #DBEAFE;
+            color: var(--brand-600);
+            font-size: 10px; font-weight: 800;
+            padding: 2px 8px;
+            border-radius: 100px;
+            letter-spacing: .07em;
+        }
+        .badge-old {
+            display: inline-flex; align-items: center;
+            background: #F1F5F9;
+            color: #94A3B8;
+            font-size: 10px; font-weight: 700;
+            padding: 2px 8px;
+            border-radius: 100px;
+            letter-spacing: .05em;
+        }
+        /* Old cards are slightly faded */
+        .news-card.is-old {
+            opacity: 0.82;
+        }
+        .news-card.is-old:hover { opacity: 1; }
+
+        /* ===== PINNED tag ===== */
+        .pinned-tag {
+            display: inline-flex; align-items: center; gap: 4px;
+            font-size: 11px; font-weight: 800;
+            color: var(--gold-light);
+            letter-spacing: .08em;
+            text-transform: uppercase;
+        }
+
+        /* ===== ADMIN PANEL ===== */
+        .admin-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(4,34,88,0.55);
+            backdrop-filter: blur(4px);
+            z-index: 200;
+            align-items: center; justify-content: center;
+        }
+        .admin-overlay.open { display: flex; }
+        .admin-modal {
+            background: white; border-radius: 20px;
+            padding: 36px; width: 100%;
+            max-width: 540px; max-height: 92vh; overflow-y: auto;
+            box-shadow: 0 24px 64px rgba(4,34,88,0.22);
+        }
+        .form-label {
+            display: block; font-size: 13px; font-weight: 700;
+            color: var(--brand-700); margin-bottom: 6px; letter-spacing: .04em;
+        }
+        .form-input, .form-select, .form-textarea {
+            width: 100%; border: 1.5px solid #E2E8F0; border-radius: 10px;
+            padding: 10px 14px; font-size: 14px;
+            font-family: 'Meiryo UI', Meiryo, sans-serif;
+            color: var(--brand-900); outline: none; transition: border-color .2s;
+        }
+        .form-input:focus, .form-select:focus, .form-textarea:focus { border-color: var(--brand-400); }
+        .form-textarea { resize: vertical; min-height: 100px; }
+        .btn-post {
+            background: var(--brand-500); color: white; border: none;
+            padding: 12px 28px; border-radius: 10px; font-weight: 700;
+            font-size: 15px; cursor: pointer; transition: background .2s;
+            font-family: 'Meiryo UI', Meiryo, sans-serif;
+        }
+        .btn-post:hover { background: var(--brand-600); }
+        .btn-cancel {
+            background: #F1F5F9; color: var(--brand-600); border: none;
+            padding: 12px 22px; border-radius: 10px; font-weight: 600;
+            font-size: 14px; cursor: pointer;
+            font-family: 'Meiryo UI', Meiryo, sans-serif;
+        }
+        .admin-fab {
+            position: fixed; bottom: 32px; right: 32px;
+            background: var(--brand-500); color: white; border: none;
+            border-radius: 50px; padding: 14px 24px;
+            display: flex; align-items: center; gap: 8px;
+            font-size: 14px; font-weight: 700; cursor: pointer;
+            box-shadow: 0 8px 24px rgba(21,101,192,0.35);
+            transition: all .2s; z-index: 100;
+            font-family: 'Meiryo UI', Meiryo, sans-serif;
+        }
+        .admin-fab:hover { background: var(--brand-600); transform: translateY(-2px); }
+
+        /* Admin login */
+        .login-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(4,34,88,0.65);
+            backdrop-filter: blur(6px); z-index: 300;
+            align-items: center; justify-content: center;
+        }
+        .login-overlay.open { display: flex; }
+
+        .no-posts {
+            text-align: center; padding: 64px 24px;
+            color: var(--brand-300); grid-column: 1/-1;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(10px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in { animation: fadeUp .35s ease; }
+
+        @media (max-width: 768px) {
+            .admin-modal { padding: 24px; margin: 16px; }
+            .admin-fab { bottom: 20px; right: 20px; padding: 12px 18px; }
+            .featured-card { padding: 24px; }
+        }
+
+        /* ===== ハンバーガーメニュー ===== */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            gap: 5px;
+            cursor: pointer;
+            padding: 6px;
+            background: transparent;
+            border: none;
+        }
+        .hamburger span {
+            display: block;
+            width: 24px;
+            height: 2px;
+            background: var(--brand-800);
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+        .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
+
+        /* ===== モバイルドロワーメニュー ===== */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 65px;
+            left: 0;
+            right: 0;
+            background: white;
+            border-bottom: 1px solid rgba(21,101,192,0.1);
+            z-index: 49;
+            max-height: calc(100vh - 65px);
+            overflow-y: auto;
+            box-shadow: 0 8px 24px rgba(21,101,192,0.12);
+        }
+        .mobile-menu.open { display: block; }
+        .mobile-menu-item {
+            display: block;
+            padding: 14px 24px;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--brand-800);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(21,101,192,0.06);
+        }
+        .mobile-menu-item:hover { background: var(--brand-050); color: var(--brand-500); }
+        .mobile-menu-section {
+            padding: 10px 24px 4px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--brand-400);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            background: var(--brand-050);
+        }
+        .mobile-menu-sub {
+            display: block;
+            padding: 11px 36px;
+            font-size: 14px;
+            color: var(--brand-700);
+            text-decoration: none;
+            border-bottom: 1px solid rgba(21,101,192,0.04);
+        }
+        .mobile-menu-sub:hover { background: var(--brand-050); color: var(--brand-500); }
+        .mobile-apply-btn {
+            display: block;
+            margin: 16px 24px;
+            padding: 14px;
+            background: var(--brand-500);
+            color: white;
+            text-align: center;
+            border-radius: 10px;
+            font-weight: 700;
+            text-decoration: none;
+            font-size: 15px;
+        }
+
+        @media (max-width: 767px) {
+            .hamburger { display: flex; }
+        }
+
+    </style>
+</head>
+<body>
+
+<!-- ===== NAV ===== -->
+<nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-[rgba(21,101,192,0.1)]">
+        <div class="max-w-[1200px] mx-auto px-6 py-4 flex justify-between items-center">
+
+            <!-- ロゴ -->
+            <a href="index.html" 
+            style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+                <img src="/IDFL-Logo.jpg" 
+                    alt="IDFL" 
+                    style="height: 36px; width: auto; object-fit: contain;">
+                <span class="text-xl font-bold tracking-tight text-[var(--brand-800)]">
+                    IDFL JAPAN
+                </span>
+            </a>
+
+            <!-- メインメニュー(PC のみ表示) -->
+            <div class="hidden md:flex items-center gap-1">
+
+                <!-- ドロップダウン① 認証サービス -->
+                <div class="nav-item relative">
+                    <button class="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-[var(--brand-800)] hover:bg-[var(--brand-050)] rounded-lg transition-colors">
+                        認証サービス
+                        <i data-lucide="chevron-down" class="nav-chevron w-3 h-3"></i>
+                    </button>
+                    <div class="nav-dropdown absolute top-full left-0 pt-2 min-w-[210px] z-50">
+                         <div class="bg-white border border-[rgba(21,101,192,0.1)] rounded-xl shadow-lg p-2">
+                            <a href="https://idfl.com/ja/services/audits-certifications/global-organic-textile-standard-gots/" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">GOTS 認証</a>
+                            <a href="https://idfl.com/ja/services/audits-certifications/organic-content-standard-ocs/" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">OCS 認証</a>
+                            <a href="https://idfl.com/ja/services/audits-certifications/responsible-wool-standard-rws/" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">RWS 認証</a>
+                            <a href="https://idfl.com/ja/services/audits-certifications/global-recycled-standard-grs/" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">GRS 認証</a>
+                            <a href="/services/fsc.html" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">FSC 認証</a>
+                            <a href="https://dev.idfl.com/ja/services/" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">ダウン・フェザー検査</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ドロップダウン② セミナー -->
+                <div class="nav-item relative">
+                    <button class="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-[var(--brand-800)] hover:bg-[var(--brand-050)] rounded-lg transition-colors">
+                        セミナー
+                        <i data-lucide="chevron-down" class="nav-chevron w-3 h-3"></i>
+                    </button>
+                    <div class="nav-dropdown absolute top-full left-0 pt-2 min-w-[210px] z-50">
+                        <div class="bg-white border border-[rgba(21,101,192,0.1)] rounded-xl shadow-lg p-2">
+                            <a href="idfl_japan_seminar_with_dropdown.html" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">開催予定のセミナー</a>
+                            <a href="/past_seminar_v2.html" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">過去のセミナー</a>
+                            <a href="/seminar/download.html" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">資料ダウンロード</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ドロップダウン③ 会社情報 -->
+                <div class="nav-item relative">
+                    <button class="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-[var(--brand-800)] hover:bg-[var(--brand-050)] rounded-lg transition-colors">
+                        会社情報
+                        <i data-lucide="chevron-down" class="nav-chevron w-3 h-3"></i>
+                    </button>
+                    <div class="nav-dropdown absolute top-full left-0 pt-2 min-w-[210px] z-50">
+                        <div class="bg-white border border-[rgba(21,101,192,0.1)] rounded-xl shadow-lg p-2">
+                            <a href="https://idfl.com/zh-tw/idfl-japan/" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">会社概要</a>
+                            <a href="https://maps.app.goo.gl/hxvPws1M6cGxbLHF7" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">アクセス</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 単一リンク(ドロップダウンなし) -->
+                <a href="/idfl_news.html" class="px-4 py-2 text-sm font-bold text-[var(--brand-500)] bg-[var(--brand-050)] rounded-lg">お知らせ</a>
+            </div>
+
+            <!-- お申し込みボタン(PC) -->
+            <a href="https://forms.office.com/Pages/ResponsePage.aspx?id=hQL27-D4ckKtEjtBsJIawI60DctQlgpAt0rPraJ8Wg5UQjA4N1UwN09PVkg5SkNZN1lBVTQxN0tYTy4u"
+               class="hidden md:block text-sm font-semibold hover:text-[var(--brand-500)] transition-colors">お申し込み</a>
+
+            <!-- ハンバーガーボタン(スマホのみ) -->
+            <button class="hamburger" id="hamburger" aria-label="メニュー">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- モバイルドロワーメニュー -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-section">認証サービス</div>
+        <a href="https://idfl.com/ja/services/audits-certifications/global-organic-textile-standard-gots/" class="mobile-menu-sub">GOTS 認証</a>
+        <a href="https://idfl.com/ja/services/audits-certifications/organic-content-standard-ocs/" class="mobile-menu-sub">OCS 認証</a>
+        <a href="https://idfl.com/ja/services/audits-certifications/responsible-wool-standard-rws/" class="mobile-menu-sub">RWS 認証</a>
+        <a href="https://idfl.com/ja/services/audits-certifications/global-recycled-standard-grs/" class="mobile-menu-sub">GRS 認証</a>
+        <a href="https://dev.idfl.com/ja/services/" class="mobile-menu-sub">ダウン・フェザー検査</a>
+        <div class="mobile-menu-section">セミナー</div>
+        <a href="idfl_japan_seminar_with_dropdown.html" class="mobile-menu-sub">開催予定のセミナー</a>
+        <a href="/past_seminar_v2.html" class="mobile-menu-sub">過去のセミナー</a>
+        <div class="mobile-menu-section">会社情報</div>
+        <a href="https://idfl.com/zh-tw/idfl-japan/" class="mobile-menu-sub">会社概要</a>
+        <a href="https://maps.app.goo.gl/hxvPws1M6cGxbLHF7" class="mobile-menu-sub">アクセス</a>
+        <a href="https://forms.office.com/Pages/ResponsePage.aspx?id=hQL27-D4ckKtEjtBsJIawI60DctQlgpAt0rPraJ8Wg5UQjA4N1UwN09PVkg5SkNZN1lBVTQxN0tYTy4u"
+           class="mobile-apply-btn">今すぐ申し込む（無料）</a>
+    </div>
+
+<!-- ===== HERO ===== -->
+<header class="hero-bg pt-36 pb-24">
+
+    <div class="hero-content max-w-5xl mx-auto px-6 text-center">
+        <div style="display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.10);border:1px solid rgba(255,255,255,0.20);border-radius:100px;padding:5px 16px;margin-bottom:20px;">
+            <i data-lucide="bell" style="width:14px;height:14px;color:var(--gold-light);"></i>
+            <span style="font-size:12px;font-weight:700;color:var(--gold-light);letter-spacing:.1em;">NEWS &amp; ANNOUNCEMENTS</span>
+        </div>
+        <h1 style="font-size:clamp(36px,6vw,64px);color:white;margin:0 0 16px;line-height:1.2;font-weight:700;">
+            お知らせ・最新情報
+        </h1>
+        <p style="font-size:18px;color:rgba(196,218,245,0.90);max-width:560px;margin:0 auto 28px;line-height:1.9;">
+            IDFL JAPAN からの公式アナウンス、<br>認証機関の最新動向をご確認ください。
+        </p>
+        <!-- Category quick-nav pills in hero -->
+        <div style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;">
+            <span onclick="filterCat('gots')" style="cursor:pointer;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);border-radius:100px;padding:7px 18px;font-size:13px;font-weight:700;color:white;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">GOTS</span>
+            <span onclick="filterCat('te')"   style="cursor:pointer;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);border-radius:100px;padding:7px 18px;font-size:13px;font-weight:700;color:white;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">Textile Exchange</span>
+            <span onclick="filterCat('fsc')"  style="cursor:pointer;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);border-radius:100px;padding:7px 18px;font-size:13px;font-weight:700;color:white;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">FSC</span>
+            <span onclick="filterCat('idfl')" style="cursor:pointer;background:rgba(201,162,39,0.25);border:1px solid rgba(201,162,39,0.50);border-radius:100px;padding:7px 18px;font-size:13px;font-weight:700;color:var(--gold-light);transition:background .2s;" onmouseover="this.style.background='rgba(201,162,39,0.40)'" onmouseout="this.style.background='rgba(201,162,39,0.25)'">IDFL 公告</span>
+            <span onclick="filterCat('others')" style="cursor:pointer;background:rgba(255,255,255,0.12);border:1px solid rgba(255,255,255,0.25);border-radius:100px;padding:7px 18px;font-size:13px;font-weight:700;color:white;transition:background .2s;" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">Others</span>
+            <span onclick="filterCat('qa')" style="cursor:pointer;background:rgba(124,58,237,0.25);border:1px solid rgba(124,58,237,0.45);border-radius:100px;padding:7px 18px;font-size:13px;font-weight:700;color:#DDD6FE;transition:background .2s;" onmouseover="this.style.background='rgba(124,58,237,0.40)'" onmouseout="this.style.background='rgba(124,58,237,0.25)'">よくある Q&amp;A</span>
+        </div>
+    </div>
+</header>
+
+<!-- ===== MAIN CONTENT ===== -->
+<main style="max-width:1200px;margin:0 auto;padding:60px 24px 120px;">
+
+    <!-- Category Tabs -->
+    <div style="border-bottom:2px solid #E8EDF5;margin-bottom:40px;padding-bottom:0;">
+        <div class="cat-tabs" id="catTabs" style="padding-bottom:16px;">
+            <button class="cat-tab active" data-cat="all"    onclick="filterCat('all')">すべて</button>
+            <button class="cat-tab"        data-cat="idfl"   onclick="filterCat('idfl')">
+                <span class="cat-dot dot-idfl"></span> IDFL 公告
+            </button>
+            <button class="cat-tab"        data-cat="gots"   onclick="filterCat('gots')">
+                <span class="cat-dot dot-gots"></span> GOTS
+            </button>
+            <button class="cat-tab"        data-cat="te"     onclick="filterCat('te')">Textile Exchange</button>
+            <button class="cat-tab"        data-cat="fsc"    onclick="filterCat('fsc')">FSC</button>
+            <button class="cat-tab"        data-cat="others" onclick="filterCat('others')">Others</button>
+            <button class="cat-tab"        data-cat="qa"     onclick="filterCat('qa')"
+                style="">
+                <span class="cat-dot dot-qa"></span> よくある Q&amp;A
+            </button>
+        </div>
+    </div>
+
+    <!-- Result count + search -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:28px;gap:16px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;">
+            <p id="resultCount" style="font-size:14px;color:var(--brand-400);font-weight:600;margin:0;"></p>
+        </div>
+        <div style="position:relative;">
+            <i data-lucide="search" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:var(--brand-300);pointer-events:none;"></i>
+            <input id="searchInput" type="text" placeholder="キーワード検索..." oninput="renderCards()"
+                   style="padding:9px 14px 9px 36px;border:1.5px solid var(--brand-100);border-radius:100px;font-size:13px;font-family:'Meiryo UI',Meiryo,sans-serif;color:var(--brand-800);outline:none;width:220px;transition:border-color .2s;"
+                   onfocus="this.style.borderColor='var(--brand-400)'" onblur="this.style.borderColor='var(--brand-100)'">
+        </div>
+    </div>
+
+    <!-- Cards Grid -->
+    <div id="cardsGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:18px;"></div>
+
+    <!-- No posts message -->
+    <div id="noPosts" class="no-posts" style="display:none;">
+        <i data-lucide="inbox" style="width:48px;height:48px;margin-bottom:16px;opacity:.4;"></i>
+        <p style="font-size:17px;font-weight:600;color:var(--brand-400);">この カテゴリーにはまだ投稿がありません</p>
+    </div>
+
+</main>
+
+<!-- ===== FOOTER ===== -->
+<footer style="background:var(--brand-900);padding:48px 24px;text-align:center;position:relative;overflow:hidden;">
+    <div style="position:absolute;bottom:0;left:0;right:0;opacity:.08;pointer-events:none;">
+        <svg viewBox="0 0 1440 80" preserveAspectRatio="none" style="display:block;">
+            <polygon points="0,80 240,30 480,60 720,10 960,50 1200,15 1440,40 1440,80" fill="#1565C0"/>
+        </svg>
+    </div>
+    <div style="position:relative;z-index:2;">
+        <svg width="44" height="28" viewBox="0 0 44 28" fill="none" style="opacity:.4;margin-bottom:16px;">
+            <polygon points="2,26 12,4 22,26" fill="none" stroke="#5A99E0" stroke-width="1.5"/>
+            <polygon points="14,26 24,8 34,26" fill="none" stroke="#5A99E0" stroke-width="1.5"/>
+            <polygon points="10,10 12,4 14,10" fill="#9AC0EE"/>
+            <polygon points="22,14 24,8 26,14" fill="#9AC0EE"/>
+        </svg>
+        <p style="font-size:22px;font-weight:700;color:white;margin:0 0 12px;">IDFL JAPAN — お知らせ</p>
+        <div style="width:40px;height:1px;background:var(--brand-300);margin:0 auto 16px;"></div>
+        <p style="font-size:13px;color:var(--brand-300);">© 2026 IDFL JAPAN | International Down and Feather Laboratory</p>
+    </div>
+</footer>
+
+<!-- ===== SYSTEM SETTINGS MODAL ===== -->
+<div class="login-overlay" id="loginOverlay">
+    <div class="admin-modal" style="max-width:400px;">
+
+        <!-- Header -->
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+            <div style="display:flex;align-items:center;gap:10px;">
+                <div style="width:40px;height:40px;background:var(--brand-500);border-radius:10px;display:flex;align-items:center;justify-content:center;">
+                    <i data-lucide="settings" style="width:18px;height:18px;color:white;"></i>
+                </div>
+                <div>
+                    <h2 style="font-size:17px;margin:0;font-weight:700;">システム設置</h2>
+                    <p style="font-size:12px;color:var(--brand-400);margin:0;">IDFL スタッフ専用</p>
+                </div>
+            </div>
+            <button onclick="closeLogin()" style="background:none;border:none;cursor:pointer;color:#94A3B8;padding:4px;">
+                <i data-lucide="x" style="width:18px;height:18px;"></i>
+            </button>
+        </div>
+
+        <!-- LOGIN STATE (not logged in) -->
+        <div id="stateLogin">
+            <p style="font-size:13px;color:var(--brand-600);background:var(--brand-050);border-radius:8px;padding:10px 14px;margin-bottom:18px;">
+                🔒 管理者としてログインすると、投稿の追加・編集・削除ができます。
+            </p>
+            <div style="margin-bottom:14px;">
+                <label class="form-label">パスワード</label>
+                <input id="adminPwInput" type="password" class="form-input" placeholder="パスワードを入力"
+                       onkeydown="if(event.key==='Enter')checkLogin()">
+            </div>
+            <p id="loginError" style="font-size:13px;color:#EF4444;display:none;margin-bottom:12px;">パスワードが正しくありません。</p>
+            <div style="display:flex;gap:10px;">
+                <button class="btn-post" style="flex:1;" onclick="checkLogin()">
+                    <span style="display:flex;align-items:center;justify-content:center;gap:6px;">
+                        <i data-lucide="log-in" style="width:15px;height:15px;"></i> ログイン
+                    </span>
+                </button>
+                <button class="btn-cancel" onclick="closeLogin()">キャンセル</button>
+            </div>
+        </div>
+
+        <!-- ADMIN STATE (logged in) -->
+        <div id="stateAdmin" style="display:none;">
+            <p style="font-size:13px;color:#16A34A;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:10px 14px;margin-bottom:20px;display:flex;align-items:center;gap:6px;">
+                <i data-lucide="check-circle" style="width:14px;height:14px;flex-shrink:0;"></i>
+                管理者としてログイン中です
+            </p>
+
+            <!-- Admin actions -->
+            <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
+                <button onclick="closeLogin();openPostModal();"
+                    style="display:flex;align-items:center;gap:10px;background:var(--brand-500);color:white;border:none;border-radius:12px;padding:14px 18px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Meiryo UI',Meiryo,sans-serif;transition:background .2s;text-align:left;"
+                    onmouseover="this.style.background='var(--brand-600)'" onmouseout="this.style.background='var(--brand-500)'">
+                    <div style="width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i data-lucide="plus" style="width:18px;height:18px;"></i>
+                    </div>
+                    <div>
+                        <div>新規投稿</div>
+                        <div style="font-size:11px;font-weight:400;opacity:.8;">お知らせを新しく追加する</div>
+                    </div>
+                </button>
+
+                <button onclick="closeLogin();"
+                    style="display:flex;align-items:center;gap:10px;background:var(--brand-050);color:var(--brand-700);border:1.5px solid var(--brand-100);border-radius:12px;padding:14px 18px;font-size:15px;font-weight:600;cursor:pointer;font-family:'Meiryo UI',Meiryo,sans-serif;transition:all .2s;text-align:left;"
+                    onmouseover="this.style.background='var(--brand-100)'" onmouseout="this.style.background='var(--brand-050)'">
+                    <div style="width:36px;height:36px;background:var(--brand-100);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                        <i data-lucide="pencil" style="width:16px;height:16px;color:var(--brand-600);"></i>
+                    </div>
+                    <div>
+                        <div>投稿の編集・削除</div>
+                        <div style="font-size:11px;font-weight:400;color:var(--brand-400);">カード上の編集・削除ボタンを使用</div>
+                    </div>
+                </button>
+            </div>
+
+            <div style="border-top:1px solid #E8EDF5;padding-top:16px;">
+                <button onclick="doLogout()"
+                    style="display:flex;align-items:center;gap:6px;background:none;border:none;color:#94A3B8;font-size:13px;cursor:pointer;font-family:'Meiryo UI',Meiryo,sans-serif;padding:4px 0;"
+                    onmouseover="this.style.color='#EF4444'" onmouseout="this.style.color='#94A3B8'">
+                    <i data-lucide="log-out" style="width:14px;height:14px;"></i>
+                    ログアウト
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- ===== POST MODAL ===== -->
+<div class="admin-overlay" id="postOverlay">
+    <div class="admin-modal">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
+            <h2 style="font-size:20px;margin:0;" id="modalTitle">新規投稿</h2>
+            <button onclick="closePostModal()" style="background:none;border:none;cursor:pointer;color:var(--brand-300);padding:4px;">
+                <i data-lucide="x" style="width:20px;height:20px;"></i>
+            </button>
+        </div>
+
+        <input type="hidden" id="editId">
+
+        <!-- カテゴリー -->
+        <div style="margin-bottom:16px;">
+            <label class="form-label">カテゴリー <span style="color:#EF4444;">*</span></label>
+            <select id="fCat" class="form-select">
+                <option value="idfl">📣 IDFL 公告</option>
+                <option value="gots">GOTS</option>
+                <option value="te">Textile Exchange</option>
+                <option value="fsc">FSC</option>
+                <option value="others">Others</option>
+                <option value="qa">❓ よくある Q&A</option>
+            </select>
+        </div>
+
+        <!-- タイトル -->
+        <div style="margin-bottom:16px;">
+            <label class="form-label">タイトル <span style="color:#EF4444;">*</span></label>
+            <input id="fTitle" type="text" class="form-input" placeholder="お知らせのタイトルを入力">
+        </div>
+
+        <!-- 本文 -->
+        <div style="margin-bottom:16px;">
+            <label class="form-label">本文 <span style="color:#EF4444;">*</span></label>
+            <textarea id="fBody" class="form-textarea" placeholder="詳細内容を入力してください。URLを含める場合はそのまま貼り付けると自動リンクになります。"></textarea>
+        </div>
+
+        <!-- リンク -->
+        <div style="margin-bottom:16px;">
+            <label class="form-label">関連リンク（任意）</label>
+            <input id="fLink" type="url" class="form-input" placeholder="https://...">
+        </div>
+
+        <!-- リンクラベル -->
+        <div style="margin-bottom:16px;">
+            <label class="form-label">リンクのラベル</label>
+            <input id="fLinkLabel" type="text" class="form-input" placeholder="詳細はこちら">
+        </div>
+
+        <!-- ピン留め -->
+        <div style="margin-bottom:24px;display:flex;align-items:center;gap:10px;">
+            <input id="fPinned" type="checkbox" style="width:16px;height:16px;accent-color:var(--brand-500);">
+            <label for="fPinned" style="font-size:14px;font-weight:600;color:var(--brand-700);cursor:pointer;">
+                📌 この投稿をトップに固定する
+            </label>
+        </div>
+
+        <div id="formError" style="font-size:13px;color:#EF4444;display:none;margin-bottom:14px;"></div>
+
+        <div style="display:flex;gap:10px;justify-content:flex-end;">
+            <button class="btn-cancel" onclick="closePostModal()">キャンセル</button>
+            <button class="btn-post" onclick="submitPost()">
+                <span id="submitLabel">投稿する</span>
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- ===== Admin gear button (bottom-left, subtle) ===== -->
+<button onclick="openLogin()" id="gearBtn" title="システム設置"
+        style="position:fixed;bottom:28px;left:28px;background:rgba(255,255,255,0.85);border:1.5px solid #E2E8F0;border-radius:50%;width:42px;height:42px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:99;transition:all .2s;box-shadow:0 2px 8px rgba(0,0,0,0.08);"
+        onmouseover="this.style.background='var(--brand-050)';this.style.borderColor='var(--brand-200)'" 
+        onmouseout="this.style.background='rgba(255,255,255,0.85)';this.style.borderColor='#E2E8F0'">
+    <i data-lucide="settings" style="width:17px;height:17px;color:#94A3B8;"></i>
+</button>
+
+<script>
+// ===================== DATA =====================
+const STORAGE_KEY = 'idfl_news_posts';
+const ADMIN_PASSWORD = 'idfl2026';
+
+let currentCat = 'all';
+let isAdmin = false;
+let editingId = null;
+
+const defaultPosts = [
+    {
+        id: 'sample-1',
+        cat: 'idfl',
+        title: '【IDFL JAPAN】2026年8月7日セミナー開催のお知らせ',
+        body: '大阪・御堂会館にて「IDFL JAPAN サステナビリティ認証セミナー」を開催いたします。GOTS 8.0 移行・MMS 対応・FSC 新規取得を中心に、グループディスカッション形式で実務課題を解決する場です。参加費無料・事前申込制です。',
+        link: 'idfl_japan_seminar_with_dropdown.html',
+        linkLabel: 'セミナー詳細はこちら',
+        pinned: true,
+        date: '2026-05-01',
+        author: 'IDFL JAPAN'
+    },
+    {
+        id: 'sample-2',
+        cat: 'gots',
+        title: 'GOTS Version 8.0 施行日のご案内（2026年6月1日より）',
+        body: 'GOTS Version 8.0 は2026年6月1日より正式施行されます。Version 7.0 認証企業は移行期限内に対応が必要です。主な変更点（化学物質規制・社会基準・MMS 連携）については、セミナーにて詳しく解説いたします。',
+        link: 'https://global-standard.org/',
+        linkLabel: 'GOTS 公式サイト',
+        pinned: false,
+        date: '2026-04-20',
+        author: 'IDFL JAPAN'
+    },
+    {
+        id: 'sample-3',
+        cat: 'te',
+        title: 'Textile Exchange — 2026年度 マテリアルベンチマーク調査',
+        body: 'Textile Exchange は毎年実施している Material Benchmark の 2026年度調査への参加を呼びかけています。GRS・OCS・RDS・RWS などの認証素材の使用状況を報告することで、業界全体のサステナビリティ進捗に貢献できます。',
+        link: 'https://textileexchange.org/',
+        linkLabel: 'Textile Exchange 公式',
+        pinned: false,
+        date: '2026-04-10',
+        author: 'IDFL JAPAN'
+    },
+    {
+        id: 'sample-4',
+        cat: 'fsc',
+        title: 'FSC CoC 認証 — 初回審査の申込受付中',
+        body: 'FSC チェーン・オブ・カストディ（CoC）認証の新規申込を受付中です。審査の流れ・必要書類・準備期間についての詳細は、IDFL JAPAN 担当者までお問い合わせください。2026年8月のセミナーでも詳細を解説予定です。',
+        link: 'https://idfl.com/ja/idfl-japan/',
+        linkLabel: 'お問い合わせ',
+        pinned: false,
+        date: '2025-11-15',
+        author: 'IDFL JAPAN'
+    },
+    {
+        id: 'sample-5',
+        cat: 'gots',
+        title: 'GOTS 化学物質規制（PRLリスト）改訂のお知らせ',
+        body: 'GOTS Version 8.0 より、化学物質規制（PRL）リストが大幅に強化されました。製造工程で使用する薬品や染料について、事前確認が必要です。IDFL JAPAN では審査準備のサポートを承っております。',
+        link: 'https://global-standard.org/',
+        linkLabel: 'GOTS 化学物質情報',
+        pinned: false,
+        date: '2025-09-05',
+        author: 'IDFL JAPAN'
+    },
+    {
+        id: 'sample-6',
+        cat: 'others',
+        title: 'RWS（責任ある羊毛基準）認証の取扱い変更について',
+        body: 'RWS 認証に関する申請フローが一部変更になりました。詳細についてはIDFL JAPANまでお問い合わせください。既存認証企業も次回更新時に新フローが適用されます。',
+        link: 'https://idfl.com/ja/idfl-japan/',
+        linkLabel: 'お問い合わせ',
+        pinned: false,
+        date: '2025-07-22',
+        author: 'IDFL JAPAN'
+    },
+    {
+        id: 'sample-qa-1',
+        cat: 'qa',
+        title: 'Q: GOTS 認証の審査にはどのくらいの期間がかかりますか？',
+        body: 'A: 初回審査の場合、書類準備から認証取得まで通常 2〜4 ヶ月程度かかります。企業の規模・サプライチェーンの複雑さ・書類の準備状況によって異なります。IDFL JAPAN では審査準備のサポートも承っておりますので、お気軽にご相談ください。',
+        link: 'https://idfl.com/ja/idfl-japan/',
+        linkLabel: 'お問い合わせはこちら',
+        pinned: false,
+        date: '2026-03-10',
+        author: 'IDFL JAPAN'
+    },
+    {
+        id: 'sample-qa-2',
+        cat: 'qa',
+        title: 'Q: GOTS と OCS の違いは何ですか？',
+        body: 'A: GOTS（グローバルオーガニックテキスタイル規格）はオーガニック繊維製品の製造から販売までのサプライチェーン全体を対象とする規格です。一方、OCS（オーガニックコンテンツ規格）は製品に含まれるオーガニック素材の含有量を証明する規格で、加工工程の要件は GOTS より限定的です。用途・目的に応じてご選択ください。',
+        link: 'https://idfl.com/ja/idfl-japan/',
+        linkLabel: 'さらに詳しく',
+        pinned: false,
+        date: '2026-02-18',
+        author: 'IDFL JAPAN'
+    },
+    {
+        id: 'sample-qa-3',
+        cat: 'qa',
+        title: 'Q: 審査費用はどのくらいですか？',
+        body: 'A: 審査費用は認証の種類・企業規模・サプライチェーンの構造によって異なります。IDFL JAPAN では個別にお見積もりを作成しております。まずはお問い合わせフォームよりお気軽にご連絡ください。',
+        link: 'https://idfl.com/ja/idfl-japan/',
+        linkLabel: 'お見積もり依頼',
+        pinned: false,
+        date: '2026-01-25',
+        author: 'IDFL JAPAN'
+    }
+];
+
+function loadPosts() {
+    const stored = localStorage.getItem(STORAGE_KEY);
+    if (stored) return JSON.parse(stored);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultPosts));
+    return defaultPosts;
+}
+function savePosts(posts) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+}
+
+// ===================== RENDERING =====================
+const catMeta = {
+    idfl:   { label: 'IDFL 公告',        pillClass: 'pill-idfl',   cardClass: 'card-idfl'   },
+    gots:   { label: 'GOTS',             pillClass: 'pill-gots',   cardClass: 'card-gots'   },
+    te:     { label: 'Textile Exchange', pillClass: 'pill-te',     cardClass: 'card-te'     },
+    fsc:    { label: 'FSC',              pillClass: 'pill-fsc',    cardClass: 'card-fsc'    },
+    others: { label: 'Others',           pillClass: 'pill-others', cardClass: 'card-others' },
+    qa:     { label: 'よくある Q&A',     pillClass: 'pill-qa',     cardClass: 'card-qa'     },
+};
+
+function formatDate(dateStr) {
+    const d = new Date(dateStr);
+    return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
+}
+
+function isNew(dateStr) {
+    const d = new Date(dateStr);
+    const now = new Date();
+    return (now - d) < 30 * 24 * 60 * 60 * 1000; // within 30 days
+}
+
+function autoLink(text) {
+    const escaped = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return escaped.replace(/(https?:\/\/[^\s<]+)/g,
+        '<a href="$1" target="_blank" rel="noopener" style="color:var(--brand-400);text-decoration:underline;">$1</a>');
+}
+
+function renderCards() {
+    const posts = loadPosts();
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const grid   = document.getElementById('cardsGrid');
+    const noPosts = document.getElementById('noPosts');
+
+    let filtered = posts.filter(p => {
+        const matchCat = currentCat === 'all' || p.cat === currentCat;
+        const matchSearch = !search ||
+            p.title.toLowerCase().includes(search) ||
+            p.body.toLowerCase().includes(search);
+        return matchCat && matchSearch;
+    });
+
+    filtered.sort((a, b) => {
+        if (a.pinned && !b.pinned) return -1;
+        if (!a.pinned && b.pinned) return 1;
+        return new Date(b.date) - new Date(a.date);
+    });
+
+    document.getElementById('resultCount').textContent = `${filtered.length} 件のお知らせ`;
+
+    if (filtered.length === 0) {
+        grid.innerHTML = '';
+        noPosts.style.display = 'block';
+        lucide.createIcons();
+        return;
+    }
+    noPosts.style.display = 'none';
+
+    grid.innerHTML = filtered.map((p, i) => {
+        const meta   = catMeta[p.cat] || catMeta.others;
+        const newPost = isNew(p.date);
+        const adminBtns = isAdmin ? `
+            <div style="display:flex;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid #E8EDF5;">
+                <button onclick="openEdit('${p.id}')" style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--brand-600);background:var(--brand-050);border:none;border-radius:8px;padding:6px 12px;cursor:pointer;">
+                    <i data-lucide="pencil" style="width:13px;height:13px;"></i> 編集
+                </button>
+                <button onclick="deletePost('${p.id}')" style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#EF4444;background:#FEF2F2;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;">
+                    <i data-lucide="trash-2" style="width:13px;height:13px;"></i> 削除
+                </button>
+            </div>` : '';
+
+        // ---- FEATURED PINNED (first pinned) ----
+        if (p.pinned && i === 0) {
+            return `
+            <div class="featured-card fade-in">
+                <div class="featured-inner">
+                    <div style="display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+                        <span class="pinned-tag">
+                            <i data-lucide="pin" style="width:11px;height:11px;"></i> PINNED
+                        </span>
+                        <span class="cat-pill ${meta.pillClass}">${meta.label}</span>
+                        ${newPost
+                            ? '<span class="badge-new" style="background:rgba(255,255,255,0.18);color:white;">NEW</span>'
+                            : ''}
+                        <span style="font-size:12px;color:rgba(196,218,245,0.7);">${formatDate(p.date)}</span>
+                    </div>
+                    <h2 style="font-size:clamp(18px,2.8vw,24px);color:white;margin:0 0 12px;line-height:1.45;font-weight:700;">${p.title}</h2>
+                    <p style="font-size:15px;color:rgba(196,218,245,0.88);line-height:1.9;margin:0 0 20px;">${autoLink(p.body)}</p>
+                    ${p.link ? `<a href="${p.link}" target="_blank" rel="noopener"
+                        style="display:inline-flex;align-items:center;gap:6px;background:var(--brand-500);color:white;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;transition:background .2s;"
+                        onmouseover="this.style.background='var(--brand-400)'" onmouseout="this.style.background='var(--brand-500)'">
+                        ${p.linkLabel || '詳細はこちら'} <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+                    </a>` : ''}
+                    ${adminBtns}
+                </div>
+            </div>`;
+        }
+
+        // ---- REGULAR CARD ----
+        return `
+        <div class="news-card ${meta.cardClass} ${newPost ? '' : 'is-old'} fade-in" style="padding-left:20px;">
+            <div style="display:flex;align-items:center;gap:7px;margin-bottom:10px;flex-wrap:wrap;">
+                <span class="cat-pill ${meta.pillClass}">${meta.label}</span>
+                ${newPost
+                    ? '<span class="badge-new">NEW</span>'
+                    : '<span class="badge-old">過去</span>'}
+                <span style="font-size:12px;color:#94A3B8;margin-left:auto;">${formatDate(p.date)}</span>
+            </div>
+            <h3 style="font-size:16px;color:var(--brand-900);margin:0 0 9px;line-height:1.5;font-weight:700;">${p.title}</h3>
+            <p style="font-size:13.5px;color:#475569;line-height:1.85;margin:0 0 14px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">${p.body}</p>
+            ${p.link ? `<a href="${p.link}" target="_blank" rel="noopener"
+                style="display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:700;color:var(--brand-500);text-decoration:none;"
+                onmouseover="this.style.color='var(--brand-700)'" onmouseout="this.style.color='var(--brand-500)'">
+                ${p.linkLabel || '詳細はこちら'} <i data-lucide="arrow-right" style="width:13px;height:13px;"></i>
+            </a>` : ''}
+            ${adminBtns}
+        </div>`;
+    }).join('');
+
+    lucide.createIcons();
+}
+
+// ===================== FILTER =====================
+function filterCat(cat) {
+    currentCat = cat;
+    document.querySelectorAll('.cat-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.cat === cat);
+    });
+    renderCards();
+}
+
+// ===================== ADMIN AUTH =====================
+function openLogin() {
+    // Show correct state panel
+    document.getElementById('stateLogin').style.display = isAdmin ? 'none' : 'block';
+    document.getElementById('stateAdmin').style.display = isAdmin ? 'block' : 'none';
+    document.getElementById('loginOverlay').classList.add('open');
+    if (!isAdmin) {
+        document.getElementById('adminPwInput').value = '';
+        document.getElementById('loginError').style.display = 'none';
+        setTimeout(() => document.getElementById('adminPwInput').focus(), 100);
+    }
+    lucide.createIcons();
+}
+function closeLogin() { document.getElementById('loginOverlay').classList.remove('open'); }
+function checkLogin() {
+    if (document.getElementById('adminPwInput').value === ADMIN_PASSWORD) {
+        isAdmin = true;
+        document.body.classList.add('admin-mode');
+        // Switch panel to admin state
+        document.getElementById('stateLogin').style.display = 'none';
+        document.getElementById('stateAdmin').style.display = 'block';
+        lucide.createIcons();
+        renderCards();
+    } else {
+        document.getElementById('loginError').style.display = 'block';
+        document.getElementById('adminPwInput').select();
+    }
+}
+function doLogout() {
+    isAdmin = false;
+    document.body.classList.remove('admin-mode');
+    closeLogin();
+    renderCards();
+}
+
+// ===================== POST MODAL =====================
+function openPostModal(post = null) {
+    editingId = post ? post.id : null;
+    document.getElementById('modalTitle').textContent  = post ? '投稿を編集' : '新規投稿';
+    document.getElementById('submitLabel').textContent = post ? '更新する'   : '投稿する';
+    document.getElementById('fCat').value       = post ? post.cat   : 'idfl';
+    document.getElementById('fTitle').value     = post ? post.title : '';
+    document.getElementById('fBody').value      = post ? post.body  : '';
+    document.getElementById('fLink').value      = post ? (post.link || '')      : '';
+    document.getElementById('fLinkLabel').value = post ? (post.linkLabel || '') : '';
+    document.getElementById('fPinned').checked  = post ? post.pinned : false;
+    document.getElementById('formError').style.display = 'none';
+    document.getElementById('postOverlay').classList.add('open');
+    setTimeout(() => document.getElementById('fTitle').focus(), 100);
+}
+function closePostModal() { document.getElementById('postOverlay').classList.remove('open'); editingId = null; }
+function openEdit(id) { const p = loadPosts().find(p => p.id === id); if (p) openPostModal(p); }
+function submitPost() {
+    const title = document.getElementById('fTitle').value.trim();
+    const body  = document.getElementById('fBody').value.trim();
+    if (!title || !body) {
+        document.getElementById('formError').textContent = 'タイトルと本文は必須です。';
+        document.getElementById('formError').style.display = 'block';
+        return;
+    }
+    const posts = loadPosts();
+    const now   = new Date().toISOString().split('T')[0];
+    if (editingId) {
+        const idx = posts.findIndex(p => p.id === editingId);
+        if (idx !== -1) posts[idx] = { ...posts[idx], cat: document.getElementById('fCat').value, title, body,
+            link: document.getElementById('fLink').value.trim(),
+            linkLabel: document.getElementById('fLinkLabel').value.trim(),
+            pinned: document.getElementById('fPinned').checked };
+    } else {
+        posts.unshift({ id: 'post-'+Date.now(), cat: document.getElementById('fCat').value, title, body,
+            link: document.getElementById('fLink').value.trim(),
+            linkLabel: document.getElementById('fLinkLabel').value.trim(),
+            pinned: document.getElementById('fPinned').checked,
+            date: now, author: 'IDFL JAPAN' });
+    }
+    savePosts(posts);
+    closePostModal();
+    renderCards();
+}
+function deletePost(id) {
+    if (!confirm('この投稿を削除してよろしいですか？')) return;
+    savePosts(loadPosts().filter(p => p.id !== id));
+    renderCards();
+}
+
+// ===================== // ===================== INIT =====================
+document.addEventListener('DOMContentLoaded', () => {
+    lucide.createIcons();
+    renderCards();
+
+    // ESC to close modals
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') {
+            closePostModal();
+            closeLogin();
+        }
+    });
+    // Click outside to close
+    document.getElementById('postOverlay').addEventListener('click', e => {
+        if (e.target === e.currentTarget) closePostModal();
+    });
+    document.getElementById('loginOverlay').addEventListener('click', e => {
+        if (e.target === e.currentTarget) closeLogin();
+    });
+});
+
+// ハンバーガーメニュー
+// ハンバーガーメニュー開閉
+        const hamburger = document.getElementById('hamburger');
+        const mobileMenu = document.getElementById('mobileMenu');
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('open');
+            mobileMenu.classList.toggle('open');
+        });
+        // メニュー項目クリックで閉じる
+        mobileMenu.querySelectorAll('a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('open');
+                mobileMenu.classList.remove('open');
+            });
+        });
+    </script>
+</body>
+</html>
