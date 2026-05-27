@@ -318,15 +318,25 @@ if (sessionStorage.getItem('converter_auth') === '1') {
 </div>
 
 <div class="card filter-card" id="filterCard">
-  <h2>🏷️ Label Grade フィルター</h2>
-  <p style="font-size:.78rem;color:var(--dim);margin-bottom:4px;">出力したい Label Grade を選択してください。チェックした製品のみ Excel に出力されます。</p>
+  <h2>🔍 出力フィルター</h2>
+  <p style="font-size:.78rem;color:var(--dim);margin-bottom:10px;">Label Grade と Product Category を選択してください。両方の条件に一致する製品のみ Excel に出力されます。</p>
+
+  <div style="font-size:.8rem;font-weight:600;color:var(--accent2);margin-bottom:2px;">🏷️ Label Grade</div>
   <div class="lg-tools">
-    <button class="lg-tool" onclick="lgSelectAll(true)">すべて選択</button>
-    <button class="lg-tool" onclick="lgSelectAll(false)">すべて解除</button>
+    <button class="lg-tool" onclick="cbSelectAll('lg-cb',true)">すべて選択</button>
+    <button class="lg-tool" onclick="cbSelectAll('lg-cb',false)">すべて解除</button>
   </div>
   <div class="lg-grid" id="lgGrid"></div>
+
+  <div style="font-size:.8rem;font-weight:600;color:var(--accent2);margin:16px 0 2px;">📦 Product Category</div>
+  <div class="lg-tools">
+    <button class="lg-tool" onclick="cbSelectAll('pc-cb',true)">すべて選択</button>
+    <button class="lg-tool" onclick="cbSelectAll('pc-cb',false)">すべて解除</button>
+  </div>
+  <div class="lg-grid" id="pcGrid"></div>
+
   <div class="btn-row" style="margin-top:14px;">
-    <button class="btn btn-go" id="reExportBtn" onclick="applyLabelFilter()">🔄 選択した Label Grade で再出力</button>
+    <button class="btn btn-go" id="reExportBtn" onclick="applyFilters()">🔄 選択した条件で再出力</button>
   </div>
 </div>
 
@@ -1003,44 +1013,64 @@ function groupLabels(group){
   if(!b)return ['（ラベルなし）'];
   return b.split(' / ').map(s=>s.trim()).filter(Boolean);}
 
+// 製品グループの Product Category を取得（先頭行のC列）
+function groupCategory(group){
+  const c=(group[0]&&group[0].C||'').trim();
+  return c||'（カテゴリーなし）';}
+
 function buildLabelFilter(allRows){
   const groups=splitGroups(allRows);
-  const counts={};
+
+  // Label Grade 集計
+  const lgCounts={};
   for(const g of groups){
-    for(const lg of groupLabels(g)){
-      counts[lg]=(counts[lg]||0)+1;}}
-  const labels=Object.keys(counts).sort();
-  const grid=document.getElementById('lgGrid');
-  grid.innerHTML=labels.map(lg=>`
+    for(const lg of groupLabels(g))lgCounts[lg]=(lgCounts[lg]||0)+1;}
+  const labels=Object.keys(lgCounts).sort();
+  document.getElementById('lgGrid').innerHTML=labels.map(lg=>`
     <label class="lg-item">
       <input type="checkbox" class="lg-cb" value="${lg.replace(/"/g,'&quot;')}" checked>
-      <span>${lg}</span>
-      <span class="lg-count">${counts[lg]}件</span>
+      <span>${lg}</span><span class="lg-count">${lgCounts[lg]}件</span>
     </label>`).join('');
-  document.getElementById('filterCard').style.display=labels.length?'block':'none';
+
+  // Product Category 集計
+  const pcCounts={};
+  for(const g of groups){
+    const c=groupCategory(g);pcCounts[c]=(pcCounts[c]||0)+1;}
+  const cats=Object.keys(pcCounts).sort();
+  document.getElementById('pcGrid').innerHTML=cats.map(pc=>`
+    <label class="lg-item">
+      <input type="checkbox" class="pc-cb" value="${pc.replace(/"/g,'&quot;')}" checked>
+      <span>${pc}</span><span class="lg-count">${pcCounts[pc]}件</span>
+    </label>`).join('');
+
+  document.getElementById('filterCard').style.display=(labels.length||cats.length)?'block':'none';
 }
 
-function lgSelectAll(state){
-  document.querySelectorAll('.lg-cb').forEach(cb=>cb.checked=state);}
+function cbSelectAll(cls,state){
+  document.querySelectorAll('.'+cls).forEach(cb=>cb.checked=state);}
 
-function applyLabelFilter(){
+function applyFilters(){
   if(!convState)return;
-  const selected=new Set([...document.querySelectorAll('.lg-cb:checked')].map(cb=>cb.value));
-  if(!selected.size){alert('Label Grade を1つ以上選択してください。');return;}
+  const selLg=new Set([...document.querySelectorAll('.lg-cb:checked')].map(cb=>cb.value));
+  const selPc=new Set([...document.querySelectorAll('.pc-cb:checked')].map(cb=>cb.value));
+  if(!selLg.size){alert('Label Grade を1つ以上選択してください。');return;}
+  if(!selPc.size){alert('Product Category を1つ以上選択してください。');return;}
 
   const groups=splitGroups(convState.allRows);
-  const kept=[];
-  let keptCount=0;
+  const kept=[];let keptCount=0;
   for(const g of groups){
     const labels=groupLabels(g);
-    if(labels.some(lg=>selected.has(lg))){
-      kept.push(...g);kept.push(null);keptCount++;}}
+    const cat=groupCategory(g);
+    const lgOk=labels.some(lg=>selLg.has(lg));
+    const pcOk=selPc.has(cat);
+    if(lgOk&&pcOk){kept.push(...g);kept.push(null);keptCount++;}}
 
-  if(!keptCount){alert('該当する製品がありません。');return;}
+  if(!keptCount){alert('該当する製品がありません。条件を見直してください。');return;}
 
   log('');
-  log('🔄 Label Grade フィルター適用','c');
-  log(`  選択: ${[...selected].join(', ')}`);
+  log('🔄 出力フィルター適用','c');
+  log(`  Label Grade: ${[...selLg].join(', ')}`);
+  log(`  Category: ${[...selPc].join(', ')}`);
   log(`  → ${keptCount} 製品を出力`,'g');
 
   const outAb=writeExcel(kept,convState.tmplAb);
@@ -1048,7 +1078,6 @@ function applyLabelFilter(){
   const name=`${convState.baseName}_filtered_${ts}.xlsx`;
   resultData={blob:new Blob([outAb],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),name};
 
-  // ダウンロードボタンを更新
   document.getElementById('dlBtn').style.display='inline-flex';
   document.getElementById('dlBtn').textContent='⬇ フィルター済みExcelをダウンロード';
   log(`  ✅ 再出力完了 — ダウンロードボタンから取得してください`,'g');
