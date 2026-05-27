@@ -51,6 +51,32 @@
     .del-card-btn:hover{background:#fee2e2;}
     body.admin-on .del-card-btn{display:inline-flex;}
     body.admin-on .doc-card{padding-right:44px;}
+
+        /* ===== NAV ===== */
+        :root {
+            --brand-050: #F5F8FF; --brand-100: #C4DAF5; --brand-200: #9AC0EE;
+            --brand-300: #5A99E0; --brand-400: #2B78D4; --brand-500: #1565C0;
+            --brand-600: #0D55A8; --brand-700: #094590; --brand-800: #063372;
+            --brand-900: #042258;
+        }
+        .nav-dropdown {
+            opacity: 0; visibility: hidden; transform: translateY(-8px);
+            transition: opacity .2s, visibility .2s, transform .2s;
+        }
+        .nav-item:hover .nav-dropdown, .nav-item:focus-within .nav-dropdown {
+            opacity: 1; visibility: visible; transform: translateY(0);
+        }
+        .nav-item:hover .nav-chevron { transform: rotate(180deg); }
+        .nav-chevron { transition: transform .2s; }
+        .mobile-menu { display: none; }
+        .hamburger { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
+        @media (max-width: 767px) {
+            .desktop-nav { display: none !important; }
+            .hamburger { display: flex; flex-direction: column; gap: 5px; }
+            .mobile-menu.open { display: block; }
+        }
+        .mobile-menu-item { display: block; padding: 12px 24px; font-weight: 700; color: var(--brand-800); text-decoration: none; border-bottom: 1px solid var(--brand-100); font-size: 14px; }
+        .mobile-menu-sub { display: block; padding: 10px 36px; font-size: 13px; color: var(--brand-600); text-decoration: none; border-bottom: 1px solid var(--brand-050); }
   </style>
 </head>
 <body>
