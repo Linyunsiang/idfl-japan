@@ -404,13 +404,14 @@ function loadRef(wb){
     const ws=wb.Sheets[sn]; if(!ws)return{};
     const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
     const m={};
-    for(const r of rows.slice(1)){const v=clean(r[0]);if(v)m[v.toLowerCase()]=v;}
+    // 名称は2列目(index 1)。1列目はID。空なら1列目にフォールバック。
+    for(const r of rows.slice(1)){const v=clean(r[1]!==''&&r[1]!=null?r[1]:r[0]);if(v)m[v.toLowerCase()]=v;}
     return m;}
   function getSet(sn){
     const ws=wb.Sheets[sn]; if(!ws)return new Set();
     const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
     const s=new Set();
-    for(const r of rows.slice(1)){const v=clean(r[0]);if(v)s.add(v);}
+    for(const r of rows.slice(1)){const v=clean(r[1]!==''&&r[1]!=null?r[1]:r[0]);if(v)s.add(v);}
     return s;}
 
   const ref={
