@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>認証工場・企業 検索 | IDFL JAPAN</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config={theme:{extend:{colors:{brand:{'050':'#eef4fb','100':'#d6e6f5','200':'#aecce9','300':'#7db0d8','400':'#4e90c4','500':'#2d74ad','600':'#1f5c91','700':'#174776','800':'#0f3260','900':'#091f3e'}}}}}
+  </script>
+  <style>
+    :root{--brand-050:#eef4fb;--brand-100:#d6e6f5;--brand-200:#aecce9;--brand-400:#4e90c4;--brand-500:#2d74ad;--brand-600:#1f5c91;--brand-700:#174776;--brand-800:#0f3260;--brand-900:#091f3e;}
+    body{font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;}
+    .glass-card{background:rgba(255,255,255,.88);backdrop-filter:blur(12px);border:1px solid var(--brand-100);border-radius:1rem;box-shadow:0 4px 24px rgba(23,71,118,.08);}
+    .cert-badge{display:inline-flex;align-items:center;padding:2px 10px;border-radius:999px;font-size:.7rem;font-weight:700;letter-spacing:.03em;}
+    .badge-GOTS{background:#d1fae5;color:#065f46;}.badge-OCS{background:#dcfce7;color:#14532d;}
+    .badge-RWS{background:#fef3c7;color:#78350f;}.badge-GRS{background:#dbeafe;color:#1e40af;}
+    .badge-FSC{background:#d1fae5;color:#064e3b;}.badge-DOWN{background:#ede9fe;color:#4c1d95;}
+    .factory-card{transition:transform .2s,box-shadow .2s;}
+    .factory-card:hover{transform:translateY(-3px);box-shadow:0 8px 32px rgba(23,71,118,.13);}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .factory-card{animation:fadeIn .3s ease both;}
+    .hero-bg{background:linear-gradient(135deg,var(--brand-800) 0%,var(--brand-600) 60%,var(--brand-400) 100%);}
+    #adminPanel{max-height:0;overflow:hidden;transition:max-height .5s ease,opacity .3s;opacity:0;}
+    #adminPanel.open{max-height:300px;opacity:1;}
+    .modal-overlay{position:fixed;inset:0;background:rgba(9,31,62,.55);backdrop-filter:blur(4px);z-index:100;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .2s;}
+    .modal-overlay.open{opacity:1;pointer-events:all;}
+    .modal-box{background:#fff;border-radius:1.25rem;box-shadow:0 20px 60px rgba(9,31,62,.25);width:100%;max-width:500px;margin:1rem;transform:translateY(16px);transition:transform .25s;max-height:90vh;overflow-y:auto;}
+    .modal-overlay.open .modal-box{transform:translateY(0);}
+    input:focus,select:focus{outline:none;box-shadow:0 0 0 3px rgba(46,116,173,.2);}
+    .label{display:block;font-size:.75rem;font-weight:600;color:var(--brand-600);margin-bottom:.25rem;}
+    .field{width:100%;border:1px solid var(--brand-200);border-radius:.5rem;padding:.6rem .75rem;font-size:.85rem;color:var(--brand-800);background:#fff;}
+    .cert-checkbox{display:flex;flex-wrap:wrap;gap:.5rem;}
+    .cert-checkbox label{display:flex;align-items:center;gap:4px;cursor:pointer;padding:3px 10px;border-radius:999px;font-size:.75rem;font-weight:600;border:1.5px solid #e5e7eb;transition:all .15s;}
+    .cert-checkbox label:has(input:checked){border-color:var(--brand-500);background:var(--brand-050);}
+  
+    :root{--brand-050:#F5F8FF;--brand-100:#C4DAF5;--brand-200:#9AC0EE;--brand-400:#2B78D4;--brand-500:#1565C0;--brand-600:#0D55A8;--brand-700:#094590;--brand-800:#063372;--brand-900:#042258;}
+    .nav-dropdown{opacity:0;visibility:hidden;transform:translateY(-8px);transition:opacity .2s,visibility .2s,transform .2s;}
+    .nav-item:hover .nav-dropdown,.nav-item:focus-within .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);}
+    .nav-item:hover .nav-chevron{transform:rotate(180deg);}
+    .nav-chevron{transition:transform .2s;}
+    .mobile-menu{display:none;}
+    .hamburger{display:none;background:none;border:none;cursor:pointer;padding:8px;}
+    .mobile-menu-item{display:block;padding:12px 24px;font-weight:700;color:var(--brand-800);text-decoration:none;border-bottom:1px solid var(--brand-100);font-size:14px;}
+    .mobile-menu-sub{display:block;padding:10px 36px;font-size:13px;color:var(--brand-600);text-decoration:none;border-bottom:1px solid var(--brand-050);}
+    @media(max-width:767px){.desktop-nav{display:none!important;}.hamburger{display:flex;flex-direction:column;gap:5px;}.mobile-menu.open{display:block;}}
+</style>
+</head>
+<body class="bg-brand-050 min-h-screen">
+
+<!-- 共通ナビ -->
+<script>window.IDFL_SHOW_ADMIN_BTN = true;</script>
+<div id="site-nav"></div>
+<script src="/nav.js"></script>
+
+<!-- ADMIN LOGIN STRIP -->
+<div id="adminLoginStrip" class="hidden bg-brand-900 text-white px-4 py-3" style="padding-top:65px">
+  <div class="max-w-6xl mx-auto flex flex-wrap items-center gap-3 pt-3 pb-1">
+    <span class="text-sm text-brand-200 font-medium">🔒 管理者パスワード</span>
+    <input id="adminPassInput" type="password" placeholder="パスワードを入力..."
+      class="flex-1 sm:w-56 px-3 py-1.5 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm"
+      onkeydown="if(event.key==='Enter')doAdminLogin()"/>
+    <button onclick="doAdminLogin()" class="px-4 py-1.5 bg-brand-500 hover:bg-brand-400 text-white rounded-lg text-sm font-medium transition">ログイン</button>
+    <button onclick="closeAdminLogin()" class="text-white/50 hover:text-white text-sm px-2">✕</button>
+    <span id="adminLoginError" class="hidden text-red-300 text-xs w-full">パスワードが正しくありません</span>
+  </div>
+</div>
+
+<!-- HERO -->
+<section class="hero-bg text-white py-14 px-4" style="padding-top:calc(65px + 3.5rem)">
+  <div class="max-w-4xl mx-auto text-center">
+    <p class="text-brand-200 text-sm font-semibold tracking-widest uppercase mb-2">IDFL Certified</p>
+    <h1 class="text-3xl md:text-4xl font-bold mb-3">認証工場・企業 検索</h1>
+    <p class="text-brand-200 text-base max-w-xl mx-auto leading-relaxed">
+      IDFLが認証した工場・企業を検索できます。<br>各企業の公式サイト・販売サイトへ直接アクセスできます。
+    </p>
+  </div>
+</section>
+
+<!-- ADMIN PANEL -->
+<div id="adminPanel" class="bg-amber-50 border-b-2 border-amber-200">
+  <div class="max-w-5xl mx-auto px-4 py-5">
+    <div class="flex flex-wrap items-center gap-3 mb-3">
+      <span class="text-amber-600 font-bold text-sm">🛠 管理者モード</span>
+      <span class="text-xs text-amber-500 bg-amber-100 px-2 py-0.5 rounded-full">IDFL ADMIN</span>
+      <button onclick="exitAdmin()" class="ml-auto text-xs text-amber-500 hover:text-amber-700 underline">終了</button>
+    </div>
+    <div class="flex flex-wrap gap-2">
+      <button onclick="openAddModal()"
+        class="flex items-center gap-2 bg-brand-700 hover:bg-brand-800 text-white px-4 py-2 rounded-lg text-sm font-bold transition">
+        ＋ 新しい企業を追加
+      </button>
+      <button onclick="exportJSON()"
+        class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition">
+        📥 保存・ダウンロード
+      </button>
+    </div>
+    <p class="text-xs text-amber-500 mt-2">
+      ① 企業を追加・削除 → ② 「保存・ダウンロード」→ ③ <code class="bg-amber-100 px-1 rounded">factories-data.json</code> をNetlifyのルートにアップロード
+    </p>
+  </div>
+</div>
+
+<!-- SEARCH -->
+<section class="max-w-5xl mx-auto px-4 pt-6">
+  <div class="glass-card p-5">
+    <div class="flex flex-col md:flex-row gap-3">
+      <div class="relative flex-grow">
+        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z"/>
+        </svg>
+        <input id="searchInput" type="text" placeholder="会社名・地域で検索..."
+          class="w-full pl-9 pr-4 py-2.5 border border-brand-200 rounded-lg text-brand-800 text-sm bg-white"/>
+      </div>
+      <select id="certFilter" class="px-4 py-2.5 border border-brand-200 rounded-lg text-brand-800 text-sm bg-white min-w-[150px]">
+        <option value="">すべての認証</option>
+        <option>GOTS</option><option>OCS</option><option>RWS</option>
+        <option>GRS</option><option>FSC</option><option value="DOWN">ダウン・フェザー</option>
+      </select>
+      <select id="regionFilter" class="px-4 py-2.5 border border-brand-200 rounded-lg text-brand-800 text-sm bg-white min-w-[130px]">
+        <option value="">すべての地域</option>
+        <option>関東</option><option>関西</option><option>中部</option>
+        <option>九州</option><option>東北</option><option>海外</option>
+      </select>
+    </div>
+    <div class="mt-3 flex flex-wrap gap-2">
+      <span class="text-xs text-brand-500 self-center mr-1">絞込：</span>
+      <button onclick="quickFilter('GOTS')" class="cert-badge badge-GOTS cursor-pointer">GOTS</button>
+      <button onclick="quickFilter('OCS')"  class="cert-badge badge-OCS cursor-pointer">OCS</button>
+      <button onclick="quickFilter('RWS')"  class="cert-badge badge-RWS cursor-pointer">RWS</button>
+      <button onclick="quickFilter('GRS')"  class="cert-badge badge-GRS cursor-pointer">GRS</button>
+      <button onclick="quickFilter('FSC')"  class="cert-badge badge-FSC cursor-pointer">FSC</button>
+      <button onclick="quickFilter('DOWN')" class="cert-badge badge-DOWN cursor-pointer">ダウン・フェザー</button>
+      <button onclick="quickFilter('')"     class="cert-badge bg-brand-100 text-brand-600 cursor-pointer">すべて</button>
+    </div>
+  </div>
+</section>
+
+<!-- RESULTS -->
+<section class="max-w-5xl mx-auto px-4 py-8">
+  <p class="text-sm text-brand-500 mb-4"><span id="resultCount">0</span> 件の認証企業</p>
+  <div id="factoryGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+  <div id="noResults" class="hidden text-center py-16">
+    <p class="text-brand-400 font-medium">認証企業がまだ登録されていません</p>
+    <p class="text-brand-300 text-sm mt-1">管理者が企業を追加すると表示されます</p>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="bg-brand-800 text-white py-12 px-4">
+  <div class="max-w-2xl mx-auto text-center">
+    <h2 class="text-xl font-bold mb-2">認証取得をご検討の企業様へ</h2>
+    <p class="text-brand-200 text-sm mb-5">IDFLでは GOTS・OCS・RWS・GRS・FSC・ダウン・フェザー認証をサポートしています。</p>
+    <a href="https://idfl.com/ja/idfl-japan/" class="inline-block bg-white text-brand-800 font-bold px-6 py-3 rounded-lg hover:bg-brand-050 transition text-sm">お問い合わせはこちら</a>
+  </div>
+</section>
+<footer class="bg-brand-900 text-brand-300 text-xs py-6 px-4 text-center">
+  <p>© 2026 IDFL JAPAN | International Down and Feather Laboratory</p>
+  <p class="mt-1">〒541-0056 大阪市中央区久太郎町1丁目6番地21 シャンクレール本町 2階 ｜ TEL: +81 06 6484 5656</p>
+</footer>
+
+<!-- ADD MODAL -->
+<div id="addModal" class="modal-overlay" onclick="if(event.target===this)closeAddModal()">
+  <div class="modal-box">
+    <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-brand-100 sticky top-0 bg-white rounded-t-2xl">
+      <h2 class="font-bold text-brand-800">認証企業を追加</h2>
+      <button onclick="closeAddModal()" class="text-brand-300 hover:text-brand-600 text-xl leading-none">✕</button>
+    </div>
+    <div class="px-6 py-5 space-y-4">
+      <div class="grid grid-cols-2 gap-3">
+        <div class="col-span-2">
+          <label class="label">会社名 <span class="text-red-400">*</span></label>
+          <input id="f_name" type="text" placeholder="株式会社〇〇" class="field"/>
+        </div>
+        <div>
+          <label class="label">都道府県 <span class="text-red-400">*</span></label>
+          <input id="f_prefecture" type="text" placeholder="大阪府" class="field"/>
+        </div>
+        <div>
+          <label class="label">地域</label>
+          <select id="f_region" class="field">
+            <option>関東</option><option>関西</option><option>中部</option>
+            <option>九州</option><option>東北</option><option>海外</option>
+          </select>
+        </div>
+        <div class="col-span-2">
+          <label class="label">公式サイト・販売サイト URL</label>
+          <input id="f_website" type="url" placeholder="https://www.example.com" class="field text-xs"/>
+        </div>
+        <div>
+          <label class="label">認証番号</label>
+          <input id="f_certNo" type="text" placeholder="IDFL-JP-2024-XXXX" class="field text-xs"/>
+        </div>
+        <div>
+          <label class="label">認証取得年</label>
+          <input id="f_since" type="text" placeholder="2022" class="field"/>
+        </div>
+        <div class="col-span-2">
+          <label class="label">製品カテゴリ</label>
+          <input id="f_products" type="text" placeholder="ニット・織物、染色加工 など" class="field"/>
+        </div>
+        <div class="col-span-2">
+          <label class="label">認証種別 <span class="text-red-400">*</span></label>
+          <div class="cert-checkbox mt-1">
+            <label><input type="checkbox" value="GOTS" class="cert-cb sr-only"><span class="cert-badge badge-GOTS">GOTS</span></label>
+            <label><input type="checkbox" value="OCS"  class="cert-cb sr-only"><span class="cert-badge badge-OCS">OCS</span></label>
+            <label><input type="checkbox" value="RWS"  class="cert-cb sr-only"><span class="cert-badge badge-RWS">RWS</span></label>
+            <label><input type="checkbox" value="GRS"  class="cert-cb sr-only"><span class="cert-badge badge-GRS">GRS</span></label>
+            <label><input type="checkbox" value="FSC"  class="cert-cb sr-only"><span class="cert-badge badge-FSC">FSC</span></label>
+            <label><input type="checkbox" value="DOWN" class="cert-cb sr-only"><span class="cert-badge badge-DOWN">ダウン・フェザー</span></label>
+          </div>
+        </div>
+      </div>
+      <div id="addError" class="hidden text-xs text-red-500 bg-red-50 rounded px-3 py-2"></div>
+      <button onclick="submitAdd()" class="w-full bg-brand-700 hover:bg-brand-800 text-white font-bold py-3 rounded-lg text-sm transition">追加する</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast" style="position:fixed;bottom:1.5rem;right:1.5rem;z-index:200;background:var(--brand-800);color:#fff;padding:.75rem 1.25rem;border-radius:.75rem;font-size:.85rem;display:flex;align-items:center;gap:.6rem;box-shadow:0 8px 24px rgba(9,31,62,.25);transition:opacity .3s" class="hidden">
+  <svg style="width:16px;height:16px;flex-shrink:0;color:#4ade80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+  </svg>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+// ─── パスワード（変更する場合はここだけ修正） ───────────────
+const ADMIN_PASSWORD = 'idfl2026';
+
+// ─── 状態 ─────────────────────────────────────────────────
+let factories = [];
+let adminMode = false;
+const CERT_LABEL = { DOWN:'ダウン・フェザー' };
+
+// ─── データ読み込み（factories-data.json から。なければ空） ──
+async function loadFactories() {
+  try {
+    const ctrl = new AbortController();
+    setTimeout(() => ctrl.abort(), 5000);
+    const r = await fetch('/factories-data.json', { signal: ctrl.signal, cache: 'no-cache' });
+    if (r.ok) factories = await r.json();
+    else factories = [];
+  } catch { factories = []; }
+  renderCards();
+}
+
+// ─── カード描画 ───────────────────────────────────────────
+function renderCards() {
+  const kw   = document.getElementById('searchInput').value.toLowerCase();
+  const cert = document.getElementById('certFilter').value;
+  const reg  = document.getElementById('regionFilter').value;
+  const filtered = factories.filter(f => {
+    const mk = !kw   || (f.name||'').toLowerCase().includes(kw) || (f.prefecture||'').toLowerCase().includes(kw);
+    const mc = !cert || (f.certs||[]).includes(cert);
+    const mr = !reg  || f.region === reg;
+    return mk && mc && mr;
+  });
+  document.getElementById('resultCount').textContent = filtered.length;
+  const grid = document.getElementById('factoryGrid');
+  const none = document.getElementById('noResults');
+  if (!filtered.length) { grid.innerHTML=''; none.classList.remove('hidden'); return; }
+  none.classList.add('hidden');
+  grid.innerHTML = filtered.map((f,i) => {
+    const badges = (f.certs||[]).map(c=>`<span class="cert-badge badge-${c}">${CERT_LABEL[c]||c}</span>`).join('');
+    const webBtn = f.website
+      ? `<a href="${f.website}" target="_blank" rel="noopener"
+           class="flex items-center justify-center gap-1.5 w-full mt-3 py-2 rounded-lg bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold transition">
+           <svg style="width:14px;height:14px" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
+           </svg>公式サイトへ</a>`
+      : `<p class="text-center text-xs text-brand-300 mt-3 py-2">サイト未登録</p>`;
+    const delBtn = adminMode
+      ? `<button onclick="deleteFactory('${f.id}')" title="削除"
+           style="position:absolute;top:12px;right:12px;padding:6px;border-radius:50%;background:#fff5f5;border:none;cursor:pointer;color:#f87171" 
+           onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='#fff5f5'">
+           <svg style="width:14px;height:14px" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+               d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+           </svg></button>` : '';
+    return `<div class="factory-card glass-card p-5" style="position:relative;animation-delay:${i*.04}s">
+      ${delBtn}
+      <div class="mb-2" style="${adminMode?'padding-right:2rem':''}">
+        <p class="font-bold text-brand-800 text-sm">${f.name}</p>
+        <p class="text-xs text-brand-400 mt-0.5">${f.prefecture||''} · ${f.region||''}</p>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">${badges}</div>
+      <div style="border-top:1px solid var(--brand-100);padding-top:12px" class="space-y-1 text-xs text-brand-600">
+        ${f.certNo   ? `<p><span class="text-brand-400">証明書番号：</span>${f.certNo}</p>`  : ''}
+        ${f.since    ? `<p><span class="text-brand-400">認証取得：</span>${f.since}年〜</p>` : ''}
+        ${f.products ? `<p><span class="text-brand-400">製品：</span>${f.products}</p>`       : ''}
+      </div>
+      ${webBtn}
+    </div>`;
+  }).join('');
+}
+
+function quickFilter(c){ document.getElementById('certFilter').value=c; renderCards(); }
+document.getElementById('searchInput').addEventListener('input', renderCards);
+document.getElementById('certFilter').addEventListener('change', renderCards);
+document.getElementById('regionFilter').addEventListener('change', renderCards);
+
+// ─── 管理者 ───────────────────────────────────────────────
+function toggleAdminLogin() {
+  if (adminMode) { exitAdmin(); return; }
+  document.getElementById('adminLoginStrip').classList.toggle('hidden');
+  if (!document.getElementById('adminLoginStrip').classList.contains('hidden'))
+    document.getElementById('adminPassInput').focus();
+}
+function closeAdminLogin() {
+  document.getElementById('adminLoginStrip').classList.add('hidden');
+  document.getElementById('adminLoginError').classList.add('hidden');
+  document.getElementById('adminPassInput').value = '';
+}
+function doAdminLogin() {
+  if (document.getElementById('adminPassInput').value !== ADMIN_PASSWORD) {
+    document.getElementById('adminLoginError').classList.remove('hidden');
+    return;
+  }
+  adminMode = true;
+  closeAdminLogin();
+  document.getElementById('adminPanel').classList.add('open');
+  renderCards();
+  showToast('管理者モードに入りました');
+}
+function exitAdmin() {
+  adminMode = false;
+  document.getElementById('adminPanel').classList.remove('open');
+  renderCards();
+}
+
+// ─── 追加 ─────────────────────────────────────────────────
+function openAddModal()  { document.getElementById('addModal').classList.add('open'); document.body.style.overflow='hidden'; }
+function closeAddModal() { document.getElementById('addModal').classList.remove('open'); document.body.style.overflow=''; }
+function submitAdd() {
+  const name       = document.getElementById('f_name').value.trim();
+  const prefecture = document.getElementById('f_prefecture').value.trim();
+  const errEl      = document.getElementById('addError');
+  if (!name||!prefecture){ errEl.textContent='会社名と都道府県は必須です'; errEl.classList.remove('hidden'); return; }
+  const certs = [...document.querySelectorAll('.cert-cb:checked')].map(c=>c.value);
+  if (!certs.length){ errEl.textContent='認証種別を1つ以上選んでください'; errEl.classList.remove('hidden'); return; }
+  errEl.classList.add('hidden');
+  factories.push({ id:crypto.randomUUID(), name, prefecture,
+    region:   document.getElementById('f_region').value,
+    website:  document.getElementById('f_website').value.trim(),
+    certNo:   document.getElementById('f_certNo').value.trim(),
+    since:    document.getElementById('f_since').value.trim(),
+    products: document.getElementById('f_products').value.trim(),
+    certs });
+  closeAddModal(); renderCards(); showToast(`${name} を追加しました`);
+  ['f_name','f_prefecture','f_website','f_certNo','f_since','f_products'].forEach(id=>document.getElementById(id).value='');
+  document.querySelectorAll('.cert-cb').forEach(c=>c.checked=false);
+}
+
+// ─── 削除 ─────────────────────────────────────────────────
+function deleteFactory(id) {
+  if (!confirm('この企業を削除しますか？')) return;
+  const f = factories.find(x=>x.id===id);
+  factories = factories.filter(x=>x.id!==id);
+  renderCards();
+  showToast(`${f?.name||'企業'} を削除しました`);
+}
+
+// ─── JSONエクスポート ──────────────────────────────────────
+function exportJSON() {
+  const blob = new Blob([JSON.stringify(factories, null, 2)], { type:'application/json' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'factories-data.json';
+  a.click();
+  showToast('ダウンロード完了。Netlifyにアップロードしてください。');
+}
+
+// ─── Toast ────────────────────────────────────────────────
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.remove('hidden');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.classList.add('hidden'), 3500);
+}
+
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeAddModal(); });
+
+// ─── 起動 ─────────────────────────────────────────────────
+loadFactories();
+</script>
+</body>
+</html>
