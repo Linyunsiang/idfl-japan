@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>IDFL Certificate Converter</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<style>
+:root{--bg:#0f0f1a;--panel:#1a1a2e;--border:#2d2d4a;--accent:#7c3aed;--accent2:#a78bfa;
+--green:#22c55e;--red:#ef4444;--yellow:#f59e0b;--cyan:#06b6d4;--fg:#e2e8f0;--dim:#64748b;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--fg);font-family:'Segoe UI',system-ui,sans-serif;min-height:100vh;}
+header{background:var(--accent);padding:14px 24px;}
+header h1{font-size:1.35rem;font-weight:700;color:#fff;}
+header p{font-size:.8rem;color:#ddd6fe;margin-top:2px;}
+.main{max-width:860px;margin:0 auto;padding:20px 14px;}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:14px;}
+.card h2{font-size:.85rem;font-weight:600;color:var(--accent2);margin-bottom:10px;}
+.drop-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.drop-zone{border:2px dashed var(--border);border-radius:8px;padding:14px;text-align:center;
+cursor:pointer;transition:.2s;min-height:78px;display:flex;flex-direction:column;
+align-items:center;justify-content:center;position:relative;}
+.drop-zone:hover,.drop-zone.over{border-color:var(--accent);background:rgba(124,58,237,.1);}
+.drop-zone.done{border-color:var(--green);border-style:solid;}
+.drop-icon{font-size:1.6rem;margin-bottom:5px;}
+.drop-lbl{font-size:.75rem;color:var(--dim);}
+.drop-fname{font-size:.78rem;color:var(--green);word-break:break-all;margin-top:3px;}
+.drop-x{font-size:.7rem;color:var(--red);cursor:pointer;margin-top:3px;}
+.tmpl-zone{width:100%;}
+.opt-row{display:flex;gap:18px;flex-wrap:wrap;}
+.rb{display:flex;align-items:center;gap:6px;cursor:pointer;font-size:.87rem;}
+.rb input{accent-color:var(--accent);}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 20px;border-radius:8px;
+font-size:.88rem;font-weight:600;border:none;cursor:pointer;transition:.15s;}
+.btn-go{background:var(--green);color:#fff;}
+.btn-go:hover:not(:disabled){background:#16a34a;}
+.btn-go:disabled{opacity:.45;cursor:not-allowed;}
+.btn-dl{background:var(--accent);color:#fff;display:none;}
+.btn-dl:hover{background:#6d28d9;}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+.prog-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:10px;}
+.prog-fill{height:100%;background:var(--accent);width:0;transition:width .35s;}
+.stats{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;}
+.stat{background:rgba(124,58,237,.15);border-radius:6px;padding:7px 13px;}
+.sval{font-size:1.4rem;font-weight:700;color:var(--accent2);}
+.slbl{font-size:.7rem;color:var(--dim);}
+.log{background:#060612;border-radius:6px;padding:10px;font-family:Consolas,monospace;
+font-size:.76rem;height:200px;overflow-y:auto;white-space:pre-wrap;word-break:break-all;}
+.g{color:#22c55e}.r{color:#ef4444}.y{color:#f59e0b}.c{color:#06b6d4}.w{color:#e2e8f0}
+@keyframes spin{to{transform:rotate(360deg)}}
+.sp{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);
+border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+@media(max-width:600px){.drop-grid{grid-template-columns:1fr;}}
+
+    /* ===== IDFL NAV ===== */
+    :root {
+        --brand-050:#F5F8FF;--brand-100:#C4DAF5;--brand-200:#9AC0EE;
+        --brand-400:#2B78D4;--brand-500:#1565C0;--brand-600:#0D55A8;
+        --brand-700:#094590;--brand-800:#063372;--brand-900:#042258;
+    }
+    .nav-dropdown{opacity:0;visibility:hidden;transform:translateY(-8px);transition:opacity .2s,visibility .2s,transform .2s;}
+    .nav-item:hover .nav-dropdown,.nav-item:focus-within .nav-dropdown{opacity:1;visibility:visible;transform:translateY(0);}
+    .nav-item:hover .nav-chevron{transform:rotate(180deg);}
+    .nav-chevron{transition:transform .2s;}
+    .mobile-menu{display:none;}
+    .hamburger{display:none;background:none;border:none;cursor:pointer;padding:8px;}
+    .mobile-menu-item{display:block;padding:12px 24px;font-weight:700;color:var(--brand-800);text-decoration:none;border-bottom:1px solid var(--brand-100);font-size:14px;}
+    .mobile-menu-sub{display:block;padding:10px 36px;font-size:13px;color:var(--brand-600);text-decoration:none;border-bottom:1px solid var(--brand-050);}
+    @media(max-width:767px){.desktop-nav{display:none!important;}.hamburger{display:flex;flex-direction:column;gap:5px;}.mobile-menu.open{display:block;}}
+
+    /* ===== PASSWORD OVERLAY ===== */
+    #pwOverlay{
+        position:fixed;inset:0;z-index:9999;
+        background:linear-gradient(135deg,#042258 0%,#0a3d6b 60%,#063372 100%);
+        display:flex;align-items:center;justify-content:center;
+        font-family:'Segoe UI',system-ui,sans-serif;
+    }
+    #pwBox{
+        background:rgba(255,255,255,0.06);
+        border:1px solid rgba(255,255,255,0.15);
+        border-radius:20px;padding:44px 40px;
+        width:100%;max-width:400px;text-align:center;
+        backdrop-filter:blur(10px);
+    }
+    #pwBox h2{color:white;font-size:22px;font-weight:700;margin:0 0 6px;}
+    #pwBox p{color:rgba(196,218,245,0.75);font-size:13px;margin:0 0 28px;}
+    #pwInput{
+        width:100%;padding:12px 16px;border-radius:10px;border:1.5px solid rgba(255,255,255,0.2);
+        background:rgba(255,255,255,0.08);color:white;font-size:15px;
+        outline:none;margin-bottom:14px;
+        font-family:'Segoe UI',system-ui,sans-serif;
+        transition:border-color .2s;
+    }
+    #pwInput:focus{border-color:rgba(196,218,245,0.6);}
+    #pwInput::placeholder{color:rgba(255,255,255,0.35);}
+    #pwBtn{
+        width:100%;padding:13px;border-radius:10px;border:none;
+        background:#1565C0;color:white;font-size:15px;font-weight:700;
+        cursor:pointer;transition:background .2s;
+        font-family:'Segoe UI',system-ui,sans-serif;
+    }
+    #pwBtn:hover{background:#0D55A8;}
+    #pwErr{color:#FCA5A5;font-size:13px;margin-top:10px;display:none;}
+
+    /* Push content below fixed nav */
+    body > header { margin-top: 64px; }
+</style>
+</head>
+<body>
+
+<nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-[rgba(21,101,192,0.1)]">
+        <div class="max-w-[1200px] mx-auto px-6 py-4 flex justify-between items-center">
+
+            <!-- ロゴ -->
+            <a href="index.html" 
+            style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
+                <img src="/IDFL-Logo.jpg" 
+                    alt="IDFL" 
+                    style="height: 36px; width: auto; object-fit: contain;">
+                <span class="text-xl font-bold tracking-tight text-[var(--brand-800)]">
+                    IDFL JAPAN
+                </span>
+            </a>
+
+            <!-- メインメニュー(PC のみ表示) -->
+            <div class="hidden md:flex items-center gap-1">
+
+                <!-- ドロップダウン① 認証サービス -->
+                <div class="nav-item relative">
+                    <button class="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-[var(--brand-800)] hover:bg-[var(--brand-050)] rounded-lg transition-colors">
+                        認証サービス
+                        <i data-lucide="chevron-down" class="nav-chevron w-3 h-3"></i>
+                    </button>
+                    <div class="nav-dropdown absolute top-full left-0 pt-2 min-w-[210px] z-50">
+                         <div class="bg-white border border-[rgba(21,101,192,0.1)] rounded-xl shadow-lg p-2">
+                            <a href="https://idfl.com/ja/services/audits-certifications/global-organic-textile-standard-gots/" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">GOTS 認証</a>
+                            <a href="https://idfl.com/ja/services/audits-certifications/organic-content-standard-ocs/" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">OCS 認証</a>
+                            <a href="https://idfl.com/ja/services/audits-certifications/responsible-wool-standard-rws/" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">RWS 認証</a>
+                            <a href="https://idfl.com/ja/services/audits-certifications/global-recycled-standard-grs/" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">GRS 認証</a>
+                            <a href="/services/fsc.html" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">FSC 認証</a>
+                            <a href="https://dev.idfl.com/ja/services/" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">ダウン・フェザー検査</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ドロップダウン② セミナー -->
+                <div class="nav-item relative">
+                    <button class="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-[var(--brand-800)] hover:bg-[var(--brand-050)] rounded-lg transition-colors">
+                        セミナー
+                        <i data-lucide="chevron-down" class="nav-chevron w-3 h-3"></i>
+                    </button>
+                    <div class="nav-dropdown absolute top-full left-0 pt-2 min-w-[210px] z-50">
+                        <div class="bg-white border border-[rgba(21,101,192,0.1)] rounded-xl shadow-lg p-2">
+                            <a href="/seminar_schedule.html" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">開催予定のセミナー</a>
+                            <a href="/past_seminar_v2.html" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">過去のセミナー</a>
+                            <a href="/download.html" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">資料ダウンロード</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ドロップダウン③ 会社情報 -->
+                <div class="nav-item relative">
+                    <button class="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-[var(--brand-800)] hover:bg-[var(--brand-050)] rounded-lg transition-colors">
+                        会社情報
+                        <i data-lucide="chevron-down" class="nav-chevron w-3 h-3"></i>
+                    </button>
+                    <div class="nav-dropdown absolute top-full left-0 pt-2 min-w-[210px] z-50">
+                        <div class="bg-white border border-[rgba(21,101,192,0.1)] rounded-xl shadow-lg p-2">
+                            <a href="https://idfl.com/zh-tw/idfl-japan/" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">会社概要</a>
+                            <a href="https://maps.app.goo.gl/hxvPws1M6cGxbLHF7" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">アクセス</a>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 単一リンク(ドロップダウンなし) -->
+                <a href="/idfl_news.html" class="px-4 py-2 text-sm font-semibold text-[var(--brand-800)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">お知らせ</a>
+                <a href="/converter.html" class="px-4 py-2 text-sm font-semibold text-[var(--brand-800)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">🔧 変換ツール</a>
+            </div>
+
+            <!-- お申し込みボタン(PC) -->
+            <a href="/download.html"
+               class="hidden md:block text-sm font-semibold hover:text-[var(--brand-500)] transition-colors">お申し込み</a>
+
+            <!-- ハンバーガーボタン(スマホのみ) -->
+            <button class="hamburger" id="hamburger" aria-label="メニュー">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </nav>
+
+    <!-- モバイルドロワーメニュー -->
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-section">認証サービス</div>
+        <a href="https://idfl.com/ja/services/audits-certifications/global-organic-textile-standard-gots/" class="mobile-menu-sub">GOTS 認証</a>
+        <a href="https://idfl.com/ja/services/audits-certifications/organic-content-standard-ocs/" class="mobile-menu-sub">OCS 認証</a>
+        <a href="https://idfl.com/ja/services/audits-certifications/responsible-wool-standard-rws/" class="mobile-menu-sub">RWS 認証</a>
+        <a href="https://idfl.com/ja/services/audits-certifications/global-recycled-standard-grs/" class="mobile-menu-sub">GRS 認証</a>
+        <a href="https://dev.idfl.com/ja/services/" class="mobile-menu-sub">ダウン・フェザー検査</a>
+        <div class="mobile-menu-section">セミナー</div>
+        <a href="/seminar_schedule.html" class="mobile-menu-sub">開催予定のセミナー</a>
+        <a href="/past_seminar_v2.html" class="mobile-menu-sub">過去のセミナー</a>
+        <div class="mobile-menu-section">会社情報</div>
+        <a href="https://idfl.com/zh-tw/idfl-japan/" class="mobile-menu-sub">会社概要</a>
+        <a href="https://maps.app.goo.gl/hxvPws1M6cGxbLHF7" class="mobile-menu-sub">アクセス</a>
+        <a href="/download.html"
+           class="mobile-apply-btn">今すぐ申し込む（無料）</a>
+    </div>
+
+
+<!-- PASSWORD OVERLAY -->
+<div id="pwOverlay">
+    <div id="pwBox">
+        <div style="width:56px;height:56px;background:rgba(255,255,255,0.12);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <h2>IDFL Certificate Converter</h2>
+        <p>IDFL スタッフ専用ツール<br>パスワードを入力してください</p>
+        <input type="password" id="pwInput" placeholder="パスワードを入力" onkeydown="if(event.key==='Enter')checkPw()">
+        <button id="pwBtn" onclick="checkPw()">ログイン</button>
+        <p id="pwErr">パスワードが正しくありません</p>
+    </div>
+</div>
+
+<script>
+const CONVERTER_PW = 'idfl2026';
+function checkPw() {
+    if (document.getElementById('pwInput').value === CONVERTER_PW) {
+        document.getElementById('pwOverlay').style.display = 'none';
+        sessionStorage.setItem('converter_auth', '1');
+    } else {
+        document.getElementById('pwErr').style.display = 'block';
+        document.getElementById('pwInput').select();
+    }
+}
+// Auto-unlock if already authenticated this session
+if (sessionStorage.getItem('converter_auth') === '1') {
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('pwOverlay').style.display = 'none';
+    });
+}
+</script>
+
+<header>
+  <h1>IDFL Certificate → Excel Converter</h1>
+  <p>スコープ証明書PDFをIDFLシステム用Excelに変換 · ブラウザで完結 · v5.0</p>
+</header>
+<div class="main">
+
+<div class="card">
+  <h2>📄 PDF証明書（1〜3ファイル）</h2>
+  <div class="drop-grid">
+    <div id="pz0" class="drop-zone" onclick="pick('p',0)" ondragover="dov(event,this)" ondragleave="dlv(this)" ondrop="drop(event,'p',0)">
+      <div class="drop-icon">📄</div><div class="drop-lbl">PDF 1（必須）</div>
+      <div class="drop-fname" id="pn0"></div><div class="drop-x" id="px0" style="display:none" onclick.stop="clr('p',0,event)">✕ 削除</div>
+    </div>
+    <div id="pz1" class="drop-zone" onclick="pick('p',1)" ondragover="dov(event,this)" ondragleave="dlv(this)" ondrop="drop(event,'p',1)">
+      <div class="drop-icon">📄</div><div class="drop-lbl">PDF 2（任意）</div>
+      <div class="drop-fname" id="pn1"></div><div class="drop-x" id="px1" style="display:none" onclick.stop="clr('p',1,event)">✕ 削除</div>
+    </div>
+    <div id="pz2" class="drop-zone" onclick="pick('p',2)" ondragover="dov(event,this)" ondragleave="dlv(this)" ondrop="drop(event,'p',2)">
+      <div class="drop-icon">📄</div><div class="drop-lbl">PDF 3（任意）</div>
+      <div class="drop-fname" id="pn2"></div><div class="drop-x" id="px2" style="display:none" onclick.stop="clr('p',2,event)">✕ 削除</div>
+    </div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>📋 Excelテンプレート</h2>
+  <div id="tz" class="drop-zone tmpl-zone" onclick="pick('t',0)" ondragover="dov(event,this)" ondragleave="dlv(this)" ondrop="drop(event,'t',0)">
+    <div class="drop-icon">📊</div><div class="drop-lbl">sample.xlsx をドロップまたはクリック</div>
+    <div class="drop-fname" id="tn"></div><div class="drop-x" id="tx" style="display:none" onclick.stop="clr('t',0,event)">✕ 削除</div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>⚙️ オプション</h2>
+  <div class="opt-row">
+    <label class="rb"><input type="radio" name="pct" value="0" checked> G列（%）を空欄にする</label>
+    <label class="rb"><input type="radio" name="pct" value="1"> G列（%）に数値を入力する</label>
+  </div>
+</div>
+
+<div class="card">
+  <div class="btn-row">
+    <button class="btn btn-go" id="goBtn" onclick="run()" disabled>▶ 変換開始</button>
+    <button class="btn btn-dl" id="dlBtn" onclick="dl()">⬇ Excelをダウンロード</button>
+  </div>
+  <div class="prog-bar"><div class="prog-fill" id="prog"></div></div>
+  <div class="stats" id="stats" style="display:none">
+    <div class="stat"><div class="sval" id="sProd">0</div><div class="slbl">製品数</div></div>
+    <div class="stat"><div class="sval" id="sErr">0</div><div class="slbl">エラー</div></div>
+    <div class="stat"><div class="sval" id="sFmt">-</div><div class="slbl">フォーマット</div></div>
+  </div>
+</div>
+
+<div class="card">
+  <h2>📝 処理ログ</h2>
+  <div class="log" id="logBox"></div>
+</div>
+</div>
+
+<input type="file" id="fi0" accept=".pdf" style="display:none" onchange="fsel('p',0,this)">
+<input type="file" id="fi1" accept=".pdf" style="display:none" onchange="fsel('p',1,this)">
+<input type="file" id="fi2" accept=".pdf" style="display:none" onchange="fsel('p',2,this)">
+<input type="file" id="fit" accept=".xlsx" style="display:none" onchange="fsel('t',0,this)">
+
+<script>
+// ════════════════════════════════════════════════════════════
+//  State
+// ════════════════════════════════════════════════════════════
+const pdfFiles=[null,null,null]; let tmplFile=null; let resultData=null;
+
+// ════════════════════════════════════════════════════════════
+//  UI helpers
+// ════════════════════════════════════════════════════════════
+function pick(t,i){document.getElementById(t==='p'?`fi${i}`:'fit').click();}
+function fsel(t,i,inp){const f=inp.files[0];if(f)setF(t,i,f);inp.value='';}
+function setF(t,i,f){
+  if(t==='p'){pdfFiles[i]=f;document.getElementById(`pn${i}`).textContent=f.name;
+    document.getElementById(`px${i}`).style.display='';document.getElementById(`pz${i}`).classList.add('done');}
+  else{tmplFile=f;document.getElementById('tn').textContent=f.name;
+    document.getElementById('tx').style.display='';document.getElementById('tz').classList.add('done');}
+  upd();}
+function clr(t,i,e){e.stopPropagation();
+  if(t==='p'){pdfFiles[i]=null;document.getElementById(`pn${i}`).textContent='';
+    document.getElementById(`px${i}`).style.display='none';document.getElementById(`pz${i}`).classList.remove('done');}
+  else{tmplFile=null;document.getElementById('tn').textContent='';
+    document.getElementById('tx').style.display='none';document.getElementById('tz').classList.remove('done');}
+  upd();}
+function dov(e,z){e.preventDefault();z.classList.add('over');}
+function dlv(z){z.classList.remove('over');}
+function drop(e,t,i){e.preventDefault();const z=document.getElementById(t==='p'?`pz${i}`:'tz');
+  z.classList.remove('over');const f=e.dataTransfer.files[0];if(f)setF(t,i,f);}
+function upd(){document.getElementById('goBtn').disabled=!(pdfFiles.some(Boolean)&&tmplFile);}
+function setProg(v){document.getElementById('prog').style.width=v+'%';}
+function log(msg,cls='w'){const b=document.getElementById('logBox');
+  const s=document.createElement('span');s.className=cls;
+  if(/✅|OK/.test(msg))s.className='g';else if(/❌|エラー|未発見/.test(msg))s.className='r';
+  else if(/⚠|修正|削除/.test(msg))s.className='y';else if(/===|📄|⚙|─/.test(msg))s.className='c';
+  s.textContent=msg+'\n';b.appendChild(s);b.scrollTop=b.scrollHeight;}
+function dl(){if(!resultData)return;
+  const a=document.createElement('a');a.href=URL.createObjectURL(resultData.blob);
+  a.download=resultData.name;a.click();URL.revokeObjectURL(a.href);}
+
+// ════════════════════════════════════════════════════════════
+//  Constants
+// ════════════════════════════════════════════════════════════
+const STD_TO_TITLE={GRS:'Global Recycled Standard (GRS)',OCS:'Organic Content Standard (OCS)',
+  RCS:'Recycled Claim Standard (RCS)',GOTS:'Global Organic Textile Standard (GOTS)',
+  RWS:'Responsible Wool Standard (RWS)'};
+
+const KNOWN_CORR={
+  'in conversion cotton (rm0103)':'In-Conversion Cotton (RM0103)',
+  'cotton, organic (rm0104)':'Organic Cotton (RM0104)',
+  'viscose (rayon) (rm0238)':'Viscose (Rayon) (RM0238)',
+};
+
+const GOTS_LABELS={'organic':'GOTS (Organic)','made with organic':'GOTS (Made with Organic)',
+  'organic in conversion':'GOTS (Organic in Conversion)'};
+
+const CU_SKIP=['CU Inspections','ORGANIC CONTENT','GLOBAL RECYCLED','RECYCLED CLAIM',
+  'Products Appendix','Product category Product','Facility number','(Label grade)',
+  'Site Appendix','Scope Certificate','www.controlunion','Place and date'];
+
+const IDFL_FOOTER=['taiwan idfl','8f., no.','new taipei','xinzhuang','shinatomo co',
+  'idfl license','wilford','this certificate provides','scan qr code','os.idfl.com',
+  'ocs version','rws version','rcs version','(continued)','place and date',
+  'last updated','extended until','status:','scope certificate number',
+  'this electronically issued','te-id te-','page ','inspectbody'];
+
+const PAGE_FOOTER=['place and date of issue','last updated','extended until','status:',
+  'scope certificate number','this electronically issued','page ','te-id te-',
+  'mark thomas','executive vice president','assurance, sustainability',
+  'gscs international','rokeya palace','taiwan idfl','8f., no.','new taipei',
+  'xinzhuang','shinatomo co','idfl license','wilford','this certificate provides',
+  'scan qr code','os.idfl.com','intertek testing','4700 broadmoor','kentwood',
+  'this scope certificate','note: * quantification','square brackets refer'];
+
+// ════════════════════════════════════════════════════════════
+//  Reference data (from SheetJS)
+// ════════════════════════════════════════════════════════════
+function clean(s){return String(s||'').replace(/[\u200b\u200c\u200d\ufeff\xa0]/g,'').trim();}
+
+function loadRef(wb){
+  function getMap(sn){
+    const ws=wb.Sheets[sn]; if(!ws)return{};
+    const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+    const m={};
+    for(const r of rows.slice(1)){const v=clean(r[0]);if(v)m[v.toLowerCase()]=v;}
+    return m;}
+  function getSet(sn){
+    const ws=wb.Sheets[sn]; if(!ws)return new Set();
+    const rows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+    const s=new Set();
+    for(const r of rows.slice(1)){const v=clean(r[0]);if(v)s.add(v);}
+    return s;}
+
+  const ref={
+    auditTitles:getSet('AuditStandard'),
+    labelGrades:getSet('AuditStandard_LabelGrade'),
+    categories:getMap('ProductCategory'),
+    details:getMap('ProductDetail'),
+    rawMaterials:getMap('RawMaterial'),
+    rmByCode:{},rmByCodeAll:{},pdByCodeAll:{}
+  };
+
+  for(const name of Object.values(ref.rawMaterials)){
+    const m=name.match(/\(RM(\d+)\)/);
+    if(m){const c=m[1];if(!ref.rmByCode[c])ref.rmByCode[c]=name;
+      (ref.rmByCodeAll[c]=ref.rmByCodeAll[c]||[]).push(name);}}
+
+  for(const name of Object.values(ref.details)){
+    const m=name.match(/\(PD(\d+)\)/);
+    if(m){const c=m[1];(ref.pdByCodeAll[c]=ref.pdByCodeAll[c]||[]).push(name);}}
+
+  return ref;}
+
+// ════════════════════════════════════════════════════════════
+//  Lookups
+// ════════════════════════════════════════════════════════════
+function wordScore(a,b){
+  const wa=new Set(a.toLowerCase().match(/\w+/g)||[]);
+  const wb2=new Set(b.toLowerCase().match(/\w+/g)||[]);
+  let n=0;for(const w of wa)if(wb2.has(w))n++;return n;}
+
+function findBestRm(value,ref){
+  if(!value)return[value,true];
+  const vl=clean(value).toLowerCase();
+  if(KNOWN_CORR[vl]){const c=KNOWN_CORR[vl];const r=ref.rawMaterials[c.toLowerCase()];return[r||c,true];}
+  const ex=ref.rawMaterials[vl];if(ex)return[ex,true];
+  const m=vl.match(/\(rm(\d+)\)/);
+  if(m){const code=m[1];const cands=ref.rmByCodeAll[code];
+    if(cands&&cands.length){
+      if(cands.length===1)return[cands[0],true];
+      let best=cands[0],bs=-1;
+      for(const c of cands){const s=wordScore(value,c);if(s>bs){bs=s;best=c;}}
+      return[best,true];}}
+  return[value,false];}
+
+function findBestDet(value,ref){
+  if(!value)return[value,true];
+  const vl=clean(value).toLowerCase();
+  const ex=ref.details[vl];if(ex)return[ex,true];
+  const m=vl.match(/\(pd(\d+)\)/);
+  if(m){const code=m[1];const cands=ref.pdByCodeAll[code];
+    if(cands&&cands.length){
+      if(cands.length===1)return[cands[0],true];
+      let best=cands[0],bs=-1;
+      for(const c of cands){const s=wordScore(value,c);if(s>bs){bs=s;best=c;}}
+      return[best,true];}}
+  return[value,false];}
+
+function findBest(value,lookup){
+  if(!value)return[value,true];
+  const r=lookup[value.toLowerCase()];return r?[r,true]:[value,false];}
+
+// ════════════════════════════════════════════════════════════
+//  Format detection
+// ════════════════════════════════════════════════════════════
+function detectFormat(text){
+  if(/GLOBAL ORGANIC TEXTILE STANDARD\s*\(GOTS\)/i.test(text))return'GOTS';
+  if(/TAIWAN IDFL/i.test(text))return'IDFL';
+  const hasProdNum=/Product\s+Number/i.test(text);
+  const hasStd=/(Global Recycled Standard|Organic Content Standard|Recycled Claim Standard|GRS Version|OCS Version|RCS Version)/i.test(text);
+  if(hasProdNum&&hasStd)return'CU_TABLE';
+  if(/CU Inspections|TE-ID: TE-/i.test(text))return'CU';
+  return'CU';}
+
+// ════════════════════════════════════════════════════════════
+//  PDF.js text extraction
+// ════════════════════════════════════════════════════════════
+pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+async function extractPages(file){
+  const ab=await file.arrayBuffer();
+  const pdf=await pdfjsLib.getDocument({data:ab}).promise;
+  const pages=[];
+  for(let i=1;i<=pdf.numPages;i++){
+    const pg=await pdf.getPage(i);
+    const tc=await pg.getTextContent();
+    const lines=[];
+    let lastY=null;let cur='';
+    for(const item of tc.items){
+      if(lastY!==null&&Math.abs(item.transform[5]-lastY)>3){
+        if(cur.trim())lines.push(cur.trim());cur='';}
+      cur+=item.str;lastY=item.transform[5];}
+    if(cur.trim())lines.push(cur.trim());
+    pages.push(lines);}
+  return pages;}
+
+// ════════════════════════════════════════════════════════════
+//  Common helpers
+// ════════════════════════════════════════════════════════════
+function joinRows(lines,isNewRow){
+  const joined=[];let cur='';
+  for(const l of lines){
+    if(isNewRow(l,cur)){if(cur.trim())joined.push(cur.trim());cur=l;}
+    else{cur=cur?(cur+' '+l).trim():l;}}
+  if(cur.trim())joined.push(cur.trim());
+  return joined;}
+
+function rmStdPattern(text){return text.replace(/(GRS|OCS|RCS|RWS)\s*\([^)]+\)/gi,'').trim();}
+
+function findStdPattern(text){
+  const stds=[];const re=/(GRS|OCS|RCS|RWS)\s*\(([^)]+)\)/gi;let m;
+  while((m=re.exec(text))!==null)stds.push([m[1].toUpperCase(),m[2]]);
+  return stds;}
+
+function findLastRm(text){
+  let last=-1;const re=/\(RM\d+\)/gi;let m;
+  while((m=re.exec(text))!==null)last=m.index+m[0].length;
+  return last;}
+
+function rmTENums(text){return text.replace(/TE-\d{8}[,\s]*/g,'').trim();}
+
+function parseMats(text){
+  const mats=[];
+  for(let part of text.split(/\s*\+\s*/)){
+    part=part.replace(/^\[.*?\]\s*/,'').trim();
+    if(!part)continue;
+    const pm=part.match(/^(\d+\.?\d*)\s*%\s*(.+)/);
+    if(pm)mats.push([pm[1]+'%',pm[2].trim()]);
+    else if(/\(RM\d+\)/i.test(part))mats.push(['',part]);}
+  return mats;}
+
+// ════════════════════════════════════════════════════════════
+//  Collect + Join for CU_TABLE / GOTS / IDFL
+// ════════════════════════════════════════════════════════════
+const CU_TABLE_CAT_RE=/(?:\w[^()]*?(?:\([^)]+\)[^()]*?)*?)\s*\(PC\d+\)/i;
+const CU_TABLE_DET_RE=/(?:\w[^()]*?(?:\([^)]+\)[^()]*?)*?)\s*(?:\[[\w\s,./]+\]\s*)?\(PD\d+\)/i;
+
+function collectTableLines(pages){
+  const all=[];let inProd=false;
+  for(const lines of pages){
+    for(const l of lines){
+      const ll=l.toLowerCase();
+      if(/products appendix/i.test(l)){inProd=true;continue;}
+      if(!inProd)continue;
+      if(['site appendix','facility appendix','non-certified subcontractor',
+          'facility name'].some(s=>ll.includes(s))){inProd=false;break;}
+      if(['product','number','category','grade)','standard'].includes(ll.trim()))continue;
+      if(ll.includes('product number'))continue;
+      if(ll.includes('product category')&&ll.includes('product detail'))continue;
+      if(ll.includes('material composition')&&(ll.includes('standard')||ll.includes('label')))continue;
+      if(ll.includes('grade) facility')||ll==='grade)')continue;
+      if(PAGE_FOOTER.some(s=>ll.includes(s)))continue;
+      all.push(l);}}
+  return all;}
+
+function joinTableRows(lines){
+  return joinRows(lines,(l,cur)=>{
+    return /^\d+\s*$/.test(l)||/^\d+\s+[A-ZÀ-Ö\'"]/.test(l)||
+      (CU_TABLE_CAT_RE.test(l)&&!(cur&&cur.slice(-20).endsWith(l.slice(-Math.min(20,l.length)))));});}
+
+// ════════════════════════════════════════════════════════════
+//  CU_TABLE parser (GSCS, Liz Fashion, Intertek)
+// ════════════════════════════════════════════════════════════
+function parseCuTable(pages){
+  const lines=collectTableLines(pages);
+  const joined=joinTableRows(lines);
+  const products=[];
+
+  for(let row of joined){
+    row=row.replace(/^\d+\s+/,'').replace(/\s+/g,' ').trim();
+    const catM=row.match(/(?:\w[^()]*?(?:\([^)]+\)[^()]*?)*?)\s*\(PC\d+\)/i);
+    if(!catM)continue;
+    const cat=catM[0].trim();
+    let rem=row.slice(catM.index+catM[0].length).trim();
+    const detM=rem.match(/(?:\w[^()]*?(?:\([^)]+\)[^()]*?)*?)\s*(?:\[[\w\s,./]+\]\s*)?\(PD\d+\)/i);
+    let det='';
+    if(detM){det=detM[0].trim();rem=rem.slice(detM.index+detM[0].length).trim();}
+    rem=rmTENums(rem).replace(/,\s*$/,'').trim();
+    const stds=findStdPattern(rem);
+    const matText=rmStdPattern(rem);
+
+    const comps=matText.split(';').map(c=>c.trim()).filter(Boolean);
+    if(!comps.length)continue;
+
+    if(comps.length===1){
+      const mats=parseMats(comps[0]);
+      if(mats.length&&stds.length){
+        products.push({cat,det,standards:stds.map(s=>({std:s[0],lbl:s[1]})),materials:mats});}}
+    else{
+      for(let i=0;i<comps.length;i++){
+        const mats=parseMats(comps[i]);
+        if(!mats.length)continue;
+        const std=stds[i]||stds[stds.length-1];
+        if(std)products.push({cat,det,standards:[{std:std[0],lbl:std[1]}],materials:mats});}}}
+  return products;}
+
+// ════════════════════════════════════════════════════════════
+//  GOTS parser
+// ════════════════════════════════════════════════════════════
+function parseGots(pages){
+  const lines=collectTableLines(pages);
+  const joined=joinTableRows(lines);
+  const products=[];
+
+  for(let row of joined){
+    row=row.replace(/\s+/g,' ').trim();
+    const catM=row.match(/(?:\w[^()]*?(?:\([^)]+\)[^()]*?)*?)\s*\(PC\d+\)/i);
+    if(!catM)continue;
+    const cat=catM[0].trim();
+    let rem=row.slice(catM.index+catM[0].length).trim();
+    const detM=rem.match(/(?:\w[^()]*?(?:\([^)]+\)[^()]*?)*?)\s*(?:\[[\w\s,./]+\]\s*)?\(PD\d+\)/i);
+    let det='';
+    if(detM){det=detM[0].trim();rem=rem.slice(detM.index+detM[0].length).trim();}
+
+    let label='';const remL=rem.toLowerCase();
+    for(const k of Object.keys(GOTS_LABELS).sort((a,b)=>b.length-a.length)){
+      if(remL.endsWith(k)){label=rem.slice(-k.length);rem=rem.slice(0,-k.length).trim();break;}}
+
+    const mats=parseMats(rem);
+    if(mats.length)products.push({cat,det,standards:[{std:'GOTS',lbl:label||'organic'}],materials:mats});}
+  return products;}
+
+// ════════════════════════════════════════════════════════════
+//  IDFL Taiwan parser (信友 etc.)
+// ════════════════════════════════════════════════════════════
+function parseIdfl(pages){
+  const all=[];let inProd=false;
+  for(const lines of pages){
+    for(const l of lines){
+      const ll=l.toLowerCase();
+      if(/products appendix/i.test(l)){inProd=true;continue;}
+      if(!inProd)continue;
+      if(['site appendix','facility name'].some(s=>ll.includes(s))){inProd=false;break;}
+      if(['product','number','standard','facility'].includes(ll.trim()))continue;
+      if(ll.includes('product number'))continue;
+      if(ll.includes('product category')&&ll.includes('product detail'))continue;
+      if(ll.includes('label grade')||ll==='(label grade)'||ll==='grade)')continue;
+      if(IDFL_FOOTER.some(s=>ll.includes(s)))continue;
+      all.push(l);}}
+
+  const joined=joinTableRows(all);
+  const products=[];
+
+  for(let row of joined){
+    row=row.replace(/^\d+\s+/,'').replace(/\s{2,}/g,' ').trim();
+    const cdM=row.match(/(.+?)\s*\(PC(\d+)\s*-\s*PD(\d+)\)/i);
+    if(!cdM)continue;
+    const cdText=cdM[1].trim(),pcCode=cdM[2],pdCode=cdM[3];
+    let rem=row.slice(cdM.index+cdM[0].length).trim();
+    rem=rmTENums(rem).trim();
+
+    const parts=cdText.split(/ - /,2);
+    const catName=parts[0].trim(),detName=(parts[1]||'').trim();
+    const cat=`${catName} (PC${pcCode})`,det=detName?`${detName} (PD${pdCode})`:'';
+
+    const lastRm=findLastRm(rem);
+    if(lastRm<0)continue;
+    const matText=rem.slice(0,lastRm).trim();
+    const stdText=rem.slice(lastRm).trim();
+
+    const stds=[];
+    const idflRe=/(GRS|OCS|RCS|RWS)\s*(\([^)]+\))?/gi;let m;
+    while((m=idflRe.exec(stdText))!==null){
+      const sn=m[1].toUpperCase();
+      const lbl=m[2]?m[2].replace(/[()]/g,'').trim():sn;
+      stds.push({std:sn,lbl});}
+
+    const mats=parseMats(matText);
+    if(mats.length&&stds.length)
+      products.push({cat,det,standards:stds,materials:mats});}
+  return products;}
+
+// ════════════════════════════════════════════════════════════
+//  CU Inspections (Vardhman) parser
+// ════════════════════════════════════════════════════════════
+function parseCu(pages){
+  const allLines=[];
+  for(let pi=1;pi<pages.length;pi++){
+    for(const l of pages[pi]){
+      if(!l||CU_SKIP.some(s=>l.includes(s)))continue;
+      if(/^\d{4}-\d{2}-\d{2}/.test(l))continue;
+      allLines.push(l);}}
+
+  // Simple join
+  const joined=[];let cur='';
+  for(const l of allLines){
+    if(cur&&(l.startsWith('(RM')||l.startsWith('(PD')||/^TE-\d{8}/.test(l))){
+      cur=(cur+' '+l).trim();}
+    else{if(cur)joined.push(cur);cur=l;}}
+  if(cur)joined.push(cur);
+
+  const catRe=/(?:Carried accessories|Dyed fabrics|Dyed fibers|Dyed yarns|Functional accessories|Greige fabrics|Greige yarns|Men's apparel|Printed fabrics|Undyed fabrics|Undyed fibers|Women's apparel)\s*\(PC\d+\)/i;
+  const products=[];let pending=null;
+
+  for(const line of joined){
+    if(/^TE-\d{8}/.test(line))continue;
+    const catM=line.match(catRe);
+    const detPos=line.match(/(?:\w[^()]*?(?:\([^)]+\)[^()]*?)*?)\s*\(PD\d+\)/i);
+    const stds=findStdPattern(line);
+
+    let matLine=line;
+    if(catM)matLine=matLine.replace(catM[0],'');
+    if(detPos)matLine=matLine.replace(detPos[0],'');
+    const matText=rmStdPattern(rmTENums(matLine));
+    const mats=parseMats(matText);
+
+    if(catM){
+      if(pending&&pending.materials.length)products.push(pending);
+      pending={cat:catM[0].trim(),det:detPos?detPos[0].trim():'',
+               standards:[],materials:[...mats]};}
+    else if(mats.length&&pending){
+      if(detPos&&!pending.det)pending.det=detPos[0].trim();
+      pending.materials.push(...mats);}
+
+    if(stds.length&&pending){
+      pending.standards=stds.map(s=>({std:s[0],lbl:s[1]}));
+      if(pending.materials.length)products.push(pending);
+      pending=null;}}
+  if(pending&&pending.materials.length)products.push(pending);
+  return products;}
+
+// ════════════════════════════════════════════════════════════
+//  Product mapping
+// ════════════════════════════════════════════════════════════
+function mapCuLabel(std,lbl,validLabels){
+  const l=lbl.trim();
+  let c;
+  if(/no label/i.test(l))c=`${std} (No label)`;
+  else if(l.toLowerCase()===std.toLowerCase())c=std;
+  else if(/blended/i.test(l))c=`${std} (${std} Blended)`;
+  else if(/100/.test(l))c=`${std} (${std} 100)`;
+  else c=l;
+  return validLabels.has(c)?c:null;}
+
+function mapGotsLabel(lbl,validLabels){
+  const ll=lbl.toLowerCase();
+  for(const[k,v] of Object.entries(GOTS_LABELS)){
+    if(ll.includes(k)&&validLabels.has(v))return v;}
+  return null;}
+
+function dedupMaterials(mats){
+  const seenRm=new Set(),seenName=new Set(),result=[];
+  for(const[pct,mat] of mats){
+    const ml=mat.toLowerCase();const rm=ml.match(/\(rm(\d+)\)/);
+    const code=rm?rm[1]:null;
+    if(code&&seenRm.has(code))continue;
+    if(seenName.has(ml))continue;
+    if(code)seenRm.add(code);seenName.add(ml);result.push([pct,mat]);}
+  return result;}
+
+function mapProduct(p,ref,showPct,fmt,errors,excel_row){
+  const tag=excel_row?` [Excel行 ${excel_row}]`:'';
+  let colA='',colB='';
+
+  if(!p.standards||!p.standards.length){colA='';colB='';}
+  else if(fmt==='GOTS'){
+    const {std,lbl}=p.standards[0];
+    colA=STD_TO_TITLE[std]||'';
+    if(colA&&!ref.auditTitles.has(colA)){errors.push(`Audit Standard 未発見: '${std}'${tag}`);colA='';}
+    const mb=mapGotsLabel(lbl,ref.labelGrades);
+    if(!mb){errors.push(`Label Grade 未発見: '${lbl}'${tag}`);colB='';}else colB=mb;
+  }else if(p.standards.length===1){
+    const {std,lbl}=p.standards[0];
+    colA=STD_TO_TITLE[std]||'';
+    if(colA&&!ref.auditTitles.has(colA)){errors.push(`Audit Standard 未発見: '${std}'${tag}`);colA='';}
+    const mb=mapCuLabel(std,lbl,ref.labelGrades);
+    if(!mb){errors.push(`Label Grade 未発見: '${lbl}' (Std: ${std})${tag}`);colB='';}else colB=mb;
+  }else{
+    const As=[],Bs=[];
+    for(const{std,lbl}of p.standards){
+      const a=STD_TO_TITLE[std]||'';
+      if(a&&!ref.auditTitles.has(a)){errors.push(`Audit Standard 未発見: '${std}'${tag}`);}
+      else As.push(a);
+      const mb=mapCuLabel(std,lbl,ref.labelGrades);
+      if(!mb)errors.push(`Label Grade 未発見: '${lbl}'${tag}`);
+      else Bs.push(mb);}
+    colA=As.filter(Boolean).join(' / ');colB=Bs.filter(Boolean).join(' / ');}
+
+  const[colC,cfound]=findBest(p.cat,ref.categories);
+  if(!cfound){errors.push(`Product Category 未発見: '${p.cat}'${tag}`);}
+
+  let colD='';
+  if(p.det){const[d,df]=findBestDet(p.det,ref);if(!df){errors.push(`Product Detail 未発見: '${p.det}'${tag}`);}else colD=d;}
+
+  const mats=dedupMaterials(p.materials);
+  const rows=[];
+  for(let mi=0;mi<mats.length;mi++){
+    const[pct,mat]=mats[mi];
+    const[colF,ff]=findBestRm(mat,ref);
+    if(!ff)errors.push(`Raw Material 未発見: '${mat}'${tag}`);
+    const pctVal=showPct&&pct?pct.replace('%','').trim():'';
+    rows.push({A:mi===0?colA:'',B:mi===0?colB:'',C:mi===0?(cfound?colC:''):'',
+               D:mi===0?colD:'',E:'',F:ff?colF:'',G:pctVal,H:'',I:''});}
+  return rows;}
+
+// ════════════════════════════════════════════════════════════
+//  Dedup
+// ════════════════════════════════════════════════════════════
+function dedupProducts(products,ref,showPct){
+  const seen=new Set(),unique=[];
+  for(const p of products){
+    const cc=(ref.categories[p.cat.toLowerCase()]||p.cat).toLowerCase();
+    const cd=(p.det?ref.details[p.det.toLowerCase()]||p.det:'').toLowerCase();
+    const rmKeys=p.materials.map(([pct,mat])=>{
+      const[cf]=findBestRm(mat,ref);
+      const m=cf.match(/\(RM(\d+)\)/i);
+      const rk=m?m[1]:cf.toLowerCase();
+      return showPct?`${rk}:${pct.replace('%','').trim()}`:rk;});
+    const key=`${cc}||${cd}||${rmKeys.sort().join(',')}`;
+    if(!seen.has(key)){seen.add(key);unique.push(p);}}
+  return unique;}
+
+// ════════════════════════════════════════════════════════════
+//  Write Excel
+// ════════════════════════════════════════════════════════════
+function writeExcel(allRows,templateAb){
+  const wb=XLSX.read(templateAb,{type:'array'});
+  const ws=wb.Sheets['<<AddProduct>>'];
+  if(!ws)throw new Error('<<AddProduct>> シートが見つかりません');
+  const cols=['A','B','C','D','E','F','G','H','I'];
+  let row=2;
+  for(const r of allRows){
+    if(r===null){row++;continue;}
+    for(const c of cols){
+      if(r[c]){const addr=c+row;ws[addr]={v:c==='G'?Number(r[c])||r[c]:r[c],t:'s'};}
+      else{const addr=c+row;if(ws[addr])delete ws[addr];}}
+    row++;}
+  // Update sheet range
+  const range=XLSX.utils.decode_range(ws['!ref']||'A1:I2');
+  range.e.r=Math.max(range.e.r,row);ws['!ref']=XLSX.utils.encode_range(range);
+  return XLSX.write(wb,{bookType:'xlsx',type:'array'});}
+
+// ════════════════════════════════════════════════════════════
+//  Main run
+// ════════════════════════════════════════════════════════════
+async function run(){
+  const btn=document.getElementById('goBtn');
+  btn.disabled=true;btn.innerHTML='<span class="sp"></span> 処理中...';
+  document.getElementById('dlBtn').style.display='none';
+  document.getElementById('stats').style.display='none';
+  document.getElementById('logBox').innerHTML='';
+  setProg(5);resultData=null;
+
+  const showPct=document.querySelector('input[name="pct"]:checked').value==='1';
+  const activePdfs=pdfFiles.filter(Boolean);
+
+  log('═'.repeat(54),'c');
+  log('  IDFL Certificate Converter  v5.0','c');
+  log('═'.repeat(54),'c');
+  log(`  PDF: ${activePdfs.map(f=>f.name).join(', ')}`);
+  log(`  テンプレート: ${tmplFile.name}`);
+  log('');
+
+  try{
+    // 1. Read template
+    log('📋 テンプレートを読み込み中...','c');
+    const tmplAb=await tmplFile.arrayBuffer();
+    const tmplWb=XLSX.read(tmplAb,{type:'array'});
+    const ref=loadRef(tmplWb);
+    log('  ✅ テンプレート読み込み完了');
+    setProg(15);
+
+    // 2. Extract PDF text
+    log('');
+    let allProducts=[];
+    let formats=[];
+
+    for(let i=0;i<activePdfs.length;i++){
+      const f=activePdfs[i];
+      log(`📄 PDF ${i+1}/${activePdfs.length}: ${f.name}`,'c');
+      const pages=await extractPages(f);
+      const allText=pages.flat().join(' ');
+      const fmt=detectFormat(allText);
+      log(`  ✅ フォーマット: ${fmt}`,'g');
+      formats.push(fmt);
+
+      let prods=[];
+      if(fmt==='GOTS')prods=parseGots(pages);
+      else if(fmt==='IDFL')prods=parseIdfl(pages);
+      else if(fmt==='CU_TABLE')prods=parseCuTable(pages);
+      else prods=parseCu(pages);
+
+      log(`  ✅ ${prods.length} 製品を検出`,'g');
+      allProducts.push(...prods);
+      setProg(15+Math.round((i+1)/activePdfs.length*35));}
+
+    // 3. Dedup
+    const before=allProducts.length;
+    allProducts=dedupProducts(allProducts,ref,showPct);
+    const removed=before-allProducts.length;
+    if(removed)log(`\n  🔄 重複削除: ${before} → ${allProducts.length} 件 (${removed} 件削除)`,'y');
+    log(`\n📊 合計 ${allProducts.length} 製品`);
+    setProg(55);
+
+    // 4. Map
+    log('\n⚙  マッピング中...','c');
+    const allRows=[],errors=[],corrections=[];
+    let excelRow=2;
+    for(const p of allProducts){
+      const rows=mapProduct(p,ref,showPct,formats[0]||'CU',errors,excelRow);
+      allRows.push(...rows);allRows.push(null);
+      excelRow+=rows.length+1;}
+    setProg(80);
+
+    // 5. Log errors
+    log('─'.repeat(50),'c');
+    if(errors.length){
+      const uniq=[...new Map(errors.map(e=>[e,e])).values()];
+      log(`⚠  エラー ${uniq.length} 件`,'r');
+      for(const e of uniq)log(`  ❌ ${e}`,'r');
+      log('  ⚠ エラー列は空欄。Excelで手動修正してください。','y');
+    }else{log('✅ エラーなし！','g');}
+
+    // 6. Write Excel
+    log('\n💾 Excelを生成中...','c');
+    const outAb=writeExcel(allRows,tmplAb);
+    const written=allRows.filter(r=>r!==null).length;
+
+    const ts=new Date().toISOString().replace(/[-:T]/g,'').slice(0,15);
+    const name=`${activePdfs[0].name.replace('.pdf','')}_products_${ts}.xlsx`;
+    resultData={blob:new Blob([outAb],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),name};
+    setProg(100);
+
+    log('');log('═'.repeat(54),'c');log('  ✅ 完了！','g');log('═'.repeat(54),'c');
+    log(`  製品数:   ${allProducts.length}`);
+    log(`  データ行: ${written}`);
+    if(errors.length)log(`  エラー:   ${errors.length} 件（Excel手動修正）`,'y');
+    else log(`  エラー:   0 件`,'g');
+
+    document.getElementById('sProd').textContent=allProducts.length;
+    document.getElementById('sErr').textContent=errors.length;
+    document.getElementById('sFmt').textContent=formats.join(', ');
+    document.getElementById('stats').style.display='';
+    document.getElementById('dlBtn').style.display='';
+
+  }catch(e){
+    log(`❌ エラー: ${e.message}`,'r');console.error(e);
+    setProg(0);
+  }finally{
+    btn.disabled=false;btn.innerHTML='▶ 変換開始';upd();}
+}
+</script>
+</body>
+</html>
