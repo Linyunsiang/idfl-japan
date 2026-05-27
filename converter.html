@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>IDFL Certificate Converter</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/lucide@latest"></script>
 <style>
@@ -862,16 +862,42 @@ function writeExcel(allRows,templateAb){
   const ws=wb.Sheets['<<AddProduct>>'];
   if(!ws)throw new Error('<<AddProduct>> シートが見つかりません');
   const cols=['A','B','C','D','E','F','G','H','I'];
+
+  // ── スタイル定義 ──
+  const headerStyle={
+    fill:{patternType:'solid',fgColor:{rgb:'1E5BBF'}},
+    font:{color:{rgb:'FFFFFF'},bold:true,sz:11},
+    alignment:{vertical:'center',horizontal:'left'}
+  };
+  const prodStyle={
+    fill:{patternType:'solid',fgColor:{rgb:'BDD7EE'}},
+    alignment:{vertical:'center'}
+  };
+
+  // ── ヘッダー行（1行目）に青色スタイル ──
+  for(const c of cols){
+    const addr=c+'1';
+    if(!ws[addr])ws[addr]={v:'',t:'s'};
+    ws[addr].s=headerStyle;}
+
+  // ── データ書き込み + 製品ごとに薄い青 ──
   let row=2;
   for(const r of allRows){
     if(r===null){row++;continue;}
     for(const c of cols){
-      if(r[c]){const addr=c+row;ws[addr]={v:c==='G'?Number(r[c])||r[c]:r[c],t:'s'};}
-      else{const addr=c+row;if(ws[addr])delete ws[addr];}}
+      const addr=c+row;
+      if(r[c]){
+        ws[addr]={v:c==='G'?Number(r[c])||r[c]:r[c],t:'s',s:prodStyle};
+      }else{
+        // 値が無くても製品行は薄い青で塗る
+        ws[addr]={v:'',t:'s',s:prodStyle};}}
     row++;}
-  // Update sheet range
+
+  // シート範囲を更新
   const range=XLSX.utils.decode_range(ws['!ref']||'A1:I2');
-  range.e.r=Math.max(range.e.r,row);ws['!ref']=XLSX.utils.encode_range(range);
+  range.e.r=Math.max(range.e.r,row);
+  range.e.c=Math.max(range.e.c,8);
+  ws['!ref']=XLSX.utils.encode_range(range);
   return XLSX.write(wb,{bookType:'xlsx',type:'array'});}
 
 // ════════════════════════════════════════════════════════════
