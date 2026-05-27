@@ -40,6 +40,8 @@ font-size:.88rem;font-weight:600;border:none;cursor:pointer;transition:.15s;}
 .btn-go:disabled{opacity:.45;cursor:not-allowed;}
 .btn-dl{background:var(--accent);color:#fff;display:none;}
 .btn-dl:hover{background:#6d28d9;}
+.btn-log{background:var(--cyan);color:#fff;display:none;}
+.btn-log:hover{background:#0891b2;}
 .btn-row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
 .prog-bar{height:5px;background:var(--border);border-radius:3px;overflow:hidden;margin-top:10px;}
 .prog-fill{height:100%;background:var(--accent);width:0;transition:width .35s;}
@@ -292,6 +294,7 @@ if (sessionStorage.getItem('converter_auth') === '1') {
   <div class="btn-row">
     <button class="btn btn-go" id="goBtn" onclick="run()" disabled>▶ 変換開始</button>
     <button class="btn btn-dl" id="dlBtn" onclick="dl()">⬇ Excelをダウンロード</button>
+    <button class="btn btn-log" id="dlLogBtn" onclick="dlLog()">📝 ログをダウンロード</button>
   </div>
   <div class="prog-bar"><div class="prog-fill" id="prog"></div></div>
   <div class="stats" id="stats" style="display:none">
@@ -349,6 +352,13 @@ function log(msg,cls='w'){const b=document.getElementById('logBox');
 function dl(){if(!resultData)return;
   const a=document.createElement('a');a.href=URL.createObjectURL(resultData.blob);
   a.download=resultData.name;a.click();URL.revokeObjectURL(a.href);}
+function dlLog(){
+  const logText=document.getElementById('logBox').textContent;
+  if(!logText.trim())return;
+  const stamp=new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+  const blob=new Blob(['IDFL Certificate Converter - 処理ログ\n生成日時: '+new Date().toLocaleString('ja-JP')+'\n'+'='.repeat(60)+'\n\n'+logText],{type:'text/plain;charset=utf-8'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='IDFL_変換ログ_'+stamp+'.txt';a.click();URL.revokeObjectURL(a.href);}
 
 // ════════════════════════════════════════════════════════════
 //  Constants
@@ -839,6 +849,7 @@ async function run(){
   const btn=document.getElementById('goBtn');
   btn.disabled=true;btn.innerHTML='<span class="sp"></span> 処理中...';
   document.getElementById('dlBtn').style.display='none';
+  document.getElementById('dlLogBtn').style.display='none';
   document.getElementById('stats').style.display='none';
   document.getElementById('logBox').innerHTML='';
   setProg(5);resultData=null;
@@ -934,10 +945,12 @@ async function run(){
     document.getElementById('sFmt').textContent=formats.join(', ');
     document.getElementById('stats').style.display='';
     document.getElementById('dlBtn').style.display='';
+    document.getElementById('dlLogBtn').style.display='';
 
   }catch(e){
     log(`❌ エラー: ${e.message}`,'r');console.error(e);
     setProg(0);
+    document.getElementById('dlLogBtn').style.display='';
   }finally{
     btn.disabled=false;btn.innerHTML='▶ 変換開始';upd();}
 }
