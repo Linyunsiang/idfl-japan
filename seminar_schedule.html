@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>開催予定のセミナー・イベント | IDFL JAPAN</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root{--b050:#EBF2FB;--b100:#C4DAF5;--b200:#9AC0EE;--b400:#2B78D4;--b500:#1565C0;--b700:#094590;--b800:#063372;--b900:#042258;}
+    *{box-sizing:border-box;}
+    body{font-family:'Noto Sans JP',sans-serif;background:#f4f7fc;color:var(--b900);margin:0;}
+    /* Hero */
+    .hero{background:linear-gradient(150deg,var(--b900) 0%,var(--b700) 55%,var(--b400) 100%);padding:calc(65px + 56px) 24px 56px;}
+    /* Filter */
+    .filter-bar{background:#fff;border-bottom:1px solid var(--b100);padding:10px 24px;position:sticky;top:65px;z-index:20;}
+    .chip{display:inline-flex;align-items:center;padding:5px 13px;border-radius:999px;font-size:12px;font-weight:700;border:1.5px solid #e5e7eb;cursor:pointer;background:#fff;color:#374151;transition:all .15s;white-space:nowrap;}
+    .chip.on{background:var(--b500);color:#fff;border-color:var(--b500);}
+    .chip:hover:not(.on){border-color:var(--b500);background:var(--b050);color:var(--b700);}
+    /* Cards */
+    .ev-card{background:#fff;border:1px solid var(--b100);border-radius:14px;padding:18px 20px;display:flex;align-items:flex-start;gap:16px;position:relative;transition:transform .18s,box-shadow .18s;}
+    .ev-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(21,101,192,.09);}
+    @keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .datebox{flex-shrink:0;width:54px;text-align:center;background:var(--b050);border-radius:10px;padding:8px 4px;border:1px solid var(--b100);}
+    .datebox .d{font-size:1.5rem;font-weight:700;color:var(--b700);line-height:1;}
+    .datebox .m{font-size:10px;font-weight:700;color:var(--b400);text-transform:uppercase;letter-spacing:.06em;margin-top:2px;}
+    .bext{background:#dcfce7;color:#166534;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;}
+    .bint{background:#fef3c7;color:#92400e;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;}
+    .bpast{background:#f1f5f9;color:#94a3b8;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;}
+    .month-hd{font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--b200);padding:28px 0 8px;border-bottom:1px solid var(--b100);margin-bottom:14px;}
+    /* Admin action buttons – hidden by default */
+    .admin-actions{position:absolute;top:10px;right:10px;display:none;gap:4px;}
+    .ev-card.admin-visible .admin-actions{display:flex;}
+    .ev-card.admin-visible{padding-right:80px;}
+    .abtn{padding:5px 6px;border-radius:7px;border:none;cursor:pointer;display:inline-flex;align-items:center;transition:background .12s;}
+    .abtn-edit{background:#eff6ff;color:var(--b500);}.abtn-edit:hover{background:var(--b100);}
+    .abtn-del{background:#fff5f5;color:#ef4444;}.abtn-del:hover{background:#fee2e2;}
+    /* Modal */
+    .modal-bg{display:none;position:fixed;inset:0;background:rgba(4,34,88,.55);backdrop-filter:blur(4px);z-index:300;align-items:center;justify-content:center;}
+    .modal-bg.open{display:flex;}
+    .modal-box{background:#fff;border-radius:18px;width:100%;max-width:520px;margin:16px;max-height:90vh;overflow-y:auto;}
+    .flabel{display:block;font-size:12px;font-weight:700;color:var(--b700);margin-bottom:4px;}
+    .finput{width:100%;border:1px solid var(--b200);border-radius:8px;padding:9px 12px;font-size:14px;color:var(--b800);background:#fff;font-family:inherit;}
+    .finput:focus{outline:none;box-shadow:0 0 0 3px rgba(21,101,192,.15);}
+    /* Toast */
+    #toast{position:fixed;bottom:24px;right:24px;z-index:400;background:var(--b800);color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;display:flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(4,34,88,.25);opacity:0;transition:opacity .3s;pointer-events:none;}
+    #toast.show{opacity:1;}
+    /* Admin float button */
+    #adminFloatBtn{position:fixed;bottom:80px;right:24px;z-index:200;background:var(--b800);color:rgba(255,255,255,.4);border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(4,34,88,.3);transition:all .2s;}
+    #adminFloatBtn:hover{color:#fff;background:var(--b700);}
+    #adminFloatBtn.active{background:var(--b500);color:#fff;}
+  </style>
+</head>
+<body>
+
+<!-- Shared nav -->
+<div id="site-nav"></div>
+<script src="/nav.js"></script>
+
+<!-- Hero -->
+<div class="hero">
+  <div style="max-width:900px;margin:0 auto">
+    <p style="color:rgba(196,218,245,.7);font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;margin:0 0 10px">IDFL Global Events 2026</p>
+    <h1 style="font-family:'DM Serif Display',serif;font-weight:400;color:#fff;font-size:clamp(1.8rem,4vw,3rem);margin:0 0 12px;line-height:1.2">
+      開催予定のセミナー<br><span style="color:var(--b200)">＆ イベント一覧</span>
+    </h1>
+    <p style="color:rgba(196,218,245,.75);font-size:14px;line-height:1.7;margin:0;max-width:480px">IDFL各オフィスが開催するセミナー・展示会・トレーニング情報です。</p>
+  </div>
+</div>
+
+<!-- Admin bar (shown after login) -->
+<div id="adminBar" style="display:none;background:#fffbeb;border-bottom:2px solid #fcd34d;padding:12px 24px;">
+  <div style="max-width:1100px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:10px">
+    <span style="color:#92400e;font-weight:700;font-size:14px">🛠 管理者モード</span>
+    <button id="addEventBtn" style="background:var(--b700);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer">＋ イベントを追加</button>
+    <button id="exportBtn"   style="background:#16a34a;color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer">📥 保存・ダウンロード</button>
+    <span style="font-size:11px;color:#b45309">→ <code>schedule-data.json</code> をNetlifyにアップロード</span>
+    <button id="exitAdminBtn" style="margin-left:auto;color:#b45309;background:transparent;border:none;cursor:pointer;font-size:12px;text-decoration:underline">終了</button>
+  </div>
+</div>
+
+<!-- Filter bar -->
+<div class="filter-bar">
+  <div style="max-width:1100px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:6px">
+    <span style="font-size:11px;color:var(--b400);font-weight:700;margin-right:2px">絞込：</span>
+    <button class="chip on" id="chip_all">すべて</button>
+    <button class="chip" id="chip_Japan">🇯🇵 Japan</button>
+    <button class="chip" id="chip_Korea">🇰🇷 Korea</button>
+    <button class="chip" id="chip_China">🇨🇳 China</button>
+    <button class="chip" id="chip_Taiwan">🇹🇼 Taiwan</button>
+    <button class="chip" id="chip_Indonesia">🇮🇩 Indonesia</button>
+    <button class="chip" id="chip_India">🇮🇳 India</button>
+    <button class="chip" id="chip_Philippines">🇵🇭 Philippines</button>
+    <div style="margin-left:auto;display:flex;gap:6px">
+      <button class="chip" id="chip_External">External</button>
+      <button class="chip" id="chip_Internal">Internal</button>
+    </div>
+  </div>
+</div>
+
+<!-- Events -->
+<main style="max-width:1100px;margin:0 auto;padding:24px 24px 120px">
+  <p id="countInfo" style="font-size:13px;color:var(--b400);margin-bottom:14px"></p>
+  <div id="evList"></div>
+</main>
+
+<section style="background:var(--b800);color:#fff;padding:48px 24px;text-align:center">
+  <h2 style="font-family:'DM Serif Display',serif;font-weight:400;font-size:1.8rem;margin:0 0 10px">セミナーへのご参加はこちら</h2>
+  <p style="color:var(--b200);font-size:14px;margin:0 0 20px">お申し込みはフォームよりどうぞ</p>
+  <a href="https://forms.office.com/Pages/ResponsePage.aspx?id=hQL27-D4ckKtEjtBsJIawI60DctQlgpAt0rPraJ8Wg5UQjA4N1UwN09PVkg5SkNZN1lBVTQxN0tYTy4u"
+     style="background:#fff;color:var(--b800);font-weight:700;padding:13px 28px;border-radius:10px;text-decoration:none;font-size:14px">今すぐ申し込む（無料）</a>
+</section>
+<footer style="background:var(--b900);color:rgba(196,218,245,.5);font-size:11px;padding:20px;text-align:center">
+  <p style="margin:0">© 2026 IDFL JAPAN | International Down and Feather Laboratory</p>
+  <p style="margin:4px 0 0">〒541-0056 大阪市中央区久太郎町1丁目6番地21 シャンクレール本町 2階</p>
+</footer>
+
+<!-- Admin float button (lock icon, bottom right) -->
+<button id="adminFloatBtn" title="管理者ログイン">
+  <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+  </svg>
+</button>
+
+<!-- Login modal -->
+<div id="loginModal" class="modal-bg">
+  <div class="modal-box" style="max-width:360px">
+    <div style="padding:24px">
+      <h3 style="font-family:'DM Serif Display',serif;font-weight:400;font-size:1.4rem;color:var(--b800);margin:0 0 16px">管理者ログイン</h3>
+      <label class="flabel">パスワード</label>
+      <input id="passInput" type="password" class="finput" placeholder="パスワードを入力..." style="margin-bottom:10px">
+      <div id="loginErr" style="display:none;color:#dc2626;font-size:12px;margin-bottom:10px">パスワードが正しくありません</div>
+      <div style="display:flex;gap:8px">
+        <button id="loginBtn" style="flex:1;background:var(--b700);color:#fff;border:none;border-radius:8px;padding:10px;font-size:14px;font-weight:700;cursor:pointer">ログイン</button>
+        <button id="cancelLoginBtn" style="flex:1;background:#f1f5f9;color:#64748b;border:none;border-radius:8px;padding:10px;font-size:14px;font-weight:700;cursor:pointer">キャンセル</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit event modal -->
+<div id="eventModal" class="modal-bg">
+  <div class="modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid var(--b100);position:sticky;top:0;background:#fff;border-radius:18px 18px 0 0">
+      <h3 id="eventModalTitle" style="margin:0;font-size:16px;font-weight:700;color:var(--b800)">イベントを追加</h3>
+      <button id="closeEventModalBtn" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:22px;line-height:1">✕</button>
+    </div>
+    <div style="padding:20px 24px;display:grid;gap:14px">
+      <div>
+        <label class="flabel">イベント名 <span style="color:#ef4444">*</span></label>
+        <input id="inp_name" class="finput" type="text" placeholder="例：GOTS 8.0 セミナー">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <label class="flabel">オフィス</label>
+          <select id="inp_office" class="finput">
+            <option value="Japan">Japan</option><option value="Korea">Korea</option>
+            <option value="China">China</option><option value="Taiwan">Taiwan</option>
+            <option value="Indonesia">Indonesia</option><option value="India">India</option>
+            <option value="Philippines">Philippines</option><option value="Other">Other</option>
+          </select>
+        </div>
+        <div>
+          <label class="flabel">開催形式</label>
+          <select id="inp_type" class="finput">
+            <option value="External">External（外部公開）</option>
+            <option value="Internal">Internal（内部）</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="flabel">開催地</label>
+        <input id="inp_loc" class="finput" type="text" placeholder="例：Osaka、Online">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <label class="flabel">開始日 <span style="color:#ef4444">*</span></label>
+          <input id="inp_from" class="finput" type="date">
+        </div>
+        <div>
+          <label class="flabel">終了日（任意）</label>
+          <input id="inp_to" class="finput" type="date">
+        </div>
+      </div>
+      <div id="eventFormErr" style="display:none;background:#fee2e2;color:#dc2626;font-size:12px;padding:8px 12px;border-radius:8px"></div>
+      <button id="saveEventBtn" style="width:100%;background:var(--b700);color:#fff;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:700;cursor:pointer">保存する</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast">
+  <svg width="15" height="15" fill="none" stroke="#4ade80" viewBox="0 0 24 24" style="flex-shrink:0">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+  </svg>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+(function() {
+
+var PASS = 'idfl2026';
+var FLAGS = {Japan:'🇯🇵',Korea:'🇰🇷',China:'🇨🇳',Taiwan:'🇹🇼',Indonesia:'🇮🇩',India:'🇮🇳',Philippines:'🇵🇭',Other:'🌐'};
+var MJA  = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
+var MSHO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+var events       = [];
+var isAdmin      = false;
+var filterOffice = 'all';
+var filterType   = 'all';
+var editingId    = null;
+
+var DEFAULT = [
+  {id:'e1', office:'Korea',      name:'Preview in Daegu 2026',                                        type:'External', location:'Daegu',      from:'2026-03-04', to:'2026-03-06'},
+  {id:'e2', office:'Japan',      name:'FSC COC Auditor Course',                                       type:'External', location:'Tokyo',      from:'2026-03-11', to:'2026-03-13'},
+  {id:'e3', office:'Japan',      name:'TES Online Seminar',                                           type:'Internal', location:'Online',     from:'2026-03-19', to:'2026-03-19'},
+  {id:'e4', office:'China',      name:'Intertextile Shanghai APPAREL Fabrics Spring',                 type:'External', location:'Shanghai',   from:'2026-03-11', to:'2026-03-13'},
+  {id:'e5', office:'Indonesia',  name:'Inspection Training for MDS Inspectors (Jakarta)',             type:'Internal', location:'Jakarta',    from:'2026-03-30', to:'2026-04-01'},
+  {id:'e6', office:'Indonesia',  name:'Inspection Training for MDS Inspectors (Semarang)',            type:'Internal', location:'Semarang',   from:'2026-04-06', to:'2026-04-08'},
+  {id:'e7', office:'Indonesia',  name:'Footwear Summit',                                              type:'External', location:'Jakarta',    from:'2026-04-13', to:'2026-04-15'},
+  {id:'e8', office:'China',      name:'Intertextile Shenzhen (SUMMER)',                               type:'External', location:'Shenzhen',   from:'2026-06-09', to:'2026-06-11'},
+  {id:'e9', office:'China',      name:'China (Hangzhou) International Textile & Apparel Expo',        type:'External', location:'Hangzhou',   from:'2026-06-24', to:'2026-06-26'},
+  {id:'e10',office:'Indonesia',  name:'Inspection Training for MDS Suppliers (Jakarta)',              type:'Internal', location:'Jakarta',    from:'2026-06-22', to:'2026-06-22'},
+  {id:'e11',office:'Indonesia',  name:'Inspection Training for MDS Suppliers (Semarang)',             type:'Internal', location:'Semarang',   from:'2026-06-24', to:'2026-06-24'},
+  {id:'e12',office:'Indonesia',  name:'General Updates 2026',                                         type:'Internal', location:'Semarang',   from:'2026-06-25', to:'2026-06-25'},
+  {id:'e13',office:'Philippines',name:'IDFL Annual Seminar - Manila',                                 type:'Internal', location:'Manila',     from:'2026-06-11', to:'2026-06-11'},
+  {id:'e14',office:'India',      name:'Bharat Tex 2026',                                              type:'External', location:'New Delhi',  from:'2026-07-14', to:'2026-07-17'},
+  {id:'e15',office:'Japan',      name:'Seminar for FSC and MMS',                                      type:'External', location:'Osaka',      from:'2026-08-07', to:'2026-08-07'},
+  {id:'e16',office:'India',      name:'Intex 2026',                                                   type:'External', location:'Sri Lanka',  from:'2026-08-05', to:'2026-08-07'},
+  {id:'e17',office:'China',      name:'Intertextile Shanghai APPAREL Fabrics Fall',                   type:'External', location:'Shanghai',   from:'2026-08-25', to:'2026-08-27'},
+  {id:'e18',office:'India',      name:'YarnEx Tirupur 2026',                                          type:'External', location:'Tirupur',    from:'2026-09-24', to:'2026-09-26'},
+  {id:'e19',office:'Taiwan',     name:'Taipei Innovative Textile Application Show',                   type:'External', location:'Taipei',     from:'2026-10-06', to:'2026-10-08'},
+  {id:'e20',office:'India',      name:'Paper Expo 2026',                                              type:'External', location:'Mumbai',     from:'2026-10-14', to:'2026-10-16'},
+  {id:'e21',office:'India',      name:'Seminar in North India – Topic TBD',                           type:'External', location:'Panipat',    from:'2026-11-01', to:'2026-11-30'},
+  {id:'e22',office:'India',      name:'Seminar in South India – Topic TBD',                           type:'External', location:'Coimbatore', from:'2026-12-01', to:'2026-12-31'},
+];
+
+/* ── Load ── */
+async function init() {
+  try {
+    var ctrl = new AbortController();
+    setTimeout(function(){ ctrl.abort(); }, 4000);
+    var r = await fetch('/schedule-data.json', {signal:ctrl.signal, cache:'no-cache'});
+    events = r.ok ? (await r.json()) : DEFAULT.slice();
+  } catch(err) {
+    events = DEFAULT.slice();
+  }
+  renderEvents();
+}
+
+/* ── Render ── */
+function fmtD(s) {
+  if (!s) return '—';
+  var d = new Date(s + 'T00:00:00');
+  return (d.getMonth()+1) + '/' + d.getDate();
+}
+
+function renderEvents() {
+  var fil = events.filter(function(e) {
+    return (filterOffice === 'all' || e.office === filterOffice) &&
+           (filterType   === 'all' || e.type   === filterType);
+  }).sort(function(a,b){ return (a.from||'').localeCompare(b.from||''); });
+
+  document.getElementById('countInfo').textContent = fil.length + ' 件のイベント';
+
+  var container = document.getElementById('evList');
+  if (fil.length === 0) {
+    container.innerHTML = '<div style="text-align:center;padding:64px;color:var(--b200)"><p style="font-size:2.5rem">📅</p><p>該当するイベントがありません</p></div>';
+    return;
+  }
+
+  /* group by month */
+  var grp = {}, order = [];
+  fil.forEach(function(e) {
+    var d   = e.from ? new Date(e.from + 'T00:00:00') : null;
+    var key = d ? (d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0')) : 'TBD';
+    if (!grp[key]) { grp[key] = []; order.push(key); }
+    grp[key].push(e);
+  });
+  order = order.filter(function(v,i,a){ return a.indexOf(v)===i; }).sort();
+
+  /* build DOM imperatively – no innerHTML for interactive parts */
+  container.innerHTML = '';
+
+  order.forEach(function(k) {
+    var parts = k.split('-');
+    var hd = document.createElement('div');
+    hd.className = 'month-hd';
+    hd.textContent = (k === 'TBD') ? 'TBD' : (MJA[parseInt(parts[1])-1] + '  ' + parts[0]);
+    container.appendChild(hd);
+
+    var grpDiv = document.createElement('div');
+    grpDiv.style.cssText = 'display:flex;flex-direction:column;gap:8px;margin-bottom:20px';
+    container.appendChild(grpDiv);
+
+    grp[k].forEach(function(e, i) {
+      var d    = e.from ? new Date(e.from + 'T00:00:00') : null;
+      var past = e.to && new Date(e.to + 'T00:00:00') < new Date();
+      var rng  = (e.from === e.to) ? fmtD(e.from) : (fmtD(e.from) + '〜' + fmtD(e.to));
+
+      var card = document.createElement('div');
+      card.className = 'ev-card' + (isAdmin ? ' admin-visible' : '');
+      card.style.cssText = 'animation:up .3s ease ' + (i*.04) + 's both' + (past ? ';opacity:.5' : '');
+
+      /* Admin buttons */
+      var actDiv = document.createElement('div');
+      actDiv.className = 'admin-actions';
+
+      var editBtn = document.createElement('button');
+      editBtn.className = 'abtn abtn-edit';
+      editBtn.title = '編集';
+      editBtn.innerHTML = '<svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>';
+      editBtn.addEventListener('click', (function(eid){ return function(){ openEventModal(eid); }; })(e.id));
+
+      var delBtn = document.createElement('button');
+      delBtn.className = 'abtn abtn-del';
+      delBtn.title = '削除';
+      delBtn.innerHTML = '<svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>';
+      delBtn.addEventListener('click', (function(eid, ename){ return function(){ deleteEvent(eid, ename); }; })(e.id, e.name));
+
+      actDiv.appendChild(editBtn);
+      actDiv.appendChild(delBtn);
+      card.appendChild(actDiv);
+
+      /* Date box */
+      var db = document.createElement('div');
+      db.className = 'datebox';
+      db.innerHTML = '<div class="d">' + (d ? d.getDate() : '?') + '</div><div class="m">' + (d ? MSHO[d.getMonth()] : '?') + '</div>';
+      card.appendChild(db);
+
+      /* Content */
+      var info = document.createElement('div');
+      info.style.cssText = 'flex:1;min-width:0';
+      var badgeClass = e.type === 'External' ? 'bext' : 'bint';
+      var pastBadge  = past ? '<span class="bpast">終了</span>' : '';
+      info.innerHTML =
+        '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin-bottom:5px">' +
+          '<span class="' + badgeClass + '">' + e.type + '</span>' +
+          '<span style="font-size:12px;color:var(--b400);font-weight:600">' + (FLAGS[e.office]||'🌐') + ' ' + e.office + '</span>' +
+          pastBadge +
+        '</div>' +
+        '<p style="font-size:14px;font-weight:700;color:var(--b800);margin:0 0 5px;line-height:1.4">' + e.name + '</p>' +
+        '<div style="display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--b400)">' +
+          '<span>📍 ' + (e.location||'—') + '</span>' +
+          '<span>📅 ' + rng + '</span>' +
+        '</div>';
+      card.appendChild(info);
+
+      /* Apply button */
+      if (e.type === 'External' && !past) {
+        var applyLink = document.createElement('a');
+        applyLink.href = 'https://forms.office.com/Pages/ResponsePage.aspx?id=hQL27-D4ckKtEjtBsJIawI60DctQlgpAt0rPraJ8Wg5UQjA4N1UwN09PVkg5SkNZN1lBVTQxN0tYTy4u';
+        applyLink.style.cssText = 'flex-shrink:0;background:var(--b500);color:#fff;padding:7px 14px;border-radius:8px;text-decoration:none;font-size:12px;font-weight:700;align-self:center;white-space:nowrap';
+        applyLink.textContent = '申込む →';
+        card.appendChild(applyLink);
+      }
+
+      grpDiv.appendChild(card);
+    });
+  });
+}
+
+/* ── Delete ── */
+function deleteEvent(id, name) {
+  if (!confirm('「' + name + '」を削除しますか？')) return;
+  events = events.filter(function(e){ return e.id !== id; });
+  renderEvents();
+  showToast('「' + name + '」を削除しました');
+}
+
+/* ── Filter chips ── */
+var officeChips = ['all','Japan','Korea','China','Taiwan','Indonesia','India','Philippines'];
+officeChips.forEach(function(o) {
+  var btn = document.getElementById('chip_' + o);
+  if (!btn) return;
+  btn.addEventListener('click', function() {
+    filterOffice = o;
+    officeChips.forEach(function(x){ var b=document.getElementById('chip_'+x); if(b) b.classList.remove('on'); });
+    btn.classList.add('on');
+    renderEvents();
+  });
+});
+
+['External','Internal'].forEach(function(t) {
+  var btn = document.getElementById('chip_' + t);
+  if (!btn) return;
+  btn.addEventListener('click', function() {
+    if (filterType === t) { filterType='all'; btn.classList.remove('on'); }
+    else { filterType=t; document.getElementById('chip_External').classList.remove('on'); document.getElementById('chip_Internal').classList.remove('on'); btn.classList.add('on'); }
+    renderEvents();
+  });
+});
+
+/* ── Admin login ── */
+document.getElementById('adminFloatBtn').addEventListener('click', function() {
+  if (isAdmin) { exitAdmin(); return; }
+  document.getElementById('loginModal').classList.add('open');
+  setTimeout(function(){ document.getElementById('passInput').focus(); }, 50);
+});
+
+function doLogin() {
+  if (document.getElementById('passInput').value !== PASS) {
+    document.getElementById('loginErr').style.display = 'block';
+    return;
+  }
+  isAdmin = true;
+  document.getElementById('loginErr').style.display = 'none';
+  document.getElementById('passInput').value = '';
+  document.getElementById('loginModal').classList.remove('open');
+  document.getElementById('adminBar').style.display = 'block';
+  document.getElementById('adminFloatBtn').classList.add('active');
+  renderEvents();
+  showToast('管理者モードに入りました');
+}
+
+document.getElementById('loginBtn').addEventListener('click', doLogin);
+document.getElementById('passInput').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+document.getElementById('cancelLoginBtn').addEventListener('click', function() {
+  document.getElementById('loginModal').classList.remove('open');
+  document.getElementById('loginErr').style.display = 'none';
+  document.getElementById('passInput').value = '';
+});
+
+function exitAdmin() {
+  isAdmin = false;
+  document.getElementById('adminBar').style.display = 'none';
+  document.getElementById('adminFloatBtn').classList.remove('active');
+  renderEvents();
+  showToast('管理者モードを終了しました');
+}
+document.getElementById('exitAdminBtn').addEventListener('click', exitAdmin);
+
+/* ── Add/Edit modal ── */
+function openEventModal(id) {
+  editingId = id || null;
+  document.getElementById('eventFormErr').style.display = 'none';
+  if (editingId) {
+    var ev = events.filter(function(e){ return e.id === editingId; })[0];
+    if (!ev) return;
+    document.getElementById('eventModalTitle').textContent = 'イベントを編集';
+    document.getElementById('inp_name').value   = ev.name;
+    document.getElementById('inp_office').value = ev.office;
+    document.getElementById('inp_type').value   = ev.type;
+    document.getElementById('inp_loc').value    = ev.location || '';
+    document.getElementById('inp_from').value   = ev.from || '';
+    document.getElementById('inp_to').value     = ev.to   || '';
+  } else {
+    document.getElementById('eventModalTitle').textContent = 'イベントを追加';
+    document.getElementById('inp_name').value   = '';
+    document.getElementById('inp_office').value = 'Japan';
+    document.getElementById('inp_type').value   = 'External';
+    document.getElementById('inp_loc').value    = '';
+    document.getElementById('inp_from').value   = '';
+    document.getElementById('inp_to').value     = '';
+  }
+  document.getElementById('eventModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeEventModal() {
+  document.getElementById('eventModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('addEventBtn').addEventListener('click', function(){ openEventModal(null); });
+document.getElementById('closeEventModalBtn').addEventListener('click', closeEventModal);
+document.getElementById('eventModal').addEventListener('click', function(e){ if(e.target===this) closeEventModal(); });
+
+document.getElementById('saveEventBtn').addEventListener('click', function() {
+  var name = document.getElementById('inp_name').value.trim();
+  var from = document.getElementById('inp_from').value;
+  if (!name || !from) {
+    document.getElementById('eventFormErr').textContent = 'イベント名と開始日は必須です';
+    document.getElementById('eventFormErr').style.display = 'block';
+    return;
+  }
+  document.getElementById('eventFormErr').style.display = 'none';
+  var data = {
+    id:       editingId || ('ev_' + Date.now()),
+    name:     name,
+    office:   document.getElementById('inp_office').value,
+    type:     document.getElementById('inp_type').value,
+    location: document.getElementById('inp_loc').value.trim(),
+    from:     from,
+    to:       document.getElementById('inp_to').value || from,
+  };
+  if (editingId) {
+    for (var i=0; i<events.length; i++) { if(events[i].id===editingId){events[i]=data;break;} }
+    showToast('「' + data.name + '」を更新しました');
+  } else {
+    events.push(data);
+    showToast('「' + data.name + '」を追加しました');
+  }
+  closeEventModal();
+  renderEvents();
+});
+
+/* ── Export ── */
+document.getElementById('exportBtn').addEventListener('click', function() {
+  var blob = new Blob([JSON.stringify(events, null, 2)], {type:'application/json'});
+  var a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='schedule-data.json'; a.click();
+  showToast('ダウンロード完了。Netlifyにアップロードしてください。');
+});
+
+/* ── Toast ── */
+var toastTimer;
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 3500);
+}
+
+document.addEventListener('keydown', function(e){ if(e.key==='Escape'){ closeEventModal(); document.getElementById('loginModal').classList.remove('open'); } });
+
+init();
+
+})(); // end IIFE
+</script>
+</body>
+</html>
