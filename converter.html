@@ -943,14 +943,14 @@ async function run(){
     document.getElementById('sProd').textContent=allProducts.length;
     document.getElementById('sErr').textContent=errors.length;
     document.getElementById('sFmt').textContent=formats.join(', ');
-    document.getElementById('stats').style.display='';
-    document.getElementById('dlBtn').style.display='';
-    document.getElementById('dlLogBtn').style.display='';
+    document.getElementById('stats').style.display='flex';
+    document.getElementById('dlBtn').style.display='inline-flex';
+    document.getElementById('dlLogBtn').style.display='inline-flex';
 
   }catch(e){
     log(`❌ エラー: ${e.message}`,'r');console.error(e);
     setProg(0);
-    document.getElementById('dlLogBtn').style.display='';
+    document.getElementById('dlLogBtn').style.display='inline-flex';
   }finally{
     btn.disabled=false;btn.innerHTML='▶ 変換開始';upd();}
 }
