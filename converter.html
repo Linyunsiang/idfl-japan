@@ -109,6 +109,16 @@ border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
 
     /* Push content below fixed nav */
     body > header { margin-top: 64px; }
+
+.filter-card{display:none;}
+.lg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;margin-top:10px;}
+.lg-item{display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(124,58,237,.08);
+  border:1px solid var(--border);border-radius:7px;font-size:.82rem;cursor:pointer;transition:.15s;}
+.lg-item:hover{background:rgba(124,58,237,.15);}
+.lg-item input{accent-color:var(--accent);width:15px;height:15px;cursor:pointer;}
+.lg-count{margin-left:auto;font-size:.72rem;color:var(--dim);}
+.lg-tools{display:flex;gap:8px;margin-top:6px;}
+.lg-tool{font-size:.74rem;color:var(--accent2);background:none;border:none;cursor:pointer;text-decoration:underline;}
 </style>
 </head>
 <body>
@@ -304,6 +314,19 @@ if (sessionStorage.getItem('converter_auth') === '1') {
     <div class="stat"><div class="sval" id="sProd">0</div><div class="slbl">製品数</div></div>
     <div class="stat"><div class="sval" id="sErr">0</div><div class="slbl">エラー</div></div>
     <div class="stat"><div class="sval" id="sFmt">-</div><div class="slbl">フォーマット</div></div>
+  </div>
+</div>
+
+<div class="card filter-card" id="filterCard">
+  <h2>🏷️ Label Grade フィルター</h2>
+  <p style="font-size:.78rem;color:var(--dim);margin-bottom:4px;">出力したい Label Grade を選択してください。チェックした製品のみ Excel に出力されます。</p>
+  <div class="lg-tools">
+    <button class="lg-tool" onclick="lgSelectAll(true)">すべて選択</button>
+    <button class="lg-tool" onclick="lgSelectAll(false)">すべて解除</button>
+  </div>
+  <div class="lg-grid" id="lgGrid"></div>
+  <div class="btn-row" style="margin-top:14px;">
+    <button class="btn btn-go" id="reExportBtn" onclick="applyLabelFilter()">🔄 選択した Label Grade で再出力</button>
   </div>
 </div>
 
@@ -848,8 +871,10 @@ async function run(){
   const btn=document.getElementById('goBtn');
   btn.disabled=true;btn.innerHTML='<span class="sp"></span> 処理中...';
   document.getElementById('dlBtn').style.display='none';
+  document.getElementById('dlBtn').textContent='⬇ Excelをダウンロード';
   document.getElementById('dlLogBtn').style.display='none';
   document.getElementById('stats').style.display='none';
+  document.getElementById('filterCard').style.display='none';
   document.getElementById('logBox').innerHTML='';
   setProg(5);resultData=null;
 
@@ -946,12 +971,87 @@ async function run(){
     document.getElementById('dlBtn').style.display='inline-flex';
     document.getElementById('dlLogBtn').style.display='inline-flex';
 
+    // ── Label Grade フィルター用に状態を保存 ──
+    convState={allRows:allRows,tmplAb:tmplAb,baseName:activePdfs[0].name.replace('.pdf','')};
+    buildLabelFilter(allRows);
+
   }catch(e){
     log(`❌ エラー: ${e.message}`,'r');console.error(e);
     setProg(0);
     document.getElementById('dlLogBtn').style.display='inline-flex';
   }finally{
     btn.disabled=false;btn.innerHTML='▶ 変換開始';upd();}
+}
+
+// ════════════════════════════════════════════════════════════
+//  Label Grade フィルター
+// ════════════════════════════════════════════════════════════
+let convState=null;
+
+// allRows を製品グループ単位（null区切り）に分割
+function splitGroups(allRows){
+  const groups=[];let cur=[];
+  for(const r of allRows){
+    if(r===null){if(cur.length){groups.push(cur);cur=[];}}
+    else cur.push(r);}
+  if(cur.length)groups.push(cur);
+  return groups;}
+
+// 製品グループの Label Grade を取得（先頭行のB列、' / ' 区切り）
+function groupLabels(group){
+  const b=(group[0]&&group[0].B||'').trim();
+  if(!b)return ['（ラベルなし）'];
+  return b.split(' / ').map(s=>s.trim()).filter(Boolean);}
+
+function buildLabelFilter(allRows){
+  const groups=splitGroups(allRows);
+  const counts={};
+  for(const g of groups){
+    for(const lg of groupLabels(g)){
+      counts[lg]=(counts[lg]||0)+1;}}
+  const labels=Object.keys(counts).sort();
+  const grid=document.getElementById('lgGrid');
+  grid.innerHTML=labels.map(lg=>`
+    <label class="lg-item">
+      <input type="checkbox" class="lg-cb" value="${lg.replace(/"/g,'&quot;')}" checked>
+      <span>${lg}</span>
+      <span class="lg-count">${counts[lg]}件</span>
+    </label>`).join('');
+  document.getElementById('filterCard').style.display=labels.length?'block':'none';
+}
+
+function lgSelectAll(state){
+  document.querySelectorAll('.lg-cb').forEach(cb=>cb.checked=state);}
+
+function applyLabelFilter(){
+  if(!convState)return;
+  const selected=new Set([...document.querySelectorAll('.lg-cb:checked')].map(cb=>cb.value));
+  if(!selected.size){alert('Label Grade を1つ以上選択してください。');return;}
+
+  const groups=splitGroups(convState.allRows);
+  const kept=[];
+  let keptCount=0;
+  for(const g of groups){
+    const labels=groupLabels(g);
+    if(labels.some(lg=>selected.has(lg))){
+      kept.push(...g);kept.push(null);keptCount++;}}
+
+  if(!keptCount){alert('該当する製品がありません。');return;}
+
+  log('');
+  log('🔄 Label Grade フィルター適用','c');
+  log(`  選択: ${[...selected].join(', ')}`);
+  log(`  → ${keptCount} 製品を出力`,'g');
+
+  const outAb=writeExcel(kept,convState.tmplAb);
+  const ts=new Date().toISOString().replace(/[-:T]/g,'').slice(0,15);
+  const name=`${convState.baseName}_filtered_${ts}.xlsx`;
+  resultData={blob:new Blob([outAb],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),name};
+
+  // ダウンロードボタンを更新
+  document.getElementById('dlBtn').style.display='inline-flex';
+  document.getElementById('dlBtn').textContent='⬇ フィルター済みExcelをダウンロード';
+  log(`  ✅ 再出力完了 — ダウンロードボタンから取得してください`,'g');
 }
 </script>
 <script>if(window.lucide)lucide.createIcons();</script>
