@@ -8,22 +8,22 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --brand-050: #EBF2FB;
-            --brand-100: #C4DAF5;
-            --brand-200: #9AC0EE;
-            --brand-300: #5A99E0;
-            --brand-400: #2B78D4;
-            --brand-500: #1565C0;
-            --brand-600: #0D55A8;
-            --brand-700: #094590;
-            --brand-800: #063372;
-            --brand-900: #042258;
-            --brand-950: #021540;
-            --background: #FFFFFF;
-            --foreground: #042258;
-            --card: rgba(21, 101, 192, 0.05);
-            --primary: #1565C0;
-            --border: rgba(21, 101, 192, 0.10);
+            --brand-050: #EBF2EC;
+            --brand-100: #C8DFC9;
+            --brand-200: #96C099;
+            --brand-300: #5C9E61;
+            --brand-400: #2E7D35;
+            --brand-500: #1B6B25;
+            --brand-600: #155A1E;
+            --brand-700: #0F4917;
+            --brand-800: #093710;
+            --brand-900: #052608;
+            --brand-950: #021503;
+            --background: #F4FAF4;
+            --foreground: #052608;
+            --card: rgba(27, 107, 37, 0.05);
+            --primary: #1B6B25;
+            --border: rgba(27, 107, 37, 0.10);
         }
         body {
             font-family: 'Meiryo UI', Meiryo, 'MS PGothic', sans-serif;
@@ -43,15 +43,12 @@
             letter-spacing: 0.05em;
         }
         .hero-gradient {
-            background:
-                linear-gradient(180deg,
-                    rgba(4,34,88,0.80) 0%,
-                    rgba(6,51,114,0.68) 50%,
-                    rgba(4,34,88,0.86) 100%),
-                url('https://images.unsplash.com/photo-1448375240586-882707db888b?w=2400&q=85');
-            background-size: cover;
-            background-position: center 40%;
-            background-repeat: no-repeat;
+        background-image: 
+        linear-gradient(180deg, rgba(235, 242, 236, 0.85) 0%, rgba(200, 223, 201, 0.70) 100%),
+        url('https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?w=2400&q=80');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
         }
         .glass-card {
             background: rgba(255, 255, 255, 0.75);
@@ -62,7 +59,7 @@
         }
         .glass-card:hover {
             transform: translateY(-4px);
-            box-shadow: 0 8px 25px rgba(21, 101, 192, 0.15);
+            box-shadow: 0 8px 25px rgba(27, 107, 37, 0.15);
         }
         .btn-primary {
             background-color: var(--brand-500);
@@ -91,8 +88,8 @@
             letter-spacing: 0.07em;
         }
         .badge-new {
-            background: #D4E6F8;
-            color: #094590;
+            background: #D4EDDA;
+            color: #0F4917;
             font-size: 10px;
             font-weight: 700;
             padding: 2px 8px;
@@ -122,97 +119,9 @@
             transition: transform 0.2s ease;
         }
 
-        /* ===== 雪山・認証バッジ装飾 ===== */
-        .hero-content {
-            position: relative;
-            z-index: 2;
-        }
-
         @media (max-width: 768px) {
             .display-xl { font-size: 40px; }
-            .section-padding { padding: 48px 16px; }
-        }
-
-        /* ===== ハンバーガーメニュー ===== */
-        .hamburger {
-            display: none;
-            flex-direction: column;
-            gap: 5px;
-            cursor: pointer;
-            padding: 6px;
-            background: transparent;
-            border: none;
-        }
-        .hamburger span {
-            display: block;
-            width: 24px;
-            height: 2px;
-            background: var(--brand-800);
-            border-radius: 2px;
-            transition: all 0.3s ease;
-        }
-        .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
-        .hamburger.open span:nth-child(2) { opacity: 0; }
-        .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(5px, -5px); }
-
-        /* ===== モバイルドロワーメニュー ===== */
-        .mobile-menu {
-            display: none;
-            position: fixed;
-            top: 65px;
-            left: 0;
-            right: 0;
-            background: white;
-            border-bottom: 1px solid rgba(21,101,192,0.1);
-            z-index: 49;
-            max-height: calc(100vh - 65px);
-            overflow-y: auto;
-            box-shadow: 0 8px 24px rgba(21,101,192,0.12);
-        }
-        .mobile-menu.open { display: block; }
-        .mobile-menu-item {
-            display: block;
-            padding: 14px 24px;
-            font-size: 15px;
-            font-weight: 600;
-            color: var(--brand-800);
-            text-decoration: none;
-            border-bottom: 1px solid rgba(21,101,192,0.06);
-        }
-        .mobile-menu-item:hover { background: var(--brand-050); color: var(--brand-500); }
-        .mobile-menu-section {
-            padding: 10px 24px 4px;
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--brand-400);
-            letter-spacing: 0.1em;
-            text-transform: uppercase;
-            background: var(--brand-050);
-        }
-        .mobile-menu-sub {
-            display: block;
-            padding: 11px 36px;
-            font-size: 14px;
-            color: var(--brand-700);
-            text-decoration: none;
-            border-bottom: 1px solid rgba(21,101,192,0.04);
-        }
-        .mobile-menu-sub:hover { background: var(--brand-050); color: var(--brand-500); }
-        .mobile-apply-btn {
-            display: block;
-            margin: 16px 24px;
-            padding: 14px;
-            background: var(--brand-500);
-            color: white;
-            text-align: center;
-            border-radius: 10px;
-            font-weight: 700;
-            text-decoration: none;
-            font-size: 15px;
-        }
-
-        @media (max-width: 767px) {
-            .hamburger { display: flex; }
+            .section-padding { padding: 48px 20px; }
         }
     </style>
 </head>
@@ -221,11 +130,11 @@
     <!-- ============================================== -->
     <!-- ナビゲーションバー(ドロップダウンメニュー統合版) -->
     <!-- ============================================== -->
-    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-[rgba(21,101,192,0.1)]">
+    <nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-[rgba(27,107,37,0.1)]">
         <div class="max-w-[1200px] mx-auto px-6 py-4 flex justify-between items-center">
 
             <!-- ロゴ -->
-            <a href="index.html" 
+            <a href="../idfl_japan_seminar_with_dropdown.html" 
             style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
                 <img src="/IDFL-Logo.jpg" 
                     alt="IDFL" 
@@ -245,7 +154,7 @@
                         <i data-lucide="chevron-down" class="nav-chevron w-3 h-3"></i>
                     </button>
                     <div class="nav-dropdown absolute top-full left-0 pt-2 min-w-[210px] z-50">
-                         <div class="bg-white border border-[rgba(21,101,192,0.1)] rounded-xl shadow-lg p-2">
+                         <div class="bg-white border border-[rgba(27,107,37,0.1)] rounded-xl shadow-lg p-2">
                             <a href="https://idfl.com/ja/services/audits-certifications/global-organic-textile-standard-gots/" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">GOTS 認証</a>
                             <a href="https://idfl.com/ja/services/audits-certifications/organic-content-standard-ocs/" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">OCS 認証</a>
                             <a href="https://idfl.com/ja/services/audits-certifications/responsible-wool-standard-rws/" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">RWS 認証</a>
@@ -263,10 +172,10 @@
                         <i data-lucide="chevron-down" class="nav-chevron w-3 h-3"></i>
                     </button>
                     <div class="nav-dropdown absolute top-full left-0 pt-2 min-w-[210px] z-50">
-                        <div class="bg-white border border-[rgba(21,101,192,0.1)] rounded-xl shadow-lg p-2">
-                            <a href="/idfl_japan_seminar_with_dropdown.html" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">開催予定のセミナー</a>
+                        <div class="bg-white border border-[rgba(27,107,37,0.1)] rounded-xl shadow-lg p-2">
+                            <a href="idfl_japan_seminar_with_dropdown.html" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">開催予定のセミナー</a>
                             <a href="/past_seminar_v2.html" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">過去のセミナー</a>
-                            <a href="/download.html" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">資料ダウンロード</a>
+                            <a href="/seminar/download.html" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">資料ダウンロード</a>
                         </div>
                     </div>
                 </div>
@@ -278,94 +187,63 @@
                         <i data-lucide="chevron-down" class="nav-chevron w-3 h-3"></i>
                     </button>
                     <div class="nav-dropdown absolute top-full left-0 pt-2 min-w-[210px] z-50">
-                        <div class="bg-white border border-[rgba(21,101,192,0.1)] rounded-xl shadow-lg p-2">
-                            <a href="https://idfl.com/zh-tw/idfl-japan/" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">会社概要</a>
-                            <a href="https://maps.app.goo.gl/hxvPws1M6cGxbLHF7" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">アクセス</a>
+                        <div class="bg-white border border-[rgba(27,107,37,0.1)] rounded-xl shadow-lg p-2">
+                            <a href="/about/company.html" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">会社概要</a>
+                            <a href="/about/access.html" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">アクセス</a>
+                            <a href="/about/contact.html" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">お問い合わせ</a>
                         </div>
                     </div>
                 </div>
 
                 <!-- 単一リンク(ドロップダウンなし) -->
-                <a href="/idfl_news.html" class="px-4 py-2 text-sm font-semibold text-[var(--brand-800)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">お知らせ</a>
+                <a href="/news.html" class="px-4 py-2 text-sm font-semibold text-[var(--brand-800)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">お知らせ</a>
             </div>
 
-            <!-- お申し込みボタン(PC) -->
-            <a href="/download.html"
-               class="hidden md:block text-sm font-semibold hover:text-[var(--brand-500)] transition-colors">お申し込み</a>
-
-            <!-- ハンバーガーボタン(スマホのみ) -->
-            <button class="hamburger" id="hamburger" aria-label="メニュー">
-                <span></span><span></span><span></span>
-            </button>
+            <!-- お申し込みボタン -->
+            <a href="https://forms.office.com/Pages/ResponsePage.aspx?id=hQL27-D4ckKtEjtBsJIawI60DctQlgpAt0rPraJ8Wg5UQjA4N1UwN09PVkg5SkNZN1lBVTQxN0tYTy4u"
+               class="text-sm font-semibold hover:text-[var(--brand-500)] transition-colors">お申し込み</a>
         </div>
     </nav>
 
-    <!-- モバイルドロワーメニュー -->
-    <div class="mobile-menu" id="mobileMenu">
-        <div class="mobile-menu-section">認証サービス</div>
-        <a href="https://idfl.com/ja/services/audits-certifications/global-organic-textile-standard-gots/" class="mobile-menu-sub">GOTS 認証</a>
-        <a href="https://idfl.com/ja/services/audits-certifications/organic-content-standard-ocs/" class="mobile-menu-sub">OCS 認証</a>
-        <a href="https://idfl.com/ja/services/audits-certifications/responsible-wool-standard-rws/" class="mobile-menu-sub">RWS 認証</a>
-        <a href="https://idfl.com/ja/services/audits-certifications/global-recycled-standard-grs/" class="mobile-menu-sub">GRS 認証</a>
-        <a href="https://dev.idfl.com/ja/services/" class="mobile-menu-sub">ダウン・フェザー検査</a>
-        <div class="mobile-menu-section">セミナー</div>
-        <a href="/idfl_japan_seminar_with_dropdown.html" class="mobile-menu-sub">開催予定のセミナー</a>
-        <a href="/past_seminar_v2.html" class="mobile-menu-sub">過去のセミナー</a>
-        <div class="mobile-menu-section">会社情報</div>
-        <a href="https://idfl.com/zh-tw/idfl-japan/" class="mobile-menu-sub">会社概要</a>
-        <a href="https://maps.app.goo.gl/hxvPws1M6cGxbLHF7" class="mobile-menu-sub">アクセス</a>
-        <a href="/download.html"
-           class="mobile-apply-btn">今すぐ申し込む（無料）</a>
-    </div>
-
-    <header class="pt-28 pb-16 hero-gradient overflow-hidden" style="position: relative;">
-        <div class="hero-content max-w-5xl mx-auto px-6 text-center">
-            <div class="inline-block tag mb-5" style="background:rgba(255,255,255,0.15);color:white;border:1px solid rgba(255,255,255,0.25);font-size:11px;">2026.08.07 セミナー開催</div>
-            <h1 class="text-2xl md:text-5xl mb-5 leading-tight" style="color:white;font-weight:700;">
+    <header class="pt-32 pb-20 hero-gradient overflow-hidden">
+        <div class="max-w-5xl mx-auto px-6 text-center">
+            <div class="inline-block tag mb-6">2026.08.07 セミナー開催</div>
+            <h1 class="text-5xl md:text-7xl mb-6 leading-tight text-[var(--brand-800)]">
                 IDFL JAPAN<br>
-                <span style="color:rgba(196,218,245,0.90);">サステナビリティ認証</span><br>
+                <span class="text-[var(--brand-600)]">サステナビリティ認証</span><br>
                 セミナーのご案内
             </h1>
-            <p class="text-base md:text-lg mb-3 max-w-2xl mx-auto font-semibold" style="color:rgba(196,218,245,0.90);">
+            <p class="text-lg md:text-xl text-[var(--brand-700)] mb-4 max-w-2xl mx-auto font-normal">
                 GOTS 7.0→8.0 移行対応 ／ MMS への切り替え ／ FSC 新規取得
             </p>
-            <p class="text-sm mb-8 max-w-xl mx-auto" style="color:rgba(196,218,245,0.72);">
+            <p class="text-base text-[var(--brand-500)] mb-10 max-w-xl mx-auto">
                 現場のリアルな課題を、専門担当者と一緒に解決するグループディスカッション形式
             </p>
             <div class="flex flex-col md:flex-row gap-4 justify-center items-center">
                 <a href="#details" class="btn-primary">
                     詳細を見る <i data-lucide="chevron-right" class="w-4 h-4"></i>
                 </a>
-                <span class="text-sm" style="color:rgba(196,218,245,0.75);">会場：御堂会館 3階 Bホール｜参加費：無料</span>
+                <span class="text-sm text-[var(--brand-400)]">会場：御堂会館 3階 Bホール｜参加費：無料</span>
             </div>
         </div>
     </header>
-    <section style="
-        position: relative;
-        overflow: hidden;
-        padding: 80px 20px;
-        background:
-            linear-gradient(180deg, rgba(4,34,88,0.78) 0%, rgba(6,51,114,0.70) 50%, rgba(4,34,88,0.82) 100%),
-            url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=2400&q=85');
-        background-size: cover;
-        background-position: center 35%;
-        background-repeat: no-repeat;
-    ">
-        <div class="max-w-4xl mx-auto px-6 text-center" style="position:relative;z-index:2;">
-            <h2 style="font-size:clamp(24px,4vw,40px);font-weight:700;color:white;margin-bottom:32px;">
+
+    <section class="section-padding bg-white">
+        <div class="max-w-4xl mx-auto px-6 text-center">
+            <h2 class="text-3xl md:text-4xl mb-8 text-[var(--brand-800)]">
                 <span class="preposition">Discussion</span> Based Learning
             </h2>
-            <div class="space-y-5 text-left max-w-3xl mx-auto" style="font-size:15px;line-height:1.9;">
-                <p style="color:rgba(196,218,245,0.92);">
+            <div class="space-y-5 text-[var(--brand-700)] text-base leading-relaxed text-left max-w-3xl mx-auto">
+                <p>
                     2025年から2026年にかけて、繊維・素材業界ではGOTS Version 8の施行、MMSへの全面移行、そしてFSC認証への関心急増という、
-                    <strong style="color:var(--gold-light,#F0D87A);">三重の制度変化</strong>が同時進行しています。
+                    <strong class="text-[var(--brand-500)]">三重の制度変化</strong>が同時進行しています。
                 </p>
-                <p style="color:rgba(196,218,245,0.92);">
-                    IDFL JAPANでは、一方的な講義形式ではなく、<strong style="color:white;">参加型グループディスカッション形式</strong>のセミナーを開催いたします。
+                <p>
+                    IDFL JAPANでは、一方的な講義形式ではなく、<strong class="text-[var(--brand-500)]">参加型グループディスカッション形式</strong>のセミナーを開催いたします。
                     各テーマの専門担当者がグループに加わり、御社の実務状況を踏まえた意見交換・情報共有を行います。
                 </p>
-                <p style="color:rgba(196,218,245,0.92);">
-                    他社の移行事例、申請フローの工夫、よくある審査指摘事項など、<strong style="color:white;">現場でしか聞けない情報</strong>を持ち帰っていただける場を目指しています。
+                <p>
+                    他社の移行事例、申請フローの工夫、よくある審査指摘事項など、<strong>現場でしか聞けない情報</strong>を持ち帰っていただける場を目指しています。
                 </p>
             </div>
         </div>
@@ -375,10 +253,7 @@
     <div class="max-w-8xl mx-auto px-6">
         <div class="flex justify-between items-end mb-12">
             <div class="text-left">
-                <h2 class="text-3xl md:text-4xl text-[var(--brand-800)]">
-                    <svg style="display:inline; vertical-align:middle; margin-right:8px; margin-bottom:4px;" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="2,20 12,4 22,20"/><polyline points="2,20 8,12 12,16 16,10 22,20" fill="rgba(21,101,192,0.15)" stroke="none"/><polygon points="9,9 12,4 15,9" fill="white" stroke="none"/></svg>
-                    Program
-                </h2>
+                <h2 class="text-3xl md:text-4xl text-[var(--brand-800)]">Program</h2>
                 <p class="text-[var(--brand-400)] mt-1">主なテーマと内容</p>
             </div>
             <div class="hidden md:block text-right">
@@ -387,14 +262,14 @@
         </div>
 
         <!-- ============ プログラムカード(時間バッジ付き) ============ -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8 mb-16">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-16">
 
             <!-- ① GOTS -->
-            <div class="glass-card p-4 md:p-8 flex flex-col h-full">
+            <div class="glass-card p-8 flex flex-col h-full">
                 <div class="mb-5 w-12 h-12 rounded-xl flex items-center justify-center bg-[var(--brand-500)] text-white">
                     <i data-lucide="refresh-cw"></i>
                 </div>
-                <div class="inline-flex items-center gap-1.5 mb-3 px-3 py-1 text-white rounded-full text-xs font-bold w-fit" style="background:#1565C0">
+                <div class="inline-flex items-center gap-1.5 mb-3 px-3 py-1 bg-[var(--brand-500)] text-white rounded-full text-xs font-bold w-fit">
                     <i data-lucide="clock" class="w-3 h-3"></i>
                     10:00〜12:00
                 </div>
@@ -410,16 +285,16 @@
                     <li>・ よくある審査指摘事例と対策</li>
                 </ul>
                 <div class="pt-4 border-t border-[var(--brand-100)] text-sm font-semibold flex items-center gap-2 text-[var(--brand-600)]">
-                    <span class="w-2 h-2 rounded-full" style="background:#5A99E0"></span> 解説 + Q&Aディスカッション
+                    <span class="w-2 h-2 bg-[var(--brand-400)] rounded-full"></span> 解説 + Q&Aディスカッション
                 </div>
             </div>
 
             <!-- ② MMS -->
-            <div class="glass-card p-4 md:p-8 flex flex-col h-full">
+            <div class="glass-card p-8 flex flex-col h-full">
                 <div class="mb-5 w-12 h-12 bg-[var(--brand-500)] rounded-xl flex items-center justify-center text-white">
                     <i data-lucide="git-branch"></i>
                 </div>
-                <div class="inline-flex items-center gap-1.5 mb-3 px-3 py-1 text-white rounded-full text-xs font-bold w-fit" style="background:#0E7490">
+                <div class="inline-flex items-center gap-1.5 mb-3 px-3 py-1 bg-[var(--brand-500)] text-white rounded-full text-xs font-bold w-fit">
                     <i data-lucide="clock" class="w-3 h-3"></i>
                     13:00〜15:30
                 </div>
@@ -435,16 +310,16 @@
                     <li>・ 移行で詰まりやすいポイントの共有</li>
                 </ul>
                 <div class="pt-4 border-t border-[var(--brand-100)] text-sm font-semibold flex items-center gap-2 text-[var(--brand-600)]">
-                    <span class="w-2 h-2 rounded-full" style="background:#22D3EE"></span> 実務グループ討論形式
+                    <span class="w-2 h-2 bg-[var(--brand-400)] rounded-full"></span> 実務グループ討論形式
                 </div>
             </div>
 
             <!-- ③ Down & Feather -->
-            <div class="glass-card p-4 md:p-8 flex flex-col h-full">
+            <div class="glass-card p-8 flex flex-col h-full">
                 <div class="mb-5 w-12 h-12 bg-[var(--brand-500)] rounded-xl flex items-center justify-center text-white">
                     <i data-lucide="feather"></i>
                 </div>
-                <div class="inline-flex items-center gap-1.5 mb-3 px-3 py-1 text-white rounded-full text-xs font-bold w-fit" style="background:#6D28D9">
+                <div class="inline-flex items-center gap-1.5 mb-3 px-3 py-1 bg-[var(--brand-500)] text-white rounded-full text-xs font-bold w-fit">
                     <i data-lucide="clock" class="w-3 h-3"></i>
                     13:00〜15:30
                 </div>
@@ -454,7 +329,7 @@
                 </div>
                 <ul class="text-[var(--brand-700)] text-sm space-y-2 mb-6 flex-grow leading-relaxed">
                     <li>・ ダウン・フェザー認証制度の概要</li>
-                    <li>・ 各認証の違い(DOWNPASS/JTAS)</li>
+                    <li>・ 各認証の違い(IDS/DOWNPASS/JTAS/RDS)</li>
                     <li>・ 基準の更新動向および監査の目的</li>
                     <li>・ 監査に向けた準備期間と対応事項</li>
                     <li>・ リサイクルダウンの取り扱い</li>
@@ -466,11 +341,11 @@
             </div>
 
             <!-- ④ FSC -->
-            <div class="glass-card p-4 md:p-8 flex flex-col h-full">
+            <div class="glass-card p-8 flex flex-col h-full">
                 <div class="mb-5 w-12 h-12 bg-[var(--brand-500)] rounded-xl flex items-center justify-center text-white">
                     <i data-lucide="file-check"></i>
                 </div>
-                <div class="inline-flex items-center gap-1.5 mb-3 px-3 py-1 text-white rounded-full text-xs font-bold w-fit" style="background:#2D8A29">
+                <div class="inline-flex items-center gap-1.5 mb-3 px-3 py-1 bg-[var(--brand-500)] text-white rounded-full text-xs font-bold w-fit">
                     <i data-lucide="clock" class="w-3 h-3"></i>
                     15:45〜16:40
                 </div>
@@ -516,23 +391,15 @@
                     <p class="text-sm text-[var(--brand-500)]">解説 + Q&Aディスカッション</p>
                 </div>
                 <div class="flex items-center gap-3 md:w-72 flex-shrink-0 md:border-l md:border-[var(--brand-100)] md:pl-5">
-                    <div style="display:flex;flex-direction:column;align-items:center;gap:5px;min-width:60px;">
-                        <div style="width:56px;height:56px;border-radius:50%;overflow:hidden;border:2px solid var(--brand-200);flex-shrink:0;">
-                            <img src="/Fiona.png" alt="松本 フィオナ 様" style="width:100%;height:100%;object-fit:cover;">
-                        </div>
-                        <div style="text-align:center;">
-                            <p style="font-size:12px;font-weight:700;color:var(--brand-800);margin:0;">松本 フィオナ 様</p>
-                            <p style="font-size:10px;color:var(--brand-500);margin:0;line-height:1.4;">GOTS<br>日本代表</p>
-                        </div>
+                    <div class="w-24 h-24 rounded-full flex-shrink-0 ring-2 ring-[var(--brand-200)]"
+                        style="overflow: hidden;">
+                        <img src="/face pic/Fiona.png" 
+                            alt="松本 フィオナ 様"
+                            style="width: 100%; height: 100%; object-fit: cover;">
                     </div>
-                    <div style="display:flex;flex-direction:column;align-items:center;gap:5px;min-width:60px;">
-                        <div style="width:56px;height:56px;border-radius:50%;overflow:hidden;border:2px solid var(--brand-200);flex-shrink:0;">
-                            <img src="/Hiroshima.jpg" alt="廣島 様" style="width:100%;height:100%;object-fit:cover;">
-                        </div>
-                        <div style="text-align:center;">
-                            <p style="font-size:12px;font-weight:700;color:var(--brand-800);margin:0;">廣島 様</p>
-                            <p style="font-size:10px;color:var(--brand-500);margin:0;line-height:1.4;">京セラドキュメント<br>ソリューションズ</p>
-                        </div>
+                    <div>
+                        <p class="text-sm font-bold text-[var(--brand-800)]">松本 フィオナ 様</p>
+                        <p class="text-xs text-[var(--brand-500)] leading-tight">GOTS 日本代表</p>
                     </div>
                 </div>
             </div>
@@ -559,14 +426,15 @@
                     <p class="text-sm text-[var(--brand-500)]">実務グループ討論形式</p>
                 </div>
                 <div class="flex items-center gap-3 md:w-72 flex-shrink-0 md:border-l md:border-[var(--brand-100)] md:pl-5">
-                    <div style="display:flex;flex-direction:column;align-items:center;gap:5px;min-width:60px;">
-                        <div style="width:56px;height:56px;border-radius:50%;overflow:hidden;border:2px solid var(--brand-200);flex-shrink:0;">
-                            <img src="/inagaki.png" alt="稲垣 先生" style="width:100%;height:100%;object-fit:cover;">
-                        </div>
-                        <div style="text-align:center;">
-                            <p style="font-size:12px;font-weight:700;color:var(--brand-800);margin:0;">稲垣 先生</p>
-                            <p style="font-size:10px;color:var(--brand-500);margin:0;line-height:1.4;">信州大学 教授<br>元 TE アンバサダー</p>
-                        </div>
+                    <div class="w-24 h-24 rounded-full flex-shrink-0 ring-2 ring-[var(--brand-200)]"
+                        style="overflow: hidden;">
+                        <img src="/face pic/inagaki.png" 
+                            alt="稲垣 先生"
+                            style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-[var(--brand-800)]">稲垣 先生</p>
+                        <p class="text-xs text-[var(--brand-500)] leading-tight">信州大学 教授<br>元 Textile Exchange アンバサダー</p>
                     </div>
                 </div>
             </div>
@@ -580,26 +448,24 @@
                     <p class="font-semibold text-[var(--brand-800)]">ダウン・フェザー認証</p>
                     <p class="text-sm text-[var(--brand-500)]">制度解説 + 監査実務</p>
                 </div>
-                <div class="flex items-start gap-3 md:w-72 flex-shrink-0 md:border-l md:border-[var(--brand-100)] md:pl-5">
-                    <!-- 黒柳様 -->
-                    <div style="display:flex;flex-direction:column;align-items:center;gap:5px;min-width:60px;">
-                        <div style="width:56px;height:56px;border-radius:50%;overflow:hidden;border:2px solid var(--brand-200);">
-                            <img src="/kuroyanagi.jpg" alt="黒柳様" style="width:100%;height:100%;object-fit:cover;">
-                        </div>
-                        <div style="text-align:center;">
-                            <p style="font-size:12px;font-weight:700;color:var(--brand-800);margin:0;">黒柳 様</p>
-                            <p style="font-size:10px;color:var(--brand-500);margin:0;line-height:1.4;">KAWADA LAB<br>研究員</p>
+                <div class="flex items-center gap-3 md:w-72 flex-shrink-0 md:border-l md:border-[var(--brand-100)] md:pl-5">
+                    <div class="flex -space-x-2 flex-shrink-0">
+                        <div class="w-24 h-24 rounded-full flex-shrink-0 ring-2 ring-[var(--brand-200)]"
+                        style="overflow: hidden;">
+                        <img src="/face pic/Mizuda.png" 
+                            alt="水田様"
+                            style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                        <div class="w-24 h-24 rounded-full bg-[var(--brand-600)] text-white flex items-center justify-center font-bold text-sm ring-2 ring-white">
+                            水田
+                            <img src="/face pic/Mizuda.png" 
+                            alt="水田様"
+                            style="width: 100%; height: 100%; object-fit: cover;">
                         </div>
                     </div>
-                    <!-- 水田様 -->
-                    <div style="display:flex;flex-direction:column;align-items:center;gap:5px;min-width:60px;">
-                        <div style="width:56px;height:56px;border-radius:50%;overflow:hidden;border:2px solid var(--brand-200);">
-                            <img src="/Mizuda.png" alt="水田様" style="width:100%;height:100%;object-fit:cover;">
-                        </div>
-                        <div style="text-align:center;">
-                            <p style="font-size:12px;font-weight:700;color:var(--brand-800);margin:0;">水田 様</p>
-                            <p style="font-size:10px;color:var(--brand-500);margin:0;line-height:1.4;">QTEC<br>ダウン羽毛監査員</p>
-                        </div>
+                    <div>
+                        <p class="text-sm font-bold text-[var(--brand-800)]">黒柳 様 / 水田 様</p>
+                        <p class="text-xs text-[var(--brand-500)] leading-tight">KAWADA LAB 研究員<br>QTEC ダウン羽毛監査員</p>
                     </div>
                 </div>
             </div>
@@ -625,15 +491,16 @@
                     <p class="font-semibold text-[var(--brand-800)]">FSC 新規認証取得</p>
                     <p class="text-sm text-[var(--brand-500)]">初回取得者向け詳細解説</p>
                 </div>
-                <div class="flex items-start gap-3 md:w-72 flex-shrink-0 md:border-l md:border-[var(--brand-100)] md:pl-5">
-                    <div style="display:flex;flex-direction:column;align-items:center;gap:5px;min-width:60px;">
-                        <div style="width:56px;height:56px;border-radius:50%;overflow:hidden;border:2px solid var(--brand-200);">
-                            <img src="/natsumi.jpg" alt="笹本様" style="width:100%;height:100%;object-fit:cover;">
-                        </div>
-                        <div style="text-align:center;">
-                            <p style="font-size:12px;font-weight:700;color:var(--brand-800);margin:0;">笹本 様</p>
-                            <p style="font-size:10px;color:var(--brand-500);margin:0;line-height:1.4;">FSC JAPAN<br>担当者</p>
-                        </div>
+                <div class="flex items-center gap-3 md:w-72 flex-shrink-0 md:border-l md:border-[var(--brand-100)] md:pl-5">
+                    <div class="w-24 h-24 rounded-full bg-[var(--brand-500)] text-white flex items-center justify-center font-bold text-sm flex-shrink-0 ring-2 ring-[var(--brand-200)]">
+                        笹本
+                        <img src="/face pic/Mizuda.png" 
+                            alt="笹本様"
+                            style="width: 100%; height: 100%; object-fit: cover;">
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-[var(--brand-800)]">笹本 様</p>
+                        <p class="text-xs text-[var(--brand-500)] leading-tight">FSC JAPAN 担当者</p>
                     </div>
                 </div>
             </div>
@@ -652,7 +519,7 @@
     <section id="details" class="section-padding">
         <div class="max-w-4xl mx-auto px-6">
             <div class="rounded-[32px] overflow-hidden flex flex-col md:flex-row bg-[var(--brand-800)] text-white">
-                <div class="md:w-1/2 p-6 md:p-12">
+                <div class="md:w-1/2 p-12">
                     <h2 class="text-3xl mb-8 text-white">Event Details</h2>
                     <ul class="space-y-6">
                         <li class="flex items-start gap-4">
@@ -697,13 +564,13 @@
                         </li>
                     </ul>
                 </div>
-                <div class="md:w-1/2 p-6 md:p-12 flex flex-col justify-center bg-white text-[var(--brand-800)]">
+                <div class="md:w-1/2 p-12 flex flex-col justify-center bg-white text-[var(--brand-800)]">
                     <p class="mb-2 font-semibold text-[var(--brand-600)]">当日のご案内</p>
                     <p class="mb-6 leading-relaxed text-sm text-[var(--brand-700)]">
                         軽食・お飲み物をご用意いたします。サプライヤーへの対応資料や現在のフロー図などお持ちいただくと、
                         より具体的な意見交換が可能です。担当者同士のネットワーキングの場としてもご活用ください。
                     </p>
-                    <a href="/download.html"
+                    <a href="https://forms.office.com/Pages/ResponsePage.aspx?id=hQL27-D4ckKtEjtBsJIawI60DctQlgpAt0rPraJ8Wg5UQjA4N1UwN09PVkg5SkNZN1lBVTQxN0tYTy4u"
                        target="_blank" rel="noopener noreferrer"
                        class="bg-[var(--brand-500)] text-white py-4 px-8 rounded-xl font-bold text-center hover:bg-[var(--brand-600)] transition-colors">
                        今すぐ申し込む（無料）
@@ -805,14 +672,8 @@
             <div style="background: #ffffff; padding: 2rem 2.5rem; text-align: center;">
 
                 <!-- 所在地・電話番号 -->
-                <div style="display: grid; grid-template-columns: 1fr;
+                <div style="display: grid; grid-template-columns: 1fr 1fr;
                             gap: 24px; max-width: 600px; margin: 0 auto 2rem;">
-                    <!-- スマホは縦並び、PC は横並び -->
-                    <style>
-                    @media(min-width:640px){
-                        .contact-grid { grid-template-columns: 1fr 1fr !important; }
-                    }
-                    </style>
 
                     <!-- 所在地 -->
                     <div style="display: flex; flex-direction: column;
@@ -898,24 +759,9 @@
         </div>
     </section>
 
-    <footer class="bg-[var(--brand-050)] py-20 border-t border-[var(--brand-100)]" style="position:relative; overflow:hidden;">
-        <!-- フッター雪山装飾 -->
-        <div style="position:absolute; bottom:0; left:0; right:0; pointer-events:none; opacity:0.08;">
-            <svg viewBox="0 0 1440 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none" style="display:block;">
-                <polygon points="0,120 180,50 360,90 540,20 720,80 900,15 1080,70 1260,30 1440,65 1440,120" fill="var(--brand-500)"/>
-                <polygon points="540,20 565,42 515,42" fill="white"/>
-                <polygon points="900,15 930,40 870,40" fill="white"/>
-            </svg>
-        </div>
-        <div class="max-w-6xl mx-auto px-6 text-center" style="position:relative; z-index:2;">
+    <footer class="bg-[var(--brand-050)] py-20 border-t border-[var(--brand-100)]">
+        <div class="max-w-6xl mx-auto px-6 text-center">
             <div class="flex flex-col items-center gap-6">
-                <!-- 小さな雪山アイコン -->
-                <svg width="48" height="32" viewBox="0 0 48 32" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity:0.4;">
-                    <polygon points="4,30 18,6 32,30" fill="none" stroke="var(--brand-500)" stroke-width="1.5"/>
-                    <polygon points="16,30 30,10 44,30" fill="none" stroke="var(--brand-500)" stroke-width="1.5"/>
-                    <polygon points="15,12 18,6 21,12" fill="var(--brand-300)" stroke="none"/>
-                    <polygon points="27,16 30,10 33,16" fill="var(--brand-300)" stroke="none"/>
-                </svg>
                 <p class="text-2xl font-semibold text-[var(--brand-900)]">皆様のご参加を心よりお待ちしております。</p>
                 <div class="w-12 h-[1px] bg-[var(--brand-300)]"></div>
                 <p class="text-[var(--brand-400)] text-sm">© 2026 IDFL JAPAN | International Down and Feather Laboratory</p>
@@ -929,21 +775,6 @@
             anchor.addEventListener('click', function (e) {
                 e.preventDefault();
                 document.querySelector(this.getAttribute('href')).scrollIntoView({ behavior: 'smooth' });
-            });
-        });
-
-        // ハンバーガーメニュー開閉
-        const hamburger = document.getElementById('hamburger');
-        const mobileMenu = document.getElementById('mobileMenu');
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('open');
-            mobileMenu.classList.toggle('open');
-        });
-        // メニュー項目クリックで閉じる
-        mobileMenu.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                hamburger.classList.remove('open');
-                mobileMenu.classList.remove('open');
             });
         });
     </script>

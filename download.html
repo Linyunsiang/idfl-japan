@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>資料ダウンロード | IDFL JAPAN</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root{--b050:#EBF2FB;--b100:#C4DAF5;--b200:#9AC0EE;--b400:#2B78D4;--b500:#1565C0;--b700:#094590;--b800:#063372;--b900:#042258;}
+    *{box-sizing:border-box;}
+    body{font-family:'Noto Sans JP',sans-serif;background:#f4f7fc;color:var(--b900);margin:0;}
+    .hero{background:linear-gradient(150deg,var(--b900) 0%,var(--b700) 55%,var(--b400) 100%);padding:calc(65px + 56px) 24px 56px;}
+    /* Admin bar */
+    #adminBar{display:none;background:#fffbeb;border-bottom:2px solid #fcd34d;padding:12px 24px;}
+    /* Tabs */
+    .cat-tab{padding:9px 18px;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;border:none;background:transparent;color:var(--b400);transition:all .15s;border-bottom:3px solid transparent;}
+    .cat-tab.on{color:var(--b700);border-bottom-color:var(--b500);background:var(--b050);}
+    .cat-tab:hover:not(.on){color:var(--b700);background:var(--b050);}
+    /* Cards */
+    .doc-card{background:#fff;border:1px solid var(--b100);border-radius:14px;padding:18px 20px;display:flex;align-items:center;gap:16px;position:relative;transition:transform .18s,box-shadow .18s;}
+    .doc-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(21,101,192,.09);}
+    @keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .doc-icon{width:46px;height:46px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;}
+    .tag{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;}
+    .t-GOTS{background:#d1fae5;color:#065f46;}.t-FSC{background:#dcfce7;color:#14532d;}
+    .t-MMS{background:#dbeafe;color:#1e40af;}.t-RWS{background:#fef3c7;color:#78350f;}
+    .t-DOWN{background:#ede9fe;color:#4c1d95;}.t-General{background:#f1f5f9;color:#475569;}
+    .badge-new{background:#dc2626;color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px;}
+    .dl-btn{display:flex;align-items:center;gap:5px;padding:7px 14px;border-radius:8px;background:var(--b050);color:var(--b700);font-size:12px;font-weight:700;text-decoration:none;border:1px solid var(--b200);transition:all .15s;flex-shrink:0;white-space:nowrap;cursor:pointer;font-family:inherit;}
+    .dl-btn:hover{background:var(--b500);color:#fff;border-color:var(--b500);}
+    /* Search */
+    .search-box{width:100%;border:1px solid var(--b200);border-radius:10px;padding:9px 14px 9px 36px;font-size:14px;background:#fff;color:var(--b800);font-family:inherit;}
+    .search-box:focus{outline:none;box-shadow:0 0 0 3px rgba(21,101,192,.15);}
+    /* Modal */
+    .modal-bg{display:none;position:fixed;inset:0;background:rgba(4,34,88,.55);backdrop-filter:blur(4px);z-index:300;align-items:center;justify-content:center;}
+    .modal-bg.open{display:flex;}
+    .modal-box{background:#fff;border-radius:18px;width:100%;max-width:500px;margin:16px;max-height:90vh;overflow-y:auto;}
+    .flabel{display:block;font-size:12px;font-weight:700;color:var(--b700);margin-bottom:4px;}
+    .finput{width:100%;border:1px solid var(--b200);border-radius:8px;padding:9px 12px;font-size:14px;color:var(--b800);background:#fff;font-family:inherit;}
+    .finput:focus{outline:none;box-shadow:0 0 0 3px rgba(21,101,192,.15);}
+    /* Toast */
+    #toast{position:fixed;bottom:24px;right:24px;z-index:400;background:var(--b800);color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;display:flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(4,34,88,.25);opacity:0;transition:opacity .3s;pointer-events:none;}
+    #toast.show{opacity:1;}
+    /* Float admin button */
+    #adminFloatBtn{position:fixed;bottom:80px;right:24px;z-index:200;background:var(--b800);color:rgba(255,255,255,.4);border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(4,34,88,.3);transition:all .2s;}
+    #adminFloatBtn:hover{color:#fff;background:var(--b700);}
+    #adminFloatBtn.active{background:var(--b500);color:#fff;}
+    /* Delete btn on card */
+    .del-card-btn{position:absolute;top:10px;right:10px;padding:5px 6px;border-radius:7px;border:none;cursor:pointer;background:#fff5f5;color:#ef4444;display:none;align-items:center;}
+    .del-card-btn:hover{background:#fee2e2;}
+    body.admin-on .del-card-btn{display:inline-flex;}
+    body.admin-on .doc-card{padding-right:44px;}
+  </style>
+</head>
+<body>
+
+<div id="site-nav"></div>
+<script src="/nav.js"></script>
+
+<!-- Hero -->
+<div class="hero">
+  <div style="max-width:900px;margin:0 auto">
+    <p style="color:rgba(196,218,245,.7);font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;margin:0 0 10px">Resources</p>
+    <h1 style="font-family:'DM Serif Display',serif;font-weight:400;color:#fff;font-size:clamp(1.8rem,4vw,3rem);margin:0 0 12px;line-height:1.2">資料ダウンロード</h1>
+    <p style="color:rgba(196,218,245,.75);font-size:14px;line-height:1.7;margin:0;max-width:480px">セミナー資料・認証ガイド・申請書類など、IDFLが提供するドキュメントをダウンロードいただけます。</p>
+  </div>
+</div>
+
+<!-- Admin bar -->
+<div id="adminBar">
+  <div style="max-width:1000px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:10px">
+    <span style="color:#92400e;font-weight:700;font-size:14px">🛠 管理者モード</span>
+    <button id="addDocBtn"  style="background:var(--b700);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer">＋ 資料を追加</button>
+    <button id="exportBtn"  style="background:#16a34a;color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer">📥 保存・ダウンロード</button>
+    <span style="font-size:11px;color:#b45309">→ <code>downloads-data.json</code> をNetlifyにアップロード</span>
+    <button id="exitAdminBtn" style="margin-left:auto;color:#b45309;background:transparent;border:none;cursor:pointer;font-size:12px;text-decoration:underline">終了</button>
+  </div>
+</div>
+
+<!-- Main -->
+<main style="max-width:1000px;margin:0 auto;padding:36px 24px 120px">
+
+  <div style="display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-bottom:22px">
+    <div style="position:relative;flex:1;min-width:200px">
+      <svg style="position:absolute;left:11px;top:50%;transform:translateY(-50%);width:15px;height:15px;color:#94a3b8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z"/></svg>
+      <input id="searchBox" class="search-box" type="text" placeholder="資料名・キーワードで検索...">
+    </div>
+    <span id="docCount" style="font-size:13px;color:var(--b400);white-space:nowrap"></span>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:26px;border-bottom:1px solid var(--b100);padding-bottom:2px">
+    <button class="cat-tab on" id="tab_all">すべて</button>
+    <button class="cat-tab" id="tab_GOTS">GOTS</button>
+    <button class="cat-tab" id="tab_FSC">FSC</button>
+    <button class="cat-tab" id="tab_MMS">MMS</button>
+    <button class="cat-tab" id="tab_RWS">RWS / GRS</button>
+    <button class="cat-tab" id="tab_DOWN">ダウン</button>
+    <button class="cat-tab" id="tab_General">一般・申請書類</button>
+  </div>
+
+  <div id="docList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:10px"></div>
+  <div id="noDoc" style="display:none;text-align:center;padding:64px;color:var(--b200)">
+    <p style="font-size:2rem">🔍</p><p>該当する資料が見つかりませんでした</p>
+  </div>
+
+  <div style="background:linear-gradient(135deg,var(--b800),var(--b700));border-radius:18px;padding:36px;color:#fff;margin-top:48px;display:flex;flex-wrap:wrap;align-items:center;gap:24px">
+    <div style="flex:1;min-width:200px">
+      <h2 style="font-family:'DM Serif Display',serif;font-weight:400;font-size:1.6rem;margin:0 0 8px">資料が見当たらない場合</h2>
+      <p style="color:rgba(196,218,245,.8);font-size:14px;margin:0;line-height:1.6">ご希望の資料がない場合はお気軽にお問い合わせください。</p>
+    </div>
+    <a href="https://idfl.com/ja/idfl-japan/" style="flex-shrink:0;background:#fff;color:var(--b800);font-weight:700;padding:13px 26px;border-radius:10px;text-decoration:none;font-size:14px">お問い合わせ →</a>
+  </div>
+</main>
+
+<footer style="background:var(--b900);color:rgba(196,218,245,.5);font-size:11px;padding:20px;text-align:center">
+  <p style="margin:0">© 2026 IDFL JAPAN | International Down and Feather Laboratory</p>
+  <p style="margin:4px 0 0">〒541-0056 大阪市中央区久太郎町1丁目6番地21 シャンクレール本町 2階</p>
+</footer>
+
+<!-- Float admin button -->
+<button id="adminFloatBtn" title="管理者ログイン">
+  <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+      d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+  </svg>
+</button>
+
+<!-- Login modal -->
+<div id="loginModal" class="modal-bg">
+  <div class="modal-box" style="max-width:360px">
+    <div style="padding:24px">
+      <h3 style="font-family:'DM Serif Display',serif;font-weight:400;font-size:1.4rem;color:var(--b800);margin:0 0 16px">管理者ログイン</h3>
+      <label class="flabel">パスワード</label>
+      <input id="passInput" type="password" class="finput" placeholder="パスワードを入力..." style="margin-bottom:10px">
+      <div id="loginErr" style="display:none;color:#dc2626;font-size:12px;margin-bottom:10px">パスワードが正しくありません</div>
+      <div style="display:flex;gap:8px">
+        <button id="loginBtn" style="flex:1;background:var(--b700);color:#fff;border:none;border-radius:8px;padding:10px;font-size:14px;font-weight:700;cursor:pointer">ログイン</button>
+        <button id="cancelLoginBtn" style="flex:1;background:#f1f5f9;color:#64748b;border:none;border-radius:8px;padding:10px;font-size:14px;font-weight:700;cursor:pointer">キャンセル</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Add doc modal -->
+<div id="addModal" class="modal-bg">
+  <div class="modal-box">
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid var(--b100);position:sticky;top:0;background:#fff;border-radius:18px 18px 0 0">
+      <h3 style="margin:0;font-size:16px;font-weight:700;color:var(--b800)">資料を追加</h3>
+      <button id="closeAddModalBtn" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:22px;line-height:1">✕</button>
+    </div>
+    <div style="padding:20px 24px;display:grid;gap:14px">
+      <div>
+        <label class="flabel">資料タイトル <span style="color:#ef4444">*</span></label>
+        <input id="inp_title" class="finput" type="text" placeholder="例：GOTS 8.0 改訂ポイント解説">
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <label class="flabel">カテゴリ</label>
+          <select id="inp_cat" class="finput">
+            <option value="GOTS">GOTS</option><option value="FSC">FSC</option>
+            <option value="MMS">MMS</option><option value="RWS">RWS / GRS</option>
+            <option value="DOWN">ダウン</option><option value="General">一般・申請書類</option>
+          </select>
+        </div>
+        <div>
+          <label class="flabel">ファイル種類</label>
+          <select id="inp_ftype" class="finput">
+            <option value="PDF">PDF</option><option value="PPT">PowerPoint</option>
+            <option value="XLSX">Excel</option><option value="DOC">Word</option>
+            <option value="ZIP">ZIP</option><option value="LINK">外部リンク</option>
+          </select>
+        </div>
+      </div>
+      <div>
+        <label class="flabel">URL（任意・後で設定可）</label>
+        <input id="inp_url" class="finput" type="text" placeholder="例：/files/doc.pdf または https://...">
+        <p style="font-size:11px;color:var(--b400);margin:4px 0 0">空欄の場合は「準備中」と表示されます</p>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
+          <label class="flabel">ファイルサイズ（任意）</label>
+          <input id="inp_size" class="finput" type="text" placeholder="例：2.4 MB">
+        </div>
+        <div>
+          <label class="flabel">更新年月（任意）</label>
+          <input id="inp_date" class="finput" type="month">
+        </div>
+      </div>
+      <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--b050);border-radius:8px;cursor:pointer">
+        <input id="inp_new" type="checkbox" style="width:16px;height:16px;accent-color:var(--b500)">
+        <span style="font-size:13px;font-weight:600;color:var(--b700)">「NEW」バッジを表示する</span>
+      </label>
+      <div id="addFormErr" style="display:none;background:#fee2e2;color:#dc2626;font-size:12px;padding:8px 12px;border-radius:8px"></div>
+      <button id="saveDocBtn" style="width:100%;background:var(--b700);color:#fff;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:700;cursor:pointer">追加する</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast">
+  <svg width="15" height="15" fill="none" stroke="#4ade80" viewBox="0 0 24 24" style="flex-shrink:0">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+  </svg>
+  <span id="toastMsg"></span>
+</div>
+
+<script>
+(function() {
+
+var PASS = 'idfl2026';
+var ICONS = {PDF:'📄',PPT:'📊',XLSX:'📈',DOC:'📝',ZIP:'🗜️',LINK:'🔗'};
+var IBGS  = {PDF:'#fee2e2',PPT:'#fed7aa',XLSX:'#d1fae5',DOC:'#dbeafe',ZIP:'#ede9fe',LINK:'#e0f2fe'};
+
+var docs     = [];
+var isAdmin  = false;
+var activeCat = 'all';
+
+var DEFAULT = [
+  {id:'d1', title:'GOTS Version 8.0 改訂ポイント解説資料',  category:'GOTS',    ftype:'PDF',  url:'', size:'2.4 MB', date:'2026-04', isNew:true},
+  {id:'d2', title:'GOTS 7.0 → 8.0 移行チェックリスト',      category:'GOTS',    ftype:'PDF',  url:'', size:'0.8 MB', date:'2026-04', isNew:true},
+  {id:'d3', title:'GOTS 化学物質規制（PRLリスト）最新版',    category:'GOTS',    ftype:'XLSX', url:'', size:'1.1 MB', date:'2026-03', isNew:false},
+  {id:'d4', title:'GOTS 認証申請書類一式',                  category:'GOTS',    ftype:'ZIP',  url:'', size:'3.2 MB', date:'2025-12', isNew:false},
+  {id:'d5', title:'FSC CoC 認証 入門ガイド（日本語版）',     category:'FSC',     ftype:'PDF',  url:'', size:'3.1 MB', date:'2026-05', isNew:true},
+  {id:'d6', title:'FSC 初回審査 準備チェックリスト',         category:'FSC',     ftype:'PDF',  url:'', size:'0.6 MB', date:'2026-05', isNew:true},
+  {id:'d7', title:'FSC ラベル使用ガイドライン',              category:'FSC',     ftype:'PDF',  url:'', size:'1.4 MB', date:'2026-02', isNew:false},
+  {id:'d8', title:'FSC Chain of Custody 申請様式',           category:'FSC',     ftype:'DOC',  url:'', size:'0.3 MB', date:'2026-01', isNew:false},
+  {id:'d9', title:'MMS 移行ガイド',                         category:'MMS',     ftype:'PDF',  url:'', size:'2.8 MB', date:'2026-04', isNew:true},
+  {id:'d10',title:'MMS サプライヤー登録マニュアル',          category:'MMS',     ftype:'PDF',  url:'', size:'1.7 MB', date:'2026-03', isNew:true},
+  {id:'d11',title:'MMS 入力フロー図（日本語）',              category:'MMS',     ftype:'PPT',  url:'', size:'4.2 MB', date:'2026-03', isNew:false},
+  {id:'d12',title:'RWS 認証概要',                           category:'RWS',     ftype:'PDF',  url:'', size:'1.9 MB', date:'2025-11', isNew:false},
+  {id:'d13',title:'GRS 申請手順書',                         category:'RWS',     ftype:'PDF',  url:'', size:'2.2 MB', date:'2026-01', isNew:false},
+  {id:'d14',title:'ダウン・フェザー認証制度 概要',           category:'DOWN',    ftype:'PDF',  url:'', size:'2.5 MB', date:'2026-04', isNew:true},
+  {id:'d15',title:'ダウン監査 準備マニュアル',               category:'DOWN',    ftype:'PDF',  url:'', size:'1.3 MB', date:'2026-03', isNew:false},
+  {id:'d16',title:'IDFL JAPAN サービス一覧（会社案内）',     category:'General', ftype:'PDF',  url:'', size:'5.6 MB', date:'2026-04', isNew:true},
+  {id:'d17',title:'認証審査 お申し込みフォーム',             category:'General', ftype:'DOC',  url:'', size:'0.2 MB', date:'2026-01', isNew:false},
+  {id:'d18',title:'IDFL 2026年 年間スケジュール',            category:'General', ftype:'PDF',  url:'', size:'0.4 MB', date:'2026-03', isNew:false},
+];
+
+/* ── Load ── */
+async function init() {
+  try {
+    var ctrl = new AbortController();
+    setTimeout(function(){ ctrl.abort(); }, 4000);
+    var r = await fetch('/downloads-data.json', {signal:ctrl.signal, cache:'no-cache'});
+    docs = r.ok ? (await r.json()) : DEFAULT.slice();
+  } catch(e) {
+    docs = DEFAULT.slice();
+  }
+  renderDocs();
+}
+
+/* ── Render ── */
+function renderDocs() {
+  var kw = document.getElementById('searchBox').value.toLowerCase();
+  var fil = docs.filter(function(d) {
+    return (activeCat === 'all' || d.category === activeCat) &&
+           (!kw || d.title.toLowerCase().indexOf(kw) >= 0);
+  });
+
+  document.getElementById('docCount').textContent = fil.length + ' 件';
+
+  var list  = document.getElementById('docList');
+  var noDoc = document.getElementById('noDoc');
+  list.innerHTML = '';
+
+  if (fil.length === 0) { noDoc.style.display = 'block'; return; }
+  noDoc.style.display = 'none';
+
+  fil.forEach(function(d, i) {
+    var card = document.createElement('div');
+    card.className = 'doc-card';
+    card.style.animation = 'up .3s ease ' + (i*.04) + 's both';
+
+    /* Delete button */
+    var delBtn = document.createElement('button');
+    delBtn.className = 'del-card-btn';
+    delBtn.title = '削除';
+    delBtn.innerHTML = '<svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>';
+    delBtn.addEventListener('click', (function(did, dtitle){ return function(){ deleteDoc(did, dtitle); }; })(d.id, d.title));
+    card.appendChild(delBtn);
+
+    /* Icon */
+    var ico = document.createElement('div');
+    ico.className = 'doc-icon';
+    ico.style.background = IBGS[d.ftype] || '#f1f5f9';
+    ico.textContent = ICONS[d.ftype] || '📄';
+    card.appendChild(ico);
+
+    /* Info */
+    var info = document.createElement('div');
+    info.style.cssText = 'flex:1;min-width:0';
+    var tagHtml = '<span class="tag t-' + d.category + '">' + d.category + '</span>';
+    var newHtml = d.isNew ? '<span class="badge-new">NEW</span>' : '';
+    var dateHtml = d.date ? '<span style="font-size:11px;color:#94a3b8;margin-left:auto">' + d.date + '</span>' : '';
+    info.innerHTML =
+      '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-bottom:5px">' + tagHtml + newHtml + dateHtml + '</div>' +
+      '<p style="font-size:14px;font-weight:700;color:var(--b800);margin:0 0 4px;line-height:1.4">' + d.title + '</p>' +
+      '<p style="font-size:12px;color:var(--b400);margin:0">' + d.ftype + (d.size ? ' ・ ' + d.size : '') + '</p>';
+    card.appendChild(info);
+
+    /* DL button */
+    var dlBtn;
+    if (d.url && d.url.trim() !== '') {
+      dlBtn = document.createElement('a');
+      dlBtn.href = d.url;
+      dlBtn.target = '_blank';
+      dlBtn.rel = 'noopener';
+    } else {
+      dlBtn = document.createElement('button');
+      dlBtn.addEventListener('click', function(){ alert('準備中です。お問い合わせください。'); });
+    }
+    dlBtn.className = 'dl-btn';
+    dlBtn.innerHTML = '<svg style="width:13px;height:13px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>DL';
+    card.appendChild(dlBtn);
+
+    list.appendChild(card);
+  });
+}
+
+/* ── Delete doc ── */
+function deleteDoc(id, title) {
+  if (!confirm('「' + title + '」を削除しますか？')) return;
+  docs = docs.filter(function(d){ return d.id !== id; });
+  renderDocs();
+  showToast('「' + title + '」を削除しました');
+}
+
+/* ── Search ── */
+document.getElementById('searchBox').addEventListener('input', renderDocs);
+
+/* ── Category tabs ── */
+var cats = ['all','GOTS','FSC','MMS','RWS','DOWN','General'];
+cats.forEach(function(c) {
+  var btn = document.getElementById('tab_' + c);
+  if (!btn) return;
+  btn.addEventListener('click', function() {
+    activeCat = c;
+    cats.forEach(function(x){ var b=document.getElementById('tab_'+x); if(b) b.classList.remove('on'); });
+    btn.classList.add('on');
+    renderDocs();
+  });
+});
+
+/* ── Admin login ── */
+document.getElementById('adminFloatBtn').addEventListener('click', function() {
+  if (isAdmin) { exitAdmin(); return; }
+  document.getElementById('loginModal').classList.add('open');
+  setTimeout(function(){ document.getElementById('passInput').focus(); }, 50);
+});
+
+function doLogin() {
+  if (document.getElementById('passInput').value !== PASS) {
+    document.getElementById('loginErr').style.display = 'block';
+    return;
+  }
+  isAdmin = true;
+  document.getElementById('loginErr').style.display = 'none';
+  document.getElementById('passInput').value = '';
+  document.getElementById('loginModal').classList.remove('open');
+  document.getElementById('adminBar').style.display = 'block';
+  document.getElementById('adminFloatBtn').classList.add('active');
+  document.body.classList.add('admin-on');
+  renderDocs();
+  showToast('管理者モードに入りました');
+}
+
+document.getElementById('loginBtn').addEventListener('click', doLogin);
+document.getElementById('passInput').addEventListener('keydown', function(e){ if(e.key==='Enter') doLogin(); });
+document.getElementById('cancelLoginBtn').addEventListener('click', function() {
+  document.getElementById('loginModal').classList.remove('open');
+  document.getElementById('loginErr').style.display = 'none';
+  document.getElementById('passInput').value = '';
+});
+
+function exitAdmin() {
+  isAdmin = false;
+  document.getElementById('adminBar').style.display = 'none';
+  document.getElementById('adminFloatBtn').classList.remove('active');
+  document.body.classList.remove('admin-on');
+  renderDocs();
+}
+document.getElementById('exitAdminBtn').addEventListener('click', exitAdmin);
+
+/* ── Add modal ── */
+function openAddModal() {
+  document.getElementById('inp_title').value = '';
+  document.getElementById('inp_cat').value   = 'GOTS';
+  document.getElementById('inp_ftype').value = 'PDF';
+  document.getElementById('inp_url').value   = '';
+  document.getElementById('inp_size').value  = '';
+  document.getElementById('inp_date').value  = '';
+  document.getElementById('inp_new').checked = false;
+  document.getElementById('addFormErr').style.display = 'none';
+  document.getElementById('addModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeAddModal() {
+  document.getElementById('addModal').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+document.getElementById('addDocBtn').addEventListener('click', openAddModal);
+document.getElementById('closeAddModalBtn').addEventListener('click', closeAddModal);
+document.getElementById('addModal').addEventListener('click', function(e){ if(e.target===this) closeAddModal(); });
+
+document.getElementById('saveDocBtn').addEventListener('click', function() {
+  var title = document.getElementById('inp_title').value.trim();
+  if (!title) {
+    document.getElementById('addFormErr').textContent = '資料タイトルは必須です';
+    document.getElementById('addFormErr').style.display = 'block';
+    return;
+  }
+  document.getElementById('addFormErr').style.display = 'none';
+  docs.unshift({
+    id:       'doc_' + Date.now(),
+    title:    title,
+    category: document.getElementById('inp_cat').value,
+    ftype:    document.getElementById('inp_ftype').value,
+    url:      document.getElementById('inp_url').value.trim(),
+    size:     document.getElementById('inp_size').value.trim(),
+    date:     document.getElementById('inp_date').value,
+    isNew:    document.getElementById('inp_new').checked,
+  });
+  closeAddModal();
+  renderDocs();
+  showToast('「' + title + '」を追加しました');
+});
+
+/* ── Export ── */
+document.getElementById('exportBtn').addEventListener('click', function() {
+  var blob = new Blob([JSON.stringify(docs, null, 2)], {type:'application/json'});
+  var a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='downloads-data.json'; a.click();
+  showToast('ダウンロード完了。Netlifyにアップロードしてください。');
+});
+
+/* ── Toast ── */
+var toastTimer;
+function showToast(msg) {
+  var t = document.getElementById('toast');
+  document.getElementById('toastMsg').textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(function(){ t.classList.remove('show'); }, 3500);
+}
+
+document.addEventListener('keydown', function(e){
+  if (e.key === 'Escape') {
+    closeAddModal();
+    document.getElementById('loginModal').classList.remove('open');
+  }
+});
+
+init();
+
+})();
+</script>
+</body>
+</html>
