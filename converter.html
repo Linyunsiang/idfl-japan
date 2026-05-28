@@ -872,7 +872,7 @@ function mapProduct(p,ref,showPct,fmt,errors,excel_row){
 //  Dedup
 // ════════════════════════════════════════════════════════════
 function dedupProducts(products,ref,showPct){
-  const seen=new Set(),unique=[];
+  const map=new Map();
   for(const p of products){
     const cc=(ref.categories[p.cat.toLowerCase()]||p.cat).toLowerCase();
     const cd=(p.det?ref.details[p.det.toLowerCase()]||p.det:'').toLowerCase();
@@ -882,8 +882,17 @@ function dedupProducts(products,ref,showPct){
       const rk=m?m[1]:cf.toLowerCase();
       return showPct?`${rk}:${pct.replace('%','').trim()}`:rk;});
     const key=`${cc}||${cd}||${rmKeys.sort().join(',')}`;
-    if(!seen.has(key)){seen.add(key);unique.push(p);}}
-  return unique;}
+
+    if(!map.has(key)){
+      // 新規 — そのまま追加（standards は配列をコピー）
+      map.set(key, {...p, standards:[...(p.standards||[])]});
+    }else{
+      // 重複 — 既存製品に standards をマージ（重複ペアは除外）
+      const existing=map.get(key);
+      for(const s of (p.standards||[])){
+        const dup=existing.standards.some(es=>es.std===s.std && es.lbl===s.lbl);
+        if(!dup)existing.standards.push(s);}}}
+  return [...map.values()];}
 
 // ════════════════════════════════════════════════════════════
 //  Write Excel
