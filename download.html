@@ -50,6 +50,9 @@
     .del-card-btn{position:absolute;top:10px;right:10px;padding:5px 6px;border-radius:7px;border:none;cursor:pointer;background:#fff5f5;color:#ef4444;display:none;align-items:center;}
     .del-card-btn:hover{background:#fee2e2;}
     body.admin-on .del-card-btn{display:inline-flex;}
+    .edit-card-btn{position:absolute;top:10px;right:46px;padding:5px 6px;border-radius:7px;border:none;cursor:pointer;background:#eff6ff;color:#2563eb;display:none;align-items:center;}
+    .edit-card-btn:hover{background:#dbeafe;}
+    body.admin-on .edit-card-btn{display:inline-flex;}
     body.admin-on .doc-card{padding-right:44px;}
 
         /* ===== NAV ===== */
@@ -272,7 +275,7 @@
 <div id="addModal" class="modal-bg">
   <div class="modal-box">
     <div style="display:flex;justify-content:space-between;align-items:center;padding:18px 24px;border-bottom:1px solid var(--b100);position:sticky;top:0;background:#fff;border-radius:18px 18px 0 0">
-      <h3 style="margin:0;font-size:16px;font-weight:700;color:var(--b800)">資料を追加</h3>
+      <h3 id="addModalTitle" style="margin:0;font-size:16px;font-weight:700;color:var(--b800)">資料を追加</h3>
       <button id="closeAddModalBtn" style="background:none;border:none;cursor:pointer;color:#94a3b8;font-size:22px;line-height:1">✕</button>
     </div>
     <div style="padding:20px 24px;display:grid;gap:14px">
@@ -346,6 +349,7 @@ var IBGS  = {PDF:'#fee2e2',PPT:'#fed7aa',XLSX:'#d1fae5',DOC:'#dbeafe',ZIP:'#ede9
 var docs     = [];
 var isAdmin  = false;
 var activeCat = 'all';
+var editingId = null;
 
 var DEFAULT = [
   {id:'d1', title:'GOTS Version 8.0 改訂ポイント解説資料',  category:'GOTS',    ftype:'PDF',  url:'', size:'2.4 MB', date:'2026-04', isNew:true},
@@ -421,6 +425,14 @@ function renderDocs() {
     delBtn.innerHTML = '<svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>';
     delBtn.addEventListener('click', (function(did, dtitle){ return function(){ deleteDoc(did, dtitle); }; })(d.id, d.title));
     card.appendChild(delBtn);
+
+    /* Edit button */
+    var editBtn = document.createElement('button');
+    editBtn.className = 'edit-card-btn';
+    editBtn.title = '編集';
+    editBtn.innerHTML = '<svg width="13" height="13" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>';
+    editBtn.addEventListener('click', (function(did){ return function(){ editDoc(did); }; })(d.id));
+    card.appendChild(editBtn);
 
     /* Icon */
     var ico = document.createElement('div');
@@ -541,6 +553,9 @@ document.getElementById('exitAdminBtn').addEventListener('click', exitAdmin);
 
 /* ── Add modal ── */
 function openAddModal() {
+  editingId = null;
+  document.getElementById('addModalTitle').textContent = '資料を追加';
+  document.getElementById('saveDocBtn').textContent = '追加する';
   document.getElementById('inp_title').value = '';
   document.getElementById('inp_cat').value   = 'GOTS';
   document.getElementById('inp_ftype').value = 'PDF';
@@ -549,6 +564,26 @@ function openAddModal() {
   document.getElementById('inp_date').value  = '';
   document.getElementById('inp_expiry').value = '';
   document.getElementById('inp_new').checked = false;
+  document.getElementById('addFormErr').style.display = 'none';
+  document.getElementById('addModal').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+/* ── Edit modal ── */
+function editDoc(id) {
+  var d = docs.find(function(x){ return x.id === id; });
+  if (!d) return;
+  editingId = id;
+  document.getElementById('addModalTitle').textContent = '資料を編集';
+  document.getElementById('saveDocBtn').textContent = '更新する';
+  document.getElementById('inp_title').value  = d.title || '';
+  document.getElementById('inp_cat').value    = d.category || 'GOTS';
+  document.getElementById('inp_ftype').value  = d.ftype || 'PDF';
+  document.getElementById('inp_url').value    = d.url || '';
+  document.getElementById('inp_size').value   = d.size || '';
+  document.getElementById('inp_date').value   = d.date || '';
+  document.getElementById('inp_expiry').value = d.expiry || '';
+  document.getElementById('inp_new').checked  = !!d.isNew;
   document.getElementById('addFormErr').style.display = 'none';
   document.getElementById('addModal').classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -570,8 +605,7 @@ document.getElementById('saveDocBtn').addEventListener('click', function() {
     return;
   }
   document.getElementById('addFormErr').style.display = 'none';
-  docs.unshift({
-    id:       'doc_' + Date.now(),
+  var data = {
     title:    title,
     category: document.getElementById('inp_cat').value,
     ftype:    document.getElementById('inp_ftype').value,
@@ -580,10 +614,27 @@ document.getElementById('saveDocBtn').addEventListener('click', function() {
     date:     document.getElementById('inp_date').value,
     expiry:   document.getElementById('inp_expiry').value,
     isNew:    document.getElementById('inp_new').checked,
-  });
-  closeAddModal();
-  renderDocs();
-  showToast('「' + title + '」を追加しました');
+  };
+
+  if (editingId) {
+    /* 編集モード：既存資料を更新 */
+    var idx = docs.findIndex(function(x){ return x.id === editingId; });
+    if (idx >= 0) {
+      data.id = editingId;
+      docs[idx] = data;
+    }
+    closeAddModal();
+    renderDocs();
+    showToast('「' + title + '」を更新しました');
+    editingId = null;
+  } else {
+    /* 追加モード */
+    data.id = 'doc_' + Date.now();
+    docs.unshift(data);
+    closeAddModal();
+    renderDocs();
+    showToast('「' + title + '」を追加しました');
+  }
 });
 
 /* ── Export ── */
