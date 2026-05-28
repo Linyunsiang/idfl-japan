@@ -818,7 +818,10 @@ function mapProduct(p,ref,showPct,fmt,errors,excel_row){
       const mb=mapCuLabel(std,lbl,ref.labelGrades);
       if(!mb)errors.push(`Label Grade 未発見: '${lbl}'${tag}`);
       else Bs.push(mb);}
-    colA=As.filter(Boolean).join(' / ');colB=Bs.filter(Boolean).join(' / ');}
+    // 重複を除去（順序保持）
+    const uniqA=[...new Set(As.filter(Boolean))];
+    const uniqB=[...new Set(Bs.filter(Boolean))];
+    colA=uniqA.join(' / ');colB=uniqB.join(' / ');}
 
   const[colC,cfound]=findBest(p.cat,ref.categories);
   if(!cfound){errors.push(`Product Category 未発見: '${p.cat}'${tag}`);}
