@@ -378,7 +378,10 @@
         </div>
     </section>
 
-    <section class="section-padding bg-white">
+    <section class="section-padding" style="background:linear-gradient(180deg,#FFFFFF 0%,#F5F8FF 40%,#EBF2FB 100%);position:relative;overflow:hidden;">
+        <!-- 装飾的な背景パターン -->
+        <div style="position:absolute;top:-100px;right:-100px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(21,101,192,0.08) 0%,transparent 70%);pointer-events:none;"></div>
+        <div style="position:absolute;bottom:-80px;left:-80px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(90,153,224,0.10) 0%,transparent 70%);pointer-events:none;"></div>
     <div class="max-w-8xl mx-auto px-6">
         <div class="flex justify-between items-end mb-12">
             <div class="text-left">
@@ -509,7 +512,7 @@
         <p class="text-sm text-[var(--brand-500)]">ご興味のあるセッションのみのご参加も可能です</p>
     </div>
 
-    <div class="glass-card p-6 md:p-10">
+    <div class="glass-card p-6 md:p-10" style="background:rgba(255,255,255,0.85);backdrop-filter:blur(12px);border:1px solid rgba(21,101,192,0.12);box-shadow:0 12px 40px rgba(21,101,192,0.10);position:relative;z-index:1;">
         <div class="space-y-3">
 
             <!-- ① GOTS -->
@@ -555,17 +558,24 @@
                 </div>
             </div>
 
-            <!-- ② MMS 移行対応 -->
-            <div class="flex flex-col md:flex-row md:items-center gap-4 md:gap-6 py-4 border-b border-[var(--brand-100)]">
+            <!-- ②③ MMS 移行対応 + ダウン・フェザー認証（合併） -->
+            <div class="flex flex-col md:flex-row md:items-start gap-4 md:gap-6 py-5 border-b border-[var(--brand-100)]">
                 <div class="md:w-44 flex-shrink-0">
                     <span class="text-xs text-[var(--brand-400)] font-semibold">受付 12:30〜</span>
-                    <p class="text-lg font-bold text-[var(--brand-700)]">13:00 〜 ●●:●●</p>
+                    <p class="text-lg font-bold text-[var(--brand-700)]">13:00 〜 15:30</p>
                 </div>
-                <div class="flex-grow">
-                    <p class="font-semibold text-[var(--brand-800)]">MMS 移行対応</p>
-                    <p class="text-sm text-[var(--brand-500)]">実務グループ討論形式</p>
+                <div class="flex-grow space-y-3">
+                    <div>
+                        <p class="font-semibold text-[var(--brand-800)]">MMS 移行対応</p>
+                        <p class="text-sm text-[var(--brand-500)]">実務グループ討論形式</p>
+                    </div>
+                    <div class="border-t border-[var(--brand-100)] pt-3">
+                        <p class="font-semibold text-[var(--brand-800)]">ダウン・フェザー認証</p>
+                        <p class="text-sm text-[var(--brand-500)]">制度解説 + 監査実務</p>
+                    </div>
                 </div>
-                <div class="flex items-center gap-3 md:w-72 flex-shrink-0 md:border-l md:border-[var(--brand-100)] md:pl-5">
+                <div class="flex flex-wrap items-start gap-3 md:w-72 flex-shrink-0 md:border-l md:border-[var(--brand-100)] md:pl-5">
+                    <!-- 稲垣先生 -->
                     <div style="display:flex;flex-direction:column;align-items:center;gap:5px;min-width:60px;">
                         <div style="width:56px;height:56px;border-radius:50%;overflow:hidden;border:2px solid var(--brand-200);flex-shrink:0;">
                             <img src="/inagaki.png" alt="稲垣 先生" style="width:100%;height:100%;object-fit:cover;">
@@ -575,19 +585,6 @@
                             <p style="font-size:10px;color:var(--brand-500);margin:0;line-height:1.4;">信州大学 教授<br>元 TE アンバサダー</p>
                         </div>
                     </div>
-                </div>
-            </div>
-
-            <!-- ③ ダウン・フェザー認証 -->
-            <div class="flex flex-col md:flex-row md:items-center gap-4 md:gap-6 py-4 border-b border-[var(--brand-100)]">
-                <div class="md:w-44 flex-shrink-0">
-                    <p class="text-lg font-bold text-[var(--brand-700)]">●●:●● 〜 15:30</p>
-                </div>
-                <div class="flex-grow">
-                    <p class="font-semibold text-[var(--brand-800)]">ダウン・フェザー認証</p>
-                    <p class="text-sm text-[var(--brand-500)]">制度解説 + 監査実務</p>
-                </div>
-                <div class="flex items-start gap-3 md:w-72 flex-shrink-0 md:border-l md:border-[var(--brand-100)] md:pl-5">
                     <!-- 黒柳様 -->
                     <div style="display:flex;flex-direction:column;align-items:center;gap:5px;min-width:60px;">
                         <div style="width:56px;height:56px;border-radius:50%;overflow:hidden;border:2px solid var(--brand-200);">
