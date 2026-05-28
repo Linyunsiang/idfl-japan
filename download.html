@@ -352,25 +352,10 @@ var activeCat = 'all';
 var editingId = null;
 
 var DEFAULT = [
-  {id:'d1', title:'GOTS Version 8.0 改訂ポイント解説資料',  category:'GOTS',    ftype:'PDF',  url:'', size:'2.4 MB', date:'2026-04', isNew:true},
-  {id:'d2', title:'GOTS 7.0 → 8.0 移行チェックリスト',      category:'GOTS',    ftype:'PDF',  url:'', size:'0.8 MB', date:'2026-04', isNew:true},
-  {id:'d3', title:'GOTS 化学物質規制（PRLリスト）最新版',    category:'GOTS',    ftype:'XLSX', url:'', size:'1.1 MB', date:'2026-03', isNew:false},
-  {id:'d4', title:'GOTS 認証申請書類一式',                  category:'GOTS',    ftype:'ZIP',  url:'', size:'3.2 MB', date:'2025-12', isNew:false},
-  {id:'d5', title:'FSC CoC 認証 入門ガイド（日本語版）',     category:'FSC',     ftype:'PDF',  url:'', size:'3.1 MB', date:'2026-05', isNew:true},
-  {id:'d6', title:'FSC 初回審査 準備チェックリスト',         category:'FSC',     ftype:'PDF',  url:'', size:'0.6 MB', date:'2026-05', isNew:true},
-  {id:'d7', title:'FSC ラベル使用ガイドライン',              category:'FSC',     ftype:'PDF',  url:'', size:'1.4 MB', date:'2026-02', isNew:false},
-  {id:'d8', title:'FSC Chain of Custody 申請様式',           category:'FSC',     ftype:'DOC',  url:'', size:'0.3 MB', date:'2026-01', isNew:false},
-  {id:'d9', title:'MMS 移行ガイド',                         category:'MMS',     ftype:'PDF',  url:'', size:'2.8 MB', date:'2026-04', isNew:true},
-  {id:'d10',title:'MMS サプライヤー登録マニュアル',          category:'MMS',     ftype:'PDF',  url:'', size:'1.7 MB', date:'2026-03', isNew:true},
-  {id:'d11',title:'MMS 入力フロー図（日本語）',              category:'MMS',     ftype:'PPT',  url:'', size:'4.2 MB', date:'2026-03', isNew:false},
-  {id:'d12',title:'RWS 認証概要',                           category:'RWS',     ftype:'PDF',  url:'', size:'1.9 MB', date:'2025-11', isNew:false},
-  {id:'d13',title:'GRS 申請手順書',                         category:'RWS',     ftype:'PDF',  url:'', size:'2.2 MB', date:'2026-01', isNew:false},
-  {id:'d14',title:'ダウン・フェザー認証制度 概要',           category:'DOWN',    ftype:'PDF',  url:'', size:'2.5 MB', date:'2026-04', isNew:true},
-  {id:'d15',title:'ダウン監査 準備マニュアル',               category:'DOWN',    ftype:'PDF',  url:'', size:'1.3 MB', date:'2026-03', isNew:false},
-  {id:'d16',title:'IDFL JAPAN サービス一覧（会社案内）',     category:'General', ftype:'PDF',  url:'', size:'5.6 MB', date:'2026-04', isNew:true},
-  {id:'d17',title:'認証審査 お申し込みフォーム',             category:'General', ftype:'DOC',  url:'', size:'0.2 MB', date:'2026-01', isNew:false},
-  {id:'d18',title:'IDFL 2026年 年間スケジュール',            category:'General', ftype:'PDF',  url:'', size:'0.4 MB', date:'2026-03', isNew:false},
-];
+  {id:'d1', title:'GOTS Version 8.0 改訂ポイント解説資料(英語)', category:'GOTS', ftype:'PDF', url:'', size:'', date:'2026-05', isNew:true, expiry:''},
+  {id:'d2', title:'GOTS ＆ Textile Exchange 認証申請書',         category:'GOTS', ftype:'DOC', url:'', size:'', date:'2026-05', isNew:true, expiry:''},
+  {id:'d3', title:'FSC 認証申請書(英語)',                        category:'FSC',  ftype:'DOC', url:'', size:'', date:'2026-05', isNew:true, expiry:''},
+]
 
 /* ── Load ── */
 async function init() {
