@@ -1110,6 +1110,46 @@ function buildLabelFilter(allRows){
 function cbSelectAll(cls,state){
   document.querySelectorAll('.'+cls).forEach(cb=>cb.checked=state);}
 
+// グループの内部もフィルター：選択された Label Grade の行のみ残す
+function filterGroupByLabels(group, selLg){
+  if(!group.length)return group;
+  const colA=group[0].A||'';
+  const colC=group[0].C||'';
+  const colD=group[0].D||'';
+
+  // 選択された Label Grade を抽出（順序保持・重複除去）
+  const filteredLabels=[];
+  const seen=new Set();
+  for(const r of group){
+    const b=(r.B||'').trim();
+    if(!b)continue;
+    for(const part of b.split(' / ').map(s=>s.trim()).filter(Boolean)){
+      if(selLg.has(part) && !seen.has(part)){
+        seen.add(part);filteredLabels.push(part);}}}
+
+  // 素材（F列, G列）はそのまま保持
+  const materials=[];
+  for(const r of group){
+    const f=(r.F||'').trim();
+    if(f)materials.push([r.F, r.G||'']);}
+
+  // 再構築：max(残ラベル数, 素材数) 行
+  const totalRows=Math.max(filteredLabels.length, materials.length, 1);
+  const newRows=[];
+  for(let i=0;i<totalRows;i++){
+    const mat=i<materials.length?materials[i]:['',''];
+    newRows.push({
+      A: i===0?colA:'',
+      B: filteredLabels[i]||'',
+      C: i===0?colC:'',
+      D: i===0?colD:'',
+      E:'',
+      F: mat[0],
+      G: mat[1],
+      H:'',I:''
+    });}
+  return newRows;}
+
 function applyFilters(){
   if(!convState)return;
   const selLg=new Set([...document.querySelectorAll('.lg-cb:checked')].map(cb=>cb.value));
@@ -1124,7 +1164,10 @@ function applyFilters(){
     const cat=groupCategory(g);
     const lgOk=labels.some(lg=>selLg.has(lg));
     const pcOk=selPc.has(cat);
-    if(lgOk&&pcOk){kept.push(...g);kept.push(null);keptCount++;}}
+    if(lgOk&&pcOk){
+      // ★ グループ内も Label Grade で絞り込む
+      const filtered=filterGroupByLabels(g, selLg);
+      kept.push(...filtered);kept.push(null);keptCount++;}}
 
   if(!keptCount){alert('該当する製品がありません。条件を見直してください。');return;}
 
@@ -1132,7 +1175,7 @@ function applyFilters(){
   log('🔄 出力フィルター適用','c');
   log(`  Label Grade: ${[...selLg].join(', ')}`);
   log(`  Category: ${[...selPc].join(', ')}`);
-  log(`  → ${keptCount} 製品を出力`,'g');
+  log(`  → ${keptCount} 製品を出力（選択した Label Grade のみ表示）`,'g');
 
   const outAb=writeExcel(kept,convState.tmplAb);
   const ts=new Date().toISOString().replace(/[-:T]/g,'').slice(0,15);
