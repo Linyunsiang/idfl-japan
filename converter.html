@@ -792,36 +792,49 @@ function dedupMaterials(mats){
     if(code)seenRm.add(code);seenName.add(ml);result.push([pct,mat]);}
   return result;}
 
+// Textile Exchange family - 全てTE系の場合は "TE Multi-standard" にまとめる
+const TE_STANDARDS = new Set(['OCS', 'GRS', 'RCS', 'RWS', 'RDS', 'CCS']);
+
 function mapProduct(p,ref,showPct,fmt,errors,excel_row){
   const tag=excel_row?` [Excel行 ${excel_row}]`:'';
-  let colA='',colB='';
+  let colA='';
+  let colBs=[];  // Label Grades を配列で保持（各行に展開）
 
-  if(!p.standards||!p.standards.length){colA='';colB='';}
-  else if(fmt==='GOTS'){
+  if(!p.standards||!p.standards.length){
+    // 空
+  }else if(fmt==='GOTS'){
     const {std,lbl}=p.standards[0];
     colA=STD_TO_TITLE[std]||'';
     if(colA&&!ref.auditTitles.has(colA)){errors.push(`Audit Standard 未発見: '${std}'${tag}`);colA='';}
     const mb=mapGotsLabel(lbl,ref.labelGrades);
-    if(!mb){errors.push(`Label Grade 未発見: '${lbl}'${tag}`);colB='';}else colB=mb;
+    if(!mb){errors.push(`Label Grade 未発見: '${lbl}'${tag}`);}else colBs.push(mb);
   }else if(p.standards.length===1){
     const {std,lbl}=p.standards[0];
     colA=STD_TO_TITLE[std]||'';
     if(colA&&!ref.auditTitles.has(colA)){errors.push(`Audit Standard 未発見: '${std}'${tag}`);colA='';}
     const mb=mapCuLabel(std,lbl,ref.labelGrades);
-    if(!mb){errors.push(`Label Grade 未発見: '${lbl}' (Std: ${std})${tag}`);colB='';}else colB=mb;
+    if(!mb){errors.push(`Label Grade 未発見: '${lbl}' (Std: ${std})${tag}`);}else colBs.push(mb);
   }else{
-    const As=[],Bs=[];
+    const As=[],Bs=[],stdCodes=[];
     for(const{std,lbl}of p.standards){
       const a=STD_TO_TITLE[std]||'';
       if(a&&!ref.auditTitles.has(a)){errors.push(`Audit Standard 未発見: '${std}'${tag}`);}
-      else As.push(a);
+      else{As.push(a);stdCodes.push(std);}
       const mb=mapCuLabel(std,lbl,ref.labelGrades);
       if(!mb)errors.push(`Label Grade 未発見: '${lbl}'${tag}`);
       else Bs.push(mb);}
-    // 重複を除去（順序保持）
+    // 重複削除（順序保持）
     const uniqA=[...new Set(As.filter(Boolean))];
-    const uniqB=[...new Set(Bs.filter(Boolean))];
-    colA=uniqA.join(' / ');colB=uniqB.join(' / ');}
+    const uniqStdCodes=[...new Set(stdCodes)];
+    colBs=[...new Set(Bs.filter(Boolean))];
+    // 2種類以上の異なる TE 系規格なら "TE Multi-standard" に統合
+    const allTE=uniqStdCodes.length>=2 && uniqStdCodes.every(s=>TE_STANDARDS.has(s));
+    const TE_MULTI='TE Multi-standard';
+    if(allTE && ref.auditTitles.has(TE_MULTI)){
+      colA=TE_MULTI;
+    }else{
+      colA=uniqA.join(' / ');
+    }}
 
   const[colC,cfound]=findBest(p.cat,ref.categories);
   if(!cfound){errors.push(`Product Category 未発見: '${p.cat}'${tag}`);}
@@ -831,13 +844,28 @@ function mapProduct(p,ref,showPct,fmt,errors,excel_row){
 
   const mats=dedupMaterials(p.materials);
   const rows=[];
-  for(let mi=0;mi<mats.length;mi++){
-    const[pct,mat]=mats[mi];
-    const[colF,ff]=findBestRm(mat,ref);
-    if(!ff)errors.push(`Raw Material 未発見: '${mat}'${tag}`);
-    const pctVal=showPct&&pct?pct.replace('%','').trim():'';
-    rows.push({A:mi===0?colA:'',B:mi===0?colB:'',C:mi===0?(cfound?colC:''):'',
-               D:mi===0?colD:'',E:'',F:ff?colF:'',G:pctVal,H:'',I:''});}
+  // 行数 = max(Label Grade数, 素材数)
+  const totalRows=Math.max(colBs.length, mats.length, 1);
+  for(let mi=0;mi<totalRows;mi++){
+    let colF='',pctVal='';
+    if(mi<mats.length){
+      const[pct,mat]=mats[mi];
+      const[cf,ff]=findBestRm(mat,ref);
+      if(!ff)errors.push(`Raw Material 未発見: '${mat}'${tag}`);
+      colF=ff?cf:'';
+      pctVal=showPct&&pct?pct.replace('%','').trim():'';
+    }
+    rows.push({
+      A: mi===0?colA:'',
+      B: colBs[mi]||'',                              // ← Label Grade を行ごとに展開
+      C: mi===0?(cfound?colC:''):'',
+      D: mi===0?colD:'',
+      E:'',
+      F: colF,
+      G: pctVal,
+      H:'',
+      I:''
+    });}
   return rows;}
 
 // ════════════════════════════════════════════════════════════
@@ -1036,11 +1064,15 @@ function splitGroups(allRows){
   if(cur.length)groups.push(cur);
   return groups;}
 
-// 製品グループの Label Grade を取得（先頭行のB列、' / ' 区切り）
+// 製品グループの Label Grade を取得（全行のB列を集約）
 function groupLabels(group){
-  const b=(group[0]&&group[0].B||'').trim();
-  if(!b)return ['（ラベルなし）'];
-  return b.split(' / ').map(s=>s.trim()).filter(Boolean);}
+  const labels=new Set();
+  for(const r of group){
+    const b=(r.B||'').trim();
+    if(b){
+      // ' / ' で結合されている古いデータも考慮
+      b.split(' / ').forEach(s=>{const t=s.trim();if(t)labels.add(t);});}}
+  return labels.size?[...labels]:['（ラベルなし）'];}
 
 // 製品グループの Product Category を取得（先頭行のC列）
 function groupCategory(group){
