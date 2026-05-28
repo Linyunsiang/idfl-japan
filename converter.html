@@ -873,11 +873,11 @@ function mapProduct(p,ref,showPct,fmt,errors,excel_row){
 // ════════════════════════════════════════════════════════════
 function dedupProducts(products,ref,showPct){
   // コード抽出ヘルパー（PC/PD/RM番号で識別 — 商品追加システムと同じ識別方法）
+  // (PC0034) も | PC0034 も PC0034 も、どの書式でも抽出できる
   const codeOf=(s,prefix)=>{
     const str=String(s||'');
-    // (PC0034) のようなコードを抽出。prefix='PC'|'PD'|'RM'
-    const m=str.match(/\(([A-Z]{2})(\d+)\)/i);
-    if(m && m[1].toUpperCase()===prefix) return m[2];
+    const m=str.match(/(PC|PD|RM)\s*(\d+)/i);
+    if(m && m[1].toUpperCase()===prefix.toUpperCase()) return m[2];
     return str.toLowerCase().trim();};
 
   const map=new Map();
