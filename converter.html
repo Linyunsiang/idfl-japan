@@ -1015,12 +1015,19 @@ async function run(){
 
     // 4. Map
     log('\n⚙  マッピング中...','c');
-    const allRows=[],errors=[],corrections=[];
+    let allRows=[];const errors=[],corrections=[];
     let excelRow=2;
     for(const p of allProducts){
       const rows=mapProduct(p,ref,showPct,formats[0]||'CU',errors,excelRow);
       allRows.push(...rows);allRows.push(null);
       excelRow+=rows.length+1;}
+
+    // 4.5 最終セーフティネット：同一製品（Cat+Detail+原材料）のグループを統合
+    const beforeGroups=splitGroups(allRows).length;
+    allRows=dedupFinalGroups(allRows);
+    const afterGroups=splitGroups(allRows).length;
+    if(beforeGroups!==afterGroups){
+      log(`  🔄 重複製品を統合: ${beforeGroups} → ${afterGroups} 製品`,'y');}
     setProg(80);
 
     // 5. Log errors
@@ -1080,6 +1087,50 @@ function splitGroups(allRows){
     else cur.push(r);}
   if(cur.length)groups.push(cur);
   return groups;}
+
+// 文字列から PC/PD/RM コードを抽出（どの書式でも）
+function codeFromText(s,prefix){
+  const m=String(s||'').match(/(PC|PD|RM)\s*(\d+)/i);
+  if(m && m[1].toUpperCase()===prefix.toUpperCase())return m[2];
+  return String(s||'').toLowerCase().trim();}
+
+// ★最終セーフティネット：出力グループ単位で重複を統合
+// 同じ Category + Detail + 原材料セット のグループを1つに統合し、Label Grade をマージ
+function dedupFinalGroups(allRows){
+  const groups=splitGroups(allRows);
+  const map=new Map();
+  for(const g of groups){
+    const catCode=codeFromText(g[0].C,'PC');
+    const detCode=codeFromText(g[0].D,'PD');
+    const rmCodes=[];
+    for(const r of g){const f=(r.F||'').trim();if(f)rmCodes.push(codeFromText(f,'RM'));}
+    const key=`${catCode}||${detCode}||${[...new Set(rmCodes)].sort().join(',')}`;
+
+    if(!map.has(key)){
+      map.set(key, g);
+    }else{
+      // 既存グループに Label Grade をマージ
+      const existing=map.get(key);
+      const existLabels=new Set();
+      for(const r of existing){const b=(r.B||'').trim();if(b)existLabels.add(b);}
+      // 新しいグループのラベルを収集
+      const newLabels=[];
+      for(const r of g){const b=(r.B||'').trim();if(b && !existLabels.has(b)){existLabels.add(b);newLabels.push(b);}}
+      if(newLabels.length){
+        // 既存グループの空きB列に追加、足りなければ行を追加
+        let placed=0;
+        for(const r of existing){
+          if(placed>=newLabels.length)break;
+          if(!(r.B||'').trim()){r.B=newLabels[placed++];}}
+        // まだ残っていれば新規行として追加（A,C,D,F は空）
+        while(placed<newLabels.length){
+          existing.push({A:'',B:newLabels[placed++],C:'',D:'',E:'',F:'',G:'',H:'',I:''});}
+      }
+    }}
+  // 再構築（null区切り）
+  const out=[];
+  for(const g of map.values()){out.push(...g);out.push(null);}
+  return out;}
 
 // 製品グループの Label Grade を取得（全行のB列を集約）
 function groupLabels(group){
@@ -1194,7 +1245,8 @@ function applyFilters(){
   log(`  Category: ${[...selPc].join(', ')}`);
   log(`  → ${keptCount} 製品を出力（選択した Label Grade のみ表示）`,'g');
 
-  const outAb=writeExcel(kept,convState.tmplAb);
+  const keptDeduped=dedupFinalGroups(kept);
+  const outAb=writeExcel(keptDeduped,convState.tmplAb);
   const ts=new Date().toISOString().replace(/[-:T]/g,'').slice(0,15);
   const name=`${convState.baseName}_filtered_${ts}.xlsx`;
   resultData={blob:new Blob([outAb],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),name};
