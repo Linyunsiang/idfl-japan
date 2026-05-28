@@ -765,6 +765,50 @@ let editingId = null;
 
 const defaultPosts = [
     {
+        id: 'news-gots-report-2025',
+        cat: 'gots',
+        title: 'GOTS認証工場数が世界で15%増加 — 2025年次報告書発表',
+        body: 'GOTSは2026年4月23日、2025年次報告書を公開しました。世界95カ国において約17,800施設がGOTS認証を取得しており、前年比15.3%の増加となりました。GOTS 8.0は2026年3月に正式発効し、義務適用開始日は2027年3月1日に設定されています。また、OECDデューデリジェンス適合性評価では、基準の98%が完全または部分的に適合と評価されました。',
+        link: 'https://global-standard.org/news',
+        linkLabel: 'GOTS公式ニュース',
+        pinned: false,
+        date: '2026-05-15',
+        author: 'IDFL JAPAN'
+    },
+    {
+        id: 'news-gsa-academy',
+        cat: 'gots',
+        title: 'Global Standard Academy（無料オンライン研修）開設のお知らせ',
+        body: 'Global Standardは、GOTSに関する信頼できる教育を広く提供するための新しい学習ハブ「Global Standard Academy」を開設しました。GOTS表示・ロゴ使用に関するインタラクティブな無料トレーニングが含まれており、認証取得を目指す企業・工場・ブランドの担当者が活用できます。',
+        link: 'https://global-standard.org/',
+        linkLabel: 'Global Standard Academy',
+        pinned: false,
+        date: '2026-05-12',
+        author: 'IDFL JAPAN'
+    },
+    {
+        id: 'news-te-materials-matter',
+        cat: 'te',
+        title: 'Textile Exchange、新基準「Materials Matter Standard」最終基準を公開',
+        body: 'Textile Exchangeは5年間の開発期間を経て、新基準「Materials Matter Standard」の最終基準を発表しました。原材料生産・一次加工分野向けの統合的・インパクト重視の基準で、2026年12月31日に発効、2027年12月31日より認証が義務化される予定です。また2026年2月には、ブランド・小売業者・サプライヤー向けの「Action Cohort（アクション・コホート）」3ステップ・パスウェイも発表されました。現行のTextile Exchange各基準は移行期間中も継続使用できます。',
+        link: 'https://textileexchange.org/news/',
+        linkLabel: 'Textile Exchange最新ニュース',
+        pinned: false,
+        date: '2026-05-09',
+        author: 'IDFL JAPAN'
+    },
+    {
+        id: 'news-fsc-climate-strategy',
+        cat: 'fsc',
+        title: 'FSC、新「気候・生物多様性戦略」を発表',
+        body: 'FSC（森林管理協議会）は2026年1月、新たな「気候・生物多様性戦略」を発表しました。また2026年3月には南アフリカおよびコートジボワールにおける新たな暫定森林管理基準を承認するなど、責任ある森林管理の普及に向けた取り組みを強化しています。テキスタイル分野では、ビスコース・モーダル・レーヨンなどの森林由来繊維（MMCF）のFSC認証サプライチェーンの整備が進んでいます。',
+        link: 'https://fsc.org/en/newscentre',
+        linkLabel: 'FSCニュースセンター',
+        pinned: false,
+        date: '2026-05-06',
+        author: 'IDFL JAPAN'
+    },
+    {
         id: 'sample-1',
         cat: 'idfl',
         title: '【IDFL JAPAN】2026年8月7日セミナー開催のお知らせ',
@@ -867,9 +911,19 @@ const defaultPosts = [
 
 function loadPosts() {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) return JSON.parse(stored);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultPosts));
-    return defaultPosts;
+    if (!stored) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultPosts));
+        return defaultPosts;
+    }
+    // 既存の保存データに、未登録の公式投稿（defaultPosts）を自動マージ
+    const posts = JSON.parse(stored);
+    const existingIds = new Set(posts.map(p => p.id));
+    let added = false;
+    for (const dp of defaultPosts) {
+        if (!existingIds.has(dp.id)) { posts.push(dp); added = true; }
+    }
+    if (added) localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+    return posts;
 }
 function savePosts(posts) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
