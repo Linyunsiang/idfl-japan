@@ -313,6 +313,11 @@
           <input id="inp_date" class="finput" type="month">
         </div>
       </div>
+      <div>
+        <label class="flabel">⏰ ダウンロード期限（任意）</label>
+        <input id="inp_expiry" class="finput" type="date">
+        <p style="font-size:11px;color:var(--b400);margin:4px 0 0">この日を過ぎるとダウンロードできなくなります。空欄の場合は無期限。</p>
+      </div>
       <label style="display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--b050);border-radius:8px;cursor:pointer">
         <input id="inp_new" type="checkbox" style="width:16px;height:16px;accent-color:var(--b500)">
         <span style="font-size:13px;font-weight:600;color:var(--b700)">「NEW」バッジを表示する</span>
@@ -398,6 +403,17 @@ function renderDocs() {
     card.className = 'doc-card';
     card.style.animation = 'up .3s ease ' + (i*.04) + 's both';
 
+    /* 有効期限チェック */
+    var isExpired = false;
+    var expiryStr = '';
+    if (d.expiry && d.expiry.trim() !== '') {
+      var today = new Date(); today.setHours(0,0,0,0);
+      var exp = new Date(d.expiry + 'T23:59:59');
+      isExpired = exp < today;
+      expiryStr = d.expiry;
+    }
+    if (isExpired) card.style.opacity = '0.55';
+
     /* Delete button */
     var delBtn = document.createElement('button');
     delBtn.className = 'del-card-btn';
@@ -417,17 +433,32 @@ function renderDocs() {
     var info = document.createElement('div');
     info.style.cssText = 'flex:1;min-width:0';
     var tagHtml = '<span class="tag t-' + d.category + '">' + d.category + '</span>';
-    var newHtml = d.isNew ? '<span class="badge-new">NEW</span>' : '';
+    var newHtml = (d.isNew && !isExpired) ? '<span class="badge-new">NEW</span>' : '';
+    var expiredHtml = isExpired ? '<span style="background:#fee2e2;color:#dc2626;font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px">期限切れ</span>' : '';
     var dateHtml = d.date ? '<span style="font-size:11px;color:#94a3b8;margin-left:auto">' + d.date + '</span>' : '';
+    /* 期限表示（有効期限が設定されていて、まだ切れていない場合） */
+    var expiryNote = '';
+    if (expiryStr && !isExpired) {
+      expiryNote = '<p style="font-size:11px;color:#b45309;margin:4px 0 0">⏰ ダウンロード期限：' + expiryStr + ' まで</p>';
+    } else if (isExpired) {
+      expiryNote = '<p style="font-size:11px;color:#dc2626;margin:4px 0 0">⏰ ' + expiryStr + ' に期限切れ（ダウンロード不可）</p>';
+    }
     info.innerHTML =
-      '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-bottom:5px">' + tagHtml + newHtml + dateHtml + '</div>' +
+      '<div style="display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin-bottom:5px">' + tagHtml + newHtml + expiredHtml + dateHtml + '</div>' +
       '<p style="font-size:14px;font-weight:700;color:var(--b800);margin:0 0 4px;line-height:1.4">' + d.title + '</p>' +
-      '<p style="font-size:12px;color:var(--b400);margin:0">' + d.ftype + (d.size ? ' ・ ' + d.size : '') + '</p>';
+      '<p style="font-size:12px;color:var(--b400);margin:0">' + d.ftype + (d.size ? ' ・ ' + d.size : '') + '</p>' +
+      expiryNote;
     card.appendChild(info);
 
     /* DL button */
     var dlBtn;
-    if (d.url && d.url.trim() !== '') {
+    if (isExpired) {
+      /* 期限切れ：ダウンロード不可 */
+      dlBtn = document.createElement('button');
+      dlBtn.disabled = true;
+      dlBtn.style.cssText = 'opacity:0.5;cursor:not-allowed';
+      dlBtn.addEventListener('click', function(){ alert('この資料はダウンロード期限が過ぎています。最新版についてはお問い合わせください。'); });
+    } else if (d.url && d.url.trim() !== '') {
       dlBtn = document.createElement('a');
       dlBtn.href = d.url;
       dlBtn.target = '_blank';
@@ -437,7 +468,7 @@ function renderDocs() {
       dlBtn.addEventListener('click', function(){ alert('準備中です。お問い合わせください。'); });
     }
     dlBtn.className = 'dl-btn';
-    dlBtn.innerHTML = '<svg style="width:13px;height:13px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>DL';
+    dlBtn.innerHTML = '<svg style="width:13px;height:13px" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>' + (isExpired ? '期限切れ' : 'DL');
     card.appendChild(dlBtn);
 
     list.appendChild(card);
@@ -516,6 +547,7 @@ function openAddModal() {
   document.getElementById('inp_url').value   = '';
   document.getElementById('inp_size').value  = '';
   document.getElementById('inp_date').value  = '';
+  document.getElementById('inp_expiry').value = '';
   document.getElementById('inp_new').checked = false;
   document.getElementById('addFormErr').style.display = 'none';
   document.getElementById('addModal').classList.add('open');
@@ -546,6 +578,7 @@ document.getElementById('saveDocBtn').addEventListener('click', function() {
     url:      document.getElementById('inp_url').value.trim(),
     size:     document.getElementById('inp_size').value.trim(),
     date:     document.getElementById('inp_date').value,
+    expiry:   document.getElementById('inp_expiry').value,
     isNew:    document.getElementById('inp_new').checked,
   });
   closeAddModal();
