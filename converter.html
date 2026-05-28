@@ -872,22 +872,30 @@ function mapProduct(p,ref,showPct,fmt,errors,excel_row){
 //  Dedup
 // ════════════════════════════════════════════════════════════
 function dedupProducts(products,ref,showPct){
+  // コード抽出ヘルパー（PC/PD/RM番号で識別 — 商品追加システムと同じ識別方法）
+  const codeOf=(s,prefix)=>{
+    const str=String(s||'');
+    // (PC0034) のようなコードを抽出。prefix='PC'|'PD'|'RM'
+    const m=str.match(/\(([A-Z]{2})(\d+)\)/i);
+    if(m && m[1].toUpperCase()===prefix) return m[2];
+    return str.toLowerCase().trim();};
+
   const map=new Map();
   for(const p of products){
-    const cc=(ref.categories[p.cat.toLowerCase()]||p.cat).toLowerCase();
-    const cd=(p.det?ref.details[p.det.toLowerCase()]||p.det:'').toLowerCase();
-    const rmKeys=p.materials.map(([pct,mat])=>{
+    // カテゴリー・詳細を正規化してコード抽出
+    const catName=ref.categories[p.cat.toLowerCase()]||p.cat;
+    const detName=p.det?(ref.details[p.det.toLowerCase()]||p.det):'';
+    const cc=codeOf(catName,'PC');
+    const cd=detName?codeOf(detName,'PD'):'';
+    // 原材料を RM コードで識別（％は識別に含めない＝商品追加システムと同じ）
+    const rmCodes=p.materials.map(([pct,mat])=>{
       const[cf]=findBestRm(mat,ref);
-      const m=cf.match(/\(RM(\d+)\)/i);
-      const rk=m?m[1]:cf.toLowerCase();
-      return showPct?`${rk}:${pct.replace('%','').trim()}`:rk;});
-    const key=`${cc}||${cd}||${rmKeys.sort().join(',')}`;
+      return codeOf(cf,'RM');});
+    const key=`${cc}||${cd}||${[...new Set(rmCodes)].sort().join(',')}`;
 
     if(!map.has(key)){
-      // 新規 — そのまま追加（standards は配列をコピー）
-      map.set(key, {...p, standards:[...(p.standards||[])]});
+      map.set(key,{...p,standards:[...(p.standards||[])]});
     }else{
-      // 重複 — 既存製品に standards をマージ（重複ペアは除外）
       const existing=map.get(key);
       for(const s of (p.standards||[])){
         const dup=existing.standards.some(es=>es.std===s.std && es.lbl===s.lbl);
