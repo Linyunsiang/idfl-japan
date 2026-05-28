@@ -378,39 +378,25 @@
         </div>
     </section>
 
-    <section class="section-padding" style="background:linear-gradient(180deg,#FFFFFF 0%,#F5F8FF 40%,#EBF2FB 100%);position:relative;overflow:hidden;">
-        <!-- 装飾的な背景パターン -->
-        <div style="position:absolute;top:-100px;right:-100px;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(21,101,192,0.08) 0%,transparent 70%);pointer-events:none;"></div>
-        <div style="position:absolute;bottom:-80px;left:-80px;width:300px;height:300px;border-radius:50%;background:radial-gradient(circle,rgba(90,153,224,0.10) 0%,transparent 70%);pointer-events:none;"></div>
-
-        <!-- エコ・認証の装飾写真（薄く配置） -->
-        <!-- 左上：オーガニックコットン -->
-        <div style="position:absolute;top:40px;left:-60px;width:240px;height:240px;border-radius:50%;overflow:hidden;opacity:0.10;pointer-events:none;filter:saturate(1.1);">
-            <img src="https://images.unsplash.com/photo-1605000797499-95a51c5269ae?w=600&q=80" alt="" style="width:100%;height:100%;object-fit:cover;">
-        </div>
-        <!-- 右上：緑の葉 -->
-        <div style="position:absolute;top:-30px;right:8%;width:200px;height:200px;border-radius:50%;overflow:hidden;opacity:0.10;pointer-events:none;">
-            <img src="https://images.unsplash.com/photo-1466692476868-aef1dfb1e735?w=600&q=80" alt="" style="width:100%;height:100%;object-fit:cover;">
-        </div>
-        <!-- 右下：サステナブルな繊維 -->
-        <div style="position:absolute;bottom:60px;right:-50px;width:260px;height:260px;border-radius:50%;overflow:hidden;opacity:0.09;pointer-events:none;">
-            <img src="https://images.unsplash.com/photo-1528759335187-3b683174c86a?w=600&q=80" alt="" style="width:100%;height:100%;object-fit:cover;">
-        </div>
-        <!-- 中央下：新緑 -->
-        <div style="position:absolute;bottom:-40px;left:30%;width:180px;height:180px;border-radius:50%;overflow:hidden;opacity:0.08;pointer-events:none;">
-            <img src="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=600&q=80" alt="" style="width:100%;height:100%;object-fit:cover;">
-        </div>
+    <section class="section-padding" style="
+        position:relative;overflow:hidden;
+        background:
+            linear-gradient(180deg, rgba(4,34,88,0.86) 0%, rgba(6,51,114,0.80) 50%, rgba(4,34,88,0.88) 100%),
+            url('https://images.unsplash.com/photo-1492496913980-501348b61469?w=2400&q=85');
+        background-size:cover;
+        background-position:center;
+        background-attachment:fixed;">
     <div class="max-w-8xl mx-auto px-6" style="position:relative;z-index:1;">
         <div class="flex justify-between items-end mb-12">
             <div class="text-left">
-                <h2 class="text-3xl md:text-4xl text-[var(--brand-800)]">
-                    <svg style="display:inline; vertical-align:middle; margin-right:8px; margin-bottom:4px;" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="2,20 12,4 22,20"/><polyline points="2,20 8,12 12,16 16,10 22,20" fill="rgba(21,101,192,0.15)" stroke="none"/><polygon points="9,9 12,4 15,9" fill="white" stroke="none"/></svg>
+                <h2 class="text-3xl md:text-4xl" style="color:white;">
+                    <svg style="display:inline; vertical-align:middle; margin-right:8px; margin-bottom:4px;" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2"><polygon points="2,20 12,4 22,20"/><polyline points="2,20 8,12 12,16 16,10 22,20" fill="rgba(255,255,255,0.2)" stroke="none"/><polygon points="9,9 12,4 15,9" fill="white" stroke="none"/></svg>
                     Program
                 </h2>
-                <p class="text-[var(--brand-400)] mt-1">主なテーマと内容</p>
+                <p class="mt-1" style="color:rgba(196,218,245,0.85);">主なテーマと内容</p>
             </div>
             <div class="hidden md:block text-right">
-                <span class="text-xs uppercase tracking-widest text-[var(--brand-300)]">2026 Curriculum</span>
+                <span class="text-xs uppercase tracking-widest" style="color:rgba(196,218,245,0.6);">2026 Curriculum</span>
             </div>
         </div>
 
@@ -518,11 +504,11 @@
         <!-- ============ タイムテーブル ============ -->
 <div class="max-w-5xl mx-auto">
     <div class="text-center mb-8">
-        <h3 class="text-2xl md:text-3xl text-[var(--brand-800)] mb-2">
+        <h3 class="text-2xl md:text-3xl mb-2" style="color:white;">
             <i data-lucide="calendar-clock" class="inline w-6 h-6 mb-1"></i>
             タイムテーブル
         </h3>
-        <p class="text-sm text-[var(--brand-500)]">ご興味のあるセッションのみのご参加も可能です</p>
+        <p class="text-sm" style="color:rgba(196,218,245,0.8);">ご興味のあるセッションのみのご参加も可能です</p>
     </div>
 
     <div class="glass-card p-6 md:p-10" style="background:rgba(255,255,255,0.85);backdrop-filter:blur(12px);border:1px solid rgba(21,101,192,0.12);box-shadow:0 12px 40px rgba(21,101,192,0.10);position:relative;z-index:1;">
