@@ -493,7 +493,7 @@
             overflow: hidden;
         }
         .timetable-row {
-            display: flex; align-items: center;
+            display: flex; align-items: stretch;
             padding: 24px 36px;
             border-bottom: 1px solid var(--ink-10);
             gap: 32px;
@@ -501,9 +501,11 @@
         .timetable-row:last-child { border-bottom: none; }
         .timetable-row.break-row {
             background: var(--cream); padding: 14px 36px;
+            align-items: center;
         }
         .timetable-time {
             min-width: 160px; flex-shrink: 0;
+            display: flex; flex-direction: column; justify-content: center;
         }
         .timetable-pre {
             font-size: 10px; font-weight: 600; letter-spacing: 0.08em;
@@ -514,7 +516,10 @@
             font-size: 20px; font-weight: 700; color: var(--ink);
             letter-spacing: -0.5px;
         }
-        .timetable-body { flex: 1; }
+        .timetable-body {
+            flex: 1;
+            display: flex; flex-direction: column; justify-content: center;
+        }
         .timetable-session-name {
             font-size: 15px; font-weight: 700; color: var(--ink); margin-bottom: 2px;
         }
@@ -522,11 +527,12 @@
             font-size: 12px; color: var(--ink-60);
         }
         .timetable-divider {
-            margin: 8px 0; border: none; border-top: 1px solid var(--ink-10);
+            margin: 10px 0; border: none; border-top: 1px solid var(--ink-10);
         }
         .timetable-speakers {
-            display: flex; gap: 16px; align-items: center;
-            min-width: 260px; padding-left: 32px;
+            display: flex; gap: 20px; align-items: center; justify-content: center;
+            flex-wrap: wrap;
+            min-width: 280px; padding-left: 32px;
             border-left: 1px solid var(--ink-10);
         }
         .speaker-avatar {
@@ -1126,7 +1132,7 @@
                 </div>
 
                 <!-- MMS + Down -->
-                <div class="timetable-row" style="align-items:flex-start;">
+                <div class="timetable-row">
                     <div class="timetable-time">
                         <div class="timetable-pre">受付 12:30〜</div>
                         <div class="timetable-main-time">13:00 〜 15:30</div>
