@@ -532,7 +532,7 @@
         .timetable-speakers {
             display: flex; gap: 20px; align-items: center; justify-content: center;
             flex-wrap: wrap;
-            min-width: 280px; padding-left: 32px;
+            width: 320px; flex-shrink: 0; padding-left: 32px;
             border-left: 1px solid var(--ink-10);
         }
         .speaker-avatar {
@@ -1125,8 +1125,8 @@
                     <div class="timetable-time">
                         <div class="timetable-main-time" style="font-size:15px;color:var(--ink-60);">12:00 〜 13:00</div>
                     </div>
-                    <div class="timetable-body" style="display:flex;align-items:center;gap:8px;color:var(--ink-60);">
-                        <i data-lucide="utensils" style="width:14px;height:14px;"></i>
+                    <div class="timetable-body" style="display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:8px;color:var(--ink-60);">
+                        <i data-lucide="utensils" style="width:14px;height:14px;flex-shrink:0;"></i>
                         <span style="font-size:13px;">昼休憩</span>
                     </div>
                 </div>
@@ -1168,8 +1168,8 @@
                     <div class="timetable-time">
                         <div class="timetable-main-time" style="font-size:15px;color:var(--ink-60);">15:30 〜 15:45</div>
                     </div>
-                    <div class="timetable-body" style="display:flex;align-items:center;gap:8px;color:var(--ink-60);">
-                        <i data-lucide="coffee" style="width:14px;height:14px;"></i>
+                    <div class="timetable-body" style="display:flex;flex-direction:row;align-items:center;justify-content:flex-start;gap:8px;color:var(--ink-60);">
+                        <i data-lucide="coffee" style="width:14px;height:14px;flex-shrink:0;"></i>
                         <span style="font-size:13px;">セッション休憩</span>
                     </div>
                 </div>
