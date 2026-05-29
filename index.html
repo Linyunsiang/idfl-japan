@@ -11,15 +11,15 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         :root {
-            --cream:      #FAF6EF;
-            --cream-dark: #F0E9DC;
-            --ink:        #1C1A17;
-            --ink-60:     rgba(28,26,23,0.60);
-            --ink-30:     rgba(28,26,23,0.30);
-            --ink-10:     rgba(28,26,23,0.08);
-            --amber:      #B8782A;
-            --amber-bg:   #FBF0DC;
-            --blue:       #1255A0;
+            --cream:      #F4F8FF;
+            --cream-dark: #E8F2FF;
+            --ink:        #061E4A;
+            --ink-60:     rgba(6,30,74,0.60);
+            --ink-30:     rgba(6,30,74,0.30);
+            --ink-10:     rgba(6,30,74,0.08);
+            --amber:      #1565C0;
+            --amber-bg:   #EBF2FB;
+            --blue:       #1565C0;
             --blue-bg:    #EBF2FB;
             --white:      #FFFFFF;
         }
@@ -48,7 +48,7 @@
         /* ===== NAV ===== */
         nav {
             position: fixed; top: 0; width: 100%; z-index: 100;
-            background: rgba(250,246,239,0.88);
+            background: rgba(244,248,255,0.92);
             backdrop-filter: blur(14px);
             border-bottom: 1px solid var(--ink-10);
         }
@@ -188,9 +188,9 @@
             border-radius: 24px; overflow: hidden;
             position: relative; min-height: 520px;
             background:
-                linear-gradient(135deg, rgba(20,16,10,0.82) 0%, rgba(28,22,14,0.68) 60%, rgba(15,30,20,0.60) 100%),
-                url('https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=2400&q=85');
-            background-size: cover; background-position: center;
+                linear-gradient(135deg, rgba(4,18,60,0.82) 0%, rgba(6,30,80,0.64) 55%, rgba(4,40,30,0.52) 100%),
+                url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=2400&q=85');
+            background-size: cover; background-position: center 40%;
             display: flex; align-items: flex-end;
         }
         .hero-content {
@@ -218,7 +218,7 @@
         }
         .hero-title em {
             font-style: normal;
-            color: #F5D58A;
+            color: #9AC0EE;
         }
         .hero-sub {
             font-size: 15px; color: rgba(255,255,255,0.70);
@@ -239,7 +239,7 @@
             transition: all 0.2s;
             border: none; cursor: pointer; text-decoration: none;
         }
-        .btn-amber:hover { background: #A06922; opacity: 1; transform: translateY(-1px); }
+        .btn-amber:hover { background: #0D55A8; opacity: 1; transform: translateY(-1px); }
         .btn-ghost {
             display: inline-flex; align-items: center; gap: 6px;
             color: rgba(255,255,255,0.65); font-size: 13px;
@@ -452,14 +452,20 @@
         /* ===== STATS ===== */
         .stats-section {
             padding: 80px 0;
+            background:
+                linear-gradient(180deg, rgba(4,18,60,0.70) 0%, rgba(6,30,80,0.60) 100%),
+                url('https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=2400&q=85');
+            background-size: cover; background-position: center;
         }
         .stats-grid {
             display: grid; grid-template-columns: repeat(4, 1fr);
-            gap: 2px; background: var(--ink-10);
+            gap: 2px; background: rgba(255,255,255,0.15);
             border-radius: 20px; overflow: hidden;
         }
         .stat-cell {
-            background: var(--white); padding: 36px 32px;
+            background: rgba(255,255,255,0.92);
+            backdrop-filter: blur(8px);
+            padding: 36px 32px;
         }
         .stat-num {
             font-size: 52px; font-weight: 700;
@@ -554,7 +560,10 @@
         /* ===== EVENT DETAILS ===== */
         .details-section { padding: 80px 0; }
         .details-card {
-            background: var(--ink);
+            background:
+                linear-gradient(135deg, rgba(4,18,60,0.95) 0%, rgba(6,40,90,0.90) 100%),
+                url('https://images.unsplash.com/photo-1519681393784-d120267933ba?w=2400&q=85');
+            background-size: cover; background-position: center;
             border-radius: 24px; overflow: hidden;
             display: grid; grid-template-columns: 1fr 1fr;
         }
@@ -581,7 +590,7 @@
             font-size: 15px; font-weight: 600; color: white; line-height: 1.5;
         }
         .details-item-link {
-            font-size: 12px; color: #F5D58A;
+            font-size: 12px; color: #9AC0EE;
             display: flex; align-items: center; gap: 4px;
             margin-top: 5px;
         }
@@ -658,7 +667,10 @@
         /* ===== CONTACT CTA ===== */
         .contact-section { padding: 80px 0; }
         .contact-card {
-            background: var(--ink);
+            background:
+                linear-gradient(160deg, rgba(4,18,60,0.88) 0%, rgba(6,50,80,0.80) 50%, rgba(4,40,30,0.75) 100%),
+                url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=2400&q=85');
+            background-size: cover; background-position: center;
             border-radius: 24px;
             overflow: hidden;
         }
@@ -735,7 +747,10 @@
 
         /* ===== FOOTER ===== */
         footer {
-            background: var(--ink);
+            background:
+                linear-gradient(180deg, rgba(4,18,60,0.92) 0%, rgba(3,12,45,0.96) 100%),
+                url('https://images.unsplash.com/photo-1454942901704-3c44c11b2ad1?w=2400&q=85');
+            background-size: cover; background-position: center top;
             padding: 64px 28px;
         }
         .footer-inner {
@@ -850,12 +865,12 @@
             <div class="hero-card">
                 <div class="hero-content">
                     <div class="hero-badge">
-                        <span></span>
+                        <span style="background:#9AC0EE;"></span>
                         2026.08.07 開催確定
                     </div>
                     <h1 class="hero-title">
                         サステナビリティ認証<br>
-                        <em>セミナーのご案内</em>
+                        <em style="color:#9AC0EE;">セミナーのご案内</em>
                     </h1>
                     <p class="hero-sub">GOTS 7.0→8.0 移行対応 ／ MMS への切り替え ／ FSC 新規取得</p>
                     <p class="hero-desc">
