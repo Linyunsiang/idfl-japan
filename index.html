@@ -35,7 +35,11 @@ html{-webkit-text-size-adjust:100%;scroll-behavior:smooth;}
 body{
   margin:0;
   font-family:var(--f-sans);
-  background:var(--bg);
+  /* ❄️ 雪山の背景（環境配慮の雰囲気・ミニマル感を保つため白オーバーレイで薄く） */
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.93) 0%, rgba(255,255,255,0.90) 50%, rgba(255,255,255,0.95) 100%),
+    url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=2400&q=85') center/cover fixed no-repeat;
+  background-color: var(--bg);
   color:var(--ink);
   font-weight:400;
   line-height:1.78;
@@ -240,8 +244,8 @@ section{position:relative;}
 .program{padding-block:var(--sp);background:var(--bg-soft);}
 .prog-list{border-top:1px solid var(--hairline);}
 .prog-item{
-  display:grid;grid-template-columns:200px 1fr 240px;gap:clamp(24px,3.5vw,48px);
-  padding:clamp(30px,4vw,48px) 0;
+  display:grid;grid-template-columns:200px 1fr 280px;gap:clamp(28px,3.8vw,52px);
+  padding:clamp(48px,6vw,80px) 0;
   border-bottom:1px solid var(--hairline);
 }
 .prog-meta{display:flex;flex-direction:column;gap:14px;align-items:flex-start;}
@@ -274,21 +278,21 @@ section{position:relative;}
 .prog-note{margin-top:34px;font-size:13px;color:var(--muted);}
 
 /* speakers */
-.speakers{display:flex;flex-direction:column;flex-wrap:nowrap;gap:12px;margin-top:0;align-self:start;}
+.speakers{display:flex;flex-direction:column;flex-wrap:nowrap;gap:16px;margin-top:0;align-self:start;}
 .speaker{
-  display:flex;align-items:center;justify-content:flex-start;gap:14px;margin:0;
-  background:var(--bg);border:1px solid var(--hairline);border-radius:14px;
-  padding:10px 14px;width:100%;
+  display:flex;align-items:center;justify-content:flex-start;gap:18px;margin:0;
+  background:var(--bg);border:1px solid var(--hairline);border-radius:18px;
+  padding:16px 20px;width:100%;
   transition:box-shadow .35s,transform .35s,border-color .35s;
 }
 .speaker:hover{transform:translateY(-2px);border-color:var(--hairline-strong);box-shadow:0 14px 34px -18px rgba(20,20,30,.35);}
-.speaker figcaption{order:2;display:flex;flex-direction:column;gap:3px;flex:1;min-width:0;}
-.sp-name{font-size:14px;font-weight:700;color:var(--ink);letter-spacing:.01em;}
-.sp-role{font-size:11px;color:var(--muted);line-height:1.45;}
+.speaker figcaption{order:2;display:flex;flex-direction:column;gap:4px;flex:1;min-width:0;}
+.sp-name{font-size:15.5px;font-weight:700;color:var(--ink);letter-spacing:.01em;}
+.sp-role{font-size:12px;color:var(--muted);line-height:1.5;}
 .speaker img{
-  order:1;flex-shrink:0;width:54px;height:54px;border-radius:50%;object-fit:cover;
-  border:2px solid #fff;background:var(--hairline-2);
-  box-shadow:0 4px 12px -6px rgba(20,20,30,.4),0 0 0 1px var(--hairline);
+  order:1;flex-shrink:0;width:72px;height:72px;border-radius:50%;object-fit:cover;
+  border:3px solid #fff;background:var(--hairline-2);
+  box-shadow:0 6px 16px -8px rgba(20,20,30,.4),0 0 0 1px var(--hairline);
   transition:transform .5s cubic-bezier(.2,.7,.3,1);
 }
 .speaker:hover img{transform:scale(1.05);}
@@ -564,7 +568,7 @@ section{position:relative;}
           <h3 class="prog-title">GOTS 7.0 → 8.0 移行</h3>
           <p class="prog-format">解説 + Q&amp;Aディスカッション</p>
           <ul class="prog-points">
-            <li>京セラドキュメントソリューションズの SCOPE 4 監査経験シェア</li>
+            <li>京セラドキュメントソリューションズの<br>SCOPE 4 監査経験シェア</li>
             <li>Version 8 の主要改訂ポイント整理</li>
             <li>グループディスカッションで改定に対する提出資料</li>
           </ul>
