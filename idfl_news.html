@@ -45,8 +45,6 @@
             font-size: 15px;
         }
         h1,h2,h3,h4 { font-weight: 700; color: var(--brand-900); }
-
-        /* ===== NAV ===== */
         .nav-dropdown {
             opacity: 0; visibility: hidden;
             transform: translateY(-8px);
@@ -390,114 +388,159 @@
         }
 
     </style>
+<style id="idfl-nav-css">
+/* === IDFL Site Nav (synced with index) === */
+:root{
+  --nav-bg:#ffffff;
+  --nav-ink:#17171b;
+  --nav-ink-soft:#3c3c43;
+  --nav-muted:#74747c;
+  --nav-hairline:rgba(23,23,27,.12);
+  --nav-hairline-2:rgba(23,23,27,.08);
+  --nav-accent:#1255A0;
+  --nav-gut:clamp(20px,5.2vw,72px);
+  --nav-fsans:"Zen Kaku Gothic New", system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+}
+.site-header{
+  position:sticky;top:0;z-index:50;
+  background:color-mix(in srgb,var(--nav-bg) 86%,transparent);
+  backdrop-filter:saturate(160%) blur(14px);
+  -webkit-backdrop-filter:saturate(160%) blur(14px);
+  border-bottom:1px solid var(--nav-hairline-2);
+  font-family:var(--nav-fsans);
+}
+.site-header .bar{
+  max-width:1340px;margin:0 auto;
+  padding:16px var(--nav-gut);
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+}
+.site-header .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;}
+.site-header .brand-logo{height:34px;width:auto;object-fit:contain;}
+.site-header .brand-name{
+  font-size:14px;font-weight:700;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--nav-ink);
+}
+.site-header .bar-right{display:flex;align-items:center;gap:10px;}
+.site-header .apply-link{
+  font-size:13.5px;font-weight:500;text-decoration:none;
+  padding:9px 18px;border-radius:999px;
+  border:1px solid var(--nav-accent);color:var(--nav-accent);
+  transition:background .3s,color .3s;
+}
+.site-header .apply-link:hover{background:var(--nav-accent);color:#fff;}
+.site-header .menu-btn{
+  display:flex;align-items:center;gap:10px;
+  background:none;border:none;cursor:pointer;
+  font-family:inherit;font-size:13.5px;font-weight:500;color:var(--nav-ink);
+  padding:9px 6px 9px 14px;
+}
+.site-header .menu-btn-lines{display:flex;flex-direction:column;gap:5px;width:20px;}
+.site-header .menu-btn-lines i{display:block;height:1.5px;background:var(--nav-ink);transition:transform .3s;}
+.site-header .menu-btn:hover .menu-btn-lines i:first-child{transform:translateX(3px);}
+
+#siteMenuOverlay{
+  position:fixed;inset:0;z-index:60;
+  background:var(--nav-bg);
+  opacity:0;visibility:hidden;
+  transform:translateY(-12px);
+  transition:opacity .4s,transform .4s,visibility .4s;
+  overflow-y:auto;
+  font-family:var(--nav-fsans);
+}
+#siteMenuOverlay.open{opacity:1;visibility:visible;transform:none;}
+#siteMenuOverlay .menu-inner{max-width:1340px;margin:0 auto;padding:26px var(--nav-gut) 64px;}
+#siteMenuOverlay .menu-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:clamp(36px,6vw,72px);}
+#siteMenuOverlay .menu-eyebrow{font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:var(--nav-muted);}
+#siteMenuOverlay .menu-close{background:none;border:none;cursor:pointer;font-family:inherit;font-size:14px;color:var(--nav-ink);letter-spacing:.04em;}
+#siteMenuOverlay .menu-close:hover{color:var(--nav-accent);}
+#siteMenuOverlay .menu-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:clamp(28px,4vw,56px);
+}
+#siteMenuOverlay .menu-col-title{
+  font-size:12px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--nav-accent);font-weight:700;
+  padding-bottom:16px;margin-bottom:18px;
+  border-bottom:1px solid var(--nav-hairline);
+}
+#siteMenuOverlay .menu-col a{
+  display:block;font-size:17px;color:var(--nav-ink-soft);text-decoration:none;
+  padding:9px 0;transition:color .25s,padding-left .25s;
+}
+#siteMenuOverlay .menu-col a:hover{color:var(--nav-accent);padding-left:7px;}
+#siteMenuOverlay .menu-cta{
+  display:inline-flex;align-items:center;gap:.6em;margin-top:clamp(40px,6vw,68px);
+  font-size:clamp(22px,3vw,32px);font-weight:700;color:var(--nav-ink);text-decoration:none;
+}
+#siteMenuOverlay .menu-cta:hover{color:var(--nav-accent);}
+#siteMenuOverlay .arrow{display:inline-block;transition:transform .35s cubic-bezier(.2,.7,.3,1);}
+#siteMenuOverlay .menu-cta:hover .arrow{transform:translateX(5px);}
+@media (max-width:900px){
+  #siteMenuOverlay .menu-grid{grid-template-columns:1fr 1fr;}
+}
+@media (max-width:620px){
+  .site-header .apply-link{display:none;}
+  .site-header .menu-btn-label{display:none;}
+}
+</style>
 </head>
 <body>
 
-<!-- ===== NAV ===== -->
-<nav class="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-md border-b border-[rgba(21,101,192,0.1)]">
-        <div class="max-w-[1200px] mx-auto px-6 py-4 flex justify-between items-center">
-
-            <!-- ロゴ -->
-            <a href="index.html" 
-            style="display: flex; align-items: center; gap: 10px; text-decoration: none;">
-                <img src="/IDFL-Logo.jpg" 
-                    alt="IDFL" 
-                    style="height: 36px; width: auto; object-fit: contain;">
-                <span class="text-xl font-bold tracking-tight text-[var(--brand-800)]">
-                    IDFL JAPAN
-                </span>
-            </a>
-
-            <!-- メインメニュー(PC のみ表示) -->
-            <div class="hidden md:flex items-center gap-1">
-
-                <!-- ドロップダウン① 認証サービス -->
-                <div class="nav-item relative">
-                    <button class="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-[var(--brand-800)] hover:bg-[var(--brand-050)] rounded-lg transition-colors">
-                        認証サービス
-                        <i data-lucide="chevron-down" class="nav-chevron w-3 h-3"></i>
-                    </button>
-                    <div class="nav-dropdown absolute top-full left-0 pt-2 min-w-[210px] z-50">
-                         <div class="bg-white border border-[rgba(21,101,192,0.1)] rounded-xl shadow-lg p-2">
-                            <a href="https://idfl.com/ja/services/audits-certifications/global-organic-textile-standard-gots/" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">GOTS 認証</a>
-                            <a href="https://idfl.com/ja/services/audits-certifications/organic-content-standard-ocs/" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">OCS 認証</a>
-                            <a href="https://idfl.com/ja/services/audits-certifications/responsible-wool-standard-rws/" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">RWS 認証</a>
-                            <a href="https://idfl.com/ja/services/audits-certifications/global-recycled-standard-grs/" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">GRS 認証</a>
-                            <a href="/services/fsc.html" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">FSC 認証</a>
-                        <a href="/certified-factories.html" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">認証工場一覧</a>
-                            <a href="https://dev.idfl.com/ja/services/" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">ダウン・フェザー検査</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ドロップダウン② セミナー -->
-                <div class="nav-item relative">
-                    <button class="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-[var(--brand-800)] hover:bg-[var(--brand-050)] rounded-lg transition-colors">
-                        セミナー
-                        <i data-lucide="chevron-down" class="nav-chevron w-3 h-3"></i>
-                    </button>
-                    <div class="nav-dropdown absolute top-full left-0 pt-2 min-w-[210px] z-50">
-                        <div class="bg-white border border-[rgba(21,101,192,0.1)] rounded-xl shadow-lg p-2">
-                            <a href="/seminar_schedule.html" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">開催予定のセミナー</a>
-                            <a href="/past_seminar_v2.html" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">過去のセミナー</a>
-                            <a href="/download.html" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">資料ダウンロード</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- ドロップダウン③ 会社情報 -->
-                <div class="nav-item relative">
-                    <button class="flex items-center gap-1.5 px-4 py-2 text-sm font-semibold text-[var(--brand-800)] hover:bg-[var(--brand-050)] rounded-lg transition-colors">
-                        会社情報
-                        <i data-lucide="chevron-down" class="nav-chevron w-3 h-3"></i>
-                    </button>
-                    <div class="nav-dropdown absolute top-full left-0 pt-2 min-w-[210px] z-50">
-                        <div class="bg-white border border-[rgba(21,101,192,0.1)] rounded-xl shadow-lg p-2">
-                            <a href="https://idfl.com/zh-tw/idfl-japan/" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">会社概要</a>
-                            <a href="https://maps.app.goo.gl/hxvPws1M6cGxbLHF7" class="block px-4 py-2.5 text-sm text-[var(--brand-700)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">アクセス</a>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- 単一リンク(ドロップダウンなし) -->
-                <a href="/idfl_news.html" class="px-4 py-2 text-sm font-semibold text-[var(--brand-800)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">お知らせ</a>
-                <a href="/converter.html" class="px-4 py-2 text-sm font-semibold text-[var(--brand-800)] hover:bg-[var(--brand-050)] hover:text-[var(--brand-500)] rounded-lg transition-colors">🔧 変換ツール</a>
-            </div>
-
-            <!-- お申し込みボタン(PC) -->
-            <a href="/download.html"
-               class="hidden md:block text-sm font-semibold hover:text-[var(--brand-500)] transition-colors">お申し込み</a>
-
-            <!-- ハンバーガーボタン(スマホのみ) -->
-            <button class="hamburger" id="hamburger" aria-label="メニュー">
-                <span></span><span></span><span></span>
-            </button>
-        </div>
-    </nav>
-
-    <!-- モバイルドロワーメニュー -->
-    <div class="mobile-menu" id="mobileMenu">
-        <div class="mobile-menu-section">認証サービス</div>
-        <a href="https://idfl.com/ja/services/audits-certifications/global-organic-textile-standard-gots/" class="mobile-menu-sub">GOTS 認証</a>
-        <a href="https://idfl.com/ja/services/audits-certifications/organic-content-standard-ocs/" class="mobile-menu-sub">OCS 認証</a>
-        <a href="https://idfl.com/ja/services/audits-certifications/responsible-wool-standard-rws/" class="mobile-menu-sub">RWS 認証</a>
-        <a href="https://idfl.com/ja/services/audits-certifications/global-recycled-standard-grs/" class="mobile-menu-sub">GRS 認証</a>
-        <a href="/certified-factories.html" class="mobile-menu-sub">認証工場一覧</a>
-        <a href="https://dev.idfl.com/ja/services/" class="mobile-menu-sub">ダウン・フェザー検査</a>
-        <div class="mobile-menu-section">セミナー</div>
-        <a href="/seminar_schedule.html" class="mobile-menu-sub">開催予定のセミナー</a>
-        <a href="/past_seminar_v2.html" class="mobile-menu-sub">過去のセミナー</a>
-        <a href="/download.html" class="mobile-menu-sub">資料ダウンロード</a>
-        <div class="mobile-menu-section">会社情報</div>
-        <a href="https://idfl.com/zh-tw/idfl-japan/" class="mobile-menu-sub">会社概要</a>
-        <a href="https://maps.app.goo.gl/hxvPws1M6cGxbLHF7" class="mobile-menu-sub">アクセス</a>
-        <div class="mobile-menu-section">その他</div>
-        <a href="/idfl_news.html" class="mobile-menu-sub">お知らせ</a>
-        <a href="/converter.html" class="mobile-menu-sub">🔧 変換ツール</a>
-        <a href="/download.html"
-           class="mobile-apply-btn">今すぐ申し込む（無料）</a>
+<header class="site-header">
+  <div class="bar">
+    <a class="brand" href="/">
+      <img src="/IDFL-Logo.png" alt="IDFL JAPAN" class="brand-logo" />
+      <span class="brand-name">IDFL JAPAN</span>
+    </a>
+    <div class="bar-right">
+      <a class="apply-link" href="https://forms.office.com/Pages/ResponsePage.aspx?id=hQL27-D4ckKtEjtBsJIawI60DctQlgpAt0rPraJ8Wg5UQjA4N1UwN09PVkg5SkNZN1lBVTQxN0tYTy4u" target="_blank" rel="noopener">お申し込み</a>
+      <button class="menu-btn" id="siteMenuBtn" aria-label="メニュー" aria-expanded="false">
+        <span class="menu-btn-lines"><i></i><i></i></span>
+        <span class="menu-btn-label">メニュー</span>
+      </button>
     </div>
+  </div>
+</header>
 
+<div id="siteMenuOverlay" aria-hidden="true">
+  <div class="menu-inner">
+    <div class="menu-head">
+      <span class="menu-eyebrow">Menu</span>
+      <button class="menu-close" id="siteMenuClose" aria-label="閉じる">閉じる ✕</button>
+    </div>
+    <nav class="menu-grid">
+      <div class="menu-col">
+        <p class="menu-col-title">認証サービス</p>
+        <a href="https://idfl.com/ja/services/audits-certifications/global-organic-textile-standard-gots/">GOTS 認証</a>
+        <a href="https://idfl.com/ja/services/audits-certifications/organic-content-standard-ocs/">OCS 認証</a>
+        <a href="https://idfl.com/ja/services/audits-certifications/responsible-wool-standard-rws/">RWS 認証</a>
+        <a href="https://idfl.com/ja/services/audits-certifications/global-recycled-standard-grs/">GRS 認証</a>
+        <a href="/services/fsc.html">FSC 認証</a>
+        <a href="/certified-factories.html">認証工場一覧</a>
+        <a href="https://dev.idfl.com/ja/services/">ダウン・フェザー検査</a>
+      </div>
+      <div class="menu-col">
+        <p class="menu-col-title">セミナー</p>
+        <a href="/seminar_schedule.html">開催予定のセミナー</a>
+        <a href="/past_seminar_v2.html">過去のセミナー</a>
+        <a href="/download.html">資料ダウンロード</a>
+      </div>
+      <div class="menu-col">
+        <p class="menu-col-title">会社情報</p>
+        <a href="https://idfl.com/zh-tw/idfl-japan/">会社概要</a>
+        <a href="https://maps.app.goo.gl/hxvPws1M6cGxbLHF7">アクセス</a>
+        <a href="/idfl_news.html">お知らせ</a>
+        <a href="/converter.html">変換ツール</a>
+      </div>
+    </nav>
+    <a class="menu-cta" href="https://forms.office.com/Pages/ResponsePage.aspx?id=hQL27-D4ckKtEjtBsJIawI60DctQlgpAt0rPraJ8Wg5UQjA4N1UwN09PVkg5SkNZN1lBVTQxN0tYTy4u" target="_blank" rel="noopener">
+      今すぐ申し込む（無料）<span class="arrow">→</span>
+    </a>
+  </div>
+</div>
+
+
+<!-- ===== NAV ===== -->
 <header class="hero-bg pt-36 pb-24">
 
     <div class="hero-content max-w-5xl mx-auto px-6 text-center">
@@ -1181,5 +1224,20 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     </script>
+
+<script>
+(function(){
+  var btn = document.getElementById('siteMenuBtn');
+  var overlay = document.getElementById('siteMenuOverlay');
+  var closeBtn = document.getElementById('siteMenuClose');
+  if(!btn || !overlay) return;
+  function openM(){overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');btn.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';}
+  function closeM(){overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');btn.setAttribute('aria-expanded','false');document.body.style.overflow='';}
+  btn.addEventListener('click', openM);
+  if(closeBtn) closeBtn.addEventListener('click', closeM);
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeM(); });
+})();
+</script>
+
 </body>
 </html>
