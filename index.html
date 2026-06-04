@@ -99,7 +99,20 @@ a:hover .arrow,.btn:hover .arrow{transform:translateX(5px);}
   font-size:14px;font-weight:700;letter-spacing:.16em;
   text-transform:uppercase;color:var(--ink);
 }
-.bar-right{display:flex;align-items:center;gap:10px;}
+.bar-right{display:flex;align-items:center;gap:12px;}
+
+/* 藍色框框次要導覽按鈕樣式 */
+.nav-btn-secondary {
+  font-size:13.5px;font-weight:500;
+  padding:9px 18px;border-radius:999px;
+  border:1px solid var(--accent);color:var(--accent);
+  transition:background .3s,color .3s;
+}
+.nav-btn-secondary:hover {
+  background:var(--accent);
+  color:var(--accent-ink);
+}
+
 .apply-link{
   font-size:13.5px;font-weight:500;
   padding:9px 18px;border-radius:999px;
@@ -244,10 +257,18 @@ section{position:relative;}
 .program{padding-block:var(--sp);background:var(--bg-soft);}
 .prog-list{border-top:1px solid var(--hairline);}
 .prog-item{
-  display:grid;grid-template-columns:200px 1fr 280px;gap:clamp(28px,3.8vw,52px);
+  display:grid;grid-template-columns:160px 1fr 340px; /* 已加寬講者欄位至 340px 防止會社名換行錯誤 */
+  gap:clamp(24px,3.5vw,44px);
   padding:clamp(48px,6vw,80px) 0;
   border-bottom:1px solid var(--hairline);
 }
+.prog-sub + .prog-sub{
+  margin-top:clamp(30px,4vw,46px);
+  padding-top:clamp(30px,4vw,46px);
+  border-top:1px solid var(--hairline);
+}
+.prog-sub .prog-badge{display:inline-block;margin-bottom:14px;}
+.prog-parallel .prog-meta{justify-content:center;}
 .prog-meta{display:flex;flex-direction:column;gap:14px;align-items:flex-start;}
 .prog-times{display:flex;flex-direction:column;gap:7px;align-items:flex-start;}
 .prog-recep{font-size:11.5px;color:var(--faint);letter-spacing:.06em;white-space:nowrap;}
@@ -277,22 +298,22 @@ section{position:relative;}
 .prog-rest{font-size:14px;color:var(--muted);letter-spacing:.05em;}
 .prog-note{margin-top:34px;font-size:13px;color:var(--muted);}
 
-/* speakers */
-.speakers{display:flex;flex-direction:column;flex-wrap:nowrap;gap:16px;margin-top:0;align-self:start;}
+/* speakers (講者板塊同步放大優化) */
+.speakers{display:flex;flex-direction:column;flex-wrap:nowrap;gap:clamp(16px,2vw,28px);margin-top:0;align-self:stretch;justify-content:center;}
 .speaker{
-  display:flex;align-items:center;justify-content:flex-start;gap:18px;margin:0;
-  background:var(--bg);border:1px solid var(--hairline);border-radius:18px;
-  padding:16px 20px;width:100%;
+  display:flex;align-items:center;justify-content:flex-start;gap:24px;margin:0;
+  background:var(--bg);border:1px solid var(--hairline);border-radius:24px;
+  padding:24px 28px;width:100%;
   transition:box-shadow .35s,transform .35s,border-color .35s;
 }
 .speaker:hover{transform:translateY(-2px);border-color:var(--hairline-strong);box-shadow:0 14px 34px -18px rgba(20,20,30,.35);}
-.speaker figcaption{order:2;display:flex;flex-direction:column;gap:4px;flex:1;min-width:0;}
-.sp-name{font-size:15.5px;font-weight:700;color:var(--ink);letter-spacing:.01em;}
-.sp-role{font-size:12px;color:var(--muted);line-height:1.5;}
+.speaker figcaption{order:2;display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;}
+.sp-name{font-size:18px;font-weight:700;color:var(--ink);letter-spacing:.01em;white-space:nowrap;}
+.sp-role{font-size:13.5px;color:var(--muted);line-height:1.45;word-break:break-all;text-align:left;}
 .speaker img{
-  order:1;flex-shrink:0;width:72px;height:72px;border-radius:50%;object-fit:cover;
-  border:3px solid #fff;background:var(--hairline-2);
-  box-shadow:0 6px 16px -8px rgba(20,20,30,.4),0 0 0 1px var(--hairline);
+  order:1;flex-shrink:0;width:96px;height:96px;border-radius:50%;object-fit:cover;
+  border:4px solid #fff;background:var(--hairline-2);
+  box-shadow:0 8px 20px -10px rgba(20,20,30,0.5),0 0 0 1px var(--hairline);
   transition:transform .5s cubic-bezier(.2,.7,.3,1);
 }
 .speaker:hover img{transform:scale(1.05);}
@@ -368,6 +389,10 @@ section{position:relative;}
 /* ============================================================
    RESPONSIVE
    ============================================================ */
+@media (max-width:1200px){
+  /* 畫面縮小時自動隱藏頂部藍框按鈕，避免與 Logo 擠壓變形 */
+  .nav-btn-secondary { display: none; }
+}
 @media (max-width:900px){
   .section-grid{grid-template-columns:1fr;gap:36px;}
   .section-head{position:static;}
@@ -376,11 +401,16 @@ section{position:relative;}
   .eco-grid{grid-template-columns:1fr 1fr;}
   .footer-grid{grid-template-columns:1fr;gap:30px;}
   .footer-copy{text-align:left;}
+  .prog-item{grid-template-columns:150px 1fr; gap:30px;}
+  .speakers{grid-column:1 / -1; flex-direction:row; flex-wrap:wrap;}
+  .speaker{width:calc(50% - 15px); min-width:260px;}
 }
 @media (max-width:620px){
   .apply-link{display:none;}
   .menu-btn-label{display:none;}
   .prog-item{grid-template-columns:1fr;gap:18px;}
+  .speakers{flex-direction:column; align-self:start;justify-content:flex-start;}
+  .speaker{width:100%;}
   .prog-meta{flex-direction:row;align-items:center;gap:16px;}
   .fact{grid-template-columns:1fr;gap:6px;}
   .aud-list{grid-template-columns:1fr;}
@@ -394,7 +424,6 @@ section{position:relative;}
 </head>
 <body>
 
-<!-- ============ HEADER ============ -->
 <header class="site-header">
   <div class="bar">
     <a class="brand" href="/">
@@ -402,6 +431,12 @@ section{position:relative;}
       <span class="brand-name">IDFL JAPAN</span>
     </a>
     <div class="bar-right">
+      <a class="nav-btn-secondary" href="https://textileexchange.org/" target="_blank" rel="noopener">TE公式サイト</a>
+      <a class="nav-btn-secondary" href="https://global-standard.org/" target="_blank" rel="noopener">GOTS公式サイト</a>
+      <a class="nav-btn-secondary" href="https://www.jba210.jp/quality/about_j-tas/" target="_blank" rel="noopener">J-TAS公式サイト</a>
+      <a class="nav-btn-secondary" href="https://portal.idfl.com/sign-in" target="_blank" rel="noopener">お客様ポータル</a>
+      <a class="nav-btn-secondary" href="https://idfl.com/ja/idfl-japan/">お問い合わせ</a>
+
       <a class="apply-link" href="https://forms.office.com/Pages/ResponsePage.aspx?id=hQL27-D4ckKtEjtBsJIawI60DctQlgpAt0rPraJ8Wg5UQjA4N1UwN09PVkg5SkNZN1lBVTQxN0tYTy4u" target="_blank" rel="noopener">お申し込み</a>
       <button class="menu-btn" id="menuBtn" aria-label="メニュー" aria-expanded="false">
         <span class="menu-btn-lines"><i></i><i></i></span>
@@ -411,7 +446,6 @@ section{position:relative;}
   </div>
 </header>
 
-<!-- ============ MENU OVERLAY ============ -->
 <div class="menu-overlay" id="menuOverlay" aria-hidden="true">
   <div class="menu-inner">
     <div class="menu-head">
@@ -458,7 +492,6 @@ section{position:relative;}
 
 <main>
 
-<!-- ============ HERO ============ -->
 <section class="hero">
   <div class="wrap">
     <p class="eyebrow accent">2026.08.07 開催確定</p>
@@ -495,7 +528,6 @@ section{position:relative;}
   </div>
 </section>
 
-<!-- ============ ABOUT ============ -->
 <section class="about" id="about">
   <div class="wrap section-grid">
     <div class="section-head">
@@ -503,7 +535,7 @@ section{position:relative;}
       <h2 class="section-title">現場の実務課題を、<br />専門家と一緒に<br />解決する</h2>
     </div>
     <div class="section-body">
-      <p>2025年から2026年にかけて、繊維・素材業界では<strong>GOTS Version 8の施行</strong>、<strong>MMSへの全面移行</strong>、そして<strong>FSC認証への関心急増</strong>という、三重の制度変化が同時進行しています。</p>
+      <p>2025年から2026年にかけて、繊維・素材業界では<strong>GOTS Version 8の施行</strong>、<strong>MMSへの全面移行</strong>、誠に<strong>FSC認証への関心急増</strong>という、三重の制度変化が同時進行しています。</p>
       <p>IDFL JAPANでは、一方的な講義形式ではなく、参加型グループディスカッション形式のセミナーを開催いたします。各テーマの専門担当者がグループに加わり、御社の実務状況を踏まえた意見交換・情報共有を行います。</p>
       <div class="note">
         <p class="note-eyebrow">Discussion Based Learning</p>
@@ -517,7 +549,6 @@ section{position:relative;}
   </div>
 </section>
 
-<!-- ============ ECO IMAGERY ============ -->
 <section class="eco">
   <div class="wrap">
     <div class="block-head">
@@ -545,17 +576,15 @@ section{position:relative;}
   </div>
 </section>
 
-<!-- ============ PROGRAM ============ -->
 <section class="program" id="program">
   <div class="wrap">
     <div class="block-head">
-      <p class="eyebrow">2026 Curriculum &amp; Schedule</p>
+      <p class="eyebrow">2026 Curriculum & Schedule</p>
       <h2 class="section-title">Program</h2>
       <p class="block-sub">主なテーマ・登壇者・タイムテーブル ／ ご興味のあるセッションのみのご参加も可能です</p>
     </div>
     <ol class="prog-list">
 
-      <!-- GOTS -->
       <li class="prog-item">
         <div class="prog-meta">
           <span class="prog-badge">NEW</span>
@@ -566,7 +595,7 @@ section{position:relative;}
         </div>
         <div class="prog-main">
           <h3 class="prog-title">GOTS 7.0 → 8.0 移行</h3>
-          <p class="prog-format">解説 + Q&amp;Aディスカッション</p>
+          <p class="prog-format">解説 + Q&Aディスカッション</p>
           <ul class="prog-points">
             <li>京セラドキュメントソリューションズの<br>SCOPE 4 監査経験シェア</li>
             <li>Version 8 の主要改訂ポイント整理</li>
@@ -586,61 +615,50 @@ section{position:relative;}
                 <span class="sp-name">廣島 様</span>
                 <span class="sp-role">京セラドキュメントソリューションズ</span>
               </figcaption>
-              <img src="/Hiroshima.jpg" alt="廣島様" />
+              <img src="/Hiroshima_refined.jpg" alt="廣島様" />
             </figure>
           </div>
       </li>
 
-      <!-- 昼休憩 -->
       <li class="prog-item prog-break">
         <div class="prog-meta"><span class="prog-time">12:00〜13:00</span></div>
         <div class="prog-main"><p class="prog-rest">昼休憩</p></div>
       </li>
 
-      <!-- MMS -->
-      <li class="prog-item">
+      <li class="prog-item prog-parallel">
         <div class="prog-meta">
-          <span class="prog-badge">重要</span>
           <div class="prog-times">
             <span class="prog-recep">受付 12:30〜</span>
             <span class="prog-time">13:00〜15:30</span>
-            <span class="prog-chip">並行開催</span>
+            <span class="prog-chip">並行開催 2セッション</span>
           </div>
         </div>
         <div class="prog-main">
-          <h3 class="prog-title">MMS 移行対応</h3>
-          <p class="prog-format">実務グループ討論形式</p>
-          <ul class="prog-points">
-            <li>MMSとは何か―旧来の計算方式との違い</li>
-            <li>移行期限と現在の対応状況</li>
-            <li>サプライヤーへのMMS登録依頼の進め方</li>
-            <li>システム入力・証明書発行の実務フロー</li>
-            <li>移行で詰まりやすいポイントの共有</li>
-          </ul>
-        </div>
-      </li>
-
-      <!-- Down & Feather -->
-      <li class="prog-item">
-        <div class="prog-meta">
-          <span class="prog-badge">入門</span>
-          <div class="prog-times">
-            <span class="prog-recep">受付 12:30〜</span>
-            <span class="prog-time">13:00〜15:30</span>
-            <span class="prog-chip">並行開催</span>
+          <div class="prog-sub">
+            <span class="prog-badge">重要</span>
+            <h3 class="prog-title">MMS 移行対応</h3>
+            <p class="prog-format">実務グループ討論形式</p>
+            <ul class="prog-points">
+              <li>MMSとは何か―旧来の計算方式との違い</li>
+              <li>移行期限と現在の対応状況</li>
+              <li>サプライヤーへのMMS登録依頼の進め方</li>
+              <li>システム入力・証明書発行の実務フロー</li>
+              <li>移行で詰まりやすいポイントの共有</li>
+            </ul>
           </div>
-        </div>
-        <div class="prog-main">
-          <h3 class="prog-title">ダウン・フェザー認証</h3>
-          <p class="prog-format">制度解説 + 監査実務</p>
-          <ul class="prog-points">
-            <li>ダウン・フェザー認証制度の概要</li>
-            <li>各認証の違い（DOWNPASS / JTAS）</li>
-            <li>基準の更新動向および監査の目的</li>
-            <li>監査に向けた準備期間と対応事項</li>
-            <li>リサイクルダウンの取り扱い</li>
-            <li>ラベリング（表示）に関する要件</li>
-          </ul>
+          <div class="prog-sub">
+            <span class="prog-badge">入門</span>
+            <h3 class="prog-title">ダウン・フェザー認証</h3>
+            <p class="prog-format">制度解説 + 監査実務</p>
+            <ul class="prog-points">
+              <li>ダウン・フェザー認証制度の概要</li>
+              <li>各認証の違い（DOWNPASS / JTAS）</li>
+              <li>基準の更新動向および監査の目的</li>
+              <li>監査に向けた準備期間と対応事項</li>
+              <li>リサイクルダウンの取り扱い</li>
+              <li>ラベリング（表示）に関する要件</li>
+            </ul>
+          </div>
         </div>
         <div class="speakers">
             <figure class="speaker">
@@ -667,13 +685,11 @@ section{position:relative;}
           </div>
       </li>
 
-      <!-- 休憩 -->
       <li class="prog-item prog-break">
         <div class="prog-meta"><span class="prog-time">15:30〜15:45</span></div>
         <div class="prog-main"><p class="prog-rest">セッション休憩</p></div>
       </li>
 
-      <!-- FSC -->
       <li class="prog-item">
         <div class="prog-meta">
           <span class="prog-badge">入門</span>
@@ -683,7 +699,7 @@ section{position:relative;}
           </div>
         </div>
         <div class="prog-main">
-          <h3 class="prog-title">FSC 新規認証取得</h3>
+          <h3 class="prog-title">SDGs達成に向けた<br />FSC®認証の活用事例</h3>
           <p class="prog-format">初回取得者向け詳細解説</p>
           <ul class="prog-points">
             <li>FSC CoC認証の基礎知識と対象範囲</li>
@@ -709,7 +725,6 @@ section{position:relative;}
   </div>
 </section>
 
-<!-- ============ OVERVIEW ============ -->
 <section class="overview" id="overview">
   <div class="wrap section-grid">
     <div class="section-head">
@@ -729,7 +744,6 @@ section{position:relative;}
   </div>
 </section>
 
-<!-- ============ ACCESS ============ -->
 <section class="access" id="access">
   <div class="wrap">
     <div class="block-head">
@@ -763,7 +777,7 @@ section{position:relative;}
           <li>周辺のコインパーキングは案内図をご参照ください</li>
         </ul>
         <figure class="ph-fig">
-          <img src="parking-map.jpg" alt="近隣駐車場マップ" />
+          <img src="parking-map.jpg" alt="近慢駐車場マップ" />
           <span class="ph-cap">周辺のコインパーキング案内図</span>
         </figure>
       </div>
@@ -771,7 +785,6 @@ section{position:relative;}
   </div>
 </section>
 
-<!-- ============ EXHIBITOR ============ -->
 <section class="exhibitor">
   <div class="wrap section-grid">
     <div class="section-head">
@@ -789,7 +802,6 @@ section{position:relative;}
   </div>
 </section>
 
-<!-- ============ AUDIENCE ============ -->
 <section class="audience">
   <div class="wrap">
     <div class="block-head">
@@ -805,7 +817,6 @@ section{position:relative;}
   </div>
 </section>
 
-<!-- ============ FINAL CTA ============ -->
 <section class="final-cta">
   <div class="wrap">
     <p class="final-msg">皆様のご参加を<br class="br-mob" />心よりお待ちしております。</p>
@@ -815,7 +826,6 @@ section{position:relative;}
 
 </main>
 
-<!-- ============ FOOTER ============ -->
 <footer class="site-footer">
   <div class="wrap footer-grid">
     <a class="brand" href="/">

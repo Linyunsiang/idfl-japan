@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
   <title>開催予定のセミナー・イベント | IDFL JAPAN</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
@@ -171,6 +174,45 @@
   .site-header .menu-btn-label{display:none;}
 }
 </style>
+<style id="idfl-tone-sync">
+/* === IDFL tone sync — match index look & feel === */
+:root{
+  --idfl-sans:"Zen Kaku Gothic New", system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+  --idfl-mono:"Space Mono", ui-monospace, "SFMono-Regular", monospace;
+  --brand-500:#1255A0; --b500:#1255A0;
+}
+html, body{ color:#17171b; }
+body{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.93) 0%, rgba(255,255,255,0.90) 50%, rgba(255,255,255,0.95) 100%),
+    url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=2400&q=85') center/cover fixed no-repeat !important;
+  background-color:#ffffff !important;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  font-feature-settings:"palt" 1;
+}
+body, p, div, span, a, li, ul, ol, td, th, h1,h2,h3,h4,h5,h6,
+button, input, select, textarea, label, dt, dd, figcaption, blockquote, small, strong, em{
+  font-family:var(--idfl-sans) !important;
+}
+code, pre, .log, .log *, .mono, [class*="mono"]{ font-family:var(--idfl-mono) !important; }
+h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
+
+/* footer (match index) */
+.site-footer{border-top:1px solid rgba(23,23,27,.12);padding-block:clamp(48px,6vw,72px);background:#ffffff;font-family:var(--idfl-sans);margin-top:0;}
+.site-footer .footer-wrap{max-width:1240px;margin:0 auto;padding-inline:clamp(20px,5.2vw,72px);width:100%;}
+.site-footer .footer-grid{display:grid;grid-template-columns:auto 1fr auto;gap:clamp(28px,4vw,64px);align-items:start;}
+.site-footer .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:#17171b;}
+.site-footer .brand-logo{height:30px;width:auto;object-fit:contain;}
+.site-footer .brand-name{font-size:14px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#17171b;}
+.site-footer .footer-links{display:flex;flex-wrap:wrap;gap:10px 28px;align-content:start;list-style:none;margin:0;padding:0;}
+.site-footer .footer-links a{font-size:13.5px;color:#74747c;transition:color .25s;text-decoration:none;}
+.site-footer .footer-links a:hover{color:#1255A0;}
+.site-footer .footer-copy{font-size:12px;color:#a0a0a8;line-height:1.7;text-align:right;letter-spacing:.02em;margin:0;}
+@media(max-width:900px){.site-footer .footer-grid{grid-template-columns:1fr;gap:30px;}.site-footer .footer-copy{text-align:left;}}
+
+</style>
+
 </head>
 <body>
 
@@ -704,6 +746,26 @@ init();
   document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeM(); });
 })();
 </script>
+
+
+<!-- ============ FOOTER (synced with index) ============ -->
+<footer class="site-footer">
+  <div class="footer-wrap footer-grid">
+    <a class="brand" href="/">
+      <img src="/IDFL-Logo.png" alt="IDFL JAPAN" class="brand-logo" />
+      <span class="brand-name">IDFL JAPAN</span>
+    </a>
+    <nav class="footer-links">
+      <a href="/seminar_schedule.html">開催予定のセミナー</a>
+      <a href="/past_seminar_v2.html">過去のセミナー</a>
+      <a href="/download.html">資料ダウンロード</a>
+      <a href="https://idfl.com/zh-tw/idfl-japan/">会社概要</a>
+      <a href="/idfl_news.html">お知らせ</a>
+      <a href="/converter.html">変換ツール</a>
+    </nav>
+    <p class="footer-copy">© 2026 IDFL JAPAN<br />International Down and Feather Laboratory</p>
+  </div>
+</footer>
 
 </body>
 </html>
