@@ -393,8 +393,47 @@
         }
 
     </style>
+<style id="idfl-tone-sync">
+/* === IDFL tone sync — match index look & feel === */
+:root{
+  --idfl-sans:"Zen Kaku Gothic New", system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+  --idfl-mono:"Space Mono", ui-monospace, "SFMono-Regular", monospace;
+  --brand-500:#1255A0; --b500:#1255A0;
+}
+html, body{ color:#17171b; }
+body{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.93) 0%, rgba(255,255,255,0.90) 50%, rgba(255,255,255,0.95) 100%),
+    url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=2400&q=85') center/cover fixed no-repeat !important;
+  background-color:#ffffff !important;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  font-feature-settings:"palt" 1;
+}
+body, p, div, span, a, li, ul, ol, td, th, h1,h2,h3,h4,h5,h6,
+button, input, select, textarea, label, dt, dd, figcaption, blockquote, small, strong, em{
+  font-family:var(--idfl-sans) !important;
+}
+code, pre, .log, .log *, .mono, [class*="mono"]{ font-family:var(--idfl-mono) !important; }
+h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
+
+/* footer (match index) */
+.site-footer{border-top:1px solid rgba(23,23,27,.12);padding-block:clamp(48px,6vw,72px);background:#ffffff;font-family:var(--idfl-sans);margin-top:0;}
+.site-footer .footer-wrap{max-width:1240px;margin:0 auto;padding-inline:clamp(20px,5.2vw,72px);width:100%;}
+.site-footer .footer-grid{display:grid;grid-template-columns:auto 1fr auto;gap:clamp(28px,4vw,64px);align-items:start;}
+.site-footer .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:#17171b;}
+.site-footer .brand-logo{height:30px;width:auto;object-fit:contain;}
+.site-footer .brand-name{font-size:14px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#17171b;}
+.site-footer .footer-links{display:flex;flex-wrap:wrap;gap:10px 28px;align-content:start;list-style:none;margin:0;padding:0;}
+.site-footer .footer-links a{font-size:13.5px;color:#74747c;transition:color .25s;text-decoration:none;}
+.site-footer .footer-links a:hover{color:#1255A0;}
+.site-footer .footer-copy{font-size:12px;color:#a0a0a8;line-height:1.7;text-align:right;letter-spacing:.02em;margin:0;}
+@media(max-width:900px){.site-footer .footer-grid{grid-template-columns:1fr;gap:30px;}.site-footer .footer-copy{text-align:left;}}
+
+</style>
+
 <style id="idfl-nav-css">
-/* === IDFL Site Nav (synced with index) === */
+/* === IDFL Site Nav v2 (pill links + menu overlay) === */
 :root{
   --nav-bg:#ffffff;
   --nav-ink:#17171b;
@@ -403,38 +442,51 @@
   --nav-hairline:rgba(23,23,27,.12);
   --nav-hairline-2:rgba(23,23,27,.08);
   --nav-accent:#1255A0;
-  --nav-gut:clamp(20px,5.2vw,72px);
+  --nav-gut:clamp(16px,3vw,40px);
   --nav-fsans:"Zen Kaku Gothic New", system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
 }
 .site-header{
   position:sticky;top:0;z-index:50;
-  background:color-mix(in srgb,var(--nav-bg) 86%,transparent);
+  background:color-mix(in srgb,var(--nav-bg) 90%,transparent);
   backdrop-filter:saturate(160%) blur(14px);
   -webkit-backdrop-filter:saturate(160%) blur(14px);
   border-bottom:1px solid var(--nav-hairline-2);
   font-family:var(--nav-fsans);
 }
 .site-header .bar{
-  max-width:1340px;margin:0 auto;
-  padding:16px var(--nav-gut);
-  display:flex;align-items:center;justify-content:space-between;gap:20px;
+  max-width:1500px;margin:0 auto;
+  padding:14px var(--nav-gut);
+  display:flex;align-items:center;justify-content:space-between;gap:18px;
 }
-.site-header .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:inherit;}
-.site-header .brand-logo{height:34px;width:auto;object-fit:contain;}
+.site-header .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;flex-shrink:0;}
+.site-header .brand-logo{height:32px;width:auto;object-fit:contain;}
 .site-header .brand-name{
-  font-size:14px;font-weight:700;letter-spacing:.16em;
+  font-size:13.5px;font-weight:700;letter-spacing:.14em;
   text-transform:uppercase;color:var(--nav-ink);
 }
-.site-header .bar-right{display:flex;align-items:center;gap:10px;}
-.site-header .apply-link{
-  font-size:13.5px;font-weight:500;text-decoration:none;
-  padding:9px 18px;border-radius:999px;
-  border:1px solid var(--nav-accent);color:var(--nav-accent);
-  transition:background .3s,color .3s;
+.site-header .nav-pills{
+  display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:center;flex:1;
 }
-.site-header .apply-link:hover{background:var(--nav-accent);color:#fff;}
+.site-header .nav-pills .pill{
+  display:inline-block;
+  padding:7px 18px;
+  border:1.5px solid var(--nav-accent);
+  border-radius:999px;
+  color:var(--nav-accent);
+  font-size:13px;
+  font-weight:500;
+  text-decoration:none;
+  white-space:nowrap;
+  background:transparent;
+  transition:background .25s,color .25s,transform .25s;
+}
+.site-header .nav-pills .pill:hover{
+  background:var(--nav-accent);
+  color:#fff;
+  transform:translateY(-1px);
+}
 .site-header .menu-btn{
-  display:flex;align-items:center;gap:10px;
+  display:flex;align-items:center;gap:10px;flex-shrink:0;
   background:none;border:none;cursor:pointer;
   font-family:inherit;font-size:13.5px;font-weight:500;color:var(--nav-ink);
   padding:9px 6px 9px 14px;
@@ -480,53 +532,16 @@
 #siteMenuOverlay .menu-cta:hover{color:var(--nav-accent);}
 #siteMenuOverlay .arrow{display:inline-block;transition:transform .35s cubic-bezier(.2,.7,.3,1);}
 #siteMenuOverlay .menu-cta:hover .arrow{transform:translateX(5px);}
+@media (max-width:1180px){
+  .site-header .nav-pills{display:none;}
+}
 @media (max-width:900px){
   #siteMenuOverlay .menu-grid{grid-template-columns:1fr 1fr;}
 }
 @media (max-width:620px){
-  .site-header .apply-link{display:none;}
   .site-header .menu-btn-label{display:none;}
 }
 </style>
-<style id="idfl-tone-sync">
-/* === IDFL tone sync — match index look & feel === */
-:root{
-  --idfl-sans:"Zen Kaku Gothic New", system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
-  --idfl-mono:"Space Mono", ui-monospace, "SFMono-Regular", monospace;
-  --brand-500:#1255A0; --b500:#1255A0;
-}
-html, body{ color:#17171b; }
-body{
-  background:
-    linear-gradient(180deg, rgba(255,255,255,0.93) 0%, rgba(255,255,255,0.90) 50%, rgba(255,255,255,0.95) 100%),
-    url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=2400&q=85') center/cover fixed no-repeat !important;
-  background-color:#ffffff !important;
-  -webkit-font-smoothing:antialiased;
-  text-rendering:optimizeLegibility;
-  font-feature-settings:"palt" 1;
-}
-body, p, div, span, a, li, ul, ol, td, th, h1,h2,h3,h4,h5,h6,
-button, input, select, textarea, label, dt, dd, figcaption, blockquote, small, strong, em{
-  font-family:var(--idfl-sans) !important;
-}
-code, pre, .log, .log *, .mono, [class*="mono"]{ font-family:var(--idfl-mono) !important; }
-h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
-
-/* footer (match index) */
-.site-footer{border-top:1px solid rgba(23,23,27,.12);padding-block:clamp(48px,6vw,72px);background:#ffffff;font-family:var(--idfl-sans);margin-top:0;}
-.site-footer .footer-wrap{max-width:1240px;margin:0 auto;padding-inline:clamp(20px,5.2vw,72px);width:100%;}
-.site-footer .footer-grid{display:grid;grid-template-columns:auto 1fr auto;gap:clamp(28px,4vw,64px);align-items:start;}
-.site-footer .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:#17171b;}
-.site-footer .brand-logo{height:30px;width:auto;object-fit:contain;}
-.site-footer .brand-name{font-size:14px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#17171b;}
-.site-footer .footer-links{display:flex;flex-wrap:wrap;gap:10px 28px;align-content:start;list-style:none;margin:0;padding:0;}
-.site-footer .footer-links a{font-size:13.5px;color:#74747c;transition:color .25s;text-decoration:none;}
-.site-footer .footer-links a:hover{color:#1255A0;}
-.site-footer .footer-copy{font-size:12px;color:#a0a0a8;line-height:1.7;text-align:right;letter-spacing:.02em;margin:0;}
-@media(max-width:900px){.site-footer .footer-grid{grid-template-columns:1fr;gap:30px;}.site-footer .footer-copy{text-align:left;}}
-
-</style>
-
 </head>
 <body>
 
@@ -536,13 +551,18 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
       <img src="/IDFL-Logo.png" alt="IDFL JAPAN" class="brand-logo" />
       <span class="brand-name">IDFL JAPAN</span>
     </a>
-    <div class="bar-right">
-      <a class="apply-link" href="https://forms.office.com/Pages/ResponsePage.aspx?id=hQL27-D4ckKtEjtBsJIawI60DctQlgpAt0rPraJ8Wg5UQjA4N1UwN09PVkg5SkNZN1lBVTQxN0tYTy4u" target="_blank" rel="noopener">お申し込み</a>
-      <button class="menu-btn" id="siteMenuBtn" aria-label="メニュー" aria-expanded="false">
-        <span class="menu-btn-lines"><i></i><i></i></span>
-        <span class="menu-btn-label">メニュー</span>
-      </button>
-    </div>
+    <nav class="nav-pills">
+      <a class="pill" href="https://textileexchange.org/" target="_blank" rel="noopener">TE公式サイト</a>
+      <a class="pill" href="https://global-standard.org/" target="_blank" rel="noopener">GOTS公式サイト</a>
+      <a class="pill" href="https://www.jba210.jp/quality/about_j-tas/" target="_blank" rel="noopener">J-TAS公式サイト</a>
+      <a class="pill" href="https://portal.idfl.com/sign-in" target="_blank" rel="noopener">お客様ポータル</a>
+      <a class="pill" href="https://idfl.com/ja/idfl-japan/" target="_blank" rel="noopener">お問い合わせ</a>
+      <a class="pill" href="https://forms.office.com/Pages/ResponsePage.aspx?id=hQL27-D4ckKtEjtBsJIawI60DctQlgpAt0rPraJ8Wg5UQjA4N1UwN09PVkg5SkNZN1lBVTQxN0tYTy4u" target="_blank" rel="noopener">お申し込み</a>
+    </nav>
+    <button class="menu-btn" id="siteMenuBtn" aria-label="メニュー" aria-expanded="false">
+      <span class="menu-btn-lines"><i></i><i></i></span>
+      <span class="menu-btn-label">メニュー</span>
+    </button>
   </div>
 </header>
 
@@ -555,26 +575,25 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
     <nav class="menu-grid">
       <div class="menu-col">
         <p class="menu-col-title">認証サービス</p>
-        <a href="https://idfl.com/ja/services/audits-certifications/global-organic-textile-standard-gots/">GOTS 認証</a>
-        <a href="https://idfl.com/ja/services/audits-certifications/organic-content-standard-ocs/">OCS 認証</a>
-        <a href="https://idfl.com/ja/services/audits-certifications/responsible-wool-standard-rws/">RWS 認証</a>
-        <a href="https://idfl.com/ja/services/audits-certifications/global-recycled-standard-grs/">GRS 認証</a>
-        <a href="/services/fsc.html">FSC 認証</a>
-        <a href="/certified-factories.html">認証工場一覧</a>
-        <a href="https://dev.idfl.com/ja/services/">ダウン・フェザー検査</a>
+        <a href="https://idfl.com/ja/services/audits-certifications/global-organic-textile-standard-gots/" target="_blank" rel="noopener">GOTS 認証</a>
+        <a href="https://idfl.com/ja/services/audits-certifications/organic-content-standard-ocs/" target="_blank" rel="noopener">OCS 認証</a>
+        <a href="https://idfl.com/ja/services/audits-certifications/responsible-wool-standard-rws/" target="_blank" rel="noopener">RWS 認証</a>
+        <a href="https://idfl.com/ja/services/audits-certifications/global-recycled-standard-grs/" target="_blank" rel="noopener">GRS 認証</a>
+        <a href="/certified-factories.html" target="_blank" rel="noopener">認証工場一覧</a>
+        <a href="https://dev.idfl.com/ja/services/" target="_blank" rel="noopener">ダウン・フェザー検査</a>
       </div>
       <div class="menu-col">
         <p class="menu-col-title">セミナー</p>
-        <a href="/seminar_schedule.html">開催予定のセミナー</a>
-        <a href="/past_seminar_v2.html">過去のセミナー</a>
-        <a href="/download.html">資料ダウンロード</a>
+        <a href="/seminar_schedule.html" target="_blank" rel="noopener">開催予定のセミナー</a>
+        <a href="/past_seminar_v2.html" target="_blank" rel="noopener">過去のセミナー</a>
+        <a href="/download.html" target="_blank" rel="noopener">資料ダウンロード</a>
       </div>
       <div class="menu-col">
         <p class="menu-col-title">会社情報</p>
-        <a href="https://idfl.com/zh-tw/idfl-japan/">会社概要</a>
-        <a href="https://maps.app.goo.gl/hxvPws1M6cGxbLHF7">アクセス</a>
-        <a href="/idfl_news.html">お知らせ</a>
-        <a href="/converter.html">変換ツール</a>
+        <a href="https://idfl.com/zh-tw/idfl-japan/" target="_blank" rel="noopener">会社概要</a>
+        <a href="https://maps.app.goo.gl/hxvPws1M6cGxbLHF7" target="_blank" rel="noopener">アクセス</a>
+        <a href="/idfl_news.html" target="_blank" rel="noopener">お知らせ</a>
+        <a href="/converter.html" target="_blank" rel="noopener">変換ツール</a>
       </div>
     </nav>
     <a class="menu-cta" href="https://forms.office.com/Pages/ResponsePage.aspx?id=hQL27-D4ckKtEjtBsJIawI60DctQlgpAt0rPraJ8Wg5UQjA4N1UwN09PVkg5SkNZN1lBVTQxN0tYTy4u" target="_blank" rel="noopener">
@@ -582,6 +601,9 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
     </a>
   </div>
 </div>
+
+
+
 
 
 <!-- ===== NAV ===== -->
@@ -1271,21 +1293,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     </script>
 
-<script>
-(function(){
-  var btn = document.getElementById('siteMenuBtn');
-  var overlay = document.getElementById('siteMenuOverlay');
-  var closeBtn = document.getElementById('siteMenuClose');
-  if(!btn || !overlay) return;
-  function openM(){overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');btn.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';}
-  function closeM(){overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');btn.setAttribute('aria-expanded','false');document.body.style.overflow='';}
-  btn.addEventListener('click', openM);
-  if(closeBtn) closeBtn.addEventListener('click', closeM);
-  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeM(); });
-})();
-</script>
-
-
 <!-- ============ FOOTER (synced with index) ============ -->
 <footer class="site-footer">
   <div class="footer-wrap footer-grid">
@@ -1304,6 +1311,21 @@ document.addEventListener('DOMContentLoaded', () => {
     <p class="footer-copy">© 2026 IDFL JAPAN<br />International Down and Feather Laboratory</p>
   </div>
 </footer>
+
+
+<script>
+(function(){
+  var btn = document.getElementById('siteMenuBtn');
+  var overlay = document.getElementById('siteMenuOverlay');
+  var closeBtn = document.getElementById('siteMenuClose');
+  if(!btn || !overlay) return;
+  function openM(){overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');btn.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';}
+  function closeM(){overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');btn.setAttribute('aria-expanded','false');document.body.style.overflow='';}
+  btn.addEventListener('click', openM);
+  if(closeBtn) closeBtn.addEventListener('click', closeM);
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeM(); });
+})();
+</script>
 
 </body>
 </html>
