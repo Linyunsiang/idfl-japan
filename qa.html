@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <title>Q&A（よくある質問） | IDFL JAPAN</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root{--b050:#EBF2FB;--b100:#C4DAF5;--b200:#9AC0EE;--b400:#2B78D4;--b500:#1565C0;--b700:#094590;--b800:#063372;--b900:#042258;}
+    *{box-sizing:border-box;}
+    body{font-family:'Noto Sans JP',sans-serif;background:#f4f7fc;color:var(--b900);margin:0;}
+    /* Hero */
+    .hero{background:linear-gradient(150deg,var(--b900) 0%,var(--b700) 55%,var(--b400) 100%);padding:calc(65px + 56px) 24px 56px;}
+    /* Filter */
+    .filter-bar{background:#fff;border-bottom:1px solid var(--b100);padding:10px 24px;position:sticky;top:65px;z-index:20;}
+    .chip{display:inline-flex;align-items:center;padding:5px 13px;border-radius:999px;font-size:12px;font-weight:700;border:1.5px solid #e5e7eb;cursor:pointer;background:#fff;color:#374151;transition:all .15s;white-space:nowrap;}
+    .chip.on{background:var(--b500);color:#fff;border-color:var(--b500);}
+    .chip:hover:not(.on){border-color:var(--b500);background:var(--b050);color:var(--b700);}
+    /* Cards */
+    .ev-card{background:#fff;border:1px solid var(--b100);border-radius:14px;padding:18px 20px;display:flex;align-items:flex-start;gap:16px;position:relative;transition:transform .18s,box-shadow .18s;}
+    .ev-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(21,101,192,.09);}
+    @keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .datebox{flex-shrink:0;width:54px;text-align:center;background:var(--b050);border-radius:10px;padding:8px 4px;border:1px solid var(--b100);}
+    .datebox .d{font-size:1.5rem;font-weight:700;color:var(--b700);line-height:1;}
+    .datebox .m{font-size:10px;font-weight:700;color:var(--b400);text-transform:uppercase;letter-spacing:.06em;margin-top:2px;}
+    .bext{background:#dcfce7;color:#166534;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;}
+    .bint{background:#fef3c7;color:#92400e;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;}
+    .bpast{background:#f1f5f9;color:#94a3b8;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;}
+    .month-hd{font-family:'DM Serif Display',serif;font-size:1.8rem;color:var(--b200);padding:28px 0 8px;border-bottom:1px solid var(--b100);margin-bottom:14px;}
+    /* Admin action buttons – hidden by default */
+    .admin-actions{position:absolute;top:10px;right:10px;display:none;gap:4px;}
+    .ev-card.admin-visible .admin-actions{display:flex;}
+    .ev-card.admin-visible{padding-right:80px;}
+    .abtn{padding:5px 6px;border-radius:7px;border:none;cursor:pointer;display:inline-flex;align-items:center;transition:background .12s;}
+    .abtn-edit{background:#eff6ff;color:var(--b500);}.abtn-edit:hover{background:var(--b100);}
+    .abtn-del{background:#fff5f5;color:#ef4444;}.abtn-del:hover{background:#fee2e2;}
+    /* Modal */
+    .modal-bg{display:none;position:fixed;inset:0;background:rgba(4,34,88,.55);backdrop-filter:blur(4px);z-index:300;align-items:center;justify-content:center;}
+    .modal-bg.open{display:flex;}
+    .modal-box{background:#fff;border-radius:18px;width:100%;max-width:520px;margin:16px;max-height:90vh;overflow-y:auto;}
+    .flabel{display:block;font-size:12px;font-weight:700;color:var(--b700);margin-bottom:4px;}
+    .finput{width:100%;border:1px solid var(--b200);border-radius:8px;padding:9px 12px;font-size:14px;color:var(--b800);background:#fff;font-family:inherit;}
+    .finput:focus{outline:none;box-shadow:0 0 0 3px rgba(21,101,192,.15);}
+    /* Toast */
+    #toast{position:fixed;bottom:24px;right:24px;z-index:400;background:var(--b800);color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;display:flex;align-items:center;gap:8px;box-shadow:0 8px 24px rgba(4,34,88,.25);opacity:0;transition:opacity .3s;pointer-events:none;}
+    #toast.show{opacity:1;}
+    /* Admin float button */
+    #adminFloatBtn{position:fixed;bottom:80px;right:24px;z-index:200;background:var(--b800);color:rgba(255,255,255,.4);border:none;border-radius:50%;width:40px;height:40px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(4,34,88,.3);transition:all .2s;}
+    #adminFloatBtn:hover{color:#fff;background:var(--b700);}
+    #adminFloatBtn.active{background:var(--b500);color:#fff;}
+
+        /* ===== NAV ===== */
+        :root {
+            --brand-050: #F5F8FF; --brand-100: #C4DAF5; --brand-200: #9AC0EE;
+            --brand-300: #5A99E0; --brand-400: #2B78D4; --brand-500: #1565C0;
+            --brand-600: #0D55A8; --brand-700: #094590; --brand-800: #063372;
+            --brand-900: #042258;
+        }
+        .nav-dropdown {
+            opacity: 0; visibility: hidden; transform: translateY(-8px);
+            transition: opacity .2s, visibility .2s, transform .2s;
+        }
+        .nav-item:hover .nav-dropdown, .nav-item:focus-within .nav-dropdown {
+            opacity: 1; visibility: visible; transform: translateY(0);
+        }
+        .nav-item:hover .nav-chevron { transform: rotate(180deg); }
+        .nav-chevron { transition: transform .2s; }
+        .mobile-menu { display: none; }
+        .hamburger { display: none; background: none; border: none; cursor: pointer; padding: 8px; }
+        @media (max-width: 767px) {
+            .desktop-nav { display: none !important; }
+            .hamburger { display: flex; flex-direction: column; gap: 5px; }
+            .mobile-menu.open { display: block; }
+        }
+        .mobile-menu-item { display: block; padding: 12px 24px; font-weight: 700; color: var(--brand-800); text-decoration: none; border-bottom: 1px solid var(--brand-100); font-size: 14px; }
+        .mobile-menu-sub { display: block; padding: 10px 36px; font-size: 13px; color: var(--brand-600); text-decoration: none; border-bottom: 1px solid var(--brand-050); }
+  </style>
+<style id="idfl-tone-sync">
+/* === IDFL tone sync — match index look & feel === */
+:root{
+  --idfl-sans:"Zen Kaku Gothic New", system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+  --idfl-mono:"Space Mono", ui-monospace, "SFMono-Regular", monospace;
+  --brand-500:#1255A0; --b500:#1255A0;
+}
+html, body{ color:#17171b; }
+body{
+  background:
+    linear-gradient(180deg, rgba(255,255,255,0.93) 0%, rgba(255,255,255,0.90) 50%, rgba(255,255,255,0.95) 100%),
+    url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=2400&q=85') center/cover fixed no-repeat !important;
+  background-color:#ffffff !important;
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+  font-feature-settings:"palt" 1;
+}
+body, p, div, span, a, li, ul, ol, td, th, h1,h2,h3,h4,h5,h6,
+button, input, select, textarea, label, dt, dd, figcaption, blockquote, small, strong, em{
+  font-family:var(--idfl-sans) !important;
+}
+code, pre, .log, .log *, .mono, [class*="mono"]{ font-family:var(--idfl-mono) !important; }
+h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
+
+/* footer (match index) */
+.site-footer{border-top:1px solid rgba(23,23,27,.12);padding-block:clamp(48px,6vw,72px);background:#ffffff;font-family:var(--idfl-sans);margin-top:0;}
+.site-footer .footer-wrap{max-width:1240px;margin:0 auto;padding-inline:clamp(20px,5.2vw,72px);width:100%;}
+.site-footer .footer-grid{display:grid;grid-template-columns:auto 1fr auto;gap:clamp(28px,4vw,64px);align-items:start;}
+.site-footer .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:#17171b;}
+.site-footer .brand-logo{height:30px;width:auto;object-fit:contain;}
+.site-footer .brand-name{font-size:14px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#17171b;}
+.site-footer .footer-links{display:flex;flex-wrap:wrap;gap:10px 28px;align-content:start;list-style:none;margin:0;padding:0;}
+.site-footer .footer-links a{font-size:13.5px;color:#74747c;transition:color .25s;text-decoration:none;}
+.site-footer .footer-links a:hover{color:#1255A0;}
+.site-footer .footer-copy{font-size:12px;color:#a0a0a8;line-height:1.7;text-align:right;letter-spacing:.02em;margin:0;}
+@media(max-width:900px){.site-footer .footer-grid{grid-template-columns:1fr;gap:30px;}.site-footer .footer-copy{text-align:left;}}
+
+</style>
+
+<style id="idfl-nav-css">
+/* === IDFL Site Nav v2 (pill links + menu overlay) === */
+:root{
+  --nav-bg:#ffffff;
+  --nav-ink:#17171b;
+  --nav-ink-soft:#3c3c43;
+  --nav-muted:#74747c;
+  --nav-hairline:rgba(23,23,27,.12);
+  --nav-hairline-2:rgba(23,23,27,.08);
+  --nav-accent:#1255A0;
+  --nav-gut:clamp(16px,3vw,40px);
+  --nav-fsans:"Zen Kaku Gothic New", system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+}
+.site-header{
+  position:sticky;top:0;z-index:50;
+  background:color-mix(in srgb,var(--nav-bg) 90%,transparent);
+  backdrop-filter:saturate(160%) blur(14px);
+  -webkit-backdrop-filter:saturate(160%) blur(14px);
+  border-bottom:1px solid var(--nav-hairline-2);
+  font-family:var(--nav-fsans);
+}
+.site-header .bar{
+  max-width:1500px;margin:0 auto;
+  padding:14px var(--nav-gut);
+  display:flex;align-items:center;justify-content:space-between;gap:18px;
+}
+.site-header .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;flex-shrink:0;}
+.site-header .brand-logo{height:32px;width:auto;object-fit:contain;}
+.site-header .brand-name{
+  font-size:13.5px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--nav-ink);
+}
+.site-header .nav-pills{
+  display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:center;flex:1;
+}
+.site-header .nav-pills .pill{
+  display:inline-block;
+  padding:7px 18px;
+  border:1.5px solid var(--nav-accent);
+  border-radius:999px;
+  color:var(--nav-accent);
+  font-size:13px;
+  font-weight:500;
+  text-decoration:none;
+  white-space:nowrap;
+  background:transparent;
+  transition:background .25s,color .25s,transform .25s;
+}
+.site-header .nav-pills .pill:hover{
+  background:var(--nav-accent);
+  color:#fff;
+  transform:translateY(-1px);
+}
+.site-header .menu-btn{
+  display:flex;align-items:center;gap:10px;flex-shrink:0;
+  background:none;border:none;cursor:pointer;
+  font-family:inherit;font-size:13.5px;font-weight:500;color:var(--nav-ink);
+  padding:9px 6px 9px 14px;
+}
+.site-header .menu-btn-lines{display:flex;flex-direction:column;gap:5px;width:20px;}
+.site-header .menu-btn-lines i{display:block;height:1.5px;background:var(--nav-ink);transition:transform .3s;}
+.site-header .menu-btn:hover .menu-btn-lines i:first-child{transform:translateX(3px);}
+
+#siteMenuOverlay{
+  position:fixed;inset:0;z-index:60;
+  background:var(--nav-bg);
+  opacity:0;visibility:hidden;
+  transform:translateY(-12px);
+  transition:opacity .4s,transform .4s,visibility .4s;
+  overflow-y:auto;
+  font-family:var(--nav-fsans);
+}
+#siteMenuOverlay.open{opacity:1;visibility:visible;transform:none;}
+#siteMenuOverlay .menu-inner{max-width:1340px;margin:0 auto;padding:26px var(--nav-gut) 64px;}
+#siteMenuOverlay .menu-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:clamp(36px,6vw,72px);}
+#siteMenuOverlay .menu-eyebrow{font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:var(--nav-muted);}
+#siteMenuOverlay .menu-close{background:none;border:none;cursor:pointer;font-family:inherit;font-size:14px;color:var(--nav-ink);letter-spacing:.04em;}
+#siteMenuOverlay .menu-close:hover{color:var(--nav-accent);}
+#siteMenuOverlay .menu-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:clamp(28px,4vw,56px);
+}
+#siteMenuOverlay .menu-col-title{
+  font-size:12px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--nav-accent);font-weight:700;
+  padding-bottom:16px;margin-bottom:18px;
+  border-bottom:1px solid var(--nav-hairline);
+}
+#siteMenuOverlay .menu-col a{
+  display:block;font-size:17px;color:var(--nav-ink-soft);text-decoration:none;
+  padding:9px 0;transition:color .25s,padding-left .25s;
+}
+#siteMenuOverlay .menu-col a:hover{color:var(--nav-accent);padding-left:7px;}
+#siteMenuOverlay .menu-cta{
+  display:inline-flex;align-items:center;gap:.6em;margin-top:clamp(40px,6vw,68px);
+  font-size:clamp(22px,3vw,32px);font-weight:700;color:var(--nav-ink);text-decoration:none;
+}
+#siteMenuOverlay .menu-cta:hover{color:var(--nav-accent);}
+#siteMenuOverlay .arrow{display:inline-block;transition:transform .35s cubic-bezier(.2,.7,.3,1);}
+#siteMenuOverlay .menu-cta:hover .arrow{transform:translateX(5px);}
+@media (max-width:1180px){
+  .site-header .nav-pills{display:none;}
+}
+@media (max-width:900px){
+  #siteMenuOverlay .menu-grid{grid-template-columns:1fr 1fr;}
+}
+@media (max-width:620px){
+  .site-header .menu-btn-label{display:none;}
+}
+</style>
+
+<style id="qa-page-css">
+  .qa-hero{background:linear-gradient(150deg,#042258 0%,#094590 55%,#2B78D4 100%);padding:calc(65px + 56px) 24px 60px;}
+  .qa-hero-inner{max-width:1000px;margin:0 auto;}
+  .qa-hero .eyebrow{color:rgba(196,218,245,.7);font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;margin:0 0 10px;}
+  .qa-hero h1{font-family:'DM Serif Display',serif;font-weight:400;color:#fff;font-size:clamp(1.8rem,4vw,3rem);margin:0 0 12px;line-height:1.2;}
+  .qa-hero p.lead{color:rgba(196,218,245,.8);font-size:14px;line-height:1.8;margin:0;max-width:620px;}
+  .qa-wrap{max-width:920px;margin:0 auto;padding:36px 24px 120px;}
+  .qa-search{position:relative;margin:0 0 28px;}
+  .qa-search input{width:100%;border:1px solid var(--brand-200);border-radius:12px;padding:12px 16px 12px 42px;font-size:15px;background:#fff;color:var(--brand-900);}
+  .qa-search input:focus{outline:none;box-shadow:0 0 0 3px rgba(18,85,160,.15);border-color:var(--brand-500);}
+  .qa-search svg{position:absolute;left:14px;top:50%;transform:translateY(-50%);color:var(--brand-400);}
+  .qa-section{margin:0 0 40px;}
+  .qa-section-title{display:flex;align-items:center;gap:12px;font-size:18px;font-weight:700;color:#042258;margin:0 0 16px;padding-bottom:12px;border-bottom:2px solid var(--brand-100);}
+  .qa-section-title .num{background:#1255A0;color:#fff;font-size:12px;font-weight:700;border-radius:999px;padding:3px 12px;letter-spacing:.04em;}
+  details.qa{background:#fff;border:1px solid var(--brand-100);border-radius:12px;margin:0 0 12px;overflow:hidden;transition:box-shadow .18s;}
+  details.qa[open]{box-shadow:0 6px 22px rgba(18,85,160,.08);border-color:var(--brand-200);}
+  details.qa summary{list-style:none;cursor:pointer;display:flex;align-items:flex-start;gap:12px;padding:16px 20px;font-weight:700;color:#063372;font-size:15px;line-height:1.6;}
+  details.qa summary::-webkit-details-marker{display:none;}
+  details.qa summary .q{flex-shrink:0;color:#1255A0;font-family:'Space Mono',monospace;font-weight:700;}
+  details.qa summary .chev{margin-left:auto;flex-shrink:0;transition:transform .2s;color:var(--brand-400);}
+  details.qa[open] summary .chev{transform:rotate(180deg);}
+  details.qa summary:hover{background:var(--brand-050);}
+  .qa-body{padding:2px 20px 20px 20px;color:#3c3c43;font-size:14px;line-height:1.9;}
+  .qa-body .a{display:flex;gap:10px;}
+  .qa-body .a .a-mark{flex-shrink:0;color:#1255A0;font-family:'Space Mono',monospace;font-weight:700;}
+  .qa-body ul{margin:10px 0 4px;padding-left:20px;}
+  .qa-body ul li{margin:4px 0;}
+  .qa-body .note{margin-top:10px;color:#74747c;font-size:13px;}
+  .qa-empty{display:none;text-align:center;color:#74747c;padding:40px 0;}
+  .qa-cta{margin-top:44px;text-align:center;background:var(--brand-050);border:1px solid var(--brand-100);border-radius:16px;padding:32px 24px;}
+  .qa-cta h3{margin:0 0 8px;color:#042258;font-size:17px;font-weight:700;}
+  .qa-cta p{margin:0 0 18px;color:#3c3c43;font-size:14px;}
+  .qa-cta a{display:inline-block;background:#1255A0;color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:12px 26px;border-radius:10px;transition:background .15s;}
+  .qa-cta a:hover{background:#063372;}
+</style>
+
+</head>
+<body>
+<header class="site-header">
+  <div class="bar">
+    <a class="brand" href="/">
+      <img src="/IDFL-Logo.png" alt="IDFL JAPAN" class="brand-logo" />
+      <span class="brand-name">IDFL JAPAN</span>
+    </a>
+    <nav class="nav-pills">
+      <a class="pill" href="https://textileexchange.org/" target="_blank" rel="noopener">TE公式サイト</a>
+      <a class="pill" href="https://global-standard.org/" target="_blank" rel="noopener">GOTS公式サイト</a>
+      <a class="pill" href="https://www.jba210.jp/quality/about_j-tas/" target="_blank" rel="noopener">J-TAS公式サイト</a>
+      <a class="pill" href="https://portal.idfl.com/sign-in" target="_blank" rel="noopener">お客様ポータル</a>
+      <a class="pill" href="https://idfl.com/ja/idfl-japan/" target="_blank" rel="noopener">お問い合わせ</a>
+      <a class="pill" href="https://forms.office.com/Pages/ResponsePage.aspx?id=hQL27-D4ckKtEjtBsJIawI60DctQlgpAt0rPraJ8Wg5UQjA4N1UwN09PVkg5SkNZN1lBVTQxN0tYTy4u" target="_blank" rel="noopener">お申し込み</a>
+    </nav>
+    <button class="menu-btn" id="siteMenuBtn" aria-label="メニュー" aria-expanded="false">
+      <span class="menu-btn-lines"><i></i><i></i></span>
+      <span class="menu-btn-label">メニュー</span>
+    </button>
+  </div>
+</header>
+
+<div id="siteMenuOverlay" aria-hidden="true">
+  <div class="menu-inner">
+    <div class="menu-head">
+      <span class="menu-eyebrow">Menu</span>
+      <button class="menu-close" id="siteMenuClose" aria-label="閉じる">閉じる ✕</button>
+    </div>
+    <nav class="menu-grid">
+      <div class="menu-col">
+        <p class="menu-col-title">認証サービス</p>
+        <a href="https://idfl.com/ja/services/audits-certifications/global-organic-textile-standard-gots/" target="_blank" rel="noopener">GOTS 認証</a>
+        <a href="https://idfl.com/ja/services/audits-certifications/organic-content-standard-ocs/" target="_blank" rel="noopener">OCS 認証</a>
+        <a href="https://idfl.com/ja/services/audits-certifications/responsible-wool-standard-rws/" target="_blank" rel="noopener">RWS 認証</a>
+        <a href="https://idfl.com/ja/services/audits-certifications/global-recycled-standard-grs/" target="_blank" rel="noopener">GRS 認証</a>
+        <a href="/certified-factories.html" target="_blank" rel="noopener">認証工場一覧</a>
+        <a href="https://dev.idfl.com/ja/services/" target="_blank" rel="noopener">ダウン・フェザー検査</a>
+        <a href="/qa.html">Q&amp;A（よくある質問）</a>
+      </div>
+      <div class="menu-col">
+        <p class="menu-col-title">セミナー</p>
+        <a href="/seminar_schedule.html" target="_blank" rel="noopener">開催予定のセミナー</a>
+        <a href="/past_seminar_v2.html" target="_blank" rel="noopener">過去のセミナー</a>
+        <a href="/download.html" target="_blank" rel="noopener">資料ダウンロード</a>
+      </div>
+      <div class="menu-col">
+        <p class="menu-col-title">会社情報</p>
+        <a href="https://idfl.com/zh-tw/idfl-japan/" target="_blank" rel="noopener">会社概要</a>
+        <a href="https://maps.app.goo.gl/hxvPws1M6cGxbLHF7" target="_blank" rel="noopener">アクセス</a>
+        <a href="/idfl_news.html" target="_blank" rel="noopener">お知らせ</a>
+        <a href="/converter.html" target="_blank" rel="noopener">変換ツール</a>
+      </div>
+    </nav>
+    <a class="menu-cta" href="https://forms.office.com/Pages/ResponsePage.aspx?id=hQL27-D4ckKtEjtBsJIawI60DctQlgpAt0rPraJ8Wg5UQjA4N1UwN09PVkg5SkNZN1lBVTQxN0tYTy4u" target="_blank" rel="noopener">
+      今すぐ申し込む（無料）<span class="arrow">→</span>
+    </a>
+  </div>
+</div>
+
+
+
+
+
+
+
+<div class="hero">
+  <div style="max-width:900px;margin:0 auto">
+    <p style="color:rgba(196,218,245,.7);font-size:11px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;margin:0 0 10px">IDFL Global Events 2026</p>
+    <h1 style="font-family:'DM Serif Display',serif;font-weight:400;color:#fff;font-size:clamp(1.8rem,4vw,3rem);margin:0 0 12px;line-height:1.2">
+      開催予定のセミナー<br><span style="color:var(--b200)">＆ イベント一覧</span>
+    </h1>
+    <p style="color:rgba(196,218,245,.75);font-size:14px;line-height:1.7;margin:0;max-width:480px">IDFL各オフィスが開催するセミナー・展示会・トレーニング情報です。</p>
+  </div>
+</div>
+
+
+<div class="qa-hero">
+  <div class="qa-hero-inner">
+    <p class="eyebrow">IDFL JAPAN · Frequently Asked Questions</p>
+    <h1>Q&amp;A（よくある質問）</h1>
+    <p class="lead">監査・認証の進め方からTC（取引証明書）の申請まで、お客様からよくいただくご質問をまとめました。気になる項目をクリックすると回答が開きます。</p>
+  </div>
+</div>
+
+<main class="qa-wrap">
+  <div class="qa-search">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
+    <input type="text" id="qaSearch" placeholder="キーワードで質問を検索（例：TC、有効期限、オンライン監査）" />
+  </div>
+    <section class="qa-section">
+      <h2 class="qa-section-title"><span class="num">Part 1</span>監査・認証編</h2>
+      <details class="qa" data-q="IDFL Japanではどのような認証（規格）の監査を受けられますか？  主に以下の国際的なサステナビリティ基準の監査・認証に対応しています。 GOTS：Global Organic Textile Standard（オーガニックテキスタイルの世界基準） Textile Exchangeのすべての基準：GRS、RCS（リサイクル）、OCS（オーガニック）、RDS、RWS、RMS、RAS（責任あるダウン・ウール・モヘア・アルパカ） FSC認証：Forest Stewardship Council（適切に管理された森林からの木材・繊維製品の認証） ※その他の認証に関しても幅広く対応・審査可能な場合がございますので、まずはお気軽にお問い合わせください。">
+        <summary><span class="q">Q1.</span><span>IDFL Japanではどのような認証（規格）の監査を受けられますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>主に以下の国際的なサステナビリティ基準の監査・認証に対応しています。</span></div><ul><li>GOTS：Global Organic Textile Standard（オーガニックテキスタイルの世界基準）</li><li>Textile Exchangeのすべての基準：GRS、RCS（リサイクル）、OCS（オーガニック）、RDS、RWS、RMS、RAS（責任あるダウン・ウール・モヘア・アルパカ）</li><li>FSC認証：Forest Stewardship Council（適切に管理された森林からの木材・繊維製品の認証）</li></ul><div class="note">※その他の認証に関しても幅広く対応・審査可能な場合がございますので、まずはお気軽にお問い合わせください。</div></div>
+      </details>
+      <details class="qa" data-q="認証を取得（SC発行）するまでに、一般的にどれくらいの期間がかかりますか？ 申請から監査の実施、不適合の修正（必要な場合）、そしてSC（事業者認証）の発行まで、一般的におよそ2〜3ヶ月程度かかります。工場の稼働状況や書類の準備状態によって前後するため、余裕を持ったスケジュールでの申請をおすすめします。   ">
+        <summary><span class="q">Q2.</span><span>認証を取得（SC発行）するまでに、一般的にどれくらいの期間がかかりますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>申請から監査の実施、不適合の修正（必要な場合）、そしてSC（事業者認証）の発行まで、一般的におよそ2〜3ヶ月程度かかります。工場の稼働状況や書類の準備状態によって前後するため、余裕を持ったスケジュールでの申請をおすすめします。</span></div></div>
+      </details>
+      <details class="qa" data-q="監査当日はどのようなことが行われますか？事前にどんな準備が必要ですか？ 当日の監査は主に書類審査、現場（工場・倉庫）確認、従業員へのインタビュー（基準による）の3つで構成されます。原料の購買記録、製造ログ、インボイス、管理手順書など必要書類をすぐに提示できるようご準備をお願いいたします。   ">
+        <summary><span class="q">Q3.</span><span>監査当日はどのようなことが行われますか？事前にどんな準備が必要ですか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>当日の監査は主に書類審査、現場（工場・倉庫）確認、従業員へのインタビュー（基準による）の3つで構成されます。原料の購買記録、製造ログ、インボイス、管理手順書など必要書類をすぐに提示できるようご準備をお願いいたします。</span></div></div>
+      </details>
+      <details class="qa" data-q="弊社の工場は海外（ベトナムや中国など）にあります。IDFL Japanに監査を依頼できますか？ はい、可能です。IDFLは世界32カ国以上に拠点（中国、台湾、ベトナム、バングラデシュ、ヨーロッパなど）を展開しています。窓口はIDFL Japan（日本語）で対応し、現地の監査は最も近いグローバル拠点の監査員が連携して実施いたします。   ">
+        <summary><span class="q">Q4.</span><span>弊社の工場は海外（ベトナムや中国など）にあります。IDFL Japanに監査を依頼できますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>はい、可能です。IDFLは世界32カ国以上に拠点（中国、台湾、ベトナム、バングラデシュ、ヨーロッパなど）を展開しています。窓口はIDFL Japan（日本語）で対応し、現地の監査は最も近いグローバル拠点の監査員が連携して実施いたします。</span></div></div>
+      </details>
+      <details class="qa" data-q="委託先（Unit・Outsourcing）の縫製工場や染色工場、倉庫も認証（SC）を取る必要がありますか？ 原則として、認証製品の製造・加工・保管・所有権の移転に関わるすべてのサプライチェーン（委託先含む）が認証を取得しているか、あるいは貴社のSCの委託先（Subcontractor）として登録されている必要があります。例外規定もありますので、製品ルートを一度ご相談ください。   ">
+        <summary><span class="q">Q5.</span><span>委託先（Unit・Outsourcing）の縫製工場や染色工場、倉庫も認証（SC）を取る必要がありますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>原則として、認証製品の製造・加工・保管・所有権の移転に関わるすべてのサプライチェーン（委託先含む）が認証を取得しているか、あるいは貴社のSCの委託先（Subcontractor）として登録されている必要があります。例外規定もありますので、製品ルートを一度ご相談ください。</span></div></div>
+      </details>
+      <details class="qa" data-q="SC（事業者認証）の有効期限はどれくらいですか？ Textile Exchange・GOTSの基準では、SCの有効期限は基本的に発行から1年間です。認証を維持するためには、毎年、有効期限が切れる前に更新監査（年次監査）を受けて合格する必要があります。   ">
+        <summary><span class="q">Q6.</span><span>SC（事業者認証）の有効期限はどれくらいですか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>Textile Exchange・GOTSの基準では、SCの有効期限は基本的に発行から1年間です。認証を維持するためには、毎年、有効期限が切れる前に更新監査（年次監査）を受けて合格する必要があります。</span></div></div>
+      </details>
+      <details class="qa" data-q="監査で不適合（NC）が指摘されたら、即不合格になってしまいますか？ 基本的には即不合格にはなりません。指摘された内容（不適合）に応じて、一定の修正期間が与えられます。その期間内に改善措置の証拠（書類や写真など）を提出し、承認されれば再度審査が行われ、合格するとSCが発行されます。ただし、賄賂や書類偽造等が発覚した場合は即不合格となります。   ">
+        <summary><span class="q">Q7.</span><span>監査で不適合（NC）が指摘されたら、即不合格になってしまいますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>基本的には即不合格にはなりません。指摘された内容（不適合）に応じて、一定の修正期間が与えられます。その期間内に改善措置の証拠（書類や写真など）を提出し、承認されれば再度審査が行われ、合格するとSCが発行されます。ただし、賄賂や書類偽造等が発覚した場合は即不合格となります。</span></div></div>
+      </details>
+      <details class="qa" data-q="GRS認証を申請したいのですが、環境面や労働環境の審査もあると聞きました。本当ですか？ はい、本当です。GRS（グローバル・リサイクル・スタンダード）では、リサイクル原料の追跡性（製品基準）だけでなく、工場内の社会的な労働環境（労働人権・安全衛生）、環境管理（排水・大気）、化学物質管理（SDS、テストレポート）についても厳しい審査基準が設けられています。   ">
+        <summary><span class="q">Q8.</span><span>GRS認証を申請したいのですが、環境面や労働環境の審査もあると聞きました。本当ですか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>はい、本当です。GRS（グローバル・リサイクル・スタンダード）では、リサイクル原料の追跡性（製品基準）だけでなく、工場内の社会的な労働環境（労働人権・安全衛生）、環境管理（排水・大気）、化学物質管理（SDS、テストレポート）についても厳しい審査基準が設けられています。</span></div></div>
+      </details>
+      <details class="qa" data-q="昨年度の監査から、住所や社名、取り扱う製品カテゴリが変わりました。どうすればいいですか？ SCの有効期限内であっても、社名・住所の変更や、新しい製品カテゴリの追加、委託先の追加・変更がある場合は、速やかにSCの変更申請を行ってください。内容によっては追加の書面審査や実地監査が必要になる場合があります。   ">
+        <summary><span class="q">Q9.</span><span>昨年度の監査から、住所や社名、取り扱う製品カテゴリが変わりました。どうすればいいですか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>SCの有効期限内であっても、社名・住所の変更や、新しい製品カテゴリの追加、委託先の追加・変更がある場合は、速やかにSCの変更申請を行ってください。内容によっては追加の書面審査や実地監査が必要になる場合があります。</span></div></div>
+      </details>
+      <details class="qa" data-q="オンライン監査での対応は可能ですか？ 規格ごとのルール（Textile ExchangeやGOTSの規定）および対象施設のリスクレベルに基づいて判断されます。初回監査は原則として現地オンサイト監査となりますが、特定の低リスクな施設や更新監査の一部ではリモート監査が認められる場合もあります。申請書をいただいてから審査させていただきますので、お気軽にご相談ください。   ">
+        <summary><span class="q">Q10.</span><span>オンライン監査での対応は可能ですか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>規格ごとのルール（Textile ExchangeやGOTSの規定）および対象施設のリスクレベルに基づいて判断されます。初回監査は原則として現地オンサイト監査となりますが、特定の低リスクな施設や更新監査の一部ではリモート監査が認められる場合もあります。申請書をいただいてから審査させていただきますので、お気軽にご相談ください。</span></div></div>
+      </details>
+      <details class="qa" data-q="監査費用はどのように決定されますか？見積もりには何の情報が必要ですか？ 監査費用は、対象となる施設の数、工場の規模（従業員数）、申請する規格の種類、製造工程などに基づいて計算されます。お見積りの際は、弊社指定の申請フォーム（Application Form）に必要事項をご記入のうえご提出ください。   ">
+        <summary><span class="q">Q11.</span><span>監査費用はどのように決定されますか？見積もりには何の情報が必要ですか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>監査費用は、対象となる施設の数、工場の規模（従業員数）、申請する規格の種類、製造工程などに基づいて計算されます。お見積りの際は、弊社指定の申請フォーム（Application Form）に必要事項をご記入のうえご提出ください。</span></div></div>
+      </details>
+      <details class="qa" data-q="1つの工場でGRSとGOTSを同時に監査してもらうことは可能ですか？ はい、可能です。複数の規格を同時に監査することで、監査員が現地に赴く回数を減らし、監査費用やお客様側の立ち合いの負担を抑えることができます。   ">
+        <summary><span class="q">Q12.</span><span>1つの工場でGRSとGOTSを同時に監査してもらうことは可能ですか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>はい、可能です。複数の規格を同時に監査することで、監査員が現地に赴く回数を減らし、監査費用やお客様側の立ち合いの負担を抑えることができます。</span></div></div>
+      </details>
+      <details class="qa" data-q="認証を取得している委託先の工場を変更、または追加したい場合はどうすればいいですか？ 貴社のSCに紐づく委託先（Subcontractor）を変更・追加する場合は、必ず事前にIDFLへ申請してください。委託先がすでに独自のSCを保持している場合は書面審査のみで済むことが多いですが、未認証の施設を追加する場合は、その施設への実地監査が必要になります。   ">
+        <summary><span class="q">Q13.</span><span>認証を取得している委託先の工場を変更、または追加したい場合はどうすればいいですか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>貴社のSCに紐づく委託先（Subcontractor）を変更・追加する場合は、必ず事前にIDFLへ申請してください。委託先がすでに独自のSCを保持している場合は書面審査のみで済むことが多いですが、未認証の施設を追加する場合は、その施設への実地監査が必要になります。</span></div></div>
+      </details>
+      <details class="qa" data-q="初回の監査に向けて、社内で管理責任者を置く必要はありますか？ はい、必要です。各認証規格（Textile ExchangeやGOTSなど）では、認証基準を満たすための社内体制として、全体の運用を監督する管理責任者（マニュアルの作成や管理を行う担当者）を任命することが求められます。   ">
+        <summary><span class="q">Q14.</span><span>初回の監査に向けて、社内で管理責任者を置く必要はありますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>はい、必要です。各認証規格（Textile ExchangeやGOTSなど）では、認証基準を満たすための社内体制として、全体の運用を監督する管理責任者（マニュアルの作成や管理を行う担当者）を任命することが求められます。</span></div></div>
+      </details>
+      <details class="qa" data-q="CCS（Content Claim Standard）とは何ですか？他の認証と何が違うのでしょうか？ CCSは、すべてのTextile Exchange基準（GRS、RCS、OCS、RDSなど）の土台となっているChain of Custody（加工流通過程の管理）の規格です。原料がサプライチェーンを通じて正しく追跡されているかを検証するための共通ルールであり、これをもとに各規格特有の基準が上乗せされています。   ">
+        <summary><span class="q">Q15.</span><span>CCS（Content Claim Standard）とは何ですか？他の認証と何が違うのでしょうか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>CCSは、すべてのTextile Exchange基準（GRS、RCS、OCS、RDSなど）の土台となっているChain of Custody（加工流通過程の管理）の規格です。原料がサプライチェーンを通じて正しく追跡されているかを検証するための共通ルールであり、これをもとに各規格特有の基準が上乗せされています。</span></div></div>
+      </details>
+      <details class="qa" data-q="工場の中に認証品と非認証品（通常の製品）が混在していても監査に通りますか？ はい、通ります。ただし、製造ライン、保管エリア、コンテナなどが明確に識別（ラベル表示など）されており、非認証品と物理的に混ざらないための管理手順が徹底されていることが審査されます。   ">
+        <summary><span class="q">Q16.</span><span>工場の中に認証品と非認証品（通常の製品）が混在していても監査に通りますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>はい、通ります。ただし、製造ライン、保管エリア、コンテナなどが明確に識別（ラベル表示など）されており、非認証品と物理的に混ざらないための管理手順が徹底されていることが審査されます。</span></div></div>
+      </details>
+      <details class="qa" data-q="監査の言語は何ベースですか？英語での対応が必要ですか？ 日本国内の施設であれば、原則として日本語が話せる監査員が対応しますので、当日のコミュニケーションは日本語で問題ありません。ただし、最終的に発行されるSCは英語ベースとなります。   ">
+        <summary><span class="q">Q17.</span><span>監査の言語は何ベースですか？英語での対応が必要ですか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>日本国内の施設であれば、原則として日本語が話せる監査員が対応しますので、当日のコミュニケーションは日本語で問題ありません。ただし、最終的に発行されるSCは英語ベースとなります。</span></div></div>
+      </details>
+      <details class="qa" data-q="監査当日、工場で働く外国人技能実習生やパートタイムの従業員へのインタビューはありますか？ はい、あります。労働環境や人権、安全衛生の基準が含まれる規格（GRSやGOTSなど）の監査では、監査員が現場の従業員（正社員、パート、外国人労働者など）をランダムに選び、面談を行います。これはマネジメント層からの報告と現場の実態が一致しているかを確認するための重要なプロセスです。   ">
+        <summary><span class="q">Q18.</span><span>監査当日、工場で働く外国人技能実習生やパートタイムの従業員へのインタビューはありますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>はい、あります。労働環境や人権、安全衛生の基準が含まれる規格（GRSやGOTSなど）の監査では、監査員が現場の従業員（正社員、パート、外国人労働者など）をランダムに選び、面談を行います。これはマネジメント層からの報告と現場の実態が一致しているかを確認するための重要なプロセスです。</span></div></div>
+      </details>
+      <details class="qa" data-q="年次更新監査（2年目以降）の申請は、いつ頃までに行うべきですか？ 現在保持しているSCの有効期限が切れる3〜4ヶ月前には、更新手続きを開始してください。   ">
+        <summary><span class="q">Q19.</span><span>年次更新監査（2年目以降）の申請は、いつ頃までに行うべきですか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>現在保持しているSCの有効期限が切れる3〜4ヶ月前には、更新手続きを開始してください。</span></div></div>
+      </details>
+    </section>
+    <section class="qa-section">
+      <h2 class="qa-section-title"><span class="num">Part 2</span>TC（取引証明書）編</h2>
+      <details class="qa" data-q="SC（Scope Certificate）とTC（Transaction Certificate）の違いは何ですか？   SC（事業者認証）：「この会社・工場は認証基準を満たした設備と体制を持っています」という認定書のようなものです（年1回更新）。 TC（取引証明書）：「この特定の出荷品（製品）は、間違いなく認証原料で作られています」という商品の本物証明書です。 ">
+        <summary><span class="q">Q1.</span><span>SC（Scope Certificate）とTC（Transaction Certificate）の違いは何ですか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><ul><li>SC（事業者認証）：「この会社・工場は認証基準を満たした設備と体制を持っています」という認定書のようなものです（年1回更新）。</li><li>TC（取引証明書）：「この特定の出荷品（製品）は、間違いなく認証原料で作られています」という商品の本物証明書です。</li></ul></div>
+      </details>
+      <details class="qa" data-q="製品を出荷しました。TCの申請期限はありますか？ はい、厳しい期限があります。Textile Exchangeの規定により、製品の出荷日（インボイス日付または輸送書類の日付のいずれか早い方）から180日以内にTCを申請しなければなりません。180日を過ぎると、システム上TCの発行ができなくなりますのでご注意ください。   ">
+        <summary><span class="q">Q2.</span><span>製品を出荷しました。TCの申請期限はありますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>はい、厳しい期限があります。Textile Exchangeの規定により、製品の出荷日（インボイス日付または輸送書類の日付のいずれか早い方）から180日以内にTCを申請しなければなりません。180日を過ぎると、システム上TCの発行ができなくなりますのでご注意ください。</span></div></div>
+      </details>
+      <details class="qa" data-q="複数の出荷（インボイス）を、1枚のTCにまとめて申請することはできますか？ 条件を満たせば可能です。原則として同一の売り手から同一の買い手への出荷であり、かつ最初の出荷から最後の出荷までの期間が3ヶ月（90日）以内の取引であれば、複数のインボイスを1枚の複数出荷TC（Multiple Shipment TC）としてまとめて申請できます。   ">
+        <summary><span class="q">Q3.</span><span>複数の出荷（インボイス）を、1枚のTCにまとめて申請することはできますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>条件を満たせば可能です。原則として同一の売り手から同一の買い手への出荷であり、かつ最初の出荷から最後の出荷までの期間が3ヶ月（90日）以内の取引であれば、複数のインボイスを1枚の複数出荷TC（Multiple Shipment TC）としてまとめて申請できます。</span></div></div>
+      </details>
+      <details class="qa" data-q="TCを申請する際、どのような書類を提出する必要がありますか？  主に以下の書類が必要となります。 原料仕入れ時の有効な入荷TC 貴社が発行した対象取引のインボイス 荷受人が確認できる輸送書類（B/L、AWB、貨物送り状 など） 輸送商品のパッキングリスト 生産ログやインプット・アウトプットの重量バランス（歩留まり）等が分かるマスバランスシート ">
+        <summary><span class="q">Q4.</span><span>TCを申請する際、どのような書類を提出する必要がありますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>主に以下の書類が必要となります。</span></div><ul><li>原料仕入れ時の有効な入荷TC</li><li>貴社が発行した対象取引のインボイス</li><li>荷受人が確認できる輸送書類（B/L、AWB、貨物送り状 など）</li><li>輸送商品のパッキングリスト</li><li>生産ログやインプット・アウトプットの重量バランス（歩留まり）等が分かるマスバランスシート</li></ul></div>
+      </details>
+      <details class="qa" data-q="原料サプライヤーからTCが届きません。自社分のTCを先に申請してもいいですか？ いいえ、できません。仕入れた原料が認証品であるという証明となる前段階の有効なTCがシステム上で確認できない限り、貴社分のTCを発行することはできません。サプライヤーへ早めのTC発行を促していただくようお願いいたします。   ">
+        <summary><span class="q">Q5.</span><span>原料サプライヤーからTCが届きません。自社分のTCを先に申請してもいいですか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>いいえ、できません。仕入れた原料が認証品であるという証明となる前段階の有効なTCがシステム上で確認できない限り、貴社分のTCを発行することはできません。サプライヤーへ早めのTC発行を促していただくようお願いいたします。</span></div></div>
+      </details>
+      <details class="qa" data-q="インボイスに記載する重量と、TCに記載する重量は一致している必要がありますか？ はい、原則として完全に整合している必要があります。インボイスやパッキングリストに記載されている製品重量と、TC申請書に記載するNet Weight（純重量）およびCertified Weight（認証製品重量）は、一致していなければなりません。   ">
+        <summary><span class="q">Q6.</span><span>インボイスに記載する重量と、TCに記載する重量は一致している必要がありますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>はい、原則として完全に整合している必要があります。インボイスやパッキングリストに記載されている製品重量と、TC申請書に記載するNet Weight（純重量）およびCertified Weight（認証製品重量）は、一致していなければなりません。</span></div></div>
+      </details>
+      <details class="qa" data-q="TCの申請から発行まで、通常どれくらいの時間がかかりますか？ 提出書類に不備や修正がない場合、通常3営業日以内で発行されます。ただし、書類の不備（重量の不一致、日付の矛盾、英語表記の誤りなど）がある場合、差し戻しと再確認に時間がかかりますので、余裕を持った申請をお願いします。   ">
+        <summary><span class="q">Q7.</span><span>TCの申請から発行まで、通常どれくらいの時間がかかりますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>提出書類に不備や修正がない場合、通常3営業日以内で発行されます。ただし、書類の不備（重量の不一致、日付の矛盾、英語表記の誤りなど）がある場合、差し戻しと再確認に時間がかかりますので、余裕を持った申請をお願いします。</span></div></div>
+      </details>
+      <details class="qa" data-q="発行されたTCの記載内容に間違いを見つけました。修正できますか？ 発行後であっても修正（再発行）は可能ですが、発行日から一定期間内（例：30〜60日以内など、規格により異なる）に申し出ていただく必要があります。また、お客様都合による修正の場合、再発行手数料が発生することがありますので、申請前にドラフト画面等でしっかりとご確認ください。   ">
+        <summary><span class="q">Q8.</span><span>発行されたTCの記載内容に間違いを見つけました。修正できますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>発行後であっても修正（再発行）は可能ですが、発行日から一定期間内（例：30〜60日以内など、規格により異なる）に申し出ていただく必要があります。また、お客様都合による修正の場合、再発行手数料が発生することがありますので、申請前にドラフト画面等でしっかりとご確認ください。</span></div></div>
+      </details>
+      <details class="qa" data-q="出荷前の段階（契約時や生産中）で、TCを先に申請することはできますか？ いいえ、できません。TCは実際の取引・出荷を証明するものですので、出荷が完了し、インボイスや輸送書類（B/Lや配送伝票）が確定した後にしか申請・発行はできません。   ">
+        <summary><span class="q">Q9.</span><span>出荷前の段階（契約時や生産中）で、TCを先に申請することはできますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>いいえ、できません。TCは実際の取引・出荷を証明するものですので、出荷が完了し、インボイスや輸送書類（B/Lや配送伝票）が確定した後にしか申請・発行はできません。</span></div></div>
+      </details>
+      <details class="qa" data-q="輸入した入荷TCの発行元がIDFL以外の認証機関（他社）でした。この原料を使って製品を作った場合、IDFL JapanへTCを申請できますか？ はい、可能です。サプライヤーから届いたTCが、Textile Exchange等に認められた正規の認証機関から発行された有効なものであれば、IDFL Japanに自社分のTCを申請いただけます。   ">
+        <summary><span class="q">Q10.</span><span>輸入した入荷TCの発行元がIDFL以外の認証機関（他社）でした。この原料を使って製品を作った場合、IDFL JapanへTCを申請できますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>はい、可能です。サプライヤーから届いたTCが、Textile Exchange等に認められた正規の認証機関から発行された有効なものであれば、IDFL Japanに自社分のTCを申請いただけます。</span></div></div>
+      </details>
+      <details class="qa" data-q="原料TCに記載されている製品カテゴリ（Product Category）と、自社が申請する製品カテゴリが異なる場合はどうなりますか？ 加工工程（例：糸から生地へ、生地から衣服へ）を経て製品の形態が変わるため、カテゴリが変わるのが正常です。ただし、貴社のSCにその加工工程および対象の製品カテゴリが登録されている必要があります。   ">
+        <summary><span class="q">Q11.</span><span>原料TCに記載されている製品カテゴリ（Product Category）と、自社が申請する製品カテゴリが異なる場合はどうなりますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>加工工程（例：糸から生地へ、生地から衣服へ）を経て製品の形態が変わるため、カテゴリが変わるのが正常です。ただし、貴社のSCにその加工工程および対象の製品カテゴリが登録されている必要があります。</span></div></div>
+      </details>
+      <details class="qa" data-q="1枚のインボイスの中に認証品と非認証品が混ざっている場合、TCの申請はどうすればいいですか？ そのまま申請していただいて構いません。ただし、TCの申請書やシステム上で、インボイス内のどの項目が認証品で、その純重量（Net Weight）が何キロなのかを明確にする必要があります。   ">
+        <summary><span class="q">Q12.</span><span>1枚のインボイスの中に認証品と非認証品が混ざっている場合、TCの申請はどうすればいいですか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>そのまま申請していただいて構いません。ただし、TCの申請書やシステム上で、インボイス内のどの項目が認証品で、その純重量（Net Weight）が何キロなのかを明確にする必要があります。</span></div></div>
+      </details>
+      <details class="qa" data-q="海外への出荷の場合、TC申請に必要な輸送書類は何になりますか？ 船便の場合はB/L（船荷証券）、航空便の場合はAWB（航空貨物運送状）が必要です。書類に記載されている荷送人（Shipper）、荷受人（Consignee）、ケース数・重量が、インボイスやTC申請内容と一致している必要があります。   ">
+        <summary><span class="q">Q13.</span><span>海外への出荷の場合、TC申請に必要な輸送書類は何になりますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>船便の場合はB/L（船荷証券）、航空便の場合はAWB（航空貨物運送状）が必要です。書類に記載されている荷送人（Shipper）、荷受人（Consignee）、ケース数・重量が、インボイスやTC申請内容と一致している必要があります。</span></div></div>
+      </details>
+      <details class="qa" data-q="原料を仕入れてから自社で長期間保管し、半年以上経ってから出荷しました。この場合でもTCは発行されますか？ はい、発行可能です。仕入れた際の原料TCが有効であり、工場内での保管中に非認証品との混在がないよう正しく管理されていれば、仕入れから時間が経過していても出荷時のTC申請は可能です。   ">
+        <summary><span class="q">Q14.</span><span>原料を仕入れてから自社で長期間保管し、半年以上経ってから出荷しました。この場合でもTCは発行されますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>はい、発行可能です。仕入れた際の原料TCが有効であり、工場内での保管中に非認証品との混在がないよう正しく管理されていれば、仕入れから時間が経過していても出荷時のTC申請は可能です。</span></div></div>
+      </details>
+      <details class="qa" data-q="TC申請の差し戻しで最も多い理由は何ですか？事前に防ぐコツは？ 最も多いのは書類間の数字や表記の不一致です（例：インボイスの重量とパッキングリストの重量がズレている、サプライヤー名や顧客名のスペルがSCの登録名と違うなど）。申請前に、各書類の重量（Net Weight）、日付、会社名（英語）が完全に一致しているか指差し確認することをおすすめします。   ">
+        <summary><span class="q">Q15.</span><span>TC申請の差し戻しで最も多い理由は何ですか？事前に防ぐコツは？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>最も多いのは書類間の数字や表記の不一致です（例：インボイスの重量とパッキングリストの重量がズレている、サプライヤー名や顧客名のスペルがSCの登録名と違うなど）。申請前に、各書類の重量（Net Weight）、日付、会社名（英語）が完全に一致しているか指差し確認することをおすすめします。</span></div></div>
+      </details>
+      <details class="qa" data-q="オンラインシステムでのTC申請方法が分かりません。サポートはありますか？ はい、ございます。IDFL Japanでは、弊社ポータルサイトでのTC申請手順について、マニュアルのご提供や、必要に応じた実務担当者様へのオンラインサポートを行っております。お気軽にご相談ください。   ">
+        <summary><span class="q">Q16.</span><span>オンラインシステムでのTC申請方法が分かりません。サポートはありますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
+        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>はい、ございます。IDFL Japanでは、弊社ポータルサイトでのTC申請手順について、マニュアルのご提供や、必要に応じた実務担当者様へのオンラインサポートを行っております。お気軽にご相談ください。</span></div></div>
+      </details>
+    </section>
+  <p class="qa-empty" id="qaEmpty">該当する質問が見つかりませんでした。</p>
+  <div class="qa-cta">
+    <h3>解決しないご質問がありますか？</h3>
+    <p>個別のご相談・お見積り・申請については、IDFL JAPAN（日本語対応）までお気軽にお問い合わせください。</p>
+    <a href="https://idfl.com/ja/idfl-japan/" target="_blank" rel="noopener">お問い合わせ →</a>
+  </div>
+</main>
+
+<!-- ============ FOOTER (synced with index) ============ -->
+<footer class="site-footer">
+  <div class="footer-wrap footer-grid">
+    <a class="brand" href="/">
+      <img src="/IDFL-Logo.png" alt="IDFL JAPAN" class="brand-logo" />
+      <span class="brand-name">IDFL JAPAN</span>
+    </a>
+    <nav class="footer-links">
+      <a href="/seminar_schedule.html">開催予定のセミナー</a>
+      <a href="/past_seminar_v2.html">過去のセミナー</a>
+      <a href="/download.html">資料ダウンロード</a>
+      <a href="https://idfl.com/zh-tw/idfl-japan/">会社概要</a>
+      <a href="/idfl_news.html">お知らせ</a>
+      <a href="/converter.html">変換ツール</a>
+    </nav>
+    <p class="footer-copy">© 2026 IDFL JAPAN<br />International Down and Feather Laboratory</p>
+  </div>
+</footer>
+
+
+
+<script>
+(function(){
+  var btn = document.getElementById('siteMenuBtn');
+  var overlay = document.getElementById('siteMenuOverlay');
+  var closeBtn = document.getElementById('siteMenuClose');
+  if(!btn || !overlay) return;
+  function openM(){overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');btn.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';}
+  function closeM(){overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');btn.setAttribute('aria-expanded','false');document.body.style.overflow='';}
+  btn.addEventListener('click', openM);
+  if(closeBtn) closeBtn.addEventListener('click', closeM);
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeM(); });
+})();
+</script>
+
+
+<script>
+(function(){
+  var box=document.getElementById('qaSearch');
+  var empty=document.getElementById('qaEmpty');
+  if(!box) return;
+  var items=[].slice.call(document.querySelectorAll('details.qa'));
+  var sections=[].slice.call(document.querySelectorAll('.qa-section'));
+  box.addEventListener('input',function(){
+    var kw=box.value.trim().toLowerCase();
+    var any=false;
+    items.forEach(function(d){
+      var hit=!kw || (d.getAttribute('data-q')||'').toLowerCase().indexOf(kw)>-1;
+      d.style.display=hit?'':'none';
+      if(hit){any=true; if(kw) d.open=true; }
+      if(!kw) d.open=false;
+    });
+    sections.forEach(function(s){
+      var visible=s.querySelectorAll('details.qa:not([style*="display: none"])').length;
+      s.style.display=visible?'':'none';
+    });
+    empty.style.display=any?'none':'block';
+  });
+})();
+</script>
+</body>
+</html>
