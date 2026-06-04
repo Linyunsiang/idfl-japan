@@ -265,6 +265,39 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
   .qa-cta a:hover{background:#063372;}
 </style>
 
+
+<style id="qa-admin-css">
+  #qaAdminBar{display:none;background:#fffbeb;border-bottom:2px solid #fcd34d;padding:10px 24px;font-size:13px;color:#92400e;text-align:center;}
+  #qaAdminBar.on{display:block;}
+  #qaAdminBar b{font-weight:800;}
+  #qaAdminBar button{margin-left:10px;font-family:inherit;font-size:12px;font-weight:700;border:1px solid #b45309;background:#fff;color:#92400e;border-radius:7px;padding:5px 12px;cursor:pointer;}
+  #qaAdminBar button:hover{background:#fef3c7;}
+  #qaAddBtn{display:none;margin:0 0 22px;width:100%;border:2px dashed var(--brand-300);background:var(--brand-050);color:var(--brand-700);font-family:inherit;font-weight:700;font-size:15px;padding:14px;border-radius:12px;cursor:pointer;}
+  #qaAddBtn:hover{background:#fff;border-color:var(--brand-500);}
+  body.qa-admin #qaAddBtn{display:block;}
+  .qa-item-admin{display:none;gap:8px;padding:0 22px 16px;}
+  body.qa-admin .qa-item-admin{display:flex;}
+  .qa-item-admin button{font-family:inherit;font-size:12px;font-weight:700;border:none;border-radius:8px;padding:6px 13px;cursor:pointer;display:inline-flex;align-items:center;gap:5px;}
+  .qa-edit-b{background:#eff6ff;color:#2563eb;}.qa-edit-b:hover{background:#dbeafe;}
+  .qa-del-b{background:#fef2f2;color:#ef4444;}.qa-del-b:hover{background:#fee2e2;}
+  #qaFloatBtn{position:fixed;bottom:26px;right:26px;z-index:200;width:44px;height:44px;border-radius:50%;border:none;cursor:pointer;background:#063372;color:rgba(255,255,255,.45);box-shadow:0 3px 10px rgba(4,34,88,.3);font-size:18px;display:flex;align-items:center;justify-content:center;transition:all .2s;}
+  #qaFloatBtn:hover{color:#fff;background:#1255A0;}
+  body.qa-admin #qaFloatBtn{background:#1255A0;color:#fff;}
+  .qa-modal-bg{display:none;position:fixed;inset:0;background:rgba(4,34,88,.55);backdrop-filter:blur(4px);z-index:300;align-items:center;justify-content:center;padding:16px;}
+  .qa-modal-bg.open{display:flex;}
+  .qa-modal{background:#fff;border-radius:18px;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;padding:26px;}
+  .qa-modal h3{margin:0 0 16px;font-size:18px;color:#042258;font-weight:700;}
+  .qa-modal label{display:block;font-size:13px;font-weight:700;color:var(--brand-700);margin:14px 0 5px;}
+  .qa-modal input,.qa-modal select,.qa-modal textarea{width:100%;border:1px solid var(--brand-200);border-radius:9px;padding:10px 12px;font-size:14px;font-family:inherit;color:var(--brand-900);}
+  .qa-modal textarea{min-height:120px;line-height:1.7;resize:vertical;}
+  .qa-modal input:focus,.qa-modal select:focus,.qa-modal textarea:focus{outline:none;box-shadow:0 0 0 3px rgba(18,85,160,.15);border-color:var(--brand-500);}
+  .qa-modal-actions{display:flex;gap:10px;margin-top:22px;}
+  .qa-btn-primary{flex:1;background:#1255A0;color:#fff;border:none;border-radius:9px;padding:12px;font-weight:700;font-size:14px;font-family:inherit;cursor:pointer;}
+  .qa-btn-primary:hover{background:#063372;}
+  .qa-btn-ghost{background:#f1f5f9;color:#475569;border:none;border-radius:9px;padding:12px 20px;font-weight:700;font-size:14px;font-family:inherit;cursor:pointer;}
+  #qaToast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:400;background:#063372;color:#fff;padding:12px 22px;border-radius:12px;font-size:13.5px;font-weight:700;box-shadow:0 8px 24px rgba(4,34,88,.25);opacity:0;transition:opacity .3s;pointer-events:none;}
+  #qaToast.show{opacity:1;}
+</style>
 </head>
 <body>
 <header class="site-header">
@@ -280,6 +313,7 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
       <a class="pill" href="https://portal.idfl.com/sign-in" target="_blank" rel="noopener">お客様ポータル</a>
       <a class="pill" href="https://idfl.com/ja/idfl-japan/" target="_blank" rel="noopener">お問い合わせ</a>
       <a class="pill" href="https://forms.office.com/Pages/ResponsePage.aspx?id=hQL27-D4ckKtEjtBsJIawI60DctQlgpAt0rPraJ8Wg5UQjA4N1UwN09PVkg5SkNZN1lBVTQxN0tYTy4u" target="_blank" rel="noopener">お申し込み</a>
+      <a class="pill" href="/qa.html" style="background:#1255A0;color:#fff;border-color:#1255A0;">Q&amp;A</a>
     </nav>
     <button class="menu-btn" id="siteMenuBtn" aria-label="メニュー" aria-expanded="false">
       <span class="menu-btn-lines"><i></i><i></i></span>
@@ -339,157 +373,19 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
   </div>
 </div>
 
+<div id="qaAdminBar">
+  <b>管理者モード</b>：Q&Aの追加・編集・削除ができます。変更はこのブラウザに保存されます（サイト全体へ反映するには「JSON書き出し」して担当者にお渡しください）。
+  <button onclick="qaExport()">JSON書き出し</button>
+  <button onclick="qaLogout()">ログアウト</button>
+</div>
+
 <main class="qa-wrap">
   <div class="qa-search">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>
     <input type="text" id="qaSearch" placeholder="キーワードで質問を検索（例：TC、有効期限、オンライン監査）" />
   </div>
-    <section class="qa-section">
-      <h2 class="qa-section-title"><span class="num">Part 1</span>監査・認証編</h2>
-      <details class="qa" data-q="IDFL Japanではどのような認証（規格）の監査を受けられますか？  主に以下の国際的なサステナビリティ基準の監査・認証に対応しています。 GOTS：Global Organic Textile Standard（オーガニックテキスタイルの世界基準） Textile Exchangeのすべての基準：GRS、RCS（リサイクル）、OCS（オーガニック）、RDS、RWS、RMS、RAS（責任あるダウン・ウール・モヘア・アルパカ） FSC認証：Forest Stewardship Council（適切に管理された森林からの木材・繊維製品の認証） ※その他の認証に関しても幅広く対応・審査可能な場合がございますので、まずはお気軽にお問い合わせください。">
-        <summary><span class="q">Q1.</span><span>IDFL Japanではどのような認証（規格）の監査を受けられますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>主に以下の国際的なサステナビリティ基準の監査・認証に対応しています。</span></div><ul><li>GOTS：Global Organic Textile Standard（オーガニックテキスタイルの世界基準）</li><li>Textile Exchangeのすべての基準：GRS、RCS（リサイクル）、OCS（オーガニック）、RDS、RWS、RMS、RAS（責任あるダウン・ウール・モヘア・アルパカ）</li><li>FSC認証：Forest Stewardship Council（適切に管理された森林からの木材・繊維製品の認証）</li></ul><div class="note">※その他の認証に関しても幅広く対応・審査可能な場合がございますので、まずはお気軽にお問い合わせください。</div></div>
-      </details>
-      <details class="qa" data-q="認証を取得（SC発行）するまでに、一般的にどれくらいの期間がかかりますか？ 申請から監査の実施、不適合の修正（必要な場合）、そしてSC（事業者認証）の発行まで、一般的におよそ2〜3ヶ月程度かかります。工場の稼働状況や書類の準備状態によって前後するため、余裕を持ったスケジュールでの申請をおすすめします。   ">
-        <summary><span class="q">Q2.</span><span>認証を取得（SC発行）するまでに、一般的にどれくらいの期間がかかりますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>申請から監査の実施、不適合の修正（必要な場合）、そしてSC（事業者認証）の発行まで、一般的におよそ2〜3ヶ月程度かかります。工場の稼働状況や書類の準備状態によって前後するため、余裕を持ったスケジュールでの申請をおすすめします。</span></div></div>
-      </details>
-      <details class="qa" data-q="監査当日はどのようなことが行われますか？事前にどんな準備が必要ですか？ 当日の監査は主に書類審査、現場（工場・倉庫）確認、従業員へのインタビュー（基準による）の3つで構成されます。原料の購買記録、製造ログ、インボイス、管理手順書など必要書類をすぐに提示できるようご準備をお願いいたします。   ">
-        <summary><span class="q">Q3.</span><span>監査当日はどのようなことが行われますか？事前にどんな準備が必要ですか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>当日の監査は主に書類審査、現場（工場・倉庫）確認、従業員へのインタビュー（基準による）の3つで構成されます。原料の購買記録、製造ログ、インボイス、管理手順書など必要書類をすぐに提示できるようご準備をお願いいたします。</span></div></div>
-      </details>
-      <details class="qa" data-q="弊社の工場は海外（ベトナムや中国など）にあります。IDFL Japanに監査を依頼できますか？ はい、可能です。IDFLは世界32カ国以上に拠点（中国、台湾、ベトナム、バングラデシュ、ヨーロッパなど）を展開しています。窓口はIDFL Japan（日本語）で対応し、現地の監査は最も近いグローバル拠点の監査員が連携して実施いたします。   ">
-        <summary><span class="q">Q4.</span><span>弊社の工場は海外（ベトナムや中国など）にあります。IDFL Japanに監査を依頼できますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>はい、可能です。IDFLは世界32カ国以上に拠点（中国、台湾、ベトナム、バングラデシュ、ヨーロッパなど）を展開しています。窓口はIDFL Japan（日本語）で対応し、現地の監査は最も近いグローバル拠点の監査員が連携して実施いたします。</span></div></div>
-      </details>
-      <details class="qa" data-q="委託先（Unit・Outsourcing）の縫製工場や染色工場、倉庫も認証（SC）を取る必要がありますか？ 原則として、認証製品の製造・加工・保管・所有権の移転に関わるすべてのサプライチェーン（委託先含む）が認証を取得しているか、あるいは貴社のSCの委託先（Subcontractor）として登録されている必要があります。例外規定もありますので、製品ルートを一度ご相談ください。   ">
-        <summary><span class="q">Q5.</span><span>委託先（Unit・Outsourcing）の縫製工場や染色工場、倉庫も認証（SC）を取る必要がありますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>原則として、認証製品の製造・加工・保管・所有権の移転に関わるすべてのサプライチェーン（委託先含む）が認証を取得しているか、あるいは貴社のSCの委託先（Subcontractor）として登録されている必要があります。例外規定もありますので、製品ルートを一度ご相談ください。</span></div></div>
-      </details>
-      <details class="qa" data-q="SC（事業者認証）の有効期限はどれくらいですか？ Textile Exchange・GOTSの基準では、SCの有効期限は基本的に発行から1年間です。認証を維持するためには、毎年、有効期限が切れる前に更新監査（年次監査）を受けて合格する必要があります。   ">
-        <summary><span class="q">Q6.</span><span>SC（事業者認証）の有効期限はどれくらいですか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>Textile Exchange・GOTSの基準では、SCの有効期限は基本的に発行から1年間です。認証を維持するためには、毎年、有効期限が切れる前に更新監査（年次監査）を受けて合格する必要があります。</span></div></div>
-      </details>
-      <details class="qa" data-q="監査で不適合（NC）が指摘されたら、即不合格になってしまいますか？ 基本的には即不合格にはなりません。指摘された内容（不適合）に応じて、一定の修正期間が与えられます。その期間内に改善措置の証拠（書類や写真など）を提出し、承認されれば再度審査が行われ、合格するとSCが発行されます。ただし、賄賂や書類偽造等が発覚した場合は即不合格となります。   ">
-        <summary><span class="q">Q7.</span><span>監査で不適合（NC）が指摘されたら、即不合格になってしまいますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>基本的には即不合格にはなりません。指摘された内容（不適合）に応じて、一定の修正期間が与えられます。その期間内に改善措置の証拠（書類や写真など）を提出し、承認されれば再度審査が行われ、合格するとSCが発行されます。ただし、賄賂や書類偽造等が発覚した場合は即不合格となります。</span></div></div>
-      </details>
-      <details class="qa" data-q="GRS認証を申請したいのですが、環境面や労働環境の審査もあると聞きました。本当ですか？ はい、本当です。GRS（グローバル・リサイクル・スタンダード）では、リサイクル原料の追跡性（製品基準）だけでなく、工場内の社会的な労働環境（労働人権・安全衛生）、環境管理（排水・大気）、化学物質管理（SDS、テストレポート）についても厳しい審査基準が設けられています。   ">
-        <summary><span class="q">Q8.</span><span>GRS認証を申請したいのですが、環境面や労働環境の審査もあると聞きました。本当ですか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>はい、本当です。GRS（グローバル・リサイクル・スタンダード）では、リサイクル原料の追跡性（製品基準）だけでなく、工場内の社会的な労働環境（労働人権・安全衛生）、環境管理（排水・大気）、化学物質管理（SDS、テストレポート）についても厳しい審査基準が設けられています。</span></div></div>
-      </details>
-      <details class="qa" data-q="昨年度の監査から、住所や社名、取り扱う製品カテゴリが変わりました。どうすればいいですか？ SCの有効期限内であっても、社名・住所の変更や、新しい製品カテゴリの追加、委託先の追加・変更がある場合は、速やかにSCの変更申請を行ってください。内容によっては追加の書面審査や実地監査が必要になる場合があります。   ">
-        <summary><span class="q">Q9.</span><span>昨年度の監査から、住所や社名、取り扱う製品カテゴリが変わりました。どうすればいいですか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>SCの有効期限内であっても、社名・住所の変更や、新しい製品カテゴリの追加、委託先の追加・変更がある場合は、速やかにSCの変更申請を行ってください。内容によっては追加の書面審査や実地監査が必要になる場合があります。</span></div></div>
-      </details>
-      <details class="qa" data-q="オンライン監査での対応は可能ですか？ 規格ごとのルール（Textile ExchangeやGOTSの規定）および対象施設のリスクレベルに基づいて判断されます。初回監査は原則として現地オンサイト監査となりますが、特定の低リスクな施設や更新監査の一部ではリモート監査が認められる場合もあります。申請書をいただいてから審査させていただきますので、お気軽にご相談ください。   ">
-        <summary><span class="q">Q10.</span><span>オンライン監査での対応は可能ですか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>規格ごとのルール（Textile ExchangeやGOTSの規定）および対象施設のリスクレベルに基づいて判断されます。初回監査は原則として現地オンサイト監査となりますが、特定の低リスクな施設や更新監査の一部ではリモート監査が認められる場合もあります。申請書をいただいてから審査させていただきますので、お気軽にご相談ください。</span></div></div>
-      </details>
-      <details class="qa" data-q="監査費用はどのように決定されますか？見積もりには何の情報が必要ですか？ 監査費用は、対象となる施設の数、工場の規模（従業員数）、申請する規格の種類、製造工程などに基づいて計算されます。お見積りの際は、弊社指定の申請フォーム（Application Form）に必要事項をご記入のうえご提出ください。   ">
-        <summary><span class="q">Q11.</span><span>監査費用はどのように決定されますか？見積もりには何の情報が必要ですか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>監査費用は、対象となる施設の数、工場の規模（従業員数）、申請する規格の種類、製造工程などに基づいて計算されます。お見積りの際は、弊社指定の申請フォーム（Application Form）に必要事項をご記入のうえご提出ください。</span></div></div>
-      </details>
-      <details class="qa" data-q="1つの工場でGRSとGOTSを同時に監査してもらうことは可能ですか？ はい、可能です。複数の規格を同時に監査することで、監査員が現地に赴く回数を減らし、監査費用やお客様側の立ち合いの負担を抑えることができます。   ">
-        <summary><span class="q">Q12.</span><span>1つの工場でGRSとGOTSを同時に監査してもらうことは可能ですか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>はい、可能です。複数の規格を同時に監査することで、監査員が現地に赴く回数を減らし、監査費用やお客様側の立ち合いの負担を抑えることができます。</span></div></div>
-      </details>
-      <details class="qa" data-q="認証を取得している委託先の工場を変更、または追加したい場合はどうすればいいですか？ 貴社のSCに紐づく委託先（Subcontractor）を変更・追加する場合は、必ず事前にIDFLへ申請してください。委託先がすでに独自のSCを保持している場合は書面審査のみで済むことが多いですが、未認証の施設を追加する場合は、その施設への実地監査が必要になります。   ">
-        <summary><span class="q">Q13.</span><span>認証を取得している委託先の工場を変更、または追加したい場合はどうすればいいですか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>貴社のSCに紐づく委託先（Subcontractor）を変更・追加する場合は、必ず事前にIDFLへ申請してください。委託先がすでに独自のSCを保持している場合は書面審査のみで済むことが多いですが、未認証の施設を追加する場合は、その施設への実地監査が必要になります。</span></div></div>
-      </details>
-      <details class="qa" data-q="初回の監査に向けて、社内で管理責任者を置く必要はありますか？ はい、必要です。各認証規格（Textile ExchangeやGOTSなど）では、認証基準を満たすための社内体制として、全体の運用を監督する管理責任者（マニュアルの作成や管理を行う担当者）を任命することが求められます。   ">
-        <summary><span class="q">Q14.</span><span>初回の監査に向けて、社内で管理責任者を置く必要はありますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>はい、必要です。各認証規格（Textile ExchangeやGOTSなど）では、認証基準を満たすための社内体制として、全体の運用を監督する管理責任者（マニュアルの作成や管理を行う担当者）を任命することが求められます。</span></div></div>
-      </details>
-      <details class="qa" data-q="CCS（Content Claim Standard）とは何ですか？他の認証と何が違うのでしょうか？ CCSは、すべてのTextile Exchange基準（GRS、RCS、OCS、RDSなど）の土台となっているChain of Custody（加工流通過程の管理）の規格です。原料がサプライチェーンを通じて正しく追跡されているかを検証するための共通ルールであり、これをもとに各規格特有の基準が上乗せされています。   ">
-        <summary><span class="q">Q15.</span><span>CCS（Content Claim Standard）とは何ですか？他の認証と何が違うのでしょうか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>CCSは、すべてのTextile Exchange基準（GRS、RCS、OCS、RDSなど）の土台となっているChain of Custody（加工流通過程の管理）の規格です。原料がサプライチェーンを通じて正しく追跡されているかを検証するための共通ルールであり、これをもとに各規格特有の基準が上乗せされています。</span></div></div>
-      </details>
-      <details class="qa" data-q="工場の中に認証品と非認証品（通常の製品）が混在していても監査に通りますか？ はい、通ります。ただし、製造ライン、保管エリア、コンテナなどが明確に識別（ラベル表示など）されており、非認証品と物理的に混ざらないための管理手順が徹底されていることが審査されます。   ">
-        <summary><span class="q">Q16.</span><span>工場の中に認証品と非認証品（通常の製品）が混在していても監査に通りますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>はい、通ります。ただし、製造ライン、保管エリア、コンテナなどが明確に識別（ラベル表示など）されており、非認証品と物理的に混ざらないための管理手順が徹底されていることが審査されます。</span></div></div>
-      </details>
-      <details class="qa" data-q="監査の言語は何ベースですか？英語での対応が必要ですか？ 日本国内の施設であれば、原則として日本語が話せる監査員が対応しますので、当日のコミュニケーションは日本語で問題ありません。ただし、最終的に発行されるSCは英語ベースとなります。   ">
-        <summary><span class="q">Q17.</span><span>監査の言語は何ベースですか？英語での対応が必要ですか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>日本国内の施設であれば、原則として日本語が話せる監査員が対応しますので、当日のコミュニケーションは日本語で問題ありません。ただし、最終的に発行されるSCは英語ベースとなります。</span></div></div>
-      </details>
-      <details class="qa" data-q="監査当日、工場で働く外国人技能実習生やパートタイムの従業員へのインタビューはありますか？ はい、あります。労働環境や人権、安全衛生の基準が含まれる規格（GRSやGOTSなど）の監査では、監査員が現場の従業員（正社員、パート、外国人労働者など）をランダムに選び、面談を行います。これはマネジメント層からの報告と現場の実態が一致しているかを確認するための重要なプロセスです。   ">
-        <summary><span class="q">Q18.</span><span>監査当日、工場で働く外国人技能実習生やパートタイムの従業員へのインタビューはありますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>はい、あります。労働環境や人権、安全衛生の基準が含まれる規格（GRSやGOTSなど）の監査では、監査員が現場の従業員（正社員、パート、外国人労働者など）をランダムに選び、面談を行います。これはマネジメント層からの報告と現場の実態が一致しているかを確認するための重要なプロセスです。</span></div></div>
-      </details>
-      <details class="qa" data-q="年次更新監査（2年目以降）の申請は、いつ頃までに行うべきですか？ 現在保持しているSCの有効期限が切れる3〜4ヶ月前には、更新手続きを開始してください。   ">
-        <summary><span class="q">Q19.</span><span>年次更新監査（2年目以降）の申請は、いつ頃までに行うべきですか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>現在保持しているSCの有効期限が切れる3〜4ヶ月前には、更新手続きを開始してください。</span></div></div>
-      </details>
-    </section>
-    <section class="qa-section">
-      <h2 class="qa-section-title"><span class="num">Part 2</span>TC（取引証明書）編</h2>
-      <details class="qa" data-q="SC（Scope Certificate）とTC（Transaction Certificate）の違いは何ですか？   SC（事業者認証）：「この会社・工場は認証基準を満たした設備と体制を持っています」という認定書のようなものです（年1回更新）。 TC（取引証明書）：「この特定の出荷品（製品）は、間違いなく認証原料で作られています」という商品の本物証明書です。 ">
-        <summary><span class="q">Q1.</span><span>SC（Scope Certificate）とTC（Transaction Certificate）の違いは何ですか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><ul><li>SC（事業者認証）：「この会社・工場は認証基準を満たした設備と体制を持っています」という認定書のようなものです（年1回更新）。</li><li>TC（取引証明書）：「この特定の出荷品（製品）は、間違いなく認証原料で作られています」という商品の本物証明書です。</li></ul></div>
-      </details>
-      <details class="qa" data-q="製品を出荷しました。TCの申請期限はありますか？ はい、厳しい期限があります。Textile Exchangeの規定により、製品の出荷日（インボイス日付または輸送書類の日付のいずれか早い方）から180日以内にTCを申請しなければなりません。180日を過ぎると、システム上TCの発行ができなくなりますのでご注意ください。   ">
-        <summary><span class="q">Q2.</span><span>製品を出荷しました。TCの申請期限はありますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>はい、厳しい期限があります。Textile Exchangeの規定により、製品の出荷日（インボイス日付または輸送書類の日付のいずれか早い方）から180日以内にTCを申請しなければなりません。180日を過ぎると、システム上TCの発行ができなくなりますのでご注意ください。</span></div></div>
-      </details>
-      <details class="qa" data-q="複数の出荷（インボイス）を、1枚のTCにまとめて申請することはできますか？ 条件を満たせば可能です。原則として同一の売り手から同一の買い手への出荷であり、かつ最初の出荷から最後の出荷までの期間が3ヶ月（90日）以内の取引であれば、複数のインボイスを1枚の複数出荷TC（Multiple Shipment TC）としてまとめて申請できます。   ">
-        <summary><span class="q">Q3.</span><span>複数の出荷（インボイス）を、1枚のTCにまとめて申請することはできますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>条件を満たせば可能です。原則として同一の売り手から同一の買い手への出荷であり、かつ最初の出荷から最後の出荷までの期間が3ヶ月（90日）以内の取引であれば、複数のインボイスを1枚の複数出荷TC（Multiple Shipment TC）としてまとめて申請できます。</span></div></div>
-      </details>
-      <details class="qa" data-q="TCを申請する際、どのような書類を提出する必要がありますか？  主に以下の書類が必要となります。 原料仕入れ時の有効な入荷TC 貴社が発行した対象取引のインボイス 荷受人が確認できる輸送書類（B/L、AWB、貨物送り状 など） 輸送商品のパッキングリスト 生産ログやインプット・アウトプットの重量バランス（歩留まり）等が分かるマスバランスシート ">
-        <summary><span class="q">Q4.</span><span>TCを申請する際、どのような書類を提出する必要がありますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>主に以下の書類が必要となります。</span></div><ul><li>原料仕入れ時の有効な入荷TC</li><li>貴社が発行した対象取引のインボイス</li><li>荷受人が確認できる輸送書類（B/L、AWB、貨物送り状 など）</li><li>輸送商品のパッキングリスト</li><li>生産ログやインプット・アウトプットの重量バランス（歩留まり）等が分かるマスバランスシート</li></ul></div>
-      </details>
-      <details class="qa" data-q="原料サプライヤーからTCが届きません。自社分のTCを先に申請してもいいですか？ いいえ、できません。仕入れた原料が認証品であるという証明となる前段階の有効なTCがシステム上で確認できない限り、貴社分のTCを発行することはできません。サプライヤーへ早めのTC発行を促していただくようお願いいたします。   ">
-        <summary><span class="q">Q5.</span><span>原料サプライヤーからTCが届きません。自社分のTCを先に申請してもいいですか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>いいえ、できません。仕入れた原料が認証品であるという証明となる前段階の有効なTCがシステム上で確認できない限り、貴社分のTCを発行することはできません。サプライヤーへ早めのTC発行を促していただくようお願いいたします。</span></div></div>
-      </details>
-      <details class="qa" data-q="インボイスに記載する重量と、TCに記載する重量は一致している必要がありますか？ はい、原則として完全に整合している必要があります。インボイスやパッキングリストに記載されている製品重量と、TC申請書に記載するNet Weight（純重量）およびCertified Weight（認証製品重量）は、一致していなければなりません。   ">
-        <summary><span class="q">Q6.</span><span>インボイスに記載する重量と、TCに記載する重量は一致している必要がありますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>はい、原則として完全に整合している必要があります。インボイスやパッキングリストに記載されている製品重量と、TC申請書に記載するNet Weight（純重量）およびCertified Weight（認証製品重量）は、一致していなければなりません。</span></div></div>
-      </details>
-      <details class="qa" data-q="TCの申請から発行まで、通常どれくらいの時間がかかりますか？ 提出書類に不備や修正がない場合、通常3営業日以内で発行されます。ただし、書類の不備（重量の不一致、日付の矛盾、英語表記の誤りなど）がある場合、差し戻しと再確認に時間がかかりますので、余裕を持った申請をお願いします。   ">
-        <summary><span class="q">Q7.</span><span>TCの申請から発行まで、通常どれくらいの時間がかかりますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>提出書類に不備や修正がない場合、通常3営業日以内で発行されます。ただし、書類の不備（重量の不一致、日付の矛盾、英語表記の誤りなど）がある場合、差し戻しと再確認に時間がかかりますので、余裕を持った申請をお願いします。</span></div></div>
-      </details>
-      <details class="qa" data-q="発行されたTCの記載内容に間違いを見つけました。修正できますか？ 発行後であっても修正（再発行）は可能ですが、発行日から一定期間内（例：30〜60日以内など、規格により異なる）に申し出ていただく必要があります。また、お客様都合による修正の場合、再発行手数料が発生することがありますので、申請前にドラフト画面等でしっかりとご確認ください。   ">
-        <summary><span class="q">Q8.</span><span>発行されたTCの記載内容に間違いを見つけました。修正できますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>発行後であっても修正（再発行）は可能ですが、発行日から一定期間内（例：30〜60日以内など、規格により異なる）に申し出ていただく必要があります。また、お客様都合による修正の場合、再発行手数料が発生することがありますので、申請前にドラフト画面等でしっかりとご確認ください。</span></div></div>
-      </details>
-      <details class="qa" data-q="出荷前の段階（契約時や生産中）で、TCを先に申請することはできますか？ いいえ、できません。TCは実際の取引・出荷を証明するものですので、出荷が完了し、インボイスや輸送書類（B/Lや配送伝票）が確定した後にしか申請・発行はできません。   ">
-        <summary><span class="q">Q9.</span><span>出荷前の段階（契約時や生産中）で、TCを先に申請することはできますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>いいえ、できません。TCは実際の取引・出荷を証明するものですので、出荷が完了し、インボイスや輸送書類（B/Lや配送伝票）が確定した後にしか申請・発行はできません。</span></div></div>
-      </details>
-      <details class="qa" data-q="輸入した入荷TCの発行元がIDFL以外の認証機関（他社）でした。この原料を使って製品を作った場合、IDFL JapanへTCを申請できますか？ はい、可能です。サプライヤーから届いたTCが、Textile Exchange等に認められた正規の認証機関から発行された有効なものであれば、IDFL Japanに自社分のTCを申請いただけます。   ">
-        <summary><span class="q">Q10.</span><span>輸入した入荷TCの発行元がIDFL以外の認証機関（他社）でした。この原料を使って製品を作った場合、IDFL JapanへTCを申請できますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>はい、可能です。サプライヤーから届いたTCが、Textile Exchange等に認められた正規の認証機関から発行された有効なものであれば、IDFL Japanに自社分のTCを申請いただけます。</span></div></div>
-      </details>
-      <details class="qa" data-q="原料TCに記載されている製品カテゴリ（Product Category）と、自社が申請する製品カテゴリが異なる場合はどうなりますか？ 加工工程（例：糸から生地へ、生地から衣服へ）を経て製品の形態が変わるため、カテゴリが変わるのが正常です。ただし、貴社のSCにその加工工程および対象の製品カテゴリが登録されている必要があります。   ">
-        <summary><span class="q">Q11.</span><span>原料TCに記載されている製品カテゴリ（Product Category）と、自社が申請する製品カテゴリが異なる場合はどうなりますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>加工工程（例：糸から生地へ、生地から衣服へ）を経て製品の形態が変わるため、カテゴリが変わるのが正常です。ただし、貴社のSCにその加工工程および対象の製品カテゴリが登録されている必要があります。</span></div></div>
-      </details>
-      <details class="qa" data-q="1枚のインボイスの中に認証品と非認証品が混ざっている場合、TCの申請はどうすればいいですか？ そのまま申請していただいて構いません。ただし、TCの申請書やシステム上で、インボイス内のどの項目が認証品で、その純重量（Net Weight）が何キロなのかを明確にする必要があります。   ">
-        <summary><span class="q">Q12.</span><span>1枚のインボイスの中に認証品と非認証品が混ざっている場合、TCの申請はどうすればいいですか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>そのまま申請していただいて構いません。ただし、TCの申請書やシステム上で、インボイス内のどの項目が認証品で、その純重量（Net Weight）が何キロなのかを明確にする必要があります。</span></div></div>
-      </details>
-      <details class="qa" data-q="海外への出荷の場合、TC申請に必要な輸送書類は何になりますか？ 船便の場合はB/L（船荷証券）、航空便の場合はAWB（航空貨物運送状）が必要です。書類に記載されている荷送人（Shipper）、荷受人（Consignee）、ケース数・重量が、インボイスやTC申請内容と一致している必要があります。   ">
-        <summary><span class="q">Q13.</span><span>海外への出荷の場合、TC申請に必要な輸送書類は何になりますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>船便の場合はB/L（船荷証券）、航空便の場合はAWB（航空貨物運送状）が必要です。書類に記載されている荷送人（Shipper）、荷受人（Consignee）、ケース数・重量が、インボイスやTC申請内容と一致している必要があります。</span></div></div>
-      </details>
-      <details class="qa" data-q="原料を仕入れてから自社で長期間保管し、半年以上経ってから出荷しました。この場合でもTCは発行されますか？ はい、発行可能です。仕入れた際の原料TCが有効であり、工場内での保管中に非認証品との混在がないよう正しく管理されていれば、仕入れから時間が経過していても出荷時のTC申請は可能です。   ">
-        <summary><span class="q">Q14.</span><span>原料を仕入れてから自社で長期間保管し、半年以上経ってから出荷しました。この場合でもTCは発行されますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>はい、発行可能です。仕入れた際の原料TCが有効であり、工場内での保管中に非認証品との混在がないよう正しく管理されていれば、仕入れから時間が経過していても出荷時のTC申請は可能です。</span></div></div>
-      </details>
-      <details class="qa" data-q="TC申請の差し戻しで最も多い理由は何ですか？事前に防ぐコツは？ 最も多いのは書類間の数字や表記の不一致です（例：インボイスの重量とパッキングリストの重量がズレている、サプライヤー名や顧客名のスペルがSCの登録名と違うなど）。申請前に、各書類の重量（Net Weight）、日付、会社名（英語）が完全に一致しているか指差し確認することをおすすめします。   ">
-        <summary><span class="q">Q15.</span><span>TC申請の差し戻しで最も多い理由は何ですか？事前に防ぐコツは？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>最も多いのは書類間の数字や表記の不一致です（例：インボイスの重量とパッキングリストの重量がズレている、サプライヤー名や顧客名のスペルがSCの登録名と違うなど）。申請前に、各書類の重量（Net Weight）、日付、会社名（英語）が完全に一致しているか指差し確認することをおすすめします。</span></div></div>
-      </details>
-      <details class="qa" data-q="オンラインシステムでのTC申請方法が分かりません。サポートはありますか？ はい、ございます。IDFL Japanでは、弊社ポータルサイトでのTC申請手順について、マニュアルのご提供や、必要に応じた実務担当者様へのオンラインサポートを行っております。お気軽にご相談ください。   ">
-        <summary><span class="q">Q16.</span><span>オンラインシステムでのTC申請方法が分かりません。サポートはありますか？</span><svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M6 9l6 6 6-6"/></svg></summary>
-        <div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>はい、ございます。IDFL Japanでは、弊社ポータルサイトでのTC申請手順について、マニュアルのご提供や、必要に応じた実務担当者様へのオンラインサポートを行っております。お気軽にご相談ください。</span></div></div>
-      </details>
-    </section>
+  <button id="qaAddBtn" onclick="qaOpenAdd()">＋ 新しいQ&Aを追加</button>
+  <div id="qaContainer"></div>
   <p class="qa-empty" id="qaEmpty">該当する質問が見つかりませんでした。</p>
   <div class="qa-cta">
     <h3>解決しないご質問がありますか？</h3>
@@ -498,7 +394,42 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
   </div>
 </main>
 
-<!-- ============ FOOTER (synced with index) ============ -->
+<button id="qaFloatBtn" onclick="qaLockClick()" title="管理者">🔒</button>
+
+<div class="qa-modal-bg" id="qaLoginModal">
+  <div class="qa-modal">
+    <h3>管理者ログイン</h3>
+    <label>パスワード</label>
+    <input type="password" id="qaPassInput" onkeydown="if(event.key==='Enter')qaDoLogin()" placeholder="パスワードを入力" />
+    <div class="qa-modal-actions">
+      <button class="qa-btn-primary" onclick="qaDoLogin()">ログイン</button>
+      <button class="qa-btn-ghost" onclick="qaCloseModal('qaLoginModal')">キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<div class="qa-modal-bg" id="qaEditModal">
+  <div class="qa-modal">
+    <h3 id="qaEditTitle">Q&Aを追加</h3>
+    <input type="hidden" id="qaEditId" />
+    <label>カテゴリ</label>
+    <select id="qaEditSection">
+      <option value="audit">監査・認証編</option>
+      <option value="tc">TC（取引証明書）編</option>
+    </select>
+    <label>質問（Q）</label>
+    <textarea id="qaEditQ" style="min-height:70px" placeholder="質問を入力"></textarea>
+    <label>回答（A）</label>
+    <textarea id="qaEditA" placeholder="回答を入力"></textarea>
+    <div class="qa-modal-actions">
+      <button class="qa-btn-primary" onclick="qaSaveItem()">保存</button>
+      <button class="qa-btn-ghost" onclick="qaCloseModal('qaEditModal')">キャンセル</button>
+    </div>
+  </div>
+</div>
+
+<div id="qaToast"></div>
+
 <footer class="site-footer">
   <div class="footer-wrap footer-grid">
     <a class="brand" href="/">
@@ -517,46 +448,153 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
   </div>
 </footer>
 
-
-
 <script>
 (function(){
-  var btn = document.getElementById('siteMenuBtn');
-  var overlay = document.getElementById('siteMenuOverlay');
-  var closeBtn = document.getElementById('siteMenuClose');
-  if(!btn || !overlay) return;
-  function openM(){overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');btn.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';}
-  function closeM(){overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');btn.setAttribute('aria-expanded','false');document.body.style.overflow='';}
-  btn.addEventListener('click', openM);
-  if(closeBtn) closeBtn.addEventListener('click', closeM);
-  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeM(); });
+  var btn=document.getElementById('siteMenuBtn'),overlay=document.getElementById('siteMenuOverlay'),closeBtn=document.getElementById('siteMenuClose');
+  if(!btn||!overlay)return;
+  function o(){overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');btn.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';}
+  function c(){overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');btn.setAttribute('aria-expanded','false');document.body.style.overflow='';}
+  btn.addEventListener('click',o);if(closeBtn)closeBtn.addEventListener('click',c);
+  document.addEventListener('keydown',function(e){if(e.key==='Escape')c();});
 })();
 </script>
-
-
 <script>
-(function(){
-  var box=document.getElementById('qaSearch');
-  var empty=document.getElementById('qaEmpty');
-  if(!box) return;
-  var items=[].slice.call(document.querySelectorAll('details.qa'));
-  var sections=[].slice.call(document.querySelectorAll('.qa-section'));
-  box.addEventListener('input',function(){
-    var kw=box.value.trim().toLowerCase();
-    var any=false;
-    items.forEach(function(d){
-      var hit=!kw || (d.getAttribute('data-q')||'').toLowerCase().indexOf(kw)>-1;
-      d.style.display=hit?'':'none';
-      if(hit){any=true; if(kw) d.open=true; }
-      if(!kw) d.open=false;
+const QA_KEY='idflQA_v1';
+const QA_PASS='idfl2026';
+const QA_SECTIONS=[{key:'audit',label:'監査・認証編',part:'Part 1'},{key:'tc',label:'TC（取引証明書）編',part:'Part 2'}];
+const defaultQA = [
+  {id:'qa-audit-01', section:'audit', q:'IDFL Japanではどのような認証（規格）の監査を受けられますか？', a:'主に以下の国際的なサステナビリティ基準に対応しています。①GOTS（オーガニックテキスタイルの世界基準）、②Textile Exchangeの全基準（GRS・RCS・OCS・RDS・RWS・RMS・RAS）、③FSC認証（適切に管理された森林由来の木材・繊維製品）。その他の認証も幅広く対応・審査可能な場合がございますので、まずはお気軽にお問い合わせください。'},
+  {id:'qa-audit-02', section:'audit', q:'認証を取得（SC発行）するまでに、一般的にどれくらいの期間がかかりますか？', a:'申請から監査の実施、不適合の修正（必要な場合）、SC（事業者認証）の発行まで、一般的におよそ2〜3ヶ月程度かかります。工場の稼働状況や書類の準備状態によって前後するため、余裕を持ったスケジュールでの申請をおすすめします。'},
+  {id:'qa-audit-03', section:'audit', q:'監査当日はどのようなことが行われますか？事前にどんな準備が必要ですか？', a:'当日の監査は主に①書類審査、②現場（工場・倉庫）確認、③従業員へのインタビュー（基準による）の3つで構成されます。原料の購買記録、製造ログ、インボイス、管理手順書など必要書類をすぐに提示できるようご準備をお願いいたします。'},
+  {id:'qa-audit-04', section:'audit', q:'弊社の工場は海外（ベトナムや中国など）にあります。IDFL Japanに監査を依頼できますか？', a:'はい、可能です。IDFLは世界32カ国以上に拠点（中国、台湾、ベトナム、バングラデシュ、ヨーロッパなど）を展開しています。窓口はIDFL Japan（日本語）で対応し、現地の監査は最も近いグローバル拠点の監査員が連携して実施いたします。'},
+  {id:'qa-audit-05', section:'audit', q:'委託先（Unit・Outsourcing）の縫製工場や染色工場、倉庫も認証（SC）を取る必要がありますか？', a:'原則として、認証製品の製造・加工・保管・所有権の移転に関わるすべてのサプライチェーン（委託先含む）が認証を取得しているか、貴社のSCの委託先（Subcontractor）として登録されている必要があります。例外規定もありますので、製品ルートを一度ご相談ください。'},
+  {id:'qa-audit-06', section:'audit', q:'SC（事業者認証）の有効期限はどれくらいですか？', a:'Textile Exchange・GOTSの基準では、SCの有効期限は基本的に発行から1年間です。認証を維持するには、毎年、有効期限が切れる前に更新監査（年次監査）を受けて合格する必要があります。'},
+  {id:'qa-audit-07', section:'audit', q:'監査で不適合（NC）が指摘されたら、即不合格になってしまいますか？', a:'基本的には即不合格にはなりません。指摘内容（不適合）に応じて一定の修正期間が与えられ、その期間内に改善措置の証拠（書類や写真など）を提出し承認されれば、再審査のうえ合格するとSCが発行されます。ただし、賄賂や書類偽造等が発覚した場合は即不合格となります。'},
+  {id:'qa-audit-08', section:'audit', q:'GRS認証を申請したいのですが、環境面や労働環境の審査もあると聞きました。本当ですか？', a:'はい、本当です。GRS（グローバル・リサイクル・スタンダード）では、リサイクル原料の追跡性（製品基準）だけでなく、工場内の社会的な労働環境（労働人権・安全衛生）、環境管理（排水・大気）、化学物質管理（SDS・テストレポート）についても厳しい審査基準が設けられています。'},
+  {id:'qa-audit-09', section:'audit', q:'昨年度の監査から、住所や社名、取り扱う製品カテゴリが変わりました。どうすればいいですか？', a:'SCの有効期限内であっても、社名・住所の変更、新しい製品カテゴリの追加、委託先の追加・変更がある場合は、速やかにSCの変更申請を行ってください。内容によっては追加の書面審査や実地監査が必要になる場合があります。'},
+  {id:'qa-audit-10', section:'audit', q:'オンライン監査での対応は可能ですか？', a:'規格ごとのルール（Textile ExchangeやGOTSの規定）および対象施設のリスクレベルに基づいて判断されます。初回監査は原則として現地オンサイト監査ですが、特定の低リスク施設や更新監査の一部ではリモート監査が認められる場合もあります。申請書をいただいてから審査いたしますので、お気軽にご相談ください。'},
+  {id:'qa-audit-11', section:'audit', q:'監査費用はどのように決定されますか？見積もりには何の情報が必要ですか？', a:'監査費用は、対象施設の数、工場の規模（従業員数）、申請する規格の種類、製造工程などに基づいて計算されます。お見積りの際は、弊社指定の申請フォーム（Application Form）に必要事項をご記入のうえご提出ください。'},
+  {id:'qa-audit-12', section:'audit', q:'1つの工場でGRSとGOTSを同時に監査してもらうことは可能ですか？', a:'はい、可能です。複数の規格を同時に監査することで、監査員が現地に赴く回数を減らし、監査費用やお客様側の立ち合いの負担を抑えることができます。'},
+  {id:'qa-audit-13', section:'audit', q:'認証を取得している委託先の工場を変更、または追加したい場合はどうすればいいですか？', a:'貴社のSCに紐づく委託先（Subcontractor）を変更・追加する場合は、必ず事前にIDFLへ申請してください。委託先がすでに独自のSCを保持している場合は書面審査のみで済むことが多いですが、未認証の施設を追加する場合はその施設への実地監査が必要になります。'},
+  {id:'qa-audit-14', section:'audit', q:'初回の監査に向けて、社内で管理責任者を置く必要はありますか？', a:'はい、必要です。各認証規格（Textile ExchangeやGOTSなど）では、認証基準を満たすための社内体制として、全体の運用を監督する管理責任者（マニュアルの作成・管理を行う担当者）を任命することが求められます。'},
+  {id:'qa-audit-15', section:'audit', q:'CCS（Content Claim Standard）とは何ですか？他の認証と何が違うのでしょうか？', a:'CCSは、すべてのTextile Exchange基準（GRS・RCS・OCS・RDSなど）の土台となっているChain of Custody（加工流通過程の管理）の規格です。原料がサプライチェーンを通じて正しく追跡されているかを検証する共通ルールであり、これをもとに各規格特有の基準が上乗せされています。'},
+  {id:'qa-audit-16', section:'audit', q:'工場の中に認証品と非認証品（通常の製品）が混在していても監査に通りますか？', a:'はい、通ります。ただし、製造ライン、保管エリア、コンテナなどが明確に識別（ラベル表示など）され、非認証品と物理的に混ざらないための管理手順が徹底されていることが審査されます。'},
+  {id:'qa-audit-17', section:'audit', q:'監査の言語は何ベースですか？英語での対応が必要ですか？', a:'日本国内の施設であれば、原則として日本語が話せる監査員が対応しますので、当日のコミュニケーションは日本語で問題ありません。ただし、最終的に発行されるSCは英語ベースとなります。'},
+  {id:'qa-audit-18', section:'audit', q:'監査当日、工場で働く外国人技能実習生やパートタイムの従業員へのインタビューはありますか？', a:'はい、あります。労働環境・人権・安全衛生の基準が含まれる規格（GRSやGOTSなど）の監査では、監査員が現場の従業員（正社員・パート・外国人労働者など）をランダムに選び面談を行います。これはマネジメント層からの報告と現場の実態が一致しているかを確認する重要なプロセスです。'},
+  {id:'qa-audit-19', section:'audit', q:'年次更新監査（2年目以降）の申請は、いつ頃までに行うべきですか？', a:'現在保持しているSCの有効期限が切れる3〜4ヶ月前には、更新手続きを開始してください。'},
+  {id:'qa-tc-01', section:'tc', q:'SC（Scope Certificate）とTC（Transaction Certificate）の違いは何ですか？', a:'SC（事業者認証）は「この会社・工場は認証基準を満たした設備と体制を持っています」という認定書のようなもので、年1回更新します。TC（取引証明書）は「この特定の出荷品（製品）は、間違いなく認証原料で作られています」という商品ごとの証明書です。'},
+  {id:'qa-tc-02', section:'tc', q:'製品を出荷しました。TCの申請期限はありますか？', a:'はい、厳しい期限があります。Textile Exchangeの規定により、製品の出荷日（インボイス日付または輸送書類の日付のいずれか早い方）から180日以内にTCを申請しなければなりません。180日を過ぎるとシステム上TCを発行できなくなりますのでご注意ください。'},
+  {id:'qa-tc-03', section:'tc', q:'複数の出荷（インボイス）を、1枚のTCにまとめて申請できますか？', a:'条件を満たせば可能です。同一の売り手から同一の買い手への出荷で、かつ最初の出荷から最後の出荷までの期間が3ヶ月（90日）以内の取引であれば、複数のインボイスを1枚の複数出荷TC（Multiple Shipment TC）としてまとめて申請できます。'},
+  {id:'qa-tc-04', section:'tc', q:'TCを申請する際、どのような書類を提出する必要がありますか？', a:'主に以下が必要です。①原料仕入れ時の有効な入荷TC、②貴社が発行した対象取引のインボイス、③荷受人が確認できる輸送書類（B/L・AWB・貨物送り状など）、④輸送商品のパッキングリスト、⑤生産ログやインプット・アウトプットの重量バランス（歩留まり）が分かるマスバランスシート。'},
+  {id:'qa-tc-05', section:'tc', q:'原料サプライヤーからTCが届きません。自社分のTCを先に申請してもいいですか？', a:'いいえ、できません。仕入れた原料が認証品であることを示す前段階の有効なTCがシステム上で確認できない限り、貴社分のTCは発行できません。サプライヤーへ早めのTC発行を促していただくようお願いいたします。'},
+  {id:'qa-tc-06', section:'tc', q:'インボイスに記載する重量と、TCに記載する重量は一致している必要がありますか？', a:'はい、原則として完全に整合している必要があります。インボイスやパッキングリストに記載の製品重量と、TC申請書に記載するNet Weight（純重量）およびCertified Weight（認証製品重量）は一致していなければなりません。'},
+  {id:'qa-tc-07', section:'tc', q:'TCの申請から発行まで、通常どれくらいの時間がかかりますか？', a:'提出書類に不備や修正がない場合、通常3営業日以内で発行されます。ただし書類の不備（重量の不一致・日付の矛盾・英語表記の誤りなど）がある場合は、差し戻しと再確認に時間がかかりますので、余裕を持った申請をお願いします。'},
+  {id:'qa-tc-08', section:'tc', q:'発行されたTCの記載内容に間違いを見つけました。修正できますか？', a:'発行後でも修正（再発行）は可能ですが、発行日から一定期間内（例：30〜60日以内など、規格により異なる）に申し出ていただく必要があります。お客様都合による修正の場合、再発行手数料が発生することがありますので、申請前にドラフト画面等でしっかりご確認ください。'},
+  {id:'qa-tc-09', section:'tc', q:'出荷前の段階（契約時や生産中）で、TCを先に申請できますか？', a:'いいえ、できません。TCは実際の取引・出荷を証明するものですので、出荷が完了し、インボイスや輸送書類（B/Lや配送伝票）が確定した後にしか申請・発行できません。'},
+  {id:'qa-tc-10', section:'tc', q:'入荷TCの発行元がIDFL以外の認証機関（他社）でした。この原料で作った製品のTCをIDFL Japanへ申請できますか？', a:'はい、可能です。サプライヤーから届いたTCが、Textile Exchange等に認められた正規の認証機関から発行された有効なものであれば、IDFL Japanに自社分のTCを申請いただけます。'},
+  {id:'qa-tc-11', section:'tc', q:'原料TCの製品カテゴリと、自社が申請する製品カテゴリが異なる場合はどうなりますか？', a:'加工工程（例：糸から生地へ、生地から衣服へ）を経て製品の形態が変わるため、カテゴリが変わるのが正常です。ただし、貴社のSCにその加工工程および対象の製品カテゴリが登録されている必要があります。'},
+  {id:'qa-tc-12', section:'tc', q:'1枚のインボイスに認証品と非認証品が混ざっている場合、TC申請はどうすればいいですか？', a:'そのまま申請していただいて構いません。ただし、TCの申請書やシステム上で、インボイス内のどの項目が認証品で、その純重量（Net Weight）が何キロなのかを明確にする必要があります。'},
+  {id:'qa-tc-13', section:'tc', q:'海外への出荷の場合、TC申請に必要な輸送書類は何になりますか？', a:'船便の場合はB/L（船荷証券）、航空便の場合はAWB（航空貨物運送状）が必要です。書類に記載の荷送人（Shipper）・荷受人（Consignee）・ケース数・重量が、インボイスやTC申請内容と一致している必要があります。'},
+  {id:'qa-tc-14', section:'tc', q:'原料を仕入れてから長期間保管し、半年以上経ってから出荷しました。この場合でもTCは発行されますか？', a:'はい、発行可能です。仕入れた際の原料TCが有効であり、保管中に非認証品との混在がないよう正しく管理されていれば、仕入れから時間が経過していても出荷時のTC申請は可能です。'},
+  {id:'qa-tc-15', section:'tc', q:'TC申請の差し戻しで最も多い理由は何ですか？事前に防ぐコツは？', a:'最も多いのは書類間の数字や表記の不一致です（例：インボイスとパッキングリストの重量のズレ、サプライヤー名や顧客名のスペルがSC登録名と違うなど）。申請前に、各書類の重量（Net Weight）・日付・会社名（英語）が完全に一致しているか指差し確認することをおすすめします。'},
+  {id:'qa-tc-16', section:'tc', q:'オンラインシステムでのTC申請方法が分かりません。サポートはありますか？', a:'はい、ございます。IDFL Japanでは、弊社ポータルサイトでのTC申請手順について、マニュアルのご提供や、必要に応じた実務担当者様へのオンラインサポートを行っております。お気軽にご相談ください。'}
+];
+let qaIsAdmin=false;
+
+function qaLoad(){
+  let stored=null; try{stored=JSON.parse(localStorage.getItem(QA_KEY));}catch(e){}
+  if(!Array.isArray(stored)){localStorage.setItem(QA_KEY,JSON.stringify(defaultQA));return defaultQA.slice();}
+  // merge any new default items by id
+  const ids=new Set(stored.map(x=>x.id));let added=false;
+  for(const d of defaultQA){if(!ids.has(d.id)){stored.push(d);added=true;}}
+  if(added)localStorage.setItem(QA_KEY,JSON.stringify(stored));
+  return stored;
+}
+function qaSave(arr){localStorage.setItem(QA_KEY,JSON.stringify(arr));}
+function qaEscape(t){return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+function qaRender(){
+  const arr=qaLoad();
+  const kw=(document.getElementById('qaSearch').value||'').trim().toLowerCase();
+  const cont=document.getElementById('qaContainer');
+  let html='';let total=0;
+  QA_SECTIONS.forEach(function(sec){
+    let items=arr.filter(x=>x.section===sec.key);
+    if(kw)items=items.filter(x=>((x.q+' '+x.a).toLowerCase().indexOf(kw)>-1));
+    if(items.length===0)return;
+    html+='<section class="qa-section"><h2 class="qa-section-title"><span class="num">'+sec.part+'</span>'+sec.label+'</h2>';
+    items.forEach(function(it,i){
+      html+='<details class="qa"'+(kw?' open':'')+'>'+
+        '<summary><span class="q">Q'+(i+1)+'.</span><span>'+qaEscape(it.q)+'</span><svg class=\"chev\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\"><path d=\"M6 9l6 6 6-6\"/></svg></summary>'+
+        '<div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>'+qaEscape(it.a)+'</span></div></div>'+
+        '<div class="qa-item-admin"><button class="qa-edit-b" onclick="qaOpenEdit(\''+it.id+'\')">✎ 編集</button>'+
+        '<button class="qa-del-b" onclick="qaDelete(\''+it.id+'\')">🗑 削除</button></div>'+
+        '</details>';
+      total++;
     });
-    sections.forEach(function(s){
-      var visible=s.querySelectorAll('details.qa:not([style*="display: none"])').length;
-      s.style.display=visible?'':'none';
-    });
-    empty.style.display=any?'none':'block';
+    html+='</section>';
   });
-})();
+  cont.innerHTML=html;
+  document.getElementById('qaEmpty').style.display=total?'none':'block';
+}
+
+// search
+document.getElementById('qaSearch').addEventListener('input',qaRender);
+
+// ----- admin -----
+function qaLockClick(){ if(qaIsAdmin){qaToast('既にログイン中です');}else{qaOpenModal('qaLoginModal');setTimeout(function(){document.getElementById('qaPassInput').focus();},50);} }
+function qaDoLogin(){
+  const v=document.getElementById('qaPassInput').value;
+  if(v===QA_PASS){qaIsAdmin=true;document.body.classList.add('qa-admin');document.getElementById('qaAdminBar').classList.add('on');document.getElementById('qaPassInput').value='';qaCloseModal('qaLoginModal');qaRender();qaToast('管理者モードになりました');}
+  else{qaToast('パスワードが違います');}
+}
+function qaLogout(){qaIsAdmin=false;document.body.classList.remove('qa-admin');document.getElementById('qaAdminBar').classList.remove('on');qaRender();qaToast('ログアウトしました');}
+function qaOpenAdd(){
+  document.getElementById('qaEditTitle').textContent='Q&Aを追加';
+  document.getElementById('qaEditId').value='';
+  document.getElementById('qaEditSection').value='audit';
+  document.getElementById('qaEditQ').value='';document.getElementById('qaEditA').value='';
+  qaOpenModal('qaEditModal');
+}
+function qaOpenEdit(id){
+  const it=qaLoad().find(x=>x.id===id);if(!it)return;
+  document.getElementById('qaEditTitle').textContent='Q&Aを編集';
+  document.getElementById('qaEditId').value=it.id;
+  document.getElementById('qaEditSection').value=it.section;
+  document.getElementById('qaEditQ').value=it.q;document.getElementById('qaEditA').value=it.a;
+  qaOpenModal('qaEditModal');
+}
+function qaSaveItem(){
+  const id=document.getElementById('qaEditId').value;
+  const sec=document.getElementById('qaEditSection').value;
+  const q=document.getElementById('qaEditQ').value.trim();
+  const a=document.getElementById('qaEditA').value.trim();
+  if(!q||!a){qaToast('質問と回答を入力してください');return;}
+  let arr=qaLoad();
+  if(id){const it=arr.find(x=>x.id===id);if(it){it.section=sec;it.q=q;it.a=a;}}
+  else{arr.push({id:'qa-custom-'+Date.now(),section:sec,q:q,a:a});}
+  qaSave(arr);qaCloseModal('qaEditModal');qaRender();qaToast('保存しました');
+}
+function qaDelete(id){
+  if(!confirm('このQ&Aを削除しますか？'))return;
+  let arr=qaLoad().filter(x=>x.id!==id);qaSave(arr);qaRender();qaToast('削除しました');
+}
+function qaExport(){
+  const arr=qaLoad();
+  let body='const defaultQA = [\n'+arr.map(function(x){
+    function e(t){return "'"+String(t).replace(/\\/g,'\\\\').replace(/'/g,"\\'")+"'";}
+    return '  {id:'+e(x.id)+', section:'+e(x.section)+', q:'+e(x.q)+', a:'+e(x.a)+'}';
+  }).join(',\n')+'\n];';
+  const blob=new Blob([body],{type:'text/plain'});const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;a.download='qa-data.js';a.click();URL.revokeObjectURL(url);
+  qaToast('qa-data.js を書き出しました');
+}
+function qaOpenModal(id){document.getElementById(id).classList.add('open');}
+function qaCloseModal(id){document.getElementById(id).classList.remove('open');}
+[].forEach.call(document.querySelectorAll('.qa-modal-bg'),function(m){m.addEventListener('click',function(e){if(e.target===m)m.classList.remove('open');});});
+let qaToastT;function qaToast(msg){const t=document.getElementById('qaToast');t.textContent=msg;t.classList.add('show');clearTimeout(qaToastT);qaToastT=setTimeout(function(){t.classList.remove('show');},2200);}
+
+qaRender();
 </script>
 </body>
 </html>
