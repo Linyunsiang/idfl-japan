@@ -26,7 +26,7 @@ exports.handler = async (event) => {
   if (!path) return resp(400, {error:'unknown type'});
   if (!Array.isArray(data)) return resp(400, {error:'data must be an array'});
 
-  const token = process.env.GITHUB_TOKEN;
+  const token = process.env.GITHUB_TOKEN || process.env.GITHUB_TOKEN1 || process.env.GH_TOKEN;
   if (!token) return resp(500, {error:'server not configured: GITHUB_TOKEN'});
 
   const api = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`;
