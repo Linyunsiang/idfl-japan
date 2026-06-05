@@ -279,6 +279,7 @@ header.site-header{padding:0;border-bottom:0;display:block;background:color-mix(
 
 
 
+
 <div id="pwOverlay">
     <div id="pwBox">
         <div style="width:56px;height:56px;background:rgba(255,255,255,0.12);border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">
@@ -339,7 +340,7 @@ if (sessionStorage.getItem('converter_auth') === '1') {
     </div>
     <div class="stats">
       <div class="stat"><b id="nProd">0</b><span>製品数</span></div>
-      <div class="stat"><b id="nErr">0</b><span>エラー</span></div>
+      <div class="stat"><b id="nErr">0</b><span>要修正（不正値）</span></div>
       <div class="stat"><b id="fmt">-</b><span>フォーマット</span></div>
     </div>
   </div>
@@ -405,6 +406,15 @@ function sim(a,b){ // dice bigram
 function _pick(t,ty){const m=(t||'').match(new RegExp(ty+'\\d{4}'));return m?m[0]:null;}
 function _byCode(code,list){const v=code?list.find(x=>x.includes(code)):null;return {value:v||'',score:v?1:0};}
 function gradeScheme(n){if(!n)return null;if(/^GOTS/i.test(n))return 'GOTS';if(/^(GRS|OCS|RCS|RWS|RDS|RAS|RMS|CCS)\b/i.test(n))return 'TE';return null;}
+function stdOf(name){const g=LOOKUPS.label_grades.find(x=>x.name===name);return g?g.std:"";}
+function compCheck(p){
+  const ms=p.materials; if(!ms.length) return true;
+  const withP=ms.filter(m=>m.exact!=null||m.min!=null||m.max!=null);
+  if(withP.length!==ms.length) return true; // %が一部のみ→検証スキップ
+  let mn=0,mx=0;
+  ms.forEach(m=>{ if(m.exact!=null){mn+=m.exact;mx+=m.exact;} else {mn+=(m.min||0);mx+=(m.max!=null?m.max:(m.min||0));} });
+  return (mn-0.6)<=100 && 100<=(mx+0.6);
+}
 // label grade phrase -> template grade name
 function mapGrade(ph){
   ph=(ph||"").toLowerCase().replace(/\s+/g,' ').trim();
@@ -505,7 +515,7 @@ function parsePageRows(items){
     return {y:ln.y,c};
   });
   // anchors = lines whose category cell has PC code
-  const anchors=cellLines.filter(l=>rePC.test(l.c[0]));
+  const anchors=cellLines.filter(l=>rePC.test(l.c[0]+' '+l.c[1]));
   if(!anchors.length) return [];
   // assign each line to nearest anchor
   const rows=anchors.map(a=>({y:a.y,category:"",details:"",material:"",grade:""}));
@@ -549,10 +559,11 @@ function mapGrades(t){
   return res;
 }
 function expandProduct(r,pid){
-  const catCode=_pick(r.category,'PC');
-  const detCode=_pick(r.details,'PD')||_pick(r.category,'PD');
-  const cat=catCode?_byCode(catCode,LOOKUPS.product_category):snap(r.category,LOOKUPS.product_category);
-  const det=detCode?_byCode(detCode,LOOKUPS.product_detail):snap(r.details,LOOKUPS.product_detail);
+  const _both=(r.category||"")+" "+(r.details||"");
+  const catCode=_pick(_both,'PC');
+  const detCode=_pick(_both,'PD');
+  const cat=catCode?_byCode(catCode,LOOKUPS.product_category):snap(r.category||_both,LOOKUPS.product_category);
+  const det=detCode?_byCode(detCode,LOOKUPS.product_detail):snap(r.details||_both,LOOKUPS.product_detail);
   const grades=mapGrades(r.grade);
   const comps=r.material.split(/\+/).map(s=>s.trim()).filter(Boolean);
   const materials=[];
@@ -563,9 +574,11 @@ function expandProduct(r,pid){
     if(!rm.value && pct.exact==null && pct.min==null) continue;
     materials.push({raw_material:rm.value,exact:pct.exact,min:pct.min,max:pct.max,_warn:rm.score<0.5});
   }
-  if(!grades.length && !materials.length) return null;
+  // 同一製品内で同一原料は1回のみ
+  const _ms=new Set(); const materialsU=materials.filter(m=>{if(!m.raw_material)return true;if(_ms.has(m.raw_material))return false;_ms.add(m.raw_material);return true;});
+  if(!grades.length && !materialsU.length) return null;
   return {audit_standard:(grades[0]||{}).std||"",product_category:cat.value,product_detail:det.value,
-          component:"",grades:grades.map(g=>g.name),materials,_catWarn:cat.score<0.6,_pid:pid};
+          component:"",grades:grades.map(g=>g.name),materials:materialsU,_catWarn:cat.score<0.6,_pid:pid};
 }
 // product -> output rows (stack grades in B, materials in F; continuation A,C,D,E blank)
 function buildOutRows(p){
@@ -573,7 +586,7 @@ function buildOutRows(p){
   for(let k=0;k<n;k++){
     const m=p.materials[k];
     rows.push({
-      a:k===0?p.audit_standard:"", b:p.grades[k]!==undefined?p.grades[k]:"",
+      a:k<p.grades.length?stdOf(p.grades[k]):"", b:p.grades[k]!==undefined?p.grades[k]:"",
       c:k===0?p.product_category:"", d:k===0?p.product_detail:"", e:k===0?(p.component||""):"",
       f:m?m.raw_material:"", g:m?m.exact:null, h:m?m.min:null, i:m?m.max:null,
       _pid:p._pid,_first:k===0,_badC:k===0&&p._catWarn,_badF:m?m._warn:false
@@ -635,11 +648,14 @@ async function convert(){
     if(p._mix){mixCount++; mixList.push(p);}});
   OUTROWS.forEach(r=>{const p=PRODUCTS[r._pid]; r._badG = !!(p && p._mix && r.b);});
   log("✔ 解析完了：製品 "+PRODUCTS.length+" 件"+(_removed?(" / 重複除去 "+_removed+" 件"):"")+" / 出力行 "+OUTROWS.length+(errs?(" / "+errs+" 件失敗"):""),"o");
-  if(mixCount){
-    log("⚠ 警告："+mixCount+" 件の製品で GOTS と Textile Exchange 標準が混在しています。通常、同一製品には登録しません。確認してください。","w");
-    mixList.slice(0,20).forEach(p=>log("    ・"+p.product_category+" / "+p.product_detail+" → ["+p.grades.join(", ")+"]","w"));
-    showWarn(mixCount, mixList);
-  } else hideWarn();
+  let compCount=0; const compList=[];
+  PRODUCTS.forEach(p=>{ p._compBad=!compCheck(p); if(p._compBad){compCount++; compList.push(p);} });
+  OUTROWS.forEach(r=>{const p=PRODUCTS[r._pid]; r._badPct=!!(p&&p._compBad&&(r.g!=null||r.h!=null||r.i!=null));});
+  if(mixCount){ log("⚠ 警告："+mixCount+" 件で GOTS と Textile Exchange 標準が混在。通常は同一製品に登録しません。","w");
+    mixList.slice(0,15).forEach(p=>log("    ・"+p.product_category+" / "+p.product_detail+" → ["+p.grades.join(", ")+"]","w")); }
+  if(compCount){ log("⚠ 警告："+compCount+" 件で成分%の合計が100%になりません。確認してください。","w");
+    compList.slice(0,15).forEach(p=>log("    ・"+p.product_category+" / "+p.product_detail,"w")); }
+  if(mixCount||compCount) showWarn(mixList, compList); else hideWarn();
   buildFilters(); renderGrid(); applyAndCount();
   const has=OUTROWS.length>0;
   $("#dl").disabled=!has; $("#dllog").disabled=false;
@@ -667,30 +683,54 @@ function pidPasses(pid){
 function keptPids(){return [...new Set(OUTROWS.map(r=>r._pid))].filter(pidPasses);}
 
 // ---------- warnings ----------
-function showWarn(n,list){
+function showWarn(mix, comp){
   $("#warnCard").style.display="block";
-  let h=`<p><b>${n} 件</b>の製品で <b>GOTS</b> と <b>Textile Exchange</b>（GRS/OCS/RCS/RWS/RDS/RAS/RMS/CCS）の標準が同一製品に混在しています。通常これらは同じ製品には登録しません。下のグレー枠（オレンジ）を確認し、必要なら修正してください。</p><ul style="margin:6px 0;padding-left:18px">`;
-  list.slice(0,15).forEach(p=>{h+=`<li>${esc(p.product_category)} / ${esc(p.product_detail)} → [${esc(p.grades.join(", "))}]</li>`;});
-  if(list.length>15)h+=`<li>… 他 ${list.length-15} 件</li>`;
-  $("#warnBody").innerHTML=h+"</ul>";
+  let h="";
+  if(mix && mix.length){
+    h+=`<p><b>${mix.length} 件</b>：<b>GOTS</b> と <b>Textile Exchange</b>（GRS/OCS/RCS/RWS/RDS/RAS/RMS/CCS）標準が同一製品に混在。通常は同じ製品に登録しません（B列オレンジ）。</p><ul style="margin:4px 0 10px;padding-left:18px">`;
+    mix.slice(0,10).forEach(p=>h+=`<li>${esc(p.product_category)} / ${esc(p.product_detail)} → [${esc(p.grades.join(", "))}]</li>`);
+    if(mix.length>10)h+=`<li>… 他 ${mix.length-10} 件</li>`; h+="</ul>";
+  }
+  if(comp && comp.length){
+    h+=`<p><b>${comp.length} 件</b>：成分%の合計が <b>100%</b> になりません（G/H/I列オレンジ）。Exact または Min/Max % を確認してください。</p><ul style="margin:4px 0;padding-left:18px">`;
+    comp.slice(0,10).forEach(p=>h+=`<li>${esc(p.product_category)} / ${esc(p.product_detail)} → ${esc(p.materials.map(m=>m.raw_material+" "+(m.exact!=null?m.exact+"%":(m.min!=null?m.min+"-"+m.max+"%":"?"))).join(" + "))}</li>`);
+    if(comp.length>10)h+=`<li>… 他 ${comp.length-10} 件</li>`; h+="</ul>";
+  }
+  $("#warnBody").innerHTML=h;
 }
 function hideWarn(){$("#warnCard").style.display="none";}
 
-// ---------- grid ----------
+// ---------- grid (受限ドロップダウン + 妥当性検証) ----------
 const OUTCOLS=[["a","Audit Standard"],["b","Label Grade"],["c","Product Category"],["d","Product Detail"],["e","Component"],["f","Raw Material"],["g","Exact %"],["h","Min %"],["i","Max %"]];
+const VSET={a:new Set(LOOKUPS.audit_standard),b:new Set(LOOKUPS.label_grades.map(g=>g.name)),c:new Set(LOOKUPS.product_category),d:new Set(LOOKUPS.product_detail),e:new Set(LOOKUPS.component),f:new Set(LOOKUPS.raw_material)};
 function esc(s){return (s==null?"":String(s)).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));}
+function cellValid(k,v){
+  if(v==null||v==="") return true;
+  if(VSET[k]) return VSET[k].has(v);
+  if(k==="g"||k==="h"||k==="i") return !isNaN(parseFloat(v));
+  return true;
+}
+let _dlCache=null;
+function datalistsHTML(){
+  if(_dlCache) return _dlCache;
+  const map={a:LOOKUPS.audit_standard,b:LOOKUPS.label_grades.map(g=>g.name),c:LOOKUPS.product_category,d:LOOKUPS.product_detail,e:LOOKUPS.component,f:LOOKUPS.raw_material};
+  _dlCache=Object.keys(map).map(k=>`<datalist id="dl_${k}">`+map[k].map(v=>`<option value="${esc(v)}"></option>`).join("")+`</datalist>`).join("");
+  return _dlCache;
+}
 function renderGrid(){
   const g=$("#grid");
-  let h="<thead><tr><th>#</th><th>製品</th>"+OUTCOLS.map(c=>`<th>${c[1]}</th>`).join("")+"</tr></thead><tbody>";
+  let h=datalistsHTML()+"<thead><tr><th>#</th><th>製品</th>"+OUTCOLS.map(c=>`<th>${c[1]}</th>`).join("")+"</tr></thead><tbody>";
   let prev=null,pn=0;
   OUTROWS.forEach((r,idx)=>{
     if(r._pid!==prev){pn++;if(prev!==null)h+=`<tr><td colspan="11" style="height:6px;background:#0c141d;border:0"></td></tr>`;prev=r._pid;}
     h+=`<tr data-i="${idx}"><td>${idx+1}</td><td>${r._first?pn:''}</td>`;
     OUTCOLS.forEach(([k])=>{
-      const bad=(k==="c"&&r._badC)||(k==="f"&&r._badF);
-      const warn=(k==="b"&&r._badG);
       const v=r[k]==null?"":r[k];
-      h+=`<td class="${bad?'bad':(warn?'warn':'')}"><input data-k="${k}" value="${esc(v)}"></td>`;
+      const invalid=!cellValid(k,v);
+      const warn=(k==="b"&&r._badG)||((k==="g"||k==="h"||k==="i")&&r._badPct);
+      const cls=invalid?'bad':(warn?'warn':'');
+      const list=VSET[k]?` list="dl_${k}"`:'';
+      h+=`<td class="${cls}"><input${list} data-k="${k}" value="${esc(v)}"></td>`;
     });
     h+="</tr>";
   });
@@ -698,20 +738,19 @@ function renderGrid(){
   g.querySelectorAll("input").forEach(inp=>inp.addEventListener("input",e=>{
     const i=+e.target.closest("tr").dataset.i, k=e.target.dataset.k;
     OUTROWS[i][k]=e.target.value;
+    e.target.closest("td").classList.toggle("bad",!cellValid(k,e.target.value));
+    applyAndCount();
   }));
 }
 
-// ---------- count + export ----------
+// ---------- count + export gating ----------
 function applyAndCount(){
-  const pids=keptPids();
-  const validPC=new Set(LOOKUPS.product_category), validLG=new Set(LOOKUPS.label_grades.map(g=>g.name)), validRM=new Set(LOOKUPS.raw_material);
-  let err=0;
-  OUTROWS.forEach(r=>{
-    if(r.c && !validPC.has(r.c))err++;
-    else if(r.b && !validLG.has(r.b))err++;
-    else if(r.f && !validRM.has(r.f))err++;
-  });
-  $("#nProd").textContent=pids.length; $("#nErr").textContent=err;
+  const pids=keptPids(); const keep=new Set(pids);
+  let invalid=0;
+  OUTROWS.forEach(r=>{ if(!keep.has(r._pid))return; OUTCOLS.forEach(([k])=>{ if(!cellValid(k,r[k]))invalid++; }); });
+  $("#nProd").textContent=pids.length; $("#nErr").textContent=invalid;
+  const dl=$("#dl"); if(dl) dl.disabled=(invalid>0||pids.length===0);
+  const note=$("#dlNote"); if(note) note.textContent = invalid>0 ? ("⚠ "+invalid+" 件の不正値（範本にない値）を修正するまで出力できません") : "";
   return pids;
 }
 function buildWorkbook(pids){
