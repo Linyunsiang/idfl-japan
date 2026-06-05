@@ -297,6 +297,12 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
   .qa-btn-ghost{background:#f1f5f9;color:#475569;border:none;border-radius:9px;padding:12px 20px;font-weight:700;font-size:14px;font-family:inherit;cursor:pointer;}
   #qaToast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:400;background:#063372;color:#fff;padding:12px 22px;border-radius:12px;font-size:13.5px;font-weight:700;box-shadow:0 8px 24px rgba(4,34,88,.25);opacity:0;transition:opacity .3s;pointer-events:none;}
   #qaToast.show{opacity:1;}
+  .qa-ans-img{display:block;max-width:100%;max-height:340px;margin:14px 0 4px;border-radius:10px;border:1px solid var(--brand-100);cursor:zoom-in;object-fit:contain;}
+  .qa-ans-link{display:inline-flex;align-items:center;gap:6px;margin-top:12px;background:#1255A0;color:#fff;text-decoration:none;font-weight:700;font-size:14px;padding:9px 18px;border-radius:9px;}
+  .qa-ans-link:hover{background:#063372;}
+  .qa-lightbox{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.85);align-items:center;justify-content:center;padding:24px;cursor:zoom-out;}
+  .qa-lightbox.open{display:flex;}
+  .qa-lightbox img{max-width:96vw;max-height:92vh;border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,.5);}
 </style>
 </head>
 <body>
@@ -421,6 +427,18 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
     <textarea id="qaEditQ" style="min-height:70px" placeholder="質問を入力"></textarea>
     <label>回答（A）</label>
     <textarea id="qaEditA" placeholder="回答を入力"></textarea>
+    <input type="hidden" id="qaEditImg" />
+    <label>画像（任意・ファイルを選択してアップロード）</label>
+    <input type="file" id="qaEditImgFile" accept="image/*" onchange="qaHandleImgFile(event)" />
+    <input type="text" id="qaEditImgUrl" placeholder="または画像URLを貼り付け（https://...）" style="margin-top:8px;" oninput="qaImgPreview(this.value)" />
+    <div id="qaImgPreviewWrap" style="display:none;margin-top:10px;">
+      <img id="qaImgPreviewEl" alt="" style="max-width:100%;max-height:180px;border-radius:8px;border:1px solid var(--brand-100);display:block;" />
+      <button type="button" class="qa-btn-ghost" style="margin-top:8px;padding:6px 14px;font-size:12px;" onclick="qaClearImg()">画像を削除</button>
+    </div>
+    <label>リンクURL（任意）</label>
+    <input type="text" id="qaEditLink" placeholder="https://（手順ページ・資料など）" />
+    <label>リンク表示名（任意）</label>
+    <input type="text" id="qaEditLinkLabel" placeholder="例：詳しい手順はこちら" />
     <div class="qa-modal-actions">
       <button class="qa-btn-primary" onclick="qaSaveItem()">保存</button>
       <button class="qa-btn-ghost" onclick="qaCloseModal('qaEditModal')">キャンセル</button>
@@ -429,6 +447,7 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
 </div>
 
 <div id="qaToast"></div>
+<div class="qa-lightbox" id="qaLightbox" onclick="qaCloseLightbox()"><img id="qaLightboxImg" src="" alt="" /></div>
 
 <footer class="site-footer">
   <div class="footer-wrap footer-grid">
@@ -526,7 +545,7 @@ function qaRender(){
     items.forEach(function(it,i){
       html+='<details class="qa"'+(kw?' open':'')+'>'+
         '<summary><span class="q">Q'+(i+1)+'.</span><span>'+qaEscape(it.q)+'</span><svg class=\"chev\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\"><path d=\"M6 9l6 6 6-6\"/></svg></summary>'+
-        '<div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>'+qaEscape(it.a)+'</span></div></div>'+
+        '<div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>'+qaEscape(it.a)+'</span></div>'+(it.img?'<img class="qa-ans-img" src="'+qaAttr(it.img)+'" alt="" loading="lazy" onclick="qaLightbox(this.src)" />':'')+(it.link?'<a class="qa-ans-link" href="'+qaAttr(it.link)+'" target="_blank" rel="noopener">'+qaEscape(it.linkLabel||'詳しくはこちら')+' →</a>':'')+'</div>'+
         '<div class="qa-item-admin"><button class="qa-edit-b" onclick="qaOpenEdit(\''+it.id+'\')">✎ 編集</button>'+
         '<button class="qa-del-b" onclick="qaDelete(\''+it.id+'\')">🗑 削除</button></div>'+
         '</details>';
@@ -554,6 +573,8 @@ function qaOpenAdd(){
   document.getElementById('qaEditId').value='';
   document.getElementById('qaEditSection').value='audit';
   document.getElementById('qaEditQ').value='';document.getElementById('qaEditA').value='';
+  qaResetImgFields();
+  document.getElementById('qaEditLink').value='';document.getElementById('qaEditLinkLabel').value='';
   qaOpenModal('qaEditModal');
 }
 function qaOpenEdit(id){
@@ -562,6 +583,9 @@ function qaOpenEdit(id){
   document.getElementById('qaEditId').value=it.id;
   document.getElementById('qaEditSection').value=it.section;
   document.getElementById('qaEditQ').value=it.q;document.getElementById('qaEditA').value=it.a;
+  qaResetImgFields();
+  if(it.img){document.getElementById('qaEditImg').value=it.img;qaShowPreview(it.img);}
+  document.getElementById('qaEditLink').value=it.link||'';document.getElementById('qaEditLinkLabel').value=it.linkLabel||'';
   qaOpenModal('qaEditModal');
 }
 function qaSaveItem(){
@@ -569,10 +593,13 @@ function qaSaveItem(){
   const sec=document.getElementById('qaEditSection').value;
   const q=document.getElementById('qaEditQ').value.trim();
   const a=document.getElementById('qaEditA').value.trim();
+  const img=document.getElementById('qaEditImg').value.trim();
+  const link=document.getElementById('qaEditLink').value.trim();
+  const linkLabel=document.getElementById('qaEditLinkLabel').value.trim();
   if(!q||!a){qaToast('質問と回答を入力してください');return;}
   let arr=qaLoad();
-  if(id){const it=arr.find(x=>x.id===id);if(it){it.section=sec;it.q=q;it.a=a;}}
-  else{arr.push({id:'qa-custom-'+Date.now(),section:sec,q:q,a:a});}
+  if(id){const it=arr.find(x=>x.id===id);if(it){it.section=sec;it.q=q;it.a=a;it.img=img;it.link=link;it.linkLabel=linkLabel;}}
+  else{arr.push({id:'qa-custom-'+Date.now(),section:sec,q:q,a:a,img:img,link:link,linkLabel:linkLabel});}
   qaSave(arr);qaCloseModal('qaEditModal');qaRender();qaToast('保存しました');
 }
 function qaDelete(id){
@@ -583,12 +610,20 @@ function qaExport(){
   const arr=qaLoad();
   let body='const defaultQA = [\n'+arr.map(function(x){
     function e(t){return "'"+String(t).replace(/\\/g,'\\\\').replace(/'/g,"\\'")+"'";}
-    return '  {id:'+e(x.id)+', section:'+e(x.section)+', q:'+e(x.q)+', a:'+e(x.a)+'}';
+    return '  {id:'+e(x.id)+', section:'+e(x.section)+', q:'+e(x.q)+', a:'+e(x.a)+', img:'+e(x.img||'')+', link:'+e(x.link||'')+', linkLabel:'+e(x.linkLabel||'')+'}';
   }).join(',\n')+'\n];';
   const blob=new Blob([body],{type:'text/plain'});const url=URL.createObjectURL(blob);
   const a=document.createElement('a');a.href=url;a.download='qa-data.js';a.click();URL.revokeObjectURL(url);
   qaToast('qa-data.js を書き出しました');
 }
+function qaAttr(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;');}
+function qaShowPreview(src){document.getElementById('qaImgPreviewEl').src=src;document.getElementById('qaImgPreviewWrap').style.display='block';}
+function qaResetImgFields(){document.getElementById('qaEditImg').value='';document.getElementById('qaEditImgUrl').value='';var f=document.getElementById('qaEditImgFile');if(f)f.value='';document.getElementById('qaImgPreviewWrap').style.display='none';document.getElementById('qaImgPreviewEl').removeAttribute('src');}
+function qaClearImg(){qaResetImgFields();qaToast('画像を削除しました');}
+function qaImgPreview(url){url=(url||'').trim();if(!url)return;document.getElementById('qaEditImg').value=url;qaShowPreview(url);}
+function qaHandleImgFile(ev){var file=ev.target.files&&ev.target.files[0];if(!file)return;if(file.type.indexOf('image/')!==0){qaToast('画像ファイルを選んでください');return;}var rd=new FileReader();rd.onload=function(e){var im=new Image();im.onload=function(){var max=1200,w=im.width,h=im.height,sc=Math.min(1,max/Math.max(w,h));var cw=Math.round(w*sc),ch=Math.round(h*sc);var c=document.createElement('canvas');c.width=cw;c.height=ch;var ctx=c.getContext('2d');ctx.fillStyle='#ffffff';ctx.fillRect(0,0,cw,ch);ctx.drawImage(im,0,0,cw,ch);var data=c.toDataURL('image/jpeg',0.82);document.getElementById('qaEditImg').value=data;document.getElementById('qaEditImgUrl').value='';qaShowPreview(data);qaToast('画像を読み込みました（約'+Math.round(data.length/1024)+'KB）');};im.src=e.target.result;};rd.readAsDataURL(file);}
+function qaLightbox(src){document.getElementById('qaLightboxImg').src=src;document.getElementById('qaLightbox').classList.add('open');}
+function qaCloseLightbox(){document.getElementById('qaLightbox').classList.remove('open');}
 function qaOpenModal(id){document.getElementById(id).classList.add('open');}
 function qaCloseModal(id){document.getElementById(id).classList.remove('open');}
 [].forEach.call(document.querySelectorAll('.qa-modal-bg'),function(m){m.addEventListener('click',function(e){if(e.target===m)m.classList.remove('open');});});
