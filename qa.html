@@ -382,7 +382,9 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
 
 <div id="qaAdminBar">
   <b>管理者モード</b>：Q&Aの追加・編集・削除ができます。変更はこのブラウザに保存されます（サイト全体へ反映するには「JSON書き出し」して担当者にお渡しください）。
-  <button onclick="qaExport()">JSON書き出し</button>
+  <button onclick="qaPublish()" style="background:#1255A0;color:#fff;border-color:#1255A0;">🌐 オンラインに公開</button>
+  <span id="qaDraftNote" style="display:none;margin-left:10px;color:#b45309;font-weight:700;">● 未公開の変更があります</span>
+  <button onclick="qaExport()">JSON書き出し（バックアップ）</button>
   <button onclick="qaLogout()">ログアウト</button>
 </div>
 
@@ -521,16 +523,28 @@ const defaultQA = [
 ];
 let qaIsAdmin=false;
 
-function qaLoad(){
-  let stored=null; try{stored=JSON.parse(localStorage.getItem(QA_KEY));}catch(e){}
-  if(!Array.isArray(stored)){localStorage.setItem(QA_KEY,JSON.stringify(defaultQA));return defaultQA.slice();}
-  // merge any new default items by id
-  const ids=new Set(stored.map(x=>x.id));let added=false;
-  for(const d of defaultQA){if(!ids.has(d.id)){stored.push(d);added=true;}}
-  if(added)localStorage.setItem(QA_KEY,JSON.stringify(stored));
-  return stored;
+let QA_DATA=[];
+async function qaBoot(){
+  let pub=null;
+  try{const r=await fetch('/data/qa.json?ts='+Date.now(),{cache:'no-store'}); if(r.ok)pub=await r.json();}catch(e){}
+  if(!Array.isArray(pub)||!pub.length) pub=defaultQA.slice();
+  let draft=null; try{draft=JSON.parse(localStorage.getItem('idflQA_draft'));}catch(e){}
+  QA_DATA=(Array.isArray(draft)&&draft.length)?draft:pub.slice();
+  qaRender();
+  if(Array.isArray(draft)&&draft.length){var b=document.getElementById('qaDraftNote');if(b)b.style.display='inline';}
 }
-function qaSave(arr){localStorage.setItem(QA_KEY,JSON.stringify(arr));}
+function qaLoad(){return QA_DATA;}
+function qaSave(arr){QA_DATA=arr;localStorage.setItem('idflQA_draft',JSON.stringify(arr));var b=document.getElementById('qaDraftNote');if(b)b.style.display='inline';}
+async function qaPublish(){
+  if(!confirm('現在の内容をオンラインに公開しますか？\n全てのお客様のサイトに反映されます（反映まで1〜2分）。'))return;
+  qaToast('公開中…');
+  try{
+    const res=await fetch('/.netlify/functions/publish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'qa',password:QA_PASS,data:QA_DATA})});
+    let j={}; try{j=await res.json();}catch(e){}
+    if(res.ok&&j.ok){localStorage.removeItem('idflQA_draft');var b=document.getElementById('qaDraftNote');if(b)b.style.display='none';qaToast('公開しました。1〜2分で反映されます（'+(j.count||QA_DATA.length)+'件）');}
+    else{qaToast('公開失敗: '+(j.error||('HTTP '+res.status)));}
+  }catch(e){qaToast('公開失敗: '+e.message);}
+}
 function qaEscape(t){return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
 function qaRender(){
@@ -630,7 +644,7 @@ function qaCloseModal(id){document.getElementById(id).classList.remove('open');}
 [].forEach.call(document.querySelectorAll('.qa-modal-bg'),function(m){m.addEventListener('click',function(e){if(e.target===m)m.classList.remove('open');});});
 let qaToastT;function qaToast(msg){const t=document.getElementById('qaToast');t.textContent=msg;t.classList.add('show');clearTimeout(qaToastT);qaToastT=setTimeout(function(){t.classList.remove('show');},2200);}
 
-qaRender();
+qaBoot();
 </script>
 </body>
 </html>
