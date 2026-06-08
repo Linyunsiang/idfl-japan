@@ -382,8 +382,7 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
 
 <div id="qaAdminBar">
   <b>管理者モード</b>：Q&Aの追加・編集・削除ができます。変更はこのブラウザに保存されます（サイト全体へ反映するには「JSON書き出し」して担当者にお渡しください）。
-  <button onclick="qaPublish()" style="background:#1255A0;color:#fff;border-color:#1255A0;">🌐 オンラインに公開</button>
-  <span id="qaDraftNote" style="display:none;margin-left:10px;color:#b45309;font-weight:700;">● 未公開の変更があります</span>
+  <button onclick="qaPublish()" style="background:#1255A0;color:#fff;border-color:#1255A0;">🔄 手動で再公開</button>
   <button onclick="qaExport()">JSON書き出し（バックアップ）</button>
   <button onclick="qaLogout()">ログアウト</button>
 </div>
@@ -537,13 +536,16 @@ function qaLoad(){return QA_DATA;}
 function qaSave(arr){QA_DATA=arr;localStorage.setItem('idflQA_draft',JSON.stringify(arr));var b=document.getElementById('qaDraftNote');if(b)b.style.display='inline';}
 async function qaPublish(){
   if(!confirm('現在の内容をオンラインに公開しますか？\n全てのお客様のサイトに反映されます（反映まで1〜2分）。'))return;
+  await _qaDoPublish();
+}
+async function _qaDoPublish(){
   qaToast('公開中…');
   try{
     const res=await fetch('/.netlify/functions/publish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'qa',password:QA_PASS,data:QA_DATA})});
     let j={}; try{j=await res.json();}catch(e){}
-    if(res.ok&&j.ok){localStorage.removeItem('idflQA_draft');var b=document.getElementById('qaDraftNote');if(b)b.style.display='none';qaToast('公開しました。1〜2分で反映されます（'+(j.count||QA_DATA.length)+'件）');}
-    else{qaToast('公開失敗: '+(j.error||('HTTP '+res.status)));}
-  }catch(e){qaToast('公開失敗: '+e.message);}
+    if(res.ok&&j.ok){localStorage.removeItem('idflQA_draft');var b=document.getElementById('qaDraftNote');if(b)b.style.display='none';qaToast('✅ 保存・公開しました（'+(j.count||QA_DATA.length)+'件）反映まで約1分');}
+    else{qaToast('⚠️ 公開失敗: '+(j.error||('HTTP '+res.status)));}
+  }catch(e){qaToast('⚠️ 公開失敗: '+e.message);}
 }
 function qaEscape(t){return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 
@@ -615,11 +617,11 @@ function qaSaveItem(){
   let arr=qaLoad();
   if(id){const it=arr.find(x=>x.id===id);if(it){it.section=sec;it.q=q;it.a=a;it.img=img;it.link=link;it.linkLabel=linkLabel;}}
   else{arr.push({id:'qa-custom-'+Date.now(),section:sec,q:q,a:a,img:img,link:link,linkLabel:linkLabel});}
-  qaSave(arr);qaCloseModal('qaEditModal');qaRender();qaToast('保存しました');
+  qaSave(arr);qaCloseModal('qaEditModal');qaRender();_qaDoPublish();
 }
 function qaDelete(id){
   if(!confirm('このQ&Aを削除しますか？'))return;
-  let arr=qaLoad().filter(x=>x.id!==id);qaSave(arr);qaRender();qaToast('削除しました');
+  let arr=qaLoad().filter(x=>x.id!==id);qaSave(arr);qaRender();_qaDoPublish();
 }
 function qaExport(){
   const arr=qaLoad();
