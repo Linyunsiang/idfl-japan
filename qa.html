@@ -424,6 +424,8 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
     <select id="qaEditSection">
       <option value="audit">監査・認証編</option>
       <option value="tc">TC（取引証明書）編</option>
+      <option value="logo">LOGO編</option>
+      <option value="other">その他編</option>
     </select>
     <label>質問（Q）</label>
     <textarea id="qaEditQ" style="min-height:70px" placeholder="質問を入力"></textarea>
@@ -482,7 +484,7 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
 <script>
 const QA_KEY='idflQA_v1';
 const QA_PASS='idfl2026';
-const QA_SECTIONS=[{key:'audit',label:'監査・認証編',part:'Part 1'},{key:'tc',label:'TC（取引証明書）編',part:'Part 2'}];
+const QA_SECTIONS=[{key:'audit',label:'監査・認証編',part:'Part 1'},{key:'tc',label:'TC（取引証明書）編',part:'Part 2'},{key:'logo',label:'LOGO編',part:'Part 3'},{key:'other',label:'その他編',part:'Part 4'}];
 const defaultQA = [
   {id:'qa-audit-01', section:'audit', q:'IDFL Japanではどのような認証（規格）の監査を受けられますか？', a:'主に以下の国際的なサステナビリティ基準に対応しています。①GOTS（オーガニックテキスタイルの世界基準）、②Textile Exchangeの全基準（GRS・RCS・OCS・RDS・RWS・RMS・RAS）、③FSC認証（適切に管理された森林由来の木材・繊維製品）。その他の認証も幅広く対応・審査可能な場合がございますので、まずはお気軽にお問い合わせください。'},
   {id:'qa-audit-02', section:'audit', q:'認証を取得（SC発行）するまでに、一般的にどれくらいの期間がかかりますか？', a:'申請から監査の実施、不適合の修正（必要な場合）、SC（事業者認証）の発行まで、一般的におよそ2〜3ヶ月程度かかります。工場の稼働状況や書類の準備状態によって前後するため、余裕を持ったスケジュールでの申請をおすすめします。'},
@@ -518,7 +520,11 @@ const defaultQA = [
   {id:'qa-tc-13', section:'tc', q:'海外への出荷の場合、TC申請に必要な輸送書類は何になりますか？', a:'船便の場合はB/L（船荷証券）、航空便の場合はAWB（航空貨物運送状）が必要です。書類に記載の荷送人（Shipper）・荷受人（Consignee）・ケース数・重量が、インボイスやTC申請内容と一致している必要があります。'},
   {id:'qa-tc-14', section:'tc', q:'原料を仕入れてから長期間保管し、半年以上経ってから出荷しました。この場合でもTCは発行されますか？', a:'はい、発行可能です。仕入れた際の原料TCが有効であり、保管中に非認証品との混在がないよう正しく管理されていれば、仕入れから時間が経過していても出荷時のTC申請は可能です。'},
   {id:'qa-tc-15', section:'tc', q:'TC申請の差し戻しで最も多い理由は何ですか？事前に防ぐコツは？', a:'最も多いのは書類間の数字や表記の不一致です（例：インボイスとパッキングリストの重量のズレ、サプライヤー名や顧客名のスペルがSC登録名と違うなど）。申請前に、各書類の重量（Net Weight）・日付・会社名（英語）が完全に一致しているか指差し確認することをおすすめします。'},
-  {id:'qa-tc-16', section:'tc', q:'オンラインシステムでのTC申請方法が分かりません。サポートはありますか？', a:'はい、ございます。IDFL Japanでは、弊社ポータルサイトでのTC申請手順について、マニュアルのご提供や、必要に応じた実務担当者様へのオンラインサポートを行っております。お気軽にご相談ください。'}
+  {id:'qa-tc-16', section:'tc', q:'オンラインシステムでのTC申請方法が分かりません。サポートはありますか？', a:'はい、ございます。IDFL Japanでは、弊社ポータルサイトでのTC申請手順について、マニュアルのご提供や、必要に応じた実務担当者様へのオンラインサポートを行っております。お気軽にご相談ください。'},
+  {id:'qa-logo-01', section:'logo', q:'認証ロゴはどこからダウンロードできますか？', a:'各認証機関の公式サイト（Textile Exchange・GOTS・FSCなど）のライセンスポータルから、認証保有者としてログインしてダウンロードいただけます。ご不明な点はIDFL Japanまでお問い合わせください。'},
+  {id:'qa-logo-02', section:'logo', q:'認証ロゴを製品やパッケージに使用する際のルールはありますか？', a:'はい、各規格に使用規定があります。ロゴのサイズ・色・背景・改変禁止などのブランドガイドラインに従う必要があります。使用前にIDFLまたは各認証機関の承認が必要な場合もありますので、事前にご確認ください。'},
+  {id:'qa-other-01', section:'other', q:'IDFL JAPANへの問い合わせはどのように行えばよいですか？', a:'弊社ウェブサイトのお問い合わせフォーム（https://idfl.com/ja/idfl-japan/）からご連絡ください。日本語でご対応いたします。'},
+  {id:'qa-other-02', section:'other', q:'セミナーや説明会への参加申込みはどこからできますか？', a:'本サイトのトップページまたは「開催予定のセミナー」ページからお申し込みいただけます。最新の開催情報もそちらでご確認ください。'}
 ];
 let qaIsAdmin=false;
 
