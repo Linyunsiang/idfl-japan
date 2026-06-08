@@ -283,7 +283,7 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
       </div>
       <div class="menu-col">
         <p class="menu-col-title">会社情報</p>
-        <a href="https://idfl.com/ja/idfl-japan/" target="_blank" rel="noopener">会社概要</a>
+        <a href="https://idfl.com/zh-tw/idfl-japan/" target="_blank" rel="noopener">会社概要</a>
         <a href="https://maps.app.goo.gl/hxvPws1M6cGxbLHF7" target="_blank" rel="noopener">アクセス</a>
         <a href="/idfl_news.html" target="_blank" rel="noopener">お知らせ</a>
         <a href="/converter.html" target="_blank" rel="noopener">変換ツール</a>
@@ -585,12 +585,32 @@ function renderDocs() {
   });
 }
 
+/* ── Publish to Netlify ── */
+async function _downloadsDoPublish() {
+  showToast('公開中…');
+  try {
+    var res = await fetch('/.netlify/functions/publish', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({type:'downloads', password: PASS, data: docs})
+    });
+    var j = {}; try { j = await res.json(); } catch(e) {}
+    if (res.ok && j.ok) {
+      showToast('✅ 保存・公開しました（' + (j.count || docs.length) + '件）反映まで約1分');
+    } else {
+      showToast('⚠️ 公開失敗: ' + (j.error || ('HTTP ' + res.status)));
+    }
+  } catch(e) {
+    showToast('⚠️ 公開失敗: ' + e.message);
+  }
+}
+
 /* ── Delete doc ── */
 function deleteDoc(id, title) {
   if (!confirm('「' + title + '」を削除しますか？')) return;
   docs = docs.filter(function(d){ return d.id !== id; });
   renderDocs();
-  showToast('「' + title + '」を削除しました');
+  _downloadsDoPublish();
 }
 
 /* ── Search ── */
@@ -723,15 +743,15 @@ document.getElementById('saveDocBtn').addEventListener('click', function() {
     }
     closeAddModal();
     renderDocs();
-    showToast('「' + title + '」を更新しました');
     editingId = null;
+    _downloadsDoPublish();
   } else {
     /* 追加モード */
     data.id = 'doc_' + Date.now();
     docs.unshift(data);
     closeAddModal();
     renderDocs();
-    showToast('「' + title + '」を追加しました');
+    _downloadsDoPublish();
   }
 });
 
@@ -775,7 +795,7 @@ init();
       <a href="/seminar_schedule.html">開催予定のセミナー</a>
       <a href="/past_seminar_v2.html">過去のセミナー</a>
       <a href="/download.html">資料ダウンロード</a>
-      <a href="https://idfl.com/ja/idfl-japan/">会社概要</a>
+      <a href="https://idfl.com/zh-tw/idfl-japan/">会社概要</a>
       <a href="/idfl_news.html">お知らせ</a>
       <a href="/qa.html">Q&amp;A</a>
       <a href="/converter.html">変換ツール</a>
