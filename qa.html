@@ -304,6 +304,14 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
   .qa-lightbox{display:none;position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.85);align-items:center;justify-content:center;padding:24px;cursor:zoom-out;}
   .qa-lightbox.open{display:flex;}
   .qa-lightbox img{max-width:96vw;max-height:92vh;border-radius:8px;box-shadow:0 10px 40px rgba(0,0,0,.5);}
+  /* ── Anchor nav ── */
+  .qa-anchor-nav{background:#fff;border-bottom:2px solid var(--b100);padding:0 24px;display:flex;align-items:center;gap:4px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;}
+  .qa-anchor-nav::-webkit-scrollbar{display:none;}
+  .qa-anchor-pill{display:inline-flex;align-items:center;gap:6px;padding:12px 16px;font-size:13px;font-weight:700;color:var(--b400);text-decoration:none;white-space:nowrap;border-bottom:3px solid transparent;margin-bottom:-2px;transition:color .15s,border-color .15s;}
+  .qa-anchor-pill:hover{color:var(--b700);border-bottom-color:var(--b200);}
+  .qa-anchor-pill.active{color:var(--b800);border-bottom-color:var(--b500);}
+  .qa-anchor-pill .part-badge{display:inline-flex;align-items:center;justify-content:center;background:var(--b050);color:var(--b700);border-radius:6px;font-size:10px;font-weight:800;padding:2px 6px;letter-spacing:.04em;}
+  .qa-anchor-pill.active .part-badge{background:var(--b500);color:#fff;}
 </style>
 </head>
 <body>
@@ -386,6 +394,13 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
   <button onclick="qaExport()">JSON書き出し（バックアップ）</button>
   <button onclick="qaLogout()">ログアウト</button>
 </div>
+
+<nav class="qa-anchor-nav" id="qaAnchorNav" aria-label="セクションへ移動">
+  <a class="qa-anchor-pill" href="#qa-sec-audit" data-sec="audit"><span class="part-badge">Part 1</span>監査・認証編</a>
+  <a class="qa-anchor-pill" href="#qa-sec-tc"    data-sec="tc"   ><span class="part-badge">Part 2</span>TC（取引証明書）編</a>
+  <a class="qa-anchor-pill" href="#qa-sec-logo"  data-sec="logo" ><span class="part-badge">Part 3</span>LOGO編</a>
+  <a class="qa-anchor-pill" href="#qa-sec-other" data-sec="other"><span class="part-badge">Part 4</span>その他編</a>
+</nav>
 
 <main class="qa-wrap">
   <div class="qa-search">
@@ -564,7 +579,7 @@ function qaRender(){
     let items=arr.filter(x=>x.section===sec.key);
     if(kw)items=items.filter(x=>((x.q+' '+x.a).toLowerCase().indexOf(kw)>-1));
     if(items.length===0)return;
-    html+='<section class="qa-section"><h2 class="qa-section-title"><span class="num">'+sec.part+'</span>'+sec.label+'</h2>';
+    html+='<section class="qa-section" id="qa-sec-'+sec.key+'"><h2 class="qa-section-title"><span class="num">'+sec.part+'</span>'+sec.label+'</h2>';
     items.forEach(function(it,i){
       html+='<details class="qa"'+(kw?' open':'')+'>'+
         '<summary><span class="q">Q'+(i+1)+'.</span><span>'+qaEscape(it.q)+'</span><svg class=\"chev\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\"><path d=\"M6 9l6 6 6-6\"/></svg></summary>'+
@@ -582,6 +597,30 @@ function qaRender(){
 
 // search
 document.getElementById('qaSearch').addEventListener('input',qaRender);
+
+// ── Anchor nav: smooth scroll + active highlight ──
+document.querySelectorAll('.qa-anchor-pill').forEach(function(a){
+  a.addEventListener('click',function(e){
+    var target=document.getElementById(a.getAttribute('data-sec')?'qa-sec-'+a.getAttribute('data-sec'):null);
+    if(!target)return;
+    e.preventDefault();
+    var offset=target.getBoundingClientRect().top+window.scrollY-130;
+    window.scrollTo({top:offset,behavior:'smooth'});
+  });
+});
+(function(){
+  var pills=document.querySelectorAll('.qa-anchor-pill');
+  function updateActive(){
+    var secs=QA_SECTIONS.map(function(s){return document.getElementById('qa-sec-'+s.key);}).filter(Boolean);
+    var active=null;
+    secs.forEach(function(sec){
+      if(sec.getBoundingClientRect().top<=160)active=sec.id.replace('qa-sec-','');
+    });
+    pills.forEach(function(p){p.classList.toggle('active',p.getAttribute('data-sec')===(active||QA_SECTIONS[0].key));});
+  }
+  window.addEventListener('scroll',updateActive,{passive:true});
+  setTimeout(updateActive,400);
+})();
 
 // ----- admin -----
 function qaLockClick(){ if(qaIsAdmin){qaToast('既にログイン中です');}else{qaOpenModal('qaLoginModal');setTimeout(function(){document.getElementById('qaPassInput').focus();},50);} }
