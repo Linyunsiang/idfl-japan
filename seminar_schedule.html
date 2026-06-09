@@ -414,6 +414,21 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div>
+          <label class="flabel">実施方法</label>
+          <select id="inp_mode" class="finput">
+            <option value="">指定なし</option>
+            <option value="オンライン">オンライン</option>
+            <option value="対面">対面</option>
+            <option value="オンライン＋対面">オンライン＋対面（ハイブリッド）</option>
+          </select>
+        </div>
+        <div>
+          <label class="flabel">時間（任意）</label>
+          <input id="inp_time" class="finput" type="text" placeholder="例：10:00〜17:00">
+        </div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div>
           <label class="flabel">開始日 <span style="color:#ef4444">*</span></label>
           <input id="inp_from" class="finput" type="date">
         </div>
@@ -421,6 +436,14 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
           <label class="flabel">終了日（任意）</label>
           <input id="inp_to" class="finput" type="date">
         </div>
+      </div>
+      <div>
+        <label class="flabel">申込リンク（任意）</label>
+        <input id="inp_signup" class="finput" type="text" placeholder="https://（申込フォームのURL）">
+      </div>
+      <div>
+        <label class="flabel">関連リンク（任意）</label>
+        <input id="inp_related" class="finput" type="text" placeholder="https://（詳細・資料などのURL）">
       </div>
       <div id="eventFormErr" style="display:none;background:#fee2e2;color:#dc2626;font-size:12px;padding:8px 12px;border-radius:8px"></div>
       <button id="saveEventBtn" style="width:100%;background:var(--b700);color:#fff;border:none;border-radius:10px;padding:13px;font-size:14px;font-weight:700;cursor:pointer">保存する</button>
@@ -584,13 +607,16 @@ function renderEvents() {
         '<div style="display:flex;flex-wrap:wrap;gap:14px;font-size:12px;color:var(--b400)">' +
           '<span>📍 ' + (e.location||'—') + '</span>' +
           '<span>📅 ' + rng + '</span>' +
+          (e.time ? '<span>⏰ ' + e.time + '</span>' : '') +
+          (e.mode ? '<span>' + (e.mode==='オンライン'?'🖥':(e.mode==='対面'?'🏢':'🔁')) + ' ' + e.mode + '</span>' : '') +
+          (e.related ? '<a href="' + e.related + '" target="_blank" rel="noopener" style="color:var(--b500);text-decoration:underline">🔗 関連リンク</a>' : '') +
         '</div>';
       card.appendChild(info);
 
       /* Apply button */
-      if (e.type === 'External' && !past) {
+      if ((e.signup || e.type === 'External') && !past) {
         var applyLink = document.createElement('a');
-        applyLink.href = 'https://forms.office.com/Pages/ResponsePage.aspx?id=hQL27-D4ckKtEjtBsJIawI60DctQlgpAt0rPraJ8Wg5UQjA4N1UwN09PVkg5SkNZN1lBVTQxN0tYTy4u';
+        applyLink.href = e.signup || 'https://forms.office.com/Pages/ResponsePage.aspx?id=hQL27-D4ckKtEjtBsJIawI60DctQlgpAt0rPraJ8Wg5UQjA4N1UwN09PVkg5SkNZN1lBVTQxN0tYTy4u';
         applyLink.style.cssText = 'flex-shrink:0;background:var(--b500);color:#fff;padding:7px 14px;border-radius:8px;text-decoration:none;font-size:12px;font-weight:700;align-self:center;white-space:nowrap';
         applyLink.textContent = '申込む →';
         card.appendChild(applyLink);
@@ -686,6 +712,10 @@ function openEventModal(id) {
     document.getElementById('inp_loc').value    = ev.location || '';
     document.getElementById('inp_from').value   = ev.from || '';
     document.getElementById('inp_to').value     = ev.to   || '';
+    document.getElementById('inp_mode').value   = ev.mode || '';
+    document.getElementById('inp_time').value   = ev.time || '';
+    document.getElementById('inp_signup').value = ev.signup || '';
+    document.getElementById('inp_related').value= ev.related || '';
   } else {
     document.getElementById('eventModalTitle').textContent = 'イベントを追加';
     document.getElementById('inp_name').value   = '';
@@ -694,6 +724,10 @@ function openEventModal(id) {
     document.getElementById('inp_loc').value    = '';
     document.getElementById('inp_from').value   = '';
     document.getElementById('inp_to').value     = '';
+    document.getElementById('inp_mode').value   = '';
+    document.getElementById('inp_time').value   = '';
+    document.getElementById('inp_signup').value = '';
+    document.getElementById('inp_related').value= '';
   }
   document.getElementById('eventModal').classList.add('open');
   document.body.style.overflow = 'hidden';
@@ -724,6 +758,10 @@ document.getElementById('saveEventBtn').addEventListener('click', function() {
     location: document.getElementById('inp_loc').value.trim(),
     from:     from,
     to:       document.getElementById('inp_to').value || from,
+    mode:     document.getElementById('inp_mode').value,
+    time:     document.getElementById('inp_time').value.trim(),
+    signup:   document.getElementById('inp_signup').value.trim(),
+    related:  document.getElementById('inp_related').value.trim(),
   };
   if (editingId) {
     for (var i=0; i<events.length; i++) { if(events[i].id===editingId){events[i]=data;break;} }
