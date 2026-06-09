@@ -311,8 +311,9 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
   <div style="max-width:1100px;margin:0 auto;display:flex;flex-wrap:wrap;align-items:center;gap:10px">
     <span style="color:#92400e;font-weight:700;font-size:14px">🛠 管理者モード</span>
     <button id="addEventBtn" style="background:var(--b700);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer">＋ イベントを追加</button>
-    <button id="exportBtn"   style="background:#16a34a;color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer">📥 保存・ダウンロード</button>
-    <span style="font-size:11px;color:#b45309">→ <code>schedule-data.json</code> をNetlifyにアップロード</span>
+    <button id="publishBtn" style="background:#1255A0;color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer">🌐 オンラインに公開</button>
+    <span id="schedDraftNote" style="display:none;font-size:12px;color:#b45309;font-weight:700">● 未公開の変更があります</span>
+    <button id="exportBtn"   style="background:#16a34a;color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:700;cursor:pointer">📥 JSONバックアップ</button>
     <button id="exitAdminBtn" style="margin-left:auto;color:#b45309;background:transparent;border:none;cursor:pointer;font-size:12px;text-decoration:underline">終了</button>
   </div>
 </div>
@@ -484,6 +485,7 @@ async function init() {
   } catch(err) {
     events = DEFAULT.slice();
   }
+  try { var _d=JSON.parse(localStorage.getItem('idflSchedule_draft')); if(Array.isArray(_d)&&_d.length){ events=_d; var _n=document.getElementById('schedDraftNote'); if(_n)_n.style.display='inline'; } } catch(e){}
   renderEvents();
 }
 
@@ -604,6 +606,7 @@ function deleteEvent(id, name) {
   if (!confirm('「' + name + '」を削除しますか？')) return;
   events = events.filter(function(e){ return e.id !== id; });
   renderEvents();
+  sdSaveDraft();
   showToast('「' + name + '」を削除しました');
 }
 
@@ -731,7 +734,22 @@ document.getElementById('saveEventBtn').addEventListener('click', function() {
   }
   closeEventModal();
   renderEvents();
+  sdSaveDraft();
 });
+
+/* ── Draft autosave & online publish ── */
+function sdSaveDraft(){ try{ localStorage.setItem('idflSchedule_draft', JSON.stringify(events)); }catch(e){} var n=document.getElementById('schedDraftNote'); if(n)n.style.display='inline'; }
+async function publishSchedule(){
+  if(!confirm('現在のスケジュールをオンラインに公開しますか？\n全てのお客様の画面に反映されます（1〜2分）。'))return;
+  showToast('公開中…');
+  try{
+    var res=await fetch('/.netlify/functions/publish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'schedule',password:PASS,data:events})});
+    var j={}; try{j=await res.json();}catch(e){}
+    if(res.ok&&j.ok){ localStorage.removeItem('idflSchedule_draft'); var n=document.getElementById('schedDraftNote'); if(n)n.style.display='none'; showToast('公開しました。1〜2分で反映されます（'+(j.count||events.length)+'件）'); }
+    else { showToast('公開失敗: '+(j.error||('HTTP '+res.status))); }
+  }catch(e){ showToast('公開失敗: '+e.message); }
+}
+document.getElementById('publishBtn').addEventListener('click', publishSchedule);
 
 /* ── Export ── */
 document.getElementById('exportBtn').addEventListener('click', function() {
