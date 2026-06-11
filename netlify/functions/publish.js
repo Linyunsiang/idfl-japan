@@ -22,6 +22,9 @@ exports.handler = async (event) => {
   if (!process.env.ADMIN_PASSWORD) return resp(500, {error:'server not configured: ADMIN_PASSWORD'});
   if (password !== process.env.ADMIN_PASSWORD) return resp(401, {error:'パスワードが正しくありません'});
 
+  // ログイン時のパスワード検証のみ（ファイル書き込みなし）
+  if (body.validateOnly) return resp(200, {ok:true});
+
   const path = ALLOWED[type];
   if (!path) return resp(400, {error:'unknown type'});
   if (!Array.isArray(data)) return resp(400, {error:'data must be an array'});

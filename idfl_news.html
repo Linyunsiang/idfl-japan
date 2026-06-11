@@ -581,7 +581,7 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
         <a href="https://idfl.com/ja/services/audits-certifications/responsible-wool-standard-rws/" target="_blank" rel="noopener">RWS 認証</a>
         <a href="https://idfl.com/ja/services/audits-certifications/global-recycled-standard-grs/" target="_blank" rel="noopener">GRS 認証</a>
         <a href="/certified-factories.html" target="_blank" rel="noopener">認証工場一覧</a>
-        <a href="https://dev.idfl.com/ja/services/" target="_blank" rel="noopener">ダウン・フェザー検査</a>
+        <a href="https://idfl.com/ja/services/" target="_blank" rel="noopener">ダウン・フェザー検査</a>
         <a href="/qa.html">Q&amp;A（よくある質問）</a>
       </div>
       <div class="menu-col">
@@ -864,7 +864,7 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
 <script>
 // ===================== DATA =====================
 const STORAGE_KEY = 'idfl_news_posts';
-const ADMIN_PASSWORD = 'idfl2026';
+let adminPassword = '';   // ログイン時に入力された値のみ保持（ソースに固定パスワードを書かない）
 
 let currentCat = 'all';
 let isAdmin = false;
@@ -1011,15 +1011,21 @@ function loadPosts() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultPosts));
         return defaultPosts;
     }
-    // 既存の保存データに、未登録の公式投稿（defaultPosts）を自動マージ
-    const posts = JSON.parse(stored);
-    const existingIds = new Set(posts.map(p => p.id));
-    let added = false;
-    for (const dp of defaultPosts) {
-        if (!existingIds.has(dp.id)) { posts.push(dp); added = true; }
-    }
-    if (added) localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
-    return posts;
+    try { return JSON.parse(stored); } catch(e) { return defaultPosts; }
+}
+// サーバーの /data/news.json を唯一の正本として localStorage を上書き同期
+// （後台で公開 → 全閲覧者が次回読み込みで最新を取得。編集・削除も反映される）
+async function syncFromServer() {
+    try {
+        const res = await fetch('/data/news.json', { cache: 'no-cache' });
+        if (!res.ok) return;
+        const data = await res.json();
+        const posts = Array.isArray(data) ? data : (data && data.posts);
+        if (Array.isArray(posts) && posts.length) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
+            renderCards();
+        }
+    } catch(e) { /* オフライン等：localStorage / defaultPosts をそのまま使用 */ }
 }
 function savePosts(posts) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
@@ -1044,7 +1050,7 @@ async function _newsDoPublish(posts) {
         const res = await fetch('/.netlify/functions/publish', {
             method: 'POST',
             headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({type:'news', password: ADMIN_PASSWORD, data: posts})
+            body: JSON.stringify({type:'news', password: adminPassword, data: posts})
         });
         let j = {}; try { j = await res.json(); } catch(e) {}
         if (res.ok && j.ok) {
@@ -1201,22 +1207,37 @@ function openLogin() {
     lucide.createIcons();
 }
 function closeLogin() { document.getElementById('loginOverlay').classList.remove('open'); }
-function checkLogin() {
-    if (document.getElementById('adminPwInput').value === ADMIN_PASSWORD) {
-        isAdmin = true;
-        document.body.classList.add('admin-mode');
-        // Switch panel to admin state
-        document.getElementById('stateLogin').style.display = 'none';
-        document.getElementById('stateAdmin').style.display = 'block';
-        lucide.createIcons();
-        renderCards();
-    } else {
-        document.getElementById('loginError').style.display = 'block';
-        document.getElementById('adminPwInput').select();
+async function checkLogin() {
+    const pw = document.getElementById('adminPwInput').value;
+    const errEl = document.getElementById('loginError');
+    errEl.style.display = 'none';
+    try {
+        // サーバー側でパスワード検証（固定値をクライアントに置かない）
+        const res = await fetch('/.netlify/functions/publish', {
+            method: 'POST',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({type:'news', password: pw, validateOnly: true})
+        });
+        if (res.ok) {
+            adminPassword = pw;   // 正しいパスワードのみメモリに保持
+            isAdmin = true;
+            document.body.classList.add('admin-mode');
+            document.getElementById('stateLogin').style.display = 'none';
+            document.getElementById('stateAdmin').style.display = 'block';
+            lucide.createIcons();
+            renderCards();
+        } else {
+            errEl.style.display = 'block';
+            document.getElementById('adminPwInput').select();
+        }
+    } catch(e) {
+        errEl.textContent = '接続できませんでした。通信環境をご確認ください。';
+        errEl.style.display = 'block';
     }
 }
 function doLogout() {
     isAdmin = false;
+    adminPassword = '';
     document.body.classList.remove('admin-mode');
     closeLogin();
     renderCards();
@@ -1276,6 +1297,7 @@ function deletePost(id) {
 document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
     renderCards();
+    syncFromServer();   // サーバーの最新公告で上書き同期
 
     // ESC to close modals
     document.addEventListener('keydown', e => {
