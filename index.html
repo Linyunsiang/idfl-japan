@@ -4,6 +4,43 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>IDFL JAPAN セミナーのご案内</title>
+
+<!-- SEO / SNS シェア用メタタグ -->
+<meta name="description" content="IDFL JAPAN（大阪）はGOTS・OCS・RWS・GRS・ダウン/フェザーなど国際サステナビリティ認証の第三者検査機関です。2026年8月7日、GOTS 8.0移行・MMS対応・FSC新規取得をテーマにした無料セミナーを開催します。" />
+<link rel="canonical" href="https://idfl-japan.com/" />
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="IDFL JAPAN" />
+<meta property="og:locale" content="ja_JP" />
+<meta property="og:title" content="IDFL JAPAN サステナビリティ認証セミナー｜2026.08.07 大阪" />
+<meta property="og:description" content="GOTS 8.0移行・MMS対応・FSC新規取得を、専門担当者とグループディスカッション形式で解決。参加費無料・事前申込制。" />
+<meta property="og:url" content="https://idfl-japan.com/" />
+<meta property="og:image" content="https://idfl-japan.com/ogp.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="IDFL JAPAN サステナビリティ認証セミナー｜2026.08.07 大阪" />
+<meta name="twitter:description" content="GOTS 8.0移行・MMS対応・FSC新規取得を専門担当者と解決。参加費無料・事前申込制。" />
+<meta name="twitter:image" content="https://idfl-japan.com/ogp.png" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Event",
+  "name": "IDFL JAPAN サステナビリティ認証セミナー",
+  "startDate": "2026-08-07T10:00:00+09:00",
+  "endDate": "2026-08-07T16:40:00+09:00",
+  "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+  "eventStatus": "https://schema.org/EventScheduled",
+  "location": {
+    "@type": "Place",
+    "name": "御堂会館 3階 Bホール",
+    "address": { "@type": "PostalAddress", "streetAddress": "中央区久太郎町4-1-15 南御堂ビルディング", "addressLocality": "大阪市", "addressRegion": "大阪府", "addressCountry": "JP" }
+  },
+  "isAccessibleForFree": true,
+  "organizer": { "@type": "Organization", "name": "IDFL JAPAN", "url": "https://idfl-japan.com/" },
+  "description": "GOTS 8.0移行・MMS対応・FSC新規取得をテーマにした参加型グループディスカッション形式のセミナー。"
+}
+</script>
+
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet" />
@@ -460,9 +497,8 @@ section{position:relative;}
         <a href="https://idfl.com/ja/services/audits-certifications/organic-content-standard-ocs/">OCS 認証</a>
         <a href="https://idfl.com/ja/services/audits-certifications/responsible-wool-standard-rws/">RWS 認証</a>
         <a href="https://idfl.com/ja/services/audits-certifications/global-recycled-standard-grs/">GRS 認証</a>
-        <a href="/services/fsc.html">FSC 認証</a>
         <a href="/certified-factories.html">認証工場一覧</a>
-        <a href="https://dev.idfl.com/ja/services/">ダウン・フェザー検査</a>
+        <a href="https://idfl.com/ja/services/">ダウン・フェザー検査</a>
         <a href="/qa.html">Q&amp;A（よくある質問）</a>
       </div>
       <div class="menu-col">
@@ -530,6 +566,90 @@ section{position:relative;}
     </div>
   </div>
 </section>
+
+<!-- 最新のお知らせ（/data/news.json を自動取得して最新3件を表示） -->
+<section class="news-home" id="news" aria-label="最新のお知らせ" hidden>
+  <div class="wrap">
+    <div class="news-home__head">
+      <div>
+        <p class="eyebrow">News &amp; Updates</p>
+        <h2 class="section-title">最新のお知らせ</h2>
+      </div>
+      <a class="news-home__all" href="/idfl_news.html">すべてのお知らせを見る →</a>
+    </div>
+    <ul class="news-home__list" id="newsHomeList"></ul>
+    <a class="news-home__all news-home__all--mobile" href="/idfl_news.html">すべてのお知らせを見る →</a>
+  </div>
+</section>
+
+<style>
+  .news-home{ padding:96px 0; background:#f7f8fa; }
+  .news-home .wrap{ max-width:1240px; margin:0 auto; padding:0 4.16rem; }
+  .news-home__head{ display:flex; align-items:flex-end; justify-content:space-between; gap:24px; margin-bottom:40px; }
+  .news-home .eyebrow{ font-size:12px; letter-spacing:.26em; color:#1255A0; text-transform:uppercase; margin:0 0 10px; font-weight:700; }
+  .news-home .section-title{ font-size:40px; font-weight:700; line-height:1.25; color:#17171b; margin:0; }
+  .news-home__all{ flex:none; font-size:14px; font-weight:700; color:#1255A0; text-decoration:none; letter-spacing:.02em; white-space:nowrap; transition:opacity .2s; }
+  .news-home__all:hover{ opacity:.65; }
+  .news-home__all--mobile{ display:none; margin-top:28px; }
+  .news-home__list{ list-style:none; margin:0; padding:0; display:grid; gap:14px; }
+  .news-home__item a{ display:flex; align-items:center; gap:20px; padding:22px 26px; background:#fff;
+    border:1px solid #e7e9ee; border-radius:14px; text-decoration:none; color:inherit; transition:border-color .2s, transform .2s, box-shadow .2s; }
+  .news-home__item a:hover{ border-color:#c7d2e6; transform:translateY(-2px); box-shadow:0 10px 30px rgba(4,34,88,.08); }
+  .news-home__meta{ flex:none; display:flex; flex-direction:column; align-items:flex-start; gap:8px; width:150px; }
+  .news-home__date{ font-size:13px; color:#74747c; letter-spacing:.04em; font-variant-numeric:tabular-nums; }
+  .news-home__badge{ font-size:11px; font-weight:700; letter-spacing:.04em; padding:3px 10px; border-radius:999px; line-height:1.6; }
+  .news-home__pin{ font-size:10px; font-weight:700; color:#fff; background:#1255A0; padding:2px 8px; border-radius:999px; letter-spacing:.08em; }
+  .news-home__title{ font-size:16px; font-weight:500; line-height:1.6; color:#17171b; margin:0;
+    display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden; }
+  .news-home__arrow{ flex:none; margin-left:auto; color:#c2c6d0; font-size:18px; }
+  .cat-idfl{ background:#e8f0fb; color:#1255A0; } .cat-gots{ background:#e8f5e9; color:#2e7d32; }
+  .cat-te{ background:#e3f2fd; color:#0277bd; } .cat-fsc{ background:#e8f3ea; color:#1b5e20; }
+  .cat-others{ background:#eef0f3; color:#5b5b63; }
+  @media (max-width:768px){
+    .news-home{ padding:64px 0; } .news-home .wrap{ padding:0 24px; }
+    .news-home .section-title{ font-size:28px; }
+    .news-home__head .news-home__all{ display:none; } .news-home__all--mobile{ display:inline-block; }
+    .news-home__item a{ flex-wrap:wrap; gap:12px; padding:18px 20px; }
+    .news-home__meta{ flex-direction:row; align-items:center; width:auto; gap:10px; }
+    .news-home__arrow{ display:none; }
+  }
+</style>
+<script>
+(function () {
+  var CAT = {
+    idfl:{label:'IDFL 公告',cls:'cat-idfl'}, gots:{label:'GOTS',cls:'cat-gots'},
+    te:{label:'Textile Exchange',cls:'cat-te'}, fsc:{label:'FSC',cls:'cat-fsc'},
+    others:{label:'お知らせ',cls:'cat-others'}
+  };
+  function fmtDate(s){ if(!s)return''; var p=String(s).split('-'); return p.length===3?p[0]+'.'+p[1]+'.'+p[2]:s; }
+  function esc(s){ return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];}); }
+  function render(posts){
+    var section=document.getElementById('news'), list=document.getElementById('newsHomeList');
+    if(!section||!list||!posts||!posts.length)return;
+    posts=posts.slice().sort(function(a,b){
+      if(!!b.pinned-!!a.pinned)return(!!b.pinned)-(!!a.pinned);
+      return(b.date||'').localeCompare(a.date||'');
+    }).slice(0,3);
+    list.innerHTML=posts.map(function(p){
+      var c=CAT[p.cat]||CAT.others;
+      return '<li class="news-home__item"><a href="/idfl_news.html">'+
+        '<span class="news-home__meta">'+
+          '<span class="news-home__date">'+esc(fmtDate(p.date))+'</span>'+
+          '<span class="news-home__badge '+c.cls+'">'+esc(c.label)+'</span>'+
+          (p.pinned?'<span class="news-home__pin">PINNED</span>':'')+
+        '</span>'+
+        '<span class="news-home__title">'+esc(p.title)+'</span>'+
+        '<span class="news-home__arrow" aria-hidden="true">→</span>'+
+      '</a></li>';
+    }).join('');
+    section.hidden=false;
+  }
+  fetch('/data/news.json',{cache:'no-cache'})
+    .then(function(r){ if(!r.ok)throw new Error('news.json '+r.status); return r.json(); })
+    .then(function(data){ render(Array.isArray(data)?data:(data&&data.posts)); })
+    .catch(function(e){ console.warn('[news-home] お知らせの取得に失敗:',e); });
+})();
+</script>
 
 <section class="about" id="about">
   <div class="wrap section-grid">
