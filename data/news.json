@@ -1,0 +1,134 @@
+[
+  {
+    "id": "news-te-calibration-log-v2026-6",
+    "cat": "te",
+    "title": "Textile Exchange、Calibration Log を最新版（TE-TXL-LOG-221 V2026.6）に更新",
+    "body": "Textile Exchangeは2026年6月1日付で、認証機関向けの解釈統一文書「Calibration Log（TE-TXL-LOG-221）」を最新版V2026.6に更新しました。Calibration LogはGRS・OCS・RCS・RWS・RDSなど各基準の運用解釈を統一するための重要文書であり、認証の取得・維持にあたっては最新版の確認が推奨されます。",
+    "link": "https://textileexchange.org/knowledge-center/documents/calibration-log/",
+    "linkLabel": "TE Calibration Log",
+    "pinned": false,
+    "date": "2026-06-01",
+    "author": "IDFL JAPAN"
+  },
+  {
+    "id": "news-gots-grts-consultation-20260331",
+    "cat": "gots",
+    "title": "GOTS、有機繊維の枠を超える新基準「GRTS（Global Responsible Textile Standard）」第2次公開諮問を実施",
+    "body": "Global Standard gGmbHは2026年4月、新基準「Global Responsible Textile Standard（GRTS）」ドラフト2について第2次公開諮問（2026年4月1日〜30日）を実施しました。GRTSはGOTSの枠組みを有機繊維以外にも拡大する新しい責任繊維基準で、2025年次報告書でも今後の重点施策として位置づけられています。従来のGOTS認証を補完・拡張し、サプライチェーン全体の責任ある調達を後押しすることが期待されています。",
+    "link": "https://global-standard.org/news/global-standard-ggmbh-launches-second-public-consultation-for-grts-draft-2-for-the-textile-industry-1-30-april-2026",
+    "linkLabel": "GOTS公式ニュース（GRTS）",
+    "pinned": false,
+    "date": "2026-03-31",
+    "author": "IDFL JAPAN"
+  },
+  {
+    "id": "news-gots-report-2025",
+    "cat": "gots",
+    "title": "GOTS認証工場数が世界で15%増加 — 2025年次報告書発表",
+    "body": "GOTSは2026年4月23日、2025年次報告書を公開しました。世界95カ国において約17,800施設がGOTS認証を取得しており、前年比15.3%の増加となりました。GOTS 8.0は2026年3月に正式発効し、義務適用開始日は2027年3月1日に設定されています。また、OECDデューデリジェンス適合性評価では、基準の98%が完全または部分的に適合と評価されました。",
+    "link": "https://global-standard.org/news",
+    "linkLabel": "GOTS公式ニュース",
+    "pinned": false,
+    "date": "2026-05-15",
+    "author": "IDFL JAPAN"
+  },
+  {
+    "id": "news-gsa-academy",
+    "cat": "gots",
+    "title": "Global Standard Academy（無料オンライン研修）開設のお知らせ",
+    "body": "Global Standardは、GOTSに関する信頼できる教育を広く提供するための新しい学習ハブ「Global Standard Academy」を開設しました。GOTS表示・ロゴ使用に関するインタラクティブな無料トレーニングが含まれており、認証取得を目指す企業・工場・ブランドの担当者が活用できます。",
+    "link": "https://global-standard.org/",
+    "linkLabel": "Global Standard Academy",
+    "pinned": false,
+    "date": "2026-05-12",
+    "author": "IDFL JAPAN"
+  },
+  {
+    "id": "news-te-materials-matter",
+    "cat": "te",
+    "title": "Textile Exchange、新基準「Materials Matter Standard」最終基準を公開",
+    "body": "Textile Exchangeは5年間の開発期間を経て、新基準「Materials Matter Standard」の最終基準を発表しました。原材料生産・一次加工分野向けの統合的・インパクト重視の基準で、2026年12月31日に発効、2027年12月31日より認証が義務化される予定です。また2026年2月には、ブランド・小売業者・サプライヤー向けの「Action Cohort（アクション・コホート）」3ステップ・パスウェイも発表されました。現行のTextile Exchange各基準は移行期間中も継続使用できます。",
+    "link": "https://textileexchange.org/news/",
+    "linkLabel": "Textile Exchange最新ニュース",
+    "pinned": false,
+    "date": "2026-05-09",
+    "author": "IDFL JAPAN"
+  },
+  {
+    "id": "news-fsc-climate-strategy",
+    "cat": "fsc",
+    "title": "FSC、新「気候・生物多様性戦略」を発表",
+    "body": "FSC（森林管理協議会）は2026年1月、新たな「気候・生物多様性戦略」を発表しました。また2026年3月には南アフリカおよびコートジボワールにおける新たな暫定森林管理基準を承認するなど、責任ある森林管理の普及に向けた取り組みを強化しています。テキスタイル分野では、ビスコース・モーダル・レーヨンなどの森林由来繊維（MMCF）のFSC認証サプライチェーンの整備が進んでいます。",
+    "link": "https://fsc.org/en/newscentre",
+    "linkLabel": "FSCニュースセンター",
+    "pinned": false,
+    "date": "2026-05-06",
+    "author": "IDFL JAPAN"
+  },
+  {
+    "id": "sample-1",
+    "cat": "idfl",
+    "title": "【IDFL JAPAN】2026年8月7日セミナー開催のお知らせ",
+    "body": "大阪・御堂会館にて「IDFL JAPAN サステナビリティ認証セミナー」を開催いたします。GOTS 8.0 移行・MMS 対応・FSC 新規取得を中心に、グループディスカッション形式で実務課題を解決する場です。参加費無料・事前申込制です。",
+    "link": "idfl_japan_seminar_with_dropdown.html",
+    "linkLabel": "セミナー詳細はこちら",
+    "pinned": true,
+    "date": "2026-05-01",
+    "author": "IDFL JAPAN"
+  },
+  {
+    "id": "sample-2",
+    "cat": "gots",
+    "title": "GOTS Version 8.0 施行日のご案内（2026年6月1日より）",
+    "body": "GOTS Version 8.0 は2026年6月1日より正式施行されます。Version 7.0 認証企業は移行期限内に対応が必要です。主な変更点（化学物質規制・社会基準・MMS 連携）については、セミナーにて詳しく解説いたします。",
+    "link": "https://global-standard.org/",
+    "linkLabel": "GOTS 公式サイト",
+    "pinned": false,
+    "date": "2026-04-20",
+    "author": "IDFL JAPAN"
+  },
+  {
+    "id": "sample-3",
+    "cat": "te",
+    "title": "Textile Exchange — 2026年度 マテリアルベンチマーク調査",
+    "body": "Textile Exchange は毎年実施している Material Benchmark の 2026年度調査への参加を呼びかけています。GRS・OCS・RDS・RWS などの認証素材の使用状況を報告することで、業界全体のサステナビリティ進捗に貢献できます。",
+    "link": "https://textileexchange.org/",
+    "linkLabel": "Textile Exchange 公式",
+    "pinned": false,
+    "date": "2026-04-10",
+    "author": "IDFL JAPAN"
+  },
+  {
+    "id": "sample-4",
+    "cat": "fsc",
+    "title": "FSC CoC 認証 — 初回審査の申込受付中",
+    "body": "FSC チェーン・オブ・カストディ（CoC）認証の新規申込を受付中です。審査の流れ・必要書類・準備期間についての詳細は、IDFL JAPAN 担当者までお問い合わせください。2026年8月のセミナーでも詳細を解説予定です。",
+    "link": "https://idfl.com/ja/idfl-japan/",
+    "linkLabel": "お問い合わせ",
+    "pinned": false,
+    "date": "2025-11-15",
+    "author": "IDFL JAPAN"
+  },
+  {
+    "id": "sample-5",
+    "cat": "gots",
+    "title": "GOTS 化学物質規制（PRLリスト）改訂のお知らせ",
+    "body": "GOTS Version 8.0 より、化学物質規制（PRL）リストが大幅に強化されました。製造工程で使用する薬品や染料について、事前確認が必要です。IDFL JAPAN では審査準備のサポートを承っております。",
+    "link": "https://global-standard.org/",
+    "linkLabel": "GOTS 化学物質情報",
+    "pinned": false,
+    "date": "2025-09-05",
+    "author": "IDFL JAPAN"
+  },
+  {
+    "id": "sample-6",
+    "cat": "others",
+    "title": "RWS（責任ある羊毛基準）認証の取扱い変更について",
+    "body": "RWS 認証に関する申請フローが一部変更になりました。詳細についてはIDFL JAPANまでお問い合わせください。既存認証企業も次回更新時に新フローが適用されます。",
+    "link": "https://idfl.com/ja/idfl-japan/",
+    "linkLabel": "お問い合わせ",
+    "pinned": false,
+    "date": "2025-07-22",
+    "author": "IDFL JAPAN"
+  }
+]
