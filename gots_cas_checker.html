@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>GOTS CAS / SDS Checker - IDFL JAPAN</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+<style>
+:root{--bg:#0f0f1a;--panel:#1a1a2e;--panel2:#13131f;--border:#2d2d4a;--accent:#7c3aed;--accent2:#a78bfa;
+--green:#22c55e;--red:#ef4444;--yellow:#f59e0b;--blue:#3b82f6;--gray:#64748b;--fg:#e2e8f0;--dim:#94a3b8;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--fg);font-family:'Segoe UI',system-ui,'Hiragino Sans','Noto Sans CJK JP',sans-serif;min-height:100vh;}
+header{background:var(--accent);padding:14px 24px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;}
+header h1{font-size:1.3rem;font-weight:700;color:#fff;}
+header p{font-size:.78rem;color:#ddd6fe;margin-top:2px;}
+.lang-sw{display:flex;gap:4px;}
+.lang-sw button{background:rgba(255,255,255,.15);color:#fff;border:none;padding:6px 12px;border-radius:6px;font-size:.8rem;cursor:pointer;font-weight:600;}
+.lang-sw button.on{background:#fff;color:var(--accent);}
+.main{max-width:920px;margin:0 auto;padding:20px 14px 60px;}
+.tabs{display:flex;gap:6px;margin-bottom:14px;}
+.tabs button{flex:1;background:var(--panel);border:1px solid var(--border);color:var(--dim);padding:12px;border-radius:8px;font-size:.9rem;font-weight:600;cursor:pointer;}
+.tabs button.on{background:var(--accent);color:#fff;border-color:var(--accent);}
+.card{background:var(--panel);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:14px;}
+.card h2{font-size:.85rem;font-weight:600;color:var(--accent2);margin-bottom:12px;}
+.search-row{display:flex;gap:10px;flex-wrap:wrap;}
+.search-row input{flex:1;min-width:200px;background:var(--panel2);border:1px solid var(--border);color:var(--fg);padding:13px 16px;border-radius:8px;font-size:1.05rem;font-family:Consolas,monospace;letter-spacing:.5px;}
+.search-row input:focus{outline:none;border-color:var(--accent);}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 24px;border-radius:8px;font-size:.92rem;font-weight:600;border:none;cursor:pointer;transition:.15s;background:var(--accent);color:#fff;}
+.btn:hover{background:#6d28d9;}
+.hint{font-size:.76rem;color:var(--dim);margin-top:8px;line-height:1.6;}
+.examples{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+.chip{background:var(--panel2);border:1px solid var(--border);color:var(--accent2);padding:4px 10px;border-radius:20px;font-size:.74rem;cursor:pointer;font-family:Consolas,monospace;}
+.chip:hover{border-color:var(--accent);}
+.drop{border:2px dashed var(--border);border-radius:10px;padding:30px;text-align:center;cursor:pointer;transition:.2s;}
+.drop:hover,.drop.over{border-color:var(--accent);background:rgba(124,58,237,.08);}
+.drop .ic{font-size:2rem;margin-bottom:8px;color:var(--accent2);}
+.drop .t{font-size:.95rem;color:var(--fg);}
+.drop .s{font-size:.76rem;color:var(--dim);margin-top:6px;}
+.proc{font-size:.82rem;color:var(--accent2);margin-top:12px;display:none;}
+.sp{display:inline-block;width:14px;height:14px;border:2px solid rgba(167,139,250,.3);border-top-color:var(--accent2);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+#result,#sdsResult{display:none;}
+.verdict{border-radius:10px;padding:18px;margin-bottom:14px;border-left:5px solid;}
+.v-basic{background:rgba(34,197,94,.1);border-color:var(--green);}
+.v-loa{background:rgba(59,130,246,.1);border-color:var(--blue);}
+.v-prohibited{background:rgba(239,68,68,.1);border-color:var(--red);}
+.v-unknown,.v-review{background:rgba(100,116,139,.12);border-color:var(--gray);}
+.v-review{background:rgba(245,158,11,.1);border-color:var(--yellow);}
+.v-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;}
+.badge{font-size:.78rem;font-weight:700;padding:5px 12px;border-radius:6px;letter-spacing:.3px;}
+.b-basic{background:var(--green);color:#04210f;}
+.b-loa{background:var(--blue);color:#fff;}
+.b-prohibited{background:var(--red);color:#fff;}
+.b-unknown{background:var(--gray);color:#fff;}
+.b-review{background:var(--yellow);color:#3a2700;}
+.v-cas{font-family:Consolas,monospace;font-size:1.05rem;color:var(--fg);}
+.v-name{font-size:1.15rem;font-weight:700;margin-top:10px;}
+.v-name small{display:block;font-size:.85rem;font-weight:400;color:var(--dim);margin-top:3px;}
+.v-meta{margin-top:14px;display:grid;gap:8px;}
+.meta-row{display:grid;grid-template-columns:120px 1fr;gap:10px;font-size:.86rem;line-height:1.5;}
+.meta-row b{color:var(--accent2);font-weight:600;}
+.vio{background:var(--panel2);border:1px solid var(--red);border-radius:8px;padding:11px 13px;margin-top:8px;font-size:.85rem;line-height:1.55;}
+.vio .vt{color:var(--red);font-weight:700;}
+.vio .rule{color:var(--dim);font-size:.78rem;margin-top:3px;}
+.rev{border-color:var(--yellow);}
+.rev .vt{color:var(--yellow);}
+.dt-q{background:var(--panel2);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:10px;}
+.dt-q p{font-size:.92rem;margin-bottom:8px;line-height:1.5;}
+.dt-q .sub{font-size:.76rem;color:var(--dim);margin-bottom:10px;}
+.dt-btns{display:flex;gap:10px;}
+.dt-btns button{flex:1;padding:11px;border-radius:7px;border:1px solid var(--border);background:var(--panel);color:var(--fg);cursor:pointer;font-size:.88rem;font-weight:600;}
+.dt-btns button.sel-yes{background:var(--red);color:#fff;border-color:var(--red);}
+.dt-btns button.sel-no{background:var(--green);color:#04210f;border-color:var(--green);}
+.flow{font-size:.82rem;color:var(--dim);background:var(--panel2);border-radius:8px;padding:12px 14px;line-height:1.85;}
+.flow b{color:var(--accent2);}
+.disclaimer{font-size:.76rem;color:var(--dim);line-height:1.65;}
+table.dbtab{width:100%;border-collapse:collapse;font-size:.8rem;margin-top:6px;}
+table.dbtab th,table.dbtab td{border:1px solid var(--border);padding:6px 9px;text-align:left;}
+table.dbtab th{background:var(--panel2);color:var(--accent2);font-weight:600;}
+table.dbtab td.c{font-family:Consolas,monospace;color:var(--accent2);white-space:nowrap;}
+.taglist{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.tag{font-family:Consolas,monospace;font-size:.74rem;padding:3px 8px;border-radius:5px;background:var(--panel2);border:1px solid var(--border);}
+.tag.bad{border-color:var(--red);color:#fca5a5;}
+.tag.ok{border-color:var(--green);color:#86efac;}
+.tag.warn{border-color:var(--yellow);color:#fcd34d;}
+details{margin-top:8px;}
+summary{cursor:pointer;font-size:.84rem;color:var(--accent2);font-weight:600;padding:6px 0;}
+.foot{text-align:center;font-size:.74rem;color:var(--gray);margin-top:24px;line-height:1.7;}
+.hidden{display:none!important;}
+</style>
+<style id="idfl-nav-css">
+/* === IDFL Site Nav v2 (pill links + menu overlay) === */
+:root{
+  --nav-bg:#ffffff;
+  --nav-ink:#17171b;
+  --nav-ink-soft:#3c3c43;
+  --nav-muted:#74747c;
+  --nav-hairline:rgba(23,23,27,.12);
+  --nav-hairline-2:rgba(23,23,27,.08);
+  --nav-accent:#1255A0;
+  --nav-gut:clamp(16px,3vw,40px);
+  --nav-fsans:"Zen Kaku Gothic New", system-ui, -apple-system, "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
+}
+.site-header{
+  position:sticky;top:0;z-index:50;
+  background:color-mix(in srgb,var(--nav-bg) 90%,transparent);
+  backdrop-filter:saturate(160%) blur(14px);
+  -webkit-backdrop-filter:saturate(160%) blur(14px);
+  border-bottom:1px solid var(--nav-hairline-2);
+  font-family:var(--nav-fsans);
+}
+.site-header .bar{
+  max-width:1500px;margin:0 auto;
+  padding:14px var(--nav-gut);
+  display:flex;align-items:center;justify-content:space-between;gap:18px;
+}
+.site-header .brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:inherit;flex-shrink:0;}
+.site-header .brand-logo{height:32px;width:auto;object-fit:contain;}
+.site-header .brand-name{
+  font-size:13.5px;font-weight:700;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--nav-ink);
+}
+.site-header .nav-pills{
+  display:flex;align-items:center;gap:9px;flex-wrap:wrap;justify-content:center;flex:1;
+}
+.site-header .nav-pills .pill{
+  display:inline-block;
+  padding:7px 18px;
+  border:1.5px solid var(--nav-accent);
+  border-radius:999px;
+  color:var(--nav-accent);
+  font-size:13px;
+  font-weight:500;
+  text-decoration:none;
+  white-space:nowrap;
+  background:transparent;
+  transition:background .25s,color .25s,transform .25s;
+}
+.site-header .nav-pills .pill:hover{
+  background:var(--nav-accent);
+  color:#fff;
+  transform:translateY(-1px);
+}
+.site-header .menu-btn{
+  display:flex;align-items:center;gap:10px;flex-shrink:0;
+  background:none;border:none;cursor:pointer;
+  font-family:inherit;font-size:13.5px;font-weight:500;color:var(--nav-ink);
+  padding:9px 6px 9px 14px;
+}
+.site-header .menu-btn-lines{display:flex;flex-direction:column;gap:5px;width:20px;}
+.site-header .menu-btn-lines i{display:block;height:1.5px;background:var(--nav-ink);transition:transform .3s;}
+.site-header .menu-btn:hover .menu-btn-lines i:first-child{transform:translateX(3px);}
+
+#siteMenuOverlay{
+  position:fixed;inset:0;z-index:60;
+  background:var(--nav-bg);
+  opacity:0;visibility:hidden;
+  transform:translateY(-12px);
+  transition:opacity .4s,transform .4s,visibility .4s;
+  overflow-y:auto;
+  font-family:var(--nav-fsans);
+}
+#siteMenuOverlay.open{opacity:1;visibility:visible;transform:none;}
+#siteMenuOverlay .menu-inner{max-width:1340px;margin:0 auto;padding:26px var(--nav-gut) 64px;}
+#siteMenuOverlay .menu-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:clamp(36px,6vw,72px);}
+#siteMenuOverlay .menu-eyebrow{font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:var(--nav-muted);}
+#siteMenuOverlay .menu-close{background:none;border:none;cursor:pointer;font-family:inherit;font-size:14px;color:var(--nav-ink);letter-spacing:.04em;}
+#siteMenuOverlay .menu-close:hover{color:var(--nav-accent);}
+#siteMenuOverlay .menu-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);
+  gap:clamp(28px,4vw,56px);
+}
+#siteMenuOverlay .menu-col-title{
+  font-size:12px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--nav-accent);font-weight:700;
+  padding-bottom:16px;margin-bottom:18px;
+  border-bottom:1px solid var(--nav-hairline);
+}
+#siteMenuOverlay .menu-col a{
+  display:block;font-size:17px;color:var(--nav-ink-soft);text-decoration:none;
+  padding:9px 0;transition:color .25s,padding-left .25s;
+}
+#siteMenuOverlay .menu-col a:hover{color:var(--nav-accent);padding-left:7px;}
+#siteMenuOverlay .menu-cta{
+  display:inline-flex;align-items:center;gap:.6em;margin-top:clamp(40px,6vw,68px);
+  font-size:clamp(22px,3vw,32px);font-weight:700;color:var(--nav-ink);text-decoration:none;
+}
+#siteMenuOverlay .menu-cta:hover{color:var(--nav-accent);}
+#siteMenuOverlay .arrow{display:inline-block;transition:transform .35s cubic-bezier(.2,.7,.3,1);}
+#siteMenuOverlay .menu-cta:hover .arrow{transform:translateX(5px);}
+@media (max-width:1180px){
+  .site-header .nav-pills{display:none;}
+}
+@media (max-width:900px){
+  #siteMenuOverlay .menu-grid{grid-template-columns:1fr 1fr;}
+}
+@media (max-width:620px){
+  .site-header .menu-btn-label{display:none;}
+}
+</style>
+<style id="idfl-footer-css">
+:root{--idfl-sans:"Zen Kaku Gothic New",system-ui,-apple-system,sans-serif;}
+/* neutralize v6.0 header{} on nav */
+header.site-header{padding:0;border-bottom:0;display:block;background:color-mix(in srgb,#ffffff 90%,transparent);}
+/* footer (match index) */
+.site-footer{border-top:1px solid rgba(23,23,27,.12);padding-block:clamp(48px,6vw,72px);background:#ffffff;font-family:var(--idfl-sans);margin-top:0;}
+.site-footer .footer-wrap{max-width:1240px;margin:0 auto;padding-inline:clamp(20px,5.2vw,72px);width:100%;}
+.site-footer .footer-grid{display:grid;grid-template-columns:auto 1fr auto;gap:clamp(28px,4vw,64px);align-items:start;}
+.site-footer .brand{display:flex;align-items:center;gap:12px;text-decoration:none;color:#17171b;}
+.site-footer .brand-logo{height:30px;width:auto;object-fit:contain;}
+.site-footer .brand-name{font-size:14px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:#17171b;}
+.site-footer .footer-links{display:flex;flex-wrap:wrap;gap:10px 28px;align-content:start;list-style:none;margin:0;padding:0;}
+.site-footer .footer-links a{font-size:13.5px;color:#74747c;transition:color .25s;text-decoration:none;}
+.site-footer .footer-links a:hover{color:#1255A0;}
+.site-footer .footer-copy{font-size:12px;color:#a0a0a8;line-height:1.7;text-align:right;letter-spacing:.02em;margin:0;}
+@media(max-width:900px){.site-footer .footer-grid{grid-template-columns:1fr;gap:30px;}.site-footer .footer-copy{text-align:left;}}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="bar">
+    <a class="brand" href="/">
+      <img src="/IDFL-Logo.png" alt="IDFL JAPAN" class="brand-logo" />
+      <span class="brand-name">IDFL JAPAN</span>
+    </a>
+    <nav class="nav-pills">
+      <a class="pill" href="https://textileexchange.org/" target="_blank" rel="noopener">TE公式サイト</a>
+      <a class="pill" href="https://global-standard.org/" target="_blank" rel="noopener">GOTS公式サイト</a>
+      <a class="pill" href="https://www.jba210.jp/quality/about_j-tas/" target="_blank" rel="noopener">J-TAS公式サイト</a>
+      <a class="pill" href="https://portal.idfl.com/sign-in" target="_blank" rel="noopener">お客様ポータル</a>
+      <a class="pill" href="https://idfl.com/ja/idfl-japan/" target="_blank" rel="noopener">お問い合わせ</a>
+      <a class="pill" href="https://forms.office.com/Pages/ResponsePage.aspx?id=hQL27-D4ckKtEjtBsJIawI60DctQlgpAt0rPraJ8Wg5UQjA4N1UwN09PVkg5SkNZN1lBVTQxN0tYTy4u" target="_blank" rel="noopener">お申し込み</a>
+      <a class="pill" href="/qa.html" style="background:#1255A0;color:#fff;border-color:#1255A0;">Q&amp;A</a>
+    </nav>
+    <button class="menu-btn" id="siteMenuBtn" aria-label="メニュー" aria-expanded="false">
+      <span class="menu-btn-lines"><i></i><i></i></span>
+      <span class="menu-btn-label">メニュー</span>
+    </button>
+  </div>
+</header>
+
+<div id="siteMenuOverlay" aria-hidden="true">
+  <div class="menu-inner">
+    <div class="menu-head">
+      <span class="menu-eyebrow">Menu</span>
+      <button class="menu-close" id="siteMenuClose" aria-label="閉じる">閉じる ✕</button>
+    </div>
+    <nav class="menu-grid">
+      <div class="menu-col">
+        <p class="menu-col-title">認証サービス</p>
+        <a href="https://idfl.com/ja/services/audits-certifications/global-organic-textile-standard-gots/" target="_blank" rel="noopener">GOTS 認証</a>
+        <a href="https://idfl.com/ja/services/audits-certifications/organic-content-standard-ocs/" target="_blank" rel="noopener">OCS 認証</a>
+        <a href="https://idfl.com/ja/services/audits-certifications/responsible-wool-standard-rws/" target="_blank" rel="noopener">RWS 認証</a>
+        <a href="https://idfl.com/ja/services/audits-certifications/global-recycled-standard-grs/" target="_blank" rel="noopener">GRS 認証</a>
+        <a href="/certified-factories.html" target="_blank" rel="noopener">認証工場一覧</a>
+        <a href="https://idfl.com/ja/services/" target="_blank" rel="noopener">ダウン・フェザー検査</a>
+        <a href="/qa.html">Q&amp;A（よくある質問）</a>
+        <a href="/gots_cas_checker.html">GOTS CAS/SDSチェッカー</a>
+      </div>
+      <div class="menu-col">
+        <p class="menu-col-title">セミナー</p>
+        <a href="/seminar_schedule.html" target="_blank" rel="noopener">開催予定のセミナー</a>
+        <a href="/past_seminar_v2.html" target="_blank" rel="noopener">過去のセミナー</a>
+        <a href="/download.html" target="_blank" rel="noopener">資料ダウンロード</a>
+      </div>
+      <div class="menu-col">
+        <p class="menu-col-title">会社情報</p>
+        <a href="https://idfl.com/ja/idfl-japan/" target="_blank" rel="noopener">会社概要</a>
+        <a href="https://maps.app.goo.gl/hxvPws1M6cGxbLHF7" target="_blank" rel="noopener">アクセス</a>
+        <a href="/idfl_news.html" target="_blank" rel="noopener">お知らせ</a>
+        <a href="/converter.html" target="_blank" rel="noopener">変換ツール</a>
+      </div>
+    </nav>
+    <a class="menu-cta" href="https://forms.office.com/Pages/ResponsePage.aspx?id=hQL27-D4ckKtEjtBsJIawI60DctQlgpAt0rPraJ8Wg5UQjA4N1UwN09PVkg5SkNZN1lBVTQxN0tYTy4u" target="_blank" rel="noopener">
+      今すぐ申し込む（無料）<span class="arrow">→</span>
+    </a>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+<header>
+  <div>
+    <h1 data-t="title">GOTS CAS / SDS チェッカー</h1>
+    <p data-t="subtitle">CAS番号またはSDS(PDF)からGOTS区分を判定</p>
+  </div>
+  <div class="lang-sw">
+    <button data-lang="ja" class="on" onclick="setLang('ja')">日本語</button>
+    <button data-lang="zh" onclick="setLang('zh')">中文</button>
+    <button data-lang="en" onclick="setLang('en')">EN</button>
+  </div>
+</header>
+
+<div class="main">
+  <div class="tabs">
+    <button id="tabCas" class="on" onclick="switchTab('cas')" data-t="tabCas">CAS番号で判定</button>
+    <button id="tabSds" onclick="switchTab('sds')" data-t="tabSds">SDS(PDF)で判定</button>
+  </div>
+
+  <!-- ===== CAS TAB ===== -->
+  <div id="paneCas">
+    <div class="card">
+      <h2 data-t="searchTitle">CAS番号で検索</h2>
+      <div class="search-row">
+        <input id="casInput" placeholder="例: 50-00-0" autocomplete="off" onkeydown="if(event.key==='Enter')lookup()">
+        <button class="btn" onclick="lookup()" data-t="btnCheck">判定する</button>
+      </div>
+      <div class="hint" data-t="hint"></div>
+      <div class="examples" id="examples"></div>
+    </div>
+    <div id="result"></div>
+  </div>
+
+  <!-- ===== SDS TAB ===== -->
+  <div id="paneSds" class="hidden">
+    <div class="card">
+      <h2 data-t="sdsTitle">SDS(PDF)を読み込んで判定</h2>
+      <div class="drop" id="drop" onclick="document.getElementById('pdfFile').click()">
+        <div class="ic">PDF</div>
+        <div class="t" data-t="dropT">SDSのPDFをドラッグ＆ドロップ／クリックで選択</div>
+        <div class="s" data-t="dropS">CAS・GHS危険有害性コード・禁止物質群を自動抽出して判定します</div>
+      </div>
+      <input type="file" id="pdfFile" accept="application/pdf" class="hidden" onchange="handleFile(this.files[0])">
+      <div class="proc" id="proc"><span class="sp"></span><span id="procTxt"></span></div>
+      <div class="hint" data-t="sdsHint"></div>
+    </div>
+    <div id="sdsResult"></div>
+  </div>
+
+  <!-- ===== SHARED ===== -->
+  <div class="card">
+    <details>
+      <summary data-t="dbTitle">収録済みCASリストを開く</summary>
+      <div id="dbtable"></div>
+    </details>
+  </div>
+
+  <div class="card">
+    <details>
+      <summary data-t="subsTitle">禁止物質 → GOTS適合な代替（科学豆知識）</summary>
+      <div id="substable"></div>
+    </details>
+  </div>
+
+  <div class="card">
+    <h2 data-t="logicTitle">判定ロジック（3ステップ）</h2>
+    <div class="flow" data-t="logicBody"></div>
+  </div>
+
+  <div class="card">
+    <div class="disclaimer" data-t="disclaimer"></div>
+  </div>
+
+  <div class="foot" data-t="foot"></div>
+</div>
+
+
+<script>
+if(window.pdfjsLib)pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+/* ============================================================
+   GOTS CAS / SDS Checker
+   Sources:
+   - GOTS Standard v7.0 (2023-03) §4.2.1 / §4.2.2.3 / §4.2.3
+   - Manual for the Implementation of GOTS v7.2 (2024-09-20):
+     "Basic chemicals (such as salt, alkali, acid, etc.) used
+      do not need to be released on Letters of Approval."
+   NOTE: GOTS has NO official CAS->category list. Decision-support
+   aid only, not an official determination.
+   ============================================================ */
+
+// ---------- CAS DATABASE ----------  cat: basic | loa | prohibited
+const DB = {
+  // ===== BASIC CHEMICALS (no LoA) =====
+  "7647-14-5":{cat:"basic",ja:"塩化ナトリウム（食塩）",zh:"氯化鈉（食鹽）",en:"Sodium chloride",use:{ja:"染色促染電解質",zh:"染色促染電解質",en:"Dyeing electrolyte"}},
+  "7757-82-6":{cat:"basic",ja:"硫酸ナトリウム（芒硝）",zh:"硫酸鈉（元明粉/芒硝）",en:"Sodium sulfate",use:{ja:"染色促染",zh:"染色促染",en:"Dyeing electrolyte"}},
+  "7727-73-3":{cat:"basic",ja:"硫酸ナトリウム十水和物（ぼう硝）",zh:"硫酸鈉十水合物",en:"Sodium sulfate decahydrate",use:{ja:"染色促染",zh:"染色促染",en:"Dyeing electrolyte"}},
+  "1310-73-2":{cat:"basic",ja:"水酸化ナトリウム（苛性ソーダ）",zh:"氫氧化鈉（燒鹼）",en:"Sodium hydroxide",use:{ja:"シルケット・精練",zh:"絲光、精練",en:"Mercerizing, scouring"}},
+  "1310-58-3":{cat:"basic",ja:"水酸化カリウム（苛性カリ）",zh:"氫氧化鉀（苛性鉀）",en:"Potassium hydroxide",use:{ja:"アルカリ剤",zh:"鹼劑",en:"Alkali"}},
+  "497-19-8":{cat:"basic",ja:"炭酸ナトリウム（ソーダ灰）",zh:"碳酸鈉（純鹼/蘇打）",en:"Sodium carbonate",use:{ja:"アルカリ剤・固着",zh:"鹼劑、固色",en:"Alkali, fixing"}},
+  "584-08-7":{cat:"basic",ja:"炭酸カリウム",zh:"碳酸鉀",en:"Potassium carbonate",use:{ja:"アルカリ剤",zh:"鹼劑",en:"Alkali"}},
+  "144-55-8":{cat:"basic",ja:"炭酸水素ナトリウム（重曹）",zh:"碳酸氫鈉（小蘇打）",en:"Sodium bicarbonate",use:{ja:"緩衝アルカリ",zh:"緩衝鹼劑",en:"Buffer alkali"}},
+  "64-19-7":{cat:"basic",ja:"酢酸",zh:"醋酸",en:"Acetic acid",use:{ja:"pH調整",zh:"pH調整",en:"pH adjustment"}},
+  "64-18-6":{cat:"basic",ja:"ギ酸",zh:"甲酸",en:"Formic acid",use:{ja:"pH調整",zh:"pH調整",en:"pH adjustment"}},
+  "77-92-9":{cat:"basic",ja:"クエン酸",zh:"檸檬酸",en:"Citric acid",use:{ja:"pH・弱キレート",zh:"pH／弱螯合",en:"pH / mild sequestrant"}},
+  "87-69-4":{cat:"basic",ja:"酒石酸",zh:"酒石酸",en:"Tartaric acid",use:{ja:"pH調整",zh:"pH調整",en:"pH adjustment"}},
+  "50-21-5":{cat:"basic",ja:"乳酸",zh:"乳酸",en:"Lactic acid",use:{ja:"pH調整",zh:"pH調整",en:"pH adjustment"}},
+  "7664-93-9":{cat:"basic",ja:"硫酸",zh:"硫酸",en:"Sulfuric acid",use:{ja:"中和・酸処理",zh:"中和、調酸",en:"Neutralization"}},
+  "7647-01-0":{cat:"basic",ja:"塩酸",zh:"鹽酸",en:"Hydrochloric acid",use:{ja:"中和・酸処理",zh:"中和、調酸",en:"Neutralization"}},
+  "7664-38-2":{cat:"basic",ja:"リン酸",zh:"磷酸",en:"Phosphoric acid",use:{ja:"pH・緩衝",zh:"pH／緩衝",en:"pH / buffer"}},
+  "144-62-7":{cat:"basic",ja:"シュウ酸",zh:"草酸",en:"Oxalic acid",use:{ja:"漂白後処理・除錆",zh:"漂後處理、除鏽",en:"Bleach after-treatment"}},
+  "7722-84-1":{cat:"basic",ja:"過酸化水素",zh:"過氧化氫（雙氧水）",en:"Hydrogen peroxide",use:{ja:"酸素漂白（GOTS唯一許可漂白）",zh:"含氧漂白（GOTS唯一許可漂白）",en:"Oxygen bleaching (only allowed bleach)"}},
+  "15630-89-4":{cat:"basic",ja:"過炭酸ナトリウム",zh:"過碳酸鈉",en:"Sodium percarbonate",use:{ja:"酸素漂白",zh:"含氧漂白",en:"Oxygen bleaching"}},
+  "7775-14-6":{cat:"basic",ja:"亜ジチオン酸ナトリウム（ハイドロ）",zh:"連二亞硫酸鈉（保險粉）",en:"Sodium dithionite (hydrosulfite)",use:{ja:"還元剤（建染染料）",zh:"還原劑（還原染料）",en:"Reducing agent (vat dyes)"}},
+  "7631-90-5":{cat:"basic",ja:"亜硫酸水素ナトリウム",zh:"亞硫酸氫鈉",en:"Sodium bisulfite",use:{ja:"還元・脱塩素",zh:"還原、除氯",en:"Reducing / dechlorination"}},
+  "7681-57-4":{cat:"basic",ja:"ピロ亜硫酸ナトリウム",zh:"焦亞硫酸鈉",en:"Sodium metabisulfite",use:{ja:"還元・脱塩素",zh:"還原、除氯",en:"Reducing / dechlorination"}},
+  "7772-98-7":{cat:"basic",ja:"チオ硫酸ナトリウム",zh:"硫代硫酸鈉（海波）",en:"Sodium thiosulfate",use:{ja:"脱塩素（アンチクロル）",zh:"除氯（脫氯劑）",en:"Antichlor"}},
+  "1344-09-8":{cat:"basic",ja:"ケイ酸ナトリウム（水ガラス）",zh:"矽酸鈉（水玻璃）",en:"Sodium silicate",use:{ja:"過酸化水素安定剤",zh:"過氧化氫安定劑",en:"Peroxide stabilizer"}},
+  "10043-52-4":{cat:"basic",ja:"塩化カルシウム",zh:"氯化鈣",en:"Calcium chloride",use:{ja:"基礎塩",zh:"基礎鹽",en:"Basic salt"}},
+  "7786-30-3":{cat:"basic",ja:"塩化マグネシウム",zh:"氯化鎂",en:"Magnesium chloride",use:{ja:"基礎塩",zh:"基礎鹽",en:"Basic salt"}},
+  "7783-20-2":{cat:"basic",ja:"硫酸アンモニウム",zh:"硫酸銨",en:"Ammonium sulfate",use:{ja:"基礎塩・緩衝",zh:"基礎鹽、緩衝",en:"Basic salt / buffer"}},
+  "127-09-3":{cat:"basic",ja:"酢酸ナトリウム",zh:"醋酸鈉",en:"Sodium acetate",use:{ja:"緩衝剤",zh:"緩衝劑",en:"Buffer"}},
+
+  // ===== TYPICAL "NEEDS LoA" SINGLE-CAS AUXILIARY INGREDIENTS =====
+  "9004-32-4":{cat:"loa",ja:"カルボキシメチルセルロース（CMC）",zh:"羧甲基纖維素（CMC）",en:"CMC",src:"§4.2.1 製剤として要LoA確認"},
+  "9004-62-0":{cat:"loa",ja:"ヒドロキシエチルセルロース",zh:"羥乙基纖維素",en:"Hydroxyethyl cellulose",src:"§4.2.1 助剤として要LoA"},
+  "9005-25-8":{cat:"loa",ja:"デンプン糊剤（合成区分は要確認）",zh:"澱粉系漿料（合成需確認）",en:"Starch-based sizing",src:"§4.2.6.3 天然糊は可／合成系は要LoA"},
+
+  // ===== PROHIBITED (GOTS §4.2.2.3 / §4.2.3) =====
+  // -- Chlorine bleach / AOX --
+  "7681-52-9":{cat:"prohibited",ja:"次亜塩素酸ナトリウム（塩素漂白）",zh:"次氯酸鈉（含氯漂白）",en:"Sodium hypochlorite (chlorine bleach)",src:"§4.2.6 含氯漂白禁止 / AOX>1%"},
+  "7758-19-2":{cat:"prohibited",ja:"亜塩素酸ナトリウム",zh:"亞氯酸鈉",en:"Sodium chlorite",src:"§4.2.6 含氯漂白 / AOX"},
+  // -- Formaldehyde / aldehydes --
+  "50-00-0":{cat:"prohibited",ja:"ホルムアルデヒド",zh:"甲醛",en:"Formaldehyde",src:"§4.2.2.3 Formaldehyde & short-chain aldehydes"},
+  "107-22-2":{cat:"prohibited",ja:"グリオキサール",zh:"乙二醛",en:"Glyoxal",src:"§4.2.2.3 short-chain aldehydes"},
+  // -- Complexing agents --
+  "60-00-4":{cat:"prohibited",ja:"EDTA",zh:"EDTA（乙二胺四乙酸）",en:"EDTA",src:"§4.2.2.3 Complexing agents"},
+  "64-02-8":{cat:"prohibited",ja:"EDTA四ナトリウム",zh:"EDTA四鈉",en:"EDTA tetrasodium",src:"§4.2.2.3 Complexing agents"},
+  "139-33-3":{cat:"prohibited",ja:"EDTA二ナトリウム",zh:"EDTA二鈉",en:"EDTA disodium",src:"§4.2.2.3 Complexing agents"},
+  "67-43-6":{cat:"prohibited",ja:"DTPA",zh:"DTPA",en:"DTPA",src:"§4.2.2.3 Complexing agents"},
+  "139-13-9":{cat:"prohibited",ja:"NTA（ニトリロ三酢酸）",zh:"NTA（次氮基三乙酸）",en:"NTA",src:"§4.2.2.3 Complexing agents"},
+  "5064-31-3":{cat:"prohibited",ja:"NTA三ナトリウム",zh:"NTA三鈉",en:"Trisodium NTA",src:"§4.2.2.3 Complexing agents"},
+  // -- Surfactants LAS --
+  "25155-30-0":{cat:"prohibited",ja:"直鎖アルキルベンゼンスルホン酸ナトリウム（LAS）",zh:"直鏈烷基苯磺酸鈉（LAS）",en:"Sodium LAS",src:"§4.2.2.3 Surfactants (LAS)"},
+  "68411-30-3":{cat:"prohibited",ja:"LAS（混合）",zh:"LAS（混合）",en:"LAS (mixed)",src:"§4.2.2.3 Surfactants (LAS)"},
+  // -- AP / APEO --
+  "104-40-5":{cat:"prohibited",ja:"4-ノニルフェノール",zh:"4-壬基酚",en:"4-Nonylphenol (NP)",src:"§4.2.2.3 AP/APEO"},
+  "25154-52-3":{cat:"prohibited",ja:"ノニルフェノール",zh:"壬基酚",en:"Nonylphenol (NP)",src:"§4.2.2.3 AP/APEO"},
+  "84852-15-3":{cat:"prohibited",ja:"4-ノニルフェノール（分岐）",zh:"4-壬基酚（支鏈）",en:"4-Nonylphenol, branched",src:"§4.2.2.3 AP/APEO"},
+  "9016-45-9":{cat:"prohibited",ja:"ノニルフェノールエトキシレート（NPEO）",zh:"壬基酚聚氧乙烯醚（NPEO）",en:"Nonylphenol ethoxylate (NPEO)",src:"§4.2.2.3 AP/APEO"},
+  "26027-38-3":{cat:"prohibited",ja:"NPEO（混合）",zh:"NPEO（混合）",en:"NPEO (mixed)",src:"§4.2.2.3 AP/APEO"},
+  "140-66-9":{cat:"prohibited",ja:"4-tert-オクチルフェノール",zh:"4-叔辛基酚",en:"4-tert-Octylphenol",src:"§4.2.2.3 AP/APEO"},
+  "1806-26-4":{cat:"prohibited",ja:"オクチルフェノール",zh:"辛基酚",en:"Octylphenol (OP)",src:"§4.2.2.3 AP/APEO"},
+  "9036-19-5":{cat:"prohibited",ja:"オクチルフェノールエトキシレート（OPEO）",zh:"辛基酚聚氧乙烯醚（OPEO）",en:"Octylphenol ethoxylate (OPEO)",src:"§4.2.2.3 AP/APEO"},
+  // -- Chlorophenols --
+  "87-86-5":{cat:"prohibited",ja:"ペンタクロロフェノール（PCP）",zh:"五氯酚（PCP）",en:"Pentachlorophenol (PCP)",src:"§4.2.2.3 Chlorophenols"},
+  "131-52-2":{cat:"prohibited",ja:"ペンタクロロフェノールナトリウム",zh:"五氯酚鈉",en:"Sodium pentachlorophenate",src:"§4.2.2.3 Chlorophenols"},
+  "88-06-2":{cat:"prohibited",ja:"2,4,6-トリクロロフェノール",zh:"2,4,6-三氯酚",en:"2,4,6-Trichlorophenol",src:"§4.2.2.3 Chlorophenols"},
+  // -- Chlorinated benzenes/toluenes --
+  "118-74-1":{cat:"prohibited",ja:"ヘキサクロロベンゼン",zh:"六氯苯",en:"Hexachlorobenzene",src:"§4.2.2.3 Chlorinated benzenes"},
+  "120-82-1":{cat:"prohibited",ja:"1,2,4-トリクロロベンゼン",zh:"1,2,4-三氯苯",en:"1,2,4-Trichlorobenzene",src:"§4.2.2.3 Chlorinated benzenes"},
+  // -- Aromatic / halogenated solvents --
+  "71-43-2":{cat:"prohibited",ja:"ベンゼン",zh:"苯",en:"Benzene",src:"§4.2.2.3 Aromatic solvents / §4.2.3 H350"},
+  "108-88-3":{cat:"prohibited",ja:"トルエン",zh:"甲苯",en:"Toluene",src:"§4.2.2.3 Aromatic solvents"},
+  "1330-20-7":{cat:"prohibited",ja:"キシレン",zh:"二甲苯",en:"Xylene",src:"§4.2.2.3 Aromatic solvents"},
+  "75-09-2":{cat:"prohibited",ja:"ジクロロメタン",zh:"二氯甲烷",en:"Dichloromethane",src:"§4.2.2.3 Halogenated solvents"},
+  "127-18-4":{cat:"prohibited",ja:"テトラクロロエチレン（PERC）",zh:"四氯乙烯（PERC）",en:"Perchloroethylene",src:"§4.2.2.3 Halogenated solvents"},
+  "79-01-6":{cat:"prohibited",ja:"トリクロロエチレン",zh:"三氯乙烯",en:"Trichloroethylene",src:"§4.2.2.3 Halogenated solvents / §4.2.3 H350"},
+  "67-66-3":{cat:"prohibited",ja:"クロロホルム",zh:"氯仿",en:"Chloroform",src:"§4.2.2.3 Halogenated solvents"},
+  // -- PFAS --
+  "335-67-1":{cat:"prohibited",ja:"PFOA",zh:"全氟辛酸（PFOA）",en:"PFOA",src:"§4.2.2.3 PFAS"},
+  "3825-26-1":{cat:"prohibited",ja:"PFOAアンモニウム塩",zh:"全氟辛酸銨",en:"Ammonium PFOA",src:"§4.2.2.3 PFAS"},
+  "1763-23-1":{cat:"prohibited",ja:"PFOS",zh:"全氟辛烷磺酸（PFOS）",en:"PFOS",src:"§4.2.2.3 PFAS"},
+  "375-95-1":{cat:"prohibited",ja:"PFNA",zh:"全氟壬酸（PFNA）",en:"PFNA",src:"§4.2.2.3 PFAS"},
+  "335-76-2":{cat:"prohibited",ja:"PFDA",zh:"全氟癸酸（PFDA）",en:"PFDA",src:"§4.2.2.3 PFAS"},
+  "647-42-7":{cat:"prohibited",ja:"6:2 フルオロテロマーアルコール",zh:"6:2 氟調醇（FTOH）",en:"6:2 FTOH",src:"§4.2.2.3 PFAS"},
+  "9002-84-0":{cat:"prohibited",ja:"PTFE（テフロン）",zh:"聚四氟乙烯（PTFE）",en:"PTFE",src:"§4.2.2.3 PFAS"},
+  // -- Plasticizers / BPA / phthalates --
+  "80-05-7":{cat:"prohibited",ja:"ビスフェノールA",zh:"雙酚A（BPA）",en:"Bisphenol A",src:"§4.2.2.3 Plasticizers / endocrine disruptor"},
+  "117-81-7":{cat:"prohibited",ja:"フタル酸ジ(2-エチルヘキシル) DEHP",zh:"鄰苯二甲酸二(2-乙基己基)酯 DEHP",en:"DEHP",src:"§4.2.2.3 Phthalates"},
+  "84-74-2":{cat:"prohibited",ja:"フタル酸ジブチル DBP",zh:"鄰苯二甲酸二丁酯 DBP",en:"DBP",src:"§4.2.2.3 Phthalates"},
+  "85-68-7":{cat:"prohibited",ja:"フタル酸ベンジルブチル BBP",zh:"鄰苯二甲酸丁苄酯 BBP",en:"BBP",src:"§4.2.2.3 Phthalates"},
+  "84-69-5":{cat:"prohibited",ja:"フタル酸ジイソブチル DIBP",zh:"鄰苯二甲酸二異丁酯 DIBP",en:"DIBP",src:"§4.2.2.3 Phthalates"},
+  "28553-12-0":{cat:"prohibited",ja:"フタル酸ジイソノニル DINP",zh:"鄰苯二甲酸二異壬酯 DINP",en:"DINP",src:"§4.2.2.3 Phthalates"},
+  "26761-40-0":{cat:"prohibited",ja:"フタル酸ジイソデシル DIDP",zh:"鄰苯二甲酸二異癸酯 DIDP",en:"DIDP",src:"§4.2.2.3 Phthalates"},
+  "117-84-0":{cat:"prohibited",ja:"フタル酸ジ-n-オクチル DnOP",zh:"鄰苯二甲酸二正辛酯 DnOP",en:"DnOP",src:"§4.2.2.3 Phthalates"},
+  "84-61-7":{cat:"prohibited",ja:"フタル酸ジシクロヘキシル DCHP",zh:"鄰苯二甲酸二環己酯 DCHP",en:"DCHP",src:"§4.2.2.3 Phthalates"},
+  // -- Cyclic siloxanes --
+  "556-67-2":{cat:"prohibited",ja:"環状シロキサン D4",zh:"環狀矽氧烷 D4",en:"Cyclic siloxane D4",src:"§4.2.2.3 Cyclic siloxanes (D4)"},
+  "541-02-6":{cat:"prohibited",ja:"環状シロキサン D5",zh:"環狀矽氧烷 D5",en:"Cyclic siloxane D5",src:"§4.2.2.3 Cyclic siloxanes (D5)"},
+  "540-97-6":{cat:"prohibited",ja:"環状シロキサン D6",zh:"環狀矽氧烷 D6",en:"Cyclic siloxane D6",src:"§4.2.2.3 Cyclic siloxanes (D6)"},
+  // -- Chlorinated paraffins --
+  "85535-84-8":{cat:"prohibited",ja:"短鎖塩素化パラフィン（SCCP）",zh:"短鏈氯化石蠟（SCCP）",en:"SCCP (C10-13)",src:"§4.2.2.3 Chlorinated paraffins"},
+  "85535-85-9":{cat:"prohibited",ja:"中鎖塩素化パラフィン（MCCP）",zh:"中鏈氯化石蠟（MCCP）",en:"MCCP (C14-17)",src:"§4.2.2.3 Chlorinated paraffins"},
+  // -- Organotin --
+  "56-35-9":{cat:"prohibited",ja:"酸化トリブチルスズ（TBTO）",zh:"氧化三丁基錫（TBTO）",en:"Tributyltin oxide (TBTO)",src:"§4.2.2.3 Organotin"},
+  "77-58-7":{cat:"prohibited",ja:"ジブチルスズジラウレート（DBT）",zh:"二月桂酸二丁基錫（DBT）",en:"Dibutyltin dilaurate (DBT)",src:"§4.2.2.3 Organotin"},
+  // -- Flame retardants --
+  "1309-64-4":{cat:"prohibited",ja:"三酸化アンチモン",zh:"三氧化二銻",en:"Antimony trioxide",src:"§4.2.2.3 Flame retardants (antimony)"},
+  "12008-41-2":{cat:"prohibited",ja:"八ホウ酸二ナトリウム",zh:"八硼酸二鈉",en:"Disodium octaborate",src:"§4.2.2.3 Flame retardants"},
+  "79-94-7":{cat:"prohibited",ja:"テトラブロモビスフェノールA（TBBPA）",zh:"四溴雙酚A（TBBPA）",en:"TBBPA",src:"§4.2.2.3 Brominated flame retardants"},
+  "1163-19-5":{cat:"prohibited",ja:"デカブロモジフェニルエーテル（decaBDE）",zh:"十溴二苯醚（decaBDE）",en:"DecaBDE",src:"§4.2.2.3 Brominated flame retardants"},
+  "25637-99-4":{cat:"prohibited",ja:"ヘキサブロモシクロドデカン（HBCD）",zh:"六溴環十二烷（HBCD）",en:"HBCD",src:"§4.2.2.3 Brominated flame retardants"},
+  "126-72-7":{cat:"prohibited",ja:"トリス(2,3-ジブロモプロピル)リン酸",zh:"三(2,3-二溴丙基)磷酸酯",en:"TDBPP",src:"§4.2.2.3 Phosphate/Brominated flame retardants"},
+  // -- Carcinogenic arylamines (azo cleavage) --
+  "92-87-5":{cat:"prohibited",ja:"ベンジジン",zh:"聯苯胺",en:"Benzidine",src:"§4.2.2.3 carcinogenic arylamine / §4.2.3 H350"},
+  "92-67-1":{cat:"prohibited",ja:"4-アミノビフェニル",zh:"4-氨基聯苯",en:"4-Aminobiphenyl",src:"§4.2.2.3 carcinogenic arylamine"},
+  "95-53-4":{cat:"prohibited",ja:"o-トルイジン",zh:"鄰甲苯胺",en:"o-Toluidine",src:"§4.2.2.3 carcinogenic arylamine"},
+  "91-59-8":{cat:"prohibited",ja:"2-ナフチルアミン",zh:"2-萘胺",en:"2-Naphthylamine",src:"§4.2.2.3 carcinogenic arylamine"},
+  "91-94-1":{cat:"prohibited",ja:"3,3'-ジクロロベンジジン",zh:"3,3'-二氯聯苯胺",en:"3,3'-Dichlorobenzidine",src:"§4.2.2.3 carcinogenic arylamine"},
+  "106-47-8":{cat:"prohibited",ja:"4-クロロアニリン",zh:"4-氯苯胺",en:"4-Chloroaniline",src:"§4.2.2.3 carcinogenic arylamine"},
+  "90-04-0":{cat:"prohibited",ja:"o-アニシジン",zh:"鄰甲氧基苯胺",en:"o-Anisidine",src:"§4.2.2.3 carcinogenic arylamine"},
+  "101-77-9":{cat:"prohibited",ja:"4,4'-メチレンジアニリン",zh:"4,4'-亞甲基二苯胺",en:"4,4'-Methylenedianiline",src:"§4.2.2.3 carcinogenic arylamine"},
+  "95-80-7":{cat:"prohibited",ja:"2,4-トルエンジアミン",zh:"2,4-甲苯二胺",en:"2,4-Toluenediamine",src:"§4.2.2.3 carcinogenic arylamine"},
+  "60-09-3":{cat:"prohibited",ja:"4-アミノアゾベンゼン",zh:"4-氨基偶氮苯",en:"4-Aminoazobenzene",src:"§4.2.2.3 carcinogenic arylamine"}
+};
+
+// ---------- GOTS §4.2.3 HAZARD CODES ----------  status: prohibited | review
+const GOTS_HAZARD = {
+  "H300":{status:"prohibited",ja:"飲み込むと生命に危険",zh:"吞食致命",en:"Fatal if swallowed",rule:"§4.2.3 健康有害性"},
+  "H310":{status:"prohibited",ja:"皮膚接触で生命に危険",zh:"接觸皮膚致命",en:"Fatal in contact with skin",rule:"§4.2.3 健康有害性"},
+  "H330":{status:"prohibited",ja:"吸入すると生命に危険",zh:"吸入致命",en:"Fatal if inhaled",rule:"§4.2.3 健康有害性"},
+  "H340":{status:"prohibited",ja:"遺伝性疾患のおそれ",zh:"可能導致遺傳性缺陷",en:"May cause genetic defects",rule:"§4.2.3 変異原性"},
+  "H341":{status:"prohibited",ja:"遺伝性疾患のおそれの疑い",zh:"懷疑導致遺傳性缺陷",en:"Suspected of causing genetic defects",rule:"§4.2.3 変異原性"},
+  "H350":{status:"prohibited",ja:"発がんのおそれ",zh:"可能致癌",en:"May cause cancer",rule:"§4.2.3 発がん性"},
+  "H351":{status:"prohibited",ja:"発がんのおそれの疑い",zh:"懷疑致癌",en:"Suspected of causing cancer",rule:"§4.2.3 発がん性"},
+  "H360":{status:"prohibited",ja:"生殖能力・胎児への悪影響のおそれ",zh:"可能損害生育力或胎兒",en:"May damage fertility or the unborn child",rule:"§4.2.3 生殖毒性"},
+  "H361":{status:"prohibited",ja:"生殖能力・胎児への悪影響の疑い",zh:"懷疑損害生育力或胎兒",en:"Suspected of damaging fertility/unborn child",rule:"§4.2.3 生殖毒性"},
+  "H370":{status:"prohibited",ja:"臓器の障害",zh:"對器官造成傷害",en:"Causes damage to organs",rule:"§4.2.3 標的臓器毒性"},
+  "H371":{status:"prohibited",ja:"臓器の障害のおそれ",zh:"可能對器官造成傷害",en:"May cause damage to organs",rule:"§4.2.3 標的臓器毒性"},
+  "H372":{status:"prohibited",ja:"長期・反復ばく露で臓器障害",zh:"長期或重複暴露對器官造成傷害",en:"Causes organ damage (prolonged exposure)",rule:"§4.2.3 標的臓器毒性"},
+  "H400":{status:"prohibited",ja:"水生生物に非常に強い毒性",zh:"對水生生物毒性極大",en:"Very toxic to aquatic life",rule:"§4.2.3 環境有害性"},
+  "H410":{status:"prohibited",ja:"水生生物に長期毒性（非常に強い）",zh:"對水生生物毒性極大且長期持續",en:"Very toxic to aquatic life, long-lasting",rule:"§4.2.3 環境有害性"},
+  "H411":{status:"prohibited",ja:"水生生物に長期毒性",zh:"對水生生物有毒且長期持續",en:"Toxic to aquatic life, long-lasting",rule:"§4.2.3 環境有害性"},
+  "H420":{status:"prohibited",ja:"オゾン層破壊",zh:"破壞臭氧層",en:"Harms ozone layer",rule:"§4.2.3 環境有害性"},
+  "H433":{status:"prohibited",ja:"陸生脊椎動物に有害",zh:"對陸生脊椎動物有害",en:"Harmful to terrestrial vertebrates",rule:"§4.2.3 環境有害性"},
+  "H413":{status:"review",ja:"水生生物に長期残留性のおそれ（生体蓄積＋難分解なら禁止）",zh:"可能對水生生物長期有害（生物累積且難分解則禁止）",en:"May cause long-lasting effects (prohibited if bioaccumulative + not rapidly degradable)",rule:"§4.2.3 環境有害性（条件付）"}
+};
+
+// ---------- GOTS §4.2.2.3 SUBSTANCE GROUPS (keyword scan) ----------
+const GOTS_GROUPS = [
+  {kw:["nonylphenol","壬基酚","ノニルフェノール","octylphenol","辛基酚","オクチルフェノール","apeo","npeo","opeo","alkylphenol"],
+   label:{ja:"アルキルフェノール類（AP/APEO）",zh:"烷基酚類（AP/APEO）",en:"Alkylphenols (AP/APEO)"},
+   rule:{ja:"§4.2.2.3 Complexing agents and surfactants（NP,OP,NPEO,OPEO 禁止）",zh:"§4.2.2.3 錯化劑與界面活性劑（NP,OP,NPEO,OPEO 禁止）",en:"§4.2.2.3 Complexing agents and surfactants"}},
+  {kw:["formaldehyde","ホルムアルデヒド","甲醛","formalin","glyoxal","グリオキサール","乙二醛"],
+   label:{ja:"ホルムアルデヒド／短鎖アルデヒド",zh:"甲醛／短鏈醛",en:"Formaldehyde / short-chain aldehydes"},
+   rule:{ja:"§4.2.2.3 Formaldehyde and other short-chain aldehydes",zh:"§4.2.2.3 甲醛及其他短鏈醛",en:"§4.2.2.3 Formaldehyde and short-chain aldehydes"}},
+  {kw:["edta","dtpa","nitrilotriacetic","ニトリロ三酢酸","乙二胺四乙酸","次氮基三乙酸"," nta "],
+   label:{ja:"キレート剤（EDTA/DTPA/NTA）",zh:"螯合劑（EDTA/DTPA/NTA）",en:"Complexing agents (EDTA/DTPA/NTA)"},
+   rule:{ja:"§4.2.2.3 Complexing agents（EDTA,DTPA,NTA 禁止）",zh:"§4.2.2.3 錯化劑（EDTA,DTPA,NTA 禁止）",en:"§4.2.2.3 Complexing agents"}},
+  {kw:["pfas","pfoa","pfos","ptfe","perfluoro","fluorotelomer","全氟","パーフルオロ","フルオロテロマー"],
+   label:{ja:"有機フッ素化合物（PFAS）",zh:"全氟／多氟烷基物質（PFAS）",en:"PFAS"},
+   rule:{ja:"§4.2.2.3 Per- and polyfluoroalkyl Substances (PFAS)",zh:"§4.2.2.3 全氟及多氟烷基物質（PFAS）",en:"§4.2.2.3 PFAS"}},
+  {kw:["phthalate","フタル酸","鄰苯二甲酸","dehp","dbp","bbp","dinp","didp","dnop","bisphenol","ビスフェノール","雙酚"],
+   label:{ja:"可塑剤（フタル酸エステル／ビスフェノールA）",zh:"塑化劑（鄰苯二甲酸酯／雙酚A）",en:"Plasticizers (phthalates / BPA)"},
+   rule:{ja:"§4.2.2.3 Plasticizers（phthalates, bisphenol A 禁止）",zh:"§4.2.2.3 塑化劑（鄰苯二甲酸酯、雙酚A 禁止）",en:"§4.2.2.3 Plasticizers"}},
+  {kw:["siloxane","シロキサン","矽氧烷","octamethylcyclo","decamethylcyclo","dodecamethylcyclo"," d4 "," d5 "," d6 "],
+   label:{ja:"環状シロキサン（D4/D5/D6）",zh:"環狀矽氧烷（D4/D5/D6）",en:"Cyclic siloxanes (D4/D5/D6)"},
+   rule:{ja:"§4.2.2.3 Cyclic siloxanes (D4,D5,D6)",zh:"§4.2.2.3 環狀矽氧烷（D4,D5,D6）",en:"§4.2.2.3 Cyclic siloxanes"}},
+  {kw:["chlorinated paraffin","塩素化パラフィン","氯化石蠟","sccp","mccp"],
+   label:{ja:"塩素化パラフィン",zh:"氯化石蠟",en:"Chlorinated paraffins"},
+   rule:{ja:"§4.2.2.3 Chlorinated paraffins",zh:"§4.2.2.3 氯化石蠟",en:"§4.2.2.3 Chlorinated paraffins"}},
+  {kw:["organotin","tributyltin","dibutyltin","有機スズ","有機錫","tbt","dbt"],
+   label:{ja:"有機スズ化合物",zh:"有機錫化合物",en:"Organotin compounds"},
+   rule:{ja:"§4.2.2.3 Organotin compounds（TBT,DBT 等）",zh:"§4.2.2.3 有機錫化合物（TBT,DBT 等）",en:"§4.2.2.3 Organotin compounds"}},
+  {kw:["pentachlorophenol","chlorophenol","クロロフェノール","氯酚","pcp"],
+   label:{ja:"クロロフェノール類",zh:"氯酚類",en:"Chlorophenols"},
+   rule:{ja:"§4.2.2.3 Chlorophenols（PCP 等）",zh:"§4.2.2.3 氯酚類（PCP 等）",en:"§4.2.2.3 Chlorophenols"}},
+  {kw:["flame retardant","難燃剤","阻燃","brominated","臭素系","溴化","antimony trioxide","三酸化アンチモン","三氧化二銻","tbbpa","decabde","hbcd"],
+   label:{ja:"難燃剤（塩素系・臭素系・アンチモン系）",zh:"阻燃劑（氯化、溴化、銻系）",en:"Flame retardants (chlorinated/brominated/antimony)"},
+   rule:{ja:"§4.2.2.3 Flame retardants",zh:"§4.2.2.3 阻燃劑",en:"§4.2.2.3 Flame retardants"}},
+  {kw:["hypochlorite","次亜塩素酸","次氯酸","chlorine bleach","sodium chlorite","亜塩素酸","亞氯酸"],
+   label:{ja:"塩素系漂白剤",zh:"含氯漂白劑",en:"Chlorine bleaching agents"},
+   rule:{ja:"§4.2.6 含氯漂白禁止／AOX>1% 禁止",zh:"§4.2.6 含氯漂白禁止／AOX>1% 禁止",en:"§4.2.6 chlorine bleaching prohibited / AOX"}},
+  {kw:["nanoparticle","ナノ粒子","奈米","nanomaterial"],
+   label:{ja:"機能性ナノ粒子",zh:"功能性奈米粒子",en:"Functional nanoparticles"},
+   rule:{ja:"§4.2.2.3 functional nanoparticles (<100nm)",zh:"§4.2.2.3 功能性奈米粒子（<100nm）",en:"§4.2.2.3 functional nanoparticles"}},
+  {kw:["gmo","genetically modified","遺伝子組換え","基因改造","基因改良"],
+   label:{ja:"GMO（遺伝子組換え由来）",zh:"GMO（基因改造來源）",en:"GMO-derived inputs"},
+   rule:{ja:"§4.2.2.3 Genetically modified organisms (GMO)",zh:"§4.2.2.3 基因改造生物（GMO）",en:"§4.2.2.3 GMO"}},
+  {kw:["microplastic","マイクロプラスチック","微塑膠","微塑料"],
+   label:{ja:"マイクロプラスチック（意図的添加）",zh:"微塑膠（刻意添加）",en:"Microplastics (intentionally added)"},
+   rule:{ja:"§4.2.2.3 Microplastics",zh:"§4.2.2.3 微塑膠",en:"§4.2.2.3 Microplastics"}},
+  {kw:["quinoline","キノリン","喹啉"],
+   label:{ja:"キノリン",zh:"喹啉",en:"Quinoline"},
+   rule:{ja:"§4.2.2.3 Quinoline",zh:"§4.2.2.3 喹啉",en:"§4.2.2.3 Quinoline"}}
+];
+
+// ---------- TEXTILE-COMMON priority (sorted first, tagged) ----------
+const TEX=new Set(["7647-14-5","7757-82-6","1310-73-2","497-19-8","144-55-8","64-19-7","64-18-6",
+"77-92-9","7722-84-1","15630-89-4","7775-14-6","7631-90-5","1344-09-8","7772-98-7",
+"7681-52-9","7758-19-2","50-00-0","9016-45-9","25154-52-3","104-40-5","60-00-4","64-02-8","67-43-6","139-13-9",
+"335-67-1","1763-23-1","9002-84-0","117-81-7","84-74-2","556-67-2","541-02-6","540-97-6",
+"85535-84-8","92-87-5","95-53-4","60-09-3","9004-32-4","9005-25-8"]);
+
+// ---------- SUBSTITUTES (banned -> GOTS-compliant alternative) ----------
+const SUBS=[
+ {match:["apeo","las"],
+  t:{ja:"AP/APEO・LAS（界面活性剤）",zh:"AP/APEO、LAS（界面活性劑）",en:"AP/APEO, LAS surfactants"},
+  a:{ja:"易生分解性の非APEO系へ：脂肪アルコールエトキシレート(AEO)、アルキルポリグルコシド(APG)。",
+     zh:"改用易生物分解的非APEO系：脂肪醇聚氧乙烯醚(AEO)、烷基多苷(APG)。",
+     en:"Switch to biodegradable non-APEO nonionics: fatty alcohol ethoxylates (AEO), alkyl polyglucosides (APG)."}},
+ {match:["complexing"],
+  t:{ja:"キレート剤（EDTA/DTPA/NTA）",zh:"螯合劑（EDTA/DTPA/NTA）",en:"Complexing agents (EDTA/DTPA/NTA)"},
+  a:{ja:"生分解性キレート GLDA・MGDA・IDS、またはクエン酸/グルコン酸ナトリウムへ。",
+     zh:"改用可生物分解螯合劑 GLDA(四鈉甘氨酸二乙酸)、MGDA、IDS，或檸檬酸／葡萄糖酸鈉。",
+     en:"Use biodegradable chelants GLDA, MGDA, IDS, or citric/sodium gluconate."}},
+ {match:["含氯漂白","chlorine","hypochlorite"],
+  t:{ja:"塩素系漂白",zh:"含氯漂白",en:"Chlorine bleaching"},
+  a:{ja:"過酸化水素(H2O2)による酸素漂白へ。GOTSで唯一許可される漂白方式。",
+     zh:"改用過氧化氫(H2O2)含氧漂白 — GOTS 唯一許可的漂白方式。",
+     en:"Use hydrogen peroxide (oxygen bleaching) — the only bleach GOTS allows."}},
+ {match:["formaldehyde","aldehyde"],
+  t:{ja:"ホルムアルデヒド（固着/樹脂加工）",zh:"甲醛（固色/樹脂整理）",en:"Formaldehyde (fixing/resin finish)"},
+  a:{ja:"無ホルムアルデヒド固着剤(ポリアミン系)へ。防シワはBTCA(ブタンテトラカルボン酸)等のノンホルマリン架橋剤へ。",
+     zh:"改用無甲醛固色劑(聚胺系)；免燙防皺改用 BTCA(丁烷四羧酸)等無甲醛交聯劑。",
+     en:"Use formaldehyde-free fixatives (polyamine); for easy-care, BTCA crosslinkers."}},
+ {match:["arylamine"],
+  t:{ja:"発がん性アリールアミン放出アゾ染料",zh:"可裂解致癌芳香胺偶氮染料",en:"Carcinogenic arylamine azo dyes"},
+  a:{ja:"GOTS Positive List登録の認証染料(発がん性アリールアミン非放出)へ。",
+     zh:"改用 GOTS Positive List 認證染料(不裂解致癌芳香胺)。",
+     en:"Use GOTS Positive List dyes that release no carcinogenic arylamines."}},
+ {match:["pfas"],
+  t:{ja:"有機フッ素（撥水/防汚）",zh:"全氟/多氟（撥水/防汙）",en:"PFAS (water/stain repellent)"},
+  a:{ja:"無フッ素(C0)撥水剤へ：樹枝状ポリマー系、シリコーン系、ワックス系。",
+     zh:"改用無氟(C0)撥水劑：樹枝狀聚合物系、矽系、蠟系。",
+     en:"Use fluorine-free (C0) repellents: dendrimer, silicone, or wax based."}},
+ {match:["phthalate","plasticizer"],
+  t:{ja:"フタル酸可塑剤/ビスフェノールA（プリント糊/コーティング）",zh:"鄰苯二甲酸酯塑化劑/雙酚A（印花漿/塗層）",en:"Phthalate plasticizers/BPA (print/coating)"},
+  a:{ja:"フタル酸不使用の水性顔料プリント糊、PU系コーティングへ(PVCプラスチゾル回避)。",
+     zh:"改用無鄰苯二甲酸酯的水性顏料印花漿、PU系塗層(避免PVC塑溶膠)。",
+     en:"Use phthalate-free water-based pigment paste and PU coatings (avoid PVC plastisol)."}},
+ {match:["siloxane"],
+  t:{ja:"環状シロキサン D4/D5/D6（柔軟剤）",zh:"環狀矽氧烷 D4/D5/D6（柔軟劑）",en:"Cyclic siloxanes D4/D5/D6 (softener)"},
+  a:{ja:"環状シロキサン非含有の直鎖アミノ変性シリコーン、または脂肪酸エステル系柔軟剤へ。",
+     zh:"改用不含環狀矽氧烷的線性胺基改質矽油，或脂肪酸酯系柔軟劑。",
+     en:"Use cyclic-siloxane-free linear amino-modified silicone, or fatty-acid-ester softeners."}},
+ {match:["chlorinated paraffin"],
+  t:{ja:"塩素化パラフィン",zh:"氯化石蠟",en:"Chlorinated paraffins"},
+  a:{ja:"脂肪酸エステル系・無塩素の潤滑/柔軟剤へ。",zh:"改用脂肪酸酯系、無氯潤滑/柔軟劑。",en:"Use fatty-acid-ester, chlorine-free lubricants/softeners."}},
+ {match:["flame retardant"],
+  t:{ja:"ハロゲン系/アンチモン系難燃剤",zh:"鹵系/銻系阻燃劑",en:"Halogen/antimony flame retardants"},
+  a:{ja:"GOTSは化学難燃を基本的に認めず。本質的難燃繊維を優先。非ハロゲンで§4.2.2/4.2.3適合かつ非禁止のもののみ検討。",
+     zh:"GOTS 基本不允許化學阻燃；優先本質阻燃纖維。僅限非鹵且符合§4.2.2/4.2.3且非禁止清單者。",
+     en:"GOTS generally disallows chemical FR; prefer inherently flame-resistant fibers, or only non-halogen options meeting §4.2.2/4.2.3."}},
+ {match:["solvent"],
+  t:{ja:"芳香族/ハロゲン化溶剤",zh:"芳香族/鹵化溶劑",en:"Aromatic/halogenated solvents"},
+  a:{ja:"水系システム、生分解性溶剤へ転換。",zh:"改用水性系統、可生物分解溶劑。",en:"Switch to water-based systems and biodegradable solvents."}},
+ {match:["organotin"],
+  t:{ja:"有機スズ化合物",zh:"有機錫化合物",en:"Organotin compounds"},
+  a:{ja:"使用回避。非スズ触媒、非禁止の防菌剤(BPR PT06適合等)へ。",zh:"避免使用；改用非錫催化劑、非禁止抗菌劑(如符合BPR PT06者)。",en:"Avoid; use non-tin catalysts and non-prohibited biocides (e.g., BPR PT06)."}}
+];
+function altFor(srcText){
+  if(!srcText)return null;const s=srcText.toLowerCase();
+  return SUBS.find(x=>x.match.some(m=>s.includes(m.toLowerCase())))||null;
+}
+
+// ---------- CAS validation ----------
+function validCAS(raw){
+  const m=raw.trim().match(/^(\d{2,7})-(\d{2})-(\d)$/);
+  if(!m)return false;
+  const digits=(m[1]+m[2]).split('').reverse();
+  let sum=0;for(let i=0;i<digits.length;i++)sum+=(i+1)*parseInt(digits[i],10);
+  return (sum%10)===parseInt(m[3],10);
+}
+function normCAS(raw){
+  let s=raw.trim().replace(/\s+/g,'');
+  if(/^\d{5,10}$/.test(s))s=s.slice(0,-3)+'-'+s.slice(-3,-1)+'-'+s.slice(-1);
+  return s;
+}
+
+/* ---------- i18n ---------- */
+const T={
+ ja:{title:"GOTS CAS / SDS チェッカー",subtitle:"CAS番号またはSDS(PDF)からGOTS区分を判定",
+  tabCas:"CAS番号で判定",tabSds:"SDS(PDF)で判定",
+  searchTitle:"CAS番号で検索",btnCheck:"判定する",
+  hint:"形式「XXXXXXX-XX-X」。チェックディジットを自動検証。DB未収録は判定フローへ。",
+  sdsTitle:"SDS(PDF)を読み込んで判定",
+  dropT:"SDSのPDFをドラッグ＆ドロップ／クリックで選択",
+  dropS:"CAS・GHS危険有害性コード・禁止物質群を自動抽出して判定します",
+  sdsHint:"※ ブラウザ内で解析。アップロードしません。画像スキャンのみのPDFは文字抽出不可。",
+  dbTitle:"収録済みCASリストを開く",
+  logicTitle:"判定ロジック（3ステップ）",
+  logicBody:"<b>Q1.</b> §4.2.2.3 禁止リスト、または §4.2.3 危険有害性(H300+/H400+) に該当？ → <b>使用禁止</b>（純物質でも不可）<br><b>Q2.</b> 単一の純物質（酸/アルカリ/塩/単純な酸化・還元剤）？ → <b>基礎化学品（LoA不要）</b>。ただし §4.2.2/§4.2.3 遵守。<br><b>Q3.</b> 染料・顔料、または配合型助剤（Preparation／商品名／機能性）？ → <b>Positive List登録＋有効LoA必須</b>",
+  disclaimer:"【出典】GOTS Standard v7.0 (2023-03) §4.2.1 / §4.2.2.3 / §4.2.3 ／ Manual for the Implementation of GOTS v7.2 (2024-09-20)：「Basic chemicals (such as salt, alkali, acid, etc.) used do not need to be released on Letters of Approval.」<br>【重要】GOTSにCAS→区分の公式対照表は存在しません。本ツールは稽核判断の補助で、公式判定ではありません。SDS解析は<b>スクリーニング</b>であり、最終判断は必ず人手・認証機関(Scope 4)で確認してください。基礎化学品でも不純物・併用条件で禁止/制限となる場合があります。",
+  foot:"IDFL JAPAN ・ GOTS CAS/SDS Checker ・ GOTS v7.0 + Implementation Manual v7.2 準拠",
+  resUse:"用途",resCat:"GOTS区分",resSrc:"根拠",resAlt:"GOTS適合な代替",texTag:"繊維常用",
+  subsTitle:"禁止物質 → GOTS適合な代替（科学豆知識）",subsHead1:"禁止される物質群",subsHead2:"GOTS適合な代替",
+  cat_basic:"基礎化学品（LoA不要）",cat_loa:"要LoA（Positive List登録必須）",cat_prohibited:"使用禁止",cat_unknown:"DB未収録 → 判定フローへ",cat_review:"要確認（条件付制限）",
+  note_basic:"基礎化学品としてLoA不要。ただし §4.2.2（禁止/制限）と §4.2.3（危険有害性）は必ず遵守。",
+  note_loa:"配合型助剤・染料に該当。GOTS Positive Listへの登録と有効なLoA・SDSが必須。",
+  note_prohibited:"GOTSで使用禁止。純物質か否かに関わらず使用不可。",
+  invalidCAS:"CAS番号の形式またはチェックディジットが不正です。「XXXXXXX-XX-X」を確認してください。",
+  dtTitle:"判定フロー（DB未収録のため人手確認）",
+  q1:"GOTS §4.2.2.3 の禁止リスト、または §4.2.3 の危険有害性区分（H300/310/330/340/350/360/370 系、H400/410/411 系）に該当しますか？",
+  q1s:"SDSのGHS分類・危険有害性コードで確認。",
+  q2:"単一CASの純物質（酸・アルカリ・塩・単純な酸化/還元剤）ですか？",
+  q2s:"混合物・商品名付き配合品 = いいえ。",
+  q3:"染料・顔料、または機能性/界面活性のある配合型助剤ですか？",
+  q3s:"機能性・表面活性・着色があれば はい。",
+  yes:"はい",no:"いいえ",
+  rUnknownProhibited:"判定：使用禁止。GOTSで使用不可。",
+  rUnknownBasic:"判定：基礎化学品に相当 → LoA不要（§4.2.2/§4.2.3 遵守）。SDSで純物質・無危険有害性を最終確認。",
+  rUnknownLoa:"判定：要LoA → GOTS Positive Listで承認状況を確認。無ければ使用不可。",
+  rNeedMore:"要追加確認：純物質でも配合品でもない/判断困難。SDSと用途を基に認証機関(Scope 4)へ照会。",
+  sdsReading:"PDFを解析中...",sdsPages:"ページ",
+  sdsNoText:"文字を抽出できませんでした。画像スキャンのみのPDFの可能性があります。文字版SDSを使用してください。",
+  sdsVerdictTitle:"SDS判定結果",
+  sdsDetectedCas:"検出されたCAS",sdsDetectedH:"検出された危険有害性コード",sdsDetectedGroup:"検出された禁止物質群",
+  sdsViolations:"GOTS違反事項",sdsReview:"要確認事項",sdsNone:"なし",
+  sdsReasonProhibited:"禁止物質・禁止危険有害性が検出されたため使用禁止。",
+  sdsReasonBasic:"基礎化学品（純物質）に相当し、禁止事項なし → LoA不要（§4.2.2/§4.2.3 遵守）。",
+  sdsReasonLoa:"禁止事項は無いが配合型助剤・染料に相当 → Positive List登録＋有効LoAが必須。",
+  sdsFile:"ファイル"
+ },
+ zh:{title:"GOTS CAS / SDS 判定工具",subtitle:"以 CAS 號或 SDS(PDF) 判定 GOTS 範疇",
+  tabCas:"用 CAS 號判定",tabSds:"用 SDS(PDF) 判定",
+  searchTitle:"以 CAS 號查詢",btnCheck:"判定",
+  hint:"格式「XXXXXXX-XX-X」，自動驗證檢查碼；未收錄帶入判定流程。",
+  sdsTitle:"讀取 SDS(PDF) 判定",
+  dropT:"拖曳 SDS 的 PDF 進來／點擊選擇",
+  dropS:"自動擷取 CAS、GHS 危害碼、禁用物質群並判定",
+  sdsHint:"※ 在瀏覽器內解析，不會上傳。純影像掃描 PDF 無法擷取文字。",
+  dbTitle:"展開已收錄 CAS 清單",
+  logicTitle:"判定邏輯（三步）",
+  logicBody:"<b>Q1.</b> 是否在 §4.2.2.3 禁用清單，或被歸 §4.2.3 危害分類(H300+/H400+)？ → <b>絕對禁止</b>（純物質也不行）<br><b>Q2.</b> 是否為單一純物質（酸/鹼/鹽/單純氧化還原劑）？ → <b>基礎化學品（不需LoA）</b>，但仍須符合 §4.2.2/§4.2.3。<br><b>Q3.</b> 是否為染料/顏料，或配方型助劑（Preparation／有商品名／有功能性）？ → <b>必須上 Positive List＋持有效 LoA</b>",
+  disclaimer:"【來源】GOTS Standard v7.0 (2023-03) §4.2.1 / §4.2.2.3 / §4.2.3；Manual for the Implementation of GOTS v7.2 (2024-09-20)：「Basic chemicals (such as salt, alkali, acid, etc.) used do not need to be released on Letters of Approval.」<br>【重要】GOTS 無官方 CAS→範疇對照表。本工具為稽核判斷輔助，非官方判定。SDS 解析屬<b>初步篩查</b>，最終判定務必由人工／認證機構(Scope 4)確認。基礎化學品仍可能因雜質或併用條件被禁用/限用。",
+  foot:"IDFL JAPAN ・ GOTS CAS/SDS Checker ・ 依據 GOTS v7.0 + Implementation Manual v7.2",
+  resUse:"用途",resCat:"GOTS 範疇",resSrc:"依據",resAlt:"GOTS 合規替代",texTag:"紡織常用",
+  subsTitle:"禁用物質 → GOTS 合規替代（科普小知識）",subsHead1:"被禁用的物質群",subsHead2:"GOTS 合規替代",
+  cat_basic:"基礎化學品（不需 LoA）",cat_loa:"需 LoA（必須上 Positive List）",cat_prohibited:"絕對禁止",cat_unknown:"資料庫未收錄 → 判定流程",cat_review:"需確認（條件式限用）",
+  note_basic:"屬基礎化學品，不需 LoA。但仍必須符合 §4.2.2（禁用/限用）與 §4.2.3（危害毒性）。",
+  note_loa:"屬配方型助劑或染料，必須上 GOTS Positive List 並持有有效 LoA 與 SDS。",
+  note_prohibited:"GOTS 絕對禁止使用。不論是否為純物質一律不可用。",
+  invalidCAS:"CAS 號格式或檢查碼錯誤，請確認「XXXXXXX-XX-X」。",
+  dtTitle:"判定流程（資料庫未收錄，請人工複核）",
+  q1:"此物質是否在 §4.2.2.3 禁用清單，或屬 §4.2.3 危害分類（H300/310/330/340/350/360/370 系、H400/410/411 系）？",
+  q1s:"以 SDS 的 GHS 分類／危害碼確認。",
+  q2:"是否為單一 CAS 的純物質（酸/鹼/鹽/單純氧化還原劑）？",
+  q2s:"混合物、有商品名的配方品＝否。",
+  q3:"是否為染料/顏料，或具功能性/表面活性的配方型助劑？",
+  q3s:"有功能性、表面活性或著色＝是。",
+  yes:"是",no:"否",
+  rUnknownProhibited:"判定：絕對禁止，GOTS 不可使用。",
+  rUnknownBasic:"判定：相當於基礎化學品 → 不需 LoA（須符合 §4.2.2/§4.2.3）。請以 SDS 最終確認為純物質且無危害分類。",
+  rUnknownLoa:"判定：需 LoA → 至 GOTS Positive List 查核准狀況；不在清單即不可用。",
+  rNeedMore:"需進一步確認：非純物質亦非典型配方品/難判斷。請依 SDS 與用途向認證機構(Scope 4)查詢。",
+  sdsReading:"解析 PDF 中...",sdsPages:"頁",
+  sdsNoText:"無法擷取文字，可能為純影像掃描 PDF。請改用文字版 SDS。",
+  sdsVerdictTitle:"SDS 判定結果",
+  sdsDetectedCas:"偵測到的 CAS",sdsDetectedH:"偵測到的危害碼",sdsDetectedGroup:"偵測到的禁用物質群",
+  sdsViolations:"違反的 GOTS 規定",sdsReview:"需確認事項",sdsNone:"無",
+  sdsReasonProhibited:"偵測到禁用物質／禁用危害分類，故絕對禁止。",
+  sdsReasonBasic:"相當於基礎化學品（純物質）且無禁用事項 → 不需 LoA（須符合 §4.2.2/§4.2.3）。",
+  sdsReasonLoa:"無禁用事項，但屬配方型助劑／染料 → 必須上 Positive List 並持有效 LoA。",
+  sdsFile:"檔案"
+ },
+ en:{title:"GOTS CAS / SDS Checker",subtitle:"Determine the GOTS category from a CAS number or an SDS (PDF)",
+  tabCas:"By CAS number",tabSds:"By SDS (PDF)",
+  searchTitle:"Search by CAS number",btnCheck:"Check",
+  hint:"Format XXXXXXX-XX-X; check digit auto-validated. Not in DB -> decision flow.",
+  sdsTitle:"Read an SDS (PDF) and determine",
+  dropT:"Drag & drop an SDS PDF, or click to select",
+  dropS:"Auto-extracts CAS, GHS hazard codes, and prohibited groups to determine",
+  sdsHint:"Note: parsed in your browser, not uploaded. Image-only scanned PDFs cannot be read.",
+  dbTitle:"Open the built-in CAS list",
+  logicTitle:"Decision logic (3 steps)",
+  logicBody:"<b>Q1.</b> On §4.2.2.3 prohibited list, or §4.2.3 hazards (H300+/H400+)? → <b>Prohibited</b> (even if pure).<br><b>Q2.</b> A single pure substance (acid/alkali/salt/simple redox agent)? → <b>Basic chemical (no LoA)</b>, must still meet §4.2.2/§4.2.3.<br><b>Q3.</b> A dye/pigment or formulated auxiliary (Preparation/trade name/functional)? → <b>Must be on the Positive List with a valid LoA</b>",
+  disclaimer:"[Sources] GOTS Standard v7.0 (2023-03) §4.2.1 / §4.2.2.3 / §4.2.3; Manual for the Implementation of GOTS v7.2 (2024-09-20): \"Basic chemicals (such as salt, alkali, acid, etc.) used do not need to be released on Letters of Approval.\"<br>[Important] GOTS has no official CAS-to-category table. This is a decision aid, not an official determination. SDS analysis is <b>screening only</b>; final calls must be confirmed by a human / certifier (Scope 4). Basic chemicals may still be restricted due to impurities or use conditions.",
+  foot:"IDFL JAPAN · GOTS CAS/SDS Checker · Based on GOTS v7.0 + Implementation Manual v7.2",
+  resUse:"Use",resCat:"GOTS category",resSrc:"Basis",resAlt:"GOTS-compliant substitute",texTag:"Textile",
+  subsTitle:"Prohibited substances -> GOTS-compliant substitutes (good to know)",subsHead1:"Prohibited group",subsHead2:"GOTS-compliant substitute",
+  cat_basic:"Basic chemical (no LoA)",cat_loa:"Needs LoA (Positive List)",cat_prohibited:"Prohibited",cat_unknown:"Not in DB -> decision flow",cat_review:"Review (conditional restriction)",
+  note_basic:"Basic chemical: no LoA needed. Must still comply with §4.2.2 and §4.2.3.",
+  note_loa:"Formulated auxiliary or dye: must be on the GOTS Positive List with a valid LoA and SDS.",
+  note_prohibited:"Prohibited under GOTS. Cannot be used whether pure or not.",
+  invalidCAS:"Invalid CAS format or check digit. Verify XXXXXXX-XX-X.",
+  dtTitle:"Decision flow (not in DB; verify manually)",
+  q1:"On the §4.2.2.3 prohibited list, or §4.2.3 hazards (H300/310/330/340/350/360/370; H400/410/411)?",
+  q1s:"Check via the GHS classification / hazard codes on the SDS.",
+  q2:"A single-CAS pure substance (acid/alkali/salt/simple redox agent)?",
+  q2s:"A mixture or trade-named formulation = No.",
+  q3:"A dye/pigment, or a functional/surface-active formulated auxiliary?",
+  q3s:"If functional, surface-active, or coloring -> Yes.",
+  yes:"Yes",no:"No",
+  rUnknownProhibited:"Result: Prohibited. Cannot be used under GOTS.",
+  rUnknownBasic:"Result: Equivalent to a basic chemical -> no LoA (must meet §4.2.2/§4.2.3). Confirm pure substance via SDS.",
+  rUnknownLoa:"Result: Needs LoA -> check the Positive List; if not listed it cannot be used.",
+  rNeedMore:"Needs more checking: neither a pure substance nor a typical formulation. Consult a certifier (Scope 4).",
+  sdsReading:"Parsing PDF...",sdsPages:"pages",
+  sdsNoText:"No text could be extracted. The PDF may be image-only. Use a text-based SDS.",
+  sdsVerdictTitle:"SDS result",
+  sdsDetectedCas:"Detected CAS",sdsDetectedH:"Detected hazard codes",sdsDetectedGroup:"Detected prohibited groups",
+  sdsViolations:"GOTS violations",sdsReview:"Items to review",sdsNone:"None",
+  sdsReasonProhibited:"A prohibited substance / prohibited hazard was detected -> prohibited.",
+  sdsReasonBasic:"Equivalent to a basic chemical (pure) with no prohibited items -> no LoA (must meet §4.2.2/§4.2.3).",
+  sdsReasonLoa:"No prohibited items, but it is a formulated auxiliary/dye -> must be on the Positive List with a valid LoA.",
+  sdsFile:"File"
+ }
+};
+let lang='ja';
+const EXAMPLES=["50-00-0","7647-14-5","9016-45-9","7722-84-1","335-67-1"];
+
+function setLang(l){
+  lang=l;document.documentElement.lang=l==='zh'?'zh-Hant':l;
+  document.querySelectorAll('.lang-sw button').forEach(b=>b.classList.toggle('on',b.dataset.lang===l));
+  document.querySelectorAll('[data-t]').forEach(el=>{const k=el.dataset.t;if(T[l][k])el.innerHTML=T[l][k];});
+  renderExamples();renderDB();
+  if(lastCAS && !document.getElementById('paneCas').classList.contains('hidden'))lookup(lastCAS,true);
+  if(lastScan)renderSdsReport(lastScan,true);
+}
+function switchTab(t){
+  document.getElementById('tabCas').classList.toggle('on',t==='cas');
+  document.getElementById('tabSds').classList.toggle('on',t==='sds');
+  document.getElementById('paneCas').classList.toggle('hidden',t!=='cas');
+  document.getElementById('paneSds').classList.toggle('hidden',t!=='sds');
+}
+function renderExamples(){
+  document.getElementById('examples').innerHTML=EXAMPLES.map(c=>`<span class="chip" onclick="lookup('${c}')">${c}</span>`).join('');
+}
+function renderDB(){
+  const order={prohibited:0,loa:1,basic:2};
+  const rows=Object.entries(DB).sort((a,b)=>{
+    if(order[a[1].cat]!==order[b[1].cat])return order[a[1].cat]-order[b[1].cat];
+    const ta=TEX.has(a[0])?0:1,tb=TEX.has(b[0])?0:1;return ta-tb;
+  }).map(([cas,d])=>{
+    const tx=TEX.has(cas)?` <span class="tag ok" style="padding:1px 6px;font-size:.68rem">${T[lang].texTag}</span>`:'';
+    return `<tr><td class="c">${cas}</td><td>${d[lang]}${tx}</td><td>${catBadge(d.cat)}</td></tr>`;
+  }).join('');
+  document.getElementById('dbtable').innerHTML=
+    `<table class="dbtab"><tr><th>CAS</th><th>${lang==='ja'?'物質名':(lang==='zh'?'物質名稱':'Substance')}</th><th>${T[lang].resCat}</th></tr>${rows}</table>`;
+  renderSubs();
+}
+function renderSubs(){
+  const el=document.getElementById('substable');if(!el)return;
+  const rows=SUBS.map(s=>`<tr><td>${s.t[lang]}</td><td>${s.a[lang]}</td></tr>`).join('');
+  el.innerHTML=`<table class="dbtab"><tr><th>${T[lang].subsHead1}</th><th>${T[lang].subsHead2}</th></tr>${rows}</table>`;
+}
+function catBadge(cat){
+  const cls={basic:'b-basic',loa:'b-loa',prohibited:'b-prohibited',unknown:'b-unknown',review:'b-review'}[cat];
+  return `<span class="badge ${cls}">${T[lang]['cat_'+cat]}</span>`;
+}
+
+/* ---------- CAS lookup ---------- */
+let lastCAS=null;
+function lookup(forceCas,keep){
+  const raw=forceCas||document.getElementById('casInput').value;
+  if(!raw.trim())return;
+  const cas=normCAS(raw);
+  document.getElementById('casInput').value=cas;lastCAS=cas;
+  const res=document.getElementById('result');res.style.display='block';
+  if(!validCAS(cas)){
+    res.innerHTML=`<div class="verdict v-prohibited"><div class="v-head"><span class="badge b-prohibited">ERROR</span></div><div class="v-name" style="margin-top:10px">${T[lang].invalidCAS}</div></div>`;
+    if(!keep)res.scrollIntoView({behavior:'smooth',block:'start'});return;
+  }
+  const d=DB[cas];
+  if(d)renderHit(cas,d);else renderDecisionTree(cas);
+  if(!keep)res.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function renderHit(cas,d){
+  const note=T[lang]['note_'+d.cat],useTxt=d.use?d.use[lang]:'',srcTxt=d.src||'';
+  const alt=d.cat==='prohibited'?altFor(d.src):null;
+  document.getElementById('result').innerHTML=`
+   <div class="verdict v-${d.cat}">
+     <div class="v-head">${catBadge(d.cat)} <span class="v-cas">${cas}</span></div>
+     <div class="v-name">${d[lang]}<small>${d.en}${d.en!==d.zh?' / '+d.zh:''}</small></div>
+     <div class="v-meta">
+       ${useTxt?`<div class="meta-row"><b>${T[lang].resUse}</b><span>${useTxt}</span></div>`:''}
+       <div class="meta-row"><b>${T[lang].resCat}</b><span>${note}</span></div>
+       ${srcTxt?`<div class="meta-row"><b>${T[lang].resSrc}</b><span>${srcTxt}</span></div>`:''}
+       ${alt?`<div class="meta-row"><b>${T[lang].resAlt}</b><span>${alt.a[lang]}</span></div>`:''}
+     </div></div>`;
+}
+let dtAns={};
+function renderDecisionTree(cas){
+  dtAns={};
+  document.getElementById('result').innerHTML=`
+   <div class="verdict v-unknown"><div class="v-head">${catBadge('unknown')} <span class="v-cas">${cas}</span></div>
+     <div class="v-name" style="font-size:1rem">${T[lang].dtTitle}</div></div>
+   <div class="card">${dtQ('q1','q1s')}${dtQ('q2','q2s')}${dtQ('q3','q3s')}<div id="dtresult"></div></div>`;
+}
+function dtQ(qk,sk){
+  return `<div class="dt-q"><p>${T[lang][qk]}</p><div class="sub">${T[lang][sk]}</div>
+    <div class="dt-btns"><button onclick="dtPick('${qk}',true,this)">${T[lang].yes}</button>
+    <button onclick="dtPick('${qk}',false,this)">${T[lang].no}</button></div></div>`;
+}
+function dtPick(qk,val,btn){
+  dtAns[qk]=val;btn.parentElement.querySelectorAll('button').forEach(b=>b.classList.remove('sel-yes','sel-no'));
+  btn.classList.add(val?'sel-yes':'sel-no');evalDT();
+}
+function evalDT(){
+  let txt='',cls='v-unknown';
+  if(dtAns.q1===true){txt=T[lang].rUnknownProhibited;cls='v-prohibited';}
+  else if(dtAns.q1===false&&dtAns.q2===true){txt=T[lang].rUnknownBasic;cls='v-basic';}
+  else if(dtAns.q1===false&&dtAns.q2===false&&dtAns.q3===true){txt=T[lang].rUnknownLoa;cls='v-loa';}
+  else if(dtAns.q1===false&&dtAns.q2===false&&dtAns.q3===false){txt=T[lang].rNeedMore;cls='v-unknown';}
+  else return;
+  document.getElementById('dtresult').innerHTML=`<div class="verdict ${cls}" style="margin-top:6px"><div class="v-name" style="font-size:1rem">${txt}</div></div>`;
+}
+
+/* ---------- SDS PDF analysis ---------- */
+const drop=document.getElementById('drop');
+['dragover','dragenter'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.add('over');}));
+['dragleave','drop'].forEach(e=>drop.addEventListener(e,ev=>{ev.preventDefault();drop.classList.remove('over');}));
+drop.addEventListener('drop',ev=>{const f=ev.dataTransfer.files[0];if(f)handleFile(f);});
+
+let lastScan=null;
+async function handleFile(file){
+  if(!file)return;
+  const proc=document.getElementById('proc');proc.style.display='block';
+  document.getElementById('procTxt').textContent=T[lang].sdsReading;
+  document.getElementById('sdsResult').style.display='none';
+  try{
+    const buf=await file.arrayBuffer();
+    const pdf=await pdfjsLib.getDocument({data:buf}).promise;
+    let text='';
+    for(let i=1;i<=pdf.numPages;i++){
+      document.getElementById('procTxt').textContent=`${T[lang].sdsReading} (${i}/${pdf.numPages} ${T[lang].sdsPages})`;
+      const page=await pdf.getPage(i);
+      const c=await page.getTextContent();
+      text+=' '+c.items.map(it=>it.str).join(' ');
+    }
+    proc.style.display='none';
+    const scan=scanSDS(text);scan.file=file.name;scan.textLen=text.replace(/\s/g,'').length;
+    lastScan=scan;renderSdsReport(scan);
+  }catch(err){
+    proc.style.display='none';
+    document.getElementById('sdsResult').style.display='block';
+    document.getElementById('sdsResult').innerHTML=`<div class="verdict v-prohibited"><div class="v-name" style="font-size:1rem">ERROR: ${err.message}</div></div>`;
+  }
+}
+function scanSDS(text){
+  const casRe=/\b(\d{2,7}-\d{2}-\d)\b/g;
+  const casFound=[...new Set([...text.matchAll(casRe)].map(m=>m[1]))].filter(validCAS);
+  const hRe=/\bH(\d{3})[A-Za-z]?\b/g;
+  const hFound=[...new Set([...text.matchAll(hRe)].map(m=>'H'+m[1]))].filter(h=>GOTS_HAZARD[h]);
+  const tl=(' '+text+' ').toLowerCase();
+  const groupHits=GOTS_GROUPS.filter(g=>g.kw.some(k=>tl.includes(k.toLowerCase())));
+  return {casFound,hFound,groupHits};
+}
+function sdsVerdict(scan){
+  const violations=[],reviews=[];
+  scan.casFound.forEach(c=>{const d=DB[c];if(d&&d.cat==='prohibited')violations.push({t:`CAS ${c} — ${d[lang]}`,rule:d.src});});
+  scan.hFound.forEach(h=>{const hz=GOTS_HAZARD[h];if(hz&&hz.status==='prohibited')violations.push({t:`${h} ${hz[lang]}`,rule:hz.rule});
+    else if(hz&&hz.status==='review')reviews.push({t:`${h} ${hz[lang]}`,rule:hz.rule});});
+  scan.groupHits.forEach(g=>{
+    const dup=violations.some(v=>v.rule===g.rule[lang]);
+    violations.push({t:g.label[lang],rule:g.rule[lang]});
+  });
+  // dedup by rule+t
+  const seen=new Set(),vio=violations.filter(v=>{const k=v.t+v.rule;if(seen.has(k))return false;seen.add(k);return true;});
+  let verdict;
+  if(vio.length)verdict='prohibited';
+  else{
+    const basicHits=scan.casFound.filter(c=>DB[c]&&DB[c].cat==='basic');
+    if(basicHits.length&&scan.casFound.length<=2)verdict='basic';
+    else verdict='loa';
+  }
+  return {verdict,vio,reviews};
+}
+function tagCas(c){
+  const d=DB[c];let cls='';
+  if(d&&d.cat==='prohibited')cls='bad';else if(d&&d.cat==='basic')cls='ok';else if(d&&d.cat==='loa')cls='warn';
+  return `<span class="tag ${cls}">${c}</span>`;
+}
+function renderSdsReport(scan,keep){
+  const {verdict,vio,reviews}=sdsVerdict(scan);
+  const reason=T[lang]['sdsReason'+(verdict==='prohibited'?'Prohibited':verdict==='basic'?'Basic':'Loa')];
+  const res=document.getElementById('sdsResult');res.style.display='block';
+  let html=`<div class="verdict v-${verdict}">
+     <div class="v-head">${catBadge(verdict)} <span class="v-cas">${scan.file||''}</span></div>
+     <div class="v-name" style="font-size:1.05rem;margin-top:10px">${reason}</div></div>`;
+
+  if(vio.length){
+    html+=`<div class="card"><h2>${T[lang].sdsViolations}</h2>`+
+      vio.map(v=>{const alt=altFor(v.rule);
+        return `<div class="vio"><div class="vt">${v.t}</div><div class="rule">${v.rule||''}</div>`+
+        (alt?`<div class="rule" style="color:var(--green);margin-top:5px">→ ${T[lang].resAlt}: ${alt.a[lang]}</div>`:'')+`</div>`;}).join('')+`</div>`;
+  }
+  if(reviews.length){
+    html+=`<div class="card"><h2>${T[lang].sdsReview}</h2>`+
+      reviews.map(v=>`<div class="vio rev"><div class="vt">${v.t}</div><div class="rule">${v.rule||''}</div></div>`).join('')+`</div>`;
+  }
+  html+=`<div class="card">
+     <div class="meta-row" style="grid-template-columns:160px 1fr;margin-bottom:10px"><b>${T[lang].sdsDetectedCas}</b>
+       <div class="taglist">${scan.casFound.length?scan.casFound.map(tagCas).join(''):T[lang].sdsNone}</div></div>
+     <div class="meta-row" style="grid-template-columns:160px 1fr;margin-bottom:10px"><b>${T[lang].sdsDetectedH}</b>
+       <div class="taglist">${scan.hFound.length?scan.hFound.map(h=>`<span class="tag ${GOTS_HAZARD[h].status==='prohibited'?'bad':'warn'}">${h}</span>`).join(''):T[lang].sdsNone}</div></div>
+     <div class="meta-row" style="grid-template-columns:160px 1fr"><b>${T[lang].sdsDetectedGroup}</b>
+       <div class="taglist">${scan.groupHits.length?scan.groupHits.map(g=>`<span class="tag bad">${g.label[lang]}</span>`).join(''):T[lang].sdsNone}</div></div>
+   </div>`;
+  if(scan.textLen<40){
+    html=`<div class="verdict v-review"><div class="v-name" style="font-size:1rem">${T[lang].sdsNoText}</div></div>`+html;
+  }
+  res.innerHTML=html;
+  if(!keep)res.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+/* init */
+renderExamples();renderDB();
+document.querySelectorAll('[data-t]').forEach(el=>{const k=el.dataset.t;if(T[lang][k])el.innerHTML=T[lang][k];});
+</script>
+
+<footer class="site-footer">
+  <div class="footer-wrap footer-grid">
+    <a class="brand" href="/">
+      <img src="/IDFL-Logo.png" alt="IDFL JAPAN" class="brand-logo" />
+      <span class="brand-name">IDFL JAPAN</span>
+    </a>
+    <nav class="footer-links">
+      <a href="/seminar_schedule.html">開催予定のセミナー</a>
+      <a href="/past_seminar_v2.html">過去のセミナー</a>
+      <a href="/download.html">資料ダウンロード</a>
+      <a href="https://idfl.com/ja/idfl-japan/">会社概要</a>
+      <a href="/idfl_news.html">お知らせ</a>
+      <a href="/qa.html">Q&amp;A</a>
+      <a href="/converter.html">変換ツール</a>
+    </nav>
+    <p class="footer-copy">© 2026 IDFL JAPAN<br />International Down and Feather Laboratory</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var btn = document.getElementById('siteMenuBtn');
+  var overlay = document.getElementById('siteMenuOverlay');
+  var closeBtn = document.getElementById('siteMenuClose');
+  if(!btn || !overlay) return;
+  function openM(){overlay.classList.add('open');overlay.setAttribute('aria-hidden','false');btn.setAttribute('aria-expanded','true');document.body.style.overflow='hidden';}
+  function closeM(){overlay.classList.remove('open');overlay.setAttribute('aria-hidden','true');btn.setAttribute('aria-expanded','false');document.body.style.overflow='';}
+  btn.addEventListener('click', openM);
+  if(closeBtn) closeBtn.addEventListener('click', closeM);
+  document.addEventListener('keydown', function(e){ if(e.key==='Escape') closeM(); });
+})();
+</script>
+</body>
+</html>
