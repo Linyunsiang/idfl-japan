@@ -547,16 +547,27 @@ function renderEvents() {
   /* build DOM imperatively – no innerHTML for interactive parts */
   container.innerHTML = '';
 
+  var _now = new Date();
+  var _curKey = _now.getFullYear() + '-' + String(_now.getMonth()+1).padStart(2,'0');
   order.forEach(function(k) {
     var parts = k.split('-');
+    var label = (k === 'TBD') ? 'TBD' : (MJA[parseInt(parts[1])-1] + '  ' + parts[0]);
+    var isPast = (k !== 'TBD') && (k < _curKey);
     var hd = document.createElement('div');
-    hd.className = 'month-hd';
-    hd.textContent = (k === 'TBD') ? 'TBD' : (MJA[parseInt(parts[1])-1] + '  ' + parts[0]);
+    hd.className = 'month-hd' + (isPast ? ' month-past' : '');
+    hd.style.cursor = 'pointer';
+    hd.innerHTML = '<span class="mh-caret" style="display:inline-block;font-size:1rem;transition:transform .2s;color:var(--b400)">' + (isPast ? '▶' : '▼') + '</span> ' + label + ' <span style="font-size:.8rem;color:var(--b200);font-weight:400">（' + grp[k].length + '件）</span>';
     container.appendChild(hd);
 
     var grpDiv = document.createElement('div');
-    grpDiv.style.cssText = 'display:flex;flex-direction:column;gap:8px;margin-bottom:20px';
+    grpDiv.style.cssText = 'display:' + (isPast ? 'none' : 'flex') + ';flex-direction:column;gap:8px;margin-bottom:20px';
     container.appendChild(grpDiv);
+
+    hd.addEventListener('click', function(){
+      var hidden = grpDiv.style.display === 'none';
+      grpDiv.style.display = hidden ? 'flex' : 'none';
+      var car = hd.querySelector('.mh-caret'); if(car) car.textContent = hidden ? '▼' : '▶';
+    });
 
     grp[k].forEach(function(e, i) {
       var d    = e.from ? new Date(e.from + 'T00:00:00') : null;
@@ -615,9 +626,9 @@ function renderEvents() {
       card.appendChild(info);
 
       /* Apply button */
-      if ((e.signup || e.type === 'External') && !past) {
+      if (e.signup && !past) {
         var applyLink = document.createElement('a');
-        applyLink.href = e.signup || 'https://forms.office.com/Pages/ResponsePage.aspx?id=hQL27-D4ckKtEjtBsJIawI60DctQlgpAt0rPraJ8Wg5UQjA4N1UwN09PVkg5SkNZN1lBVTQxN0tYTy4u';
+        applyLink.href = e.signup;
         applyLink.style.cssText = 'flex-shrink:0;background:var(--b500);color:#fff;padding:7px 14px;border-radius:8px;text-decoration:none;font-size:12px;font-weight:700;align-self:center;white-space:nowrap';
         applyLink.textContent = '申込む →';
         card.appendChild(applyLink);
