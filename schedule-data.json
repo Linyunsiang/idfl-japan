@@ -106,5 +106,83 @@
     "location": "IDFL VN team",
     "from": "2026-06-11",
     "to": "2026-06-11"
+  },
+  {
+    "id": "ext-fff-summer-2026",
+    "office": "Other",
+    "name": "Functional Fabric Fair – Summer（機能性素材見本市）",
+    "type": "External",
+    "location": "New York, USA",
+    "from": "2026-07-07",
+    "to": "2026-07-09",
+    "mode": "対面",
+    "time": "",
+    "signup": "",
+    "related": "https://www.functionalfabricfair.com/"
+  },
+  {
+    "id": "ext-premiere-vision-paris-2026",
+    "office": "Other",
+    "name": "Première Vision Paris 2026",
+    "type": "External",
+    "location": "Paris, France",
+    "from": "2026-09-01",
+    "to": "2026-09-03",
+    "mode": "対面",
+    "time": "",
+    "signup": "",
+    "related": "https://paris.premierevision.com/en"
+  },
+  {
+    "id": "ext-fsc-forest-week-2026",
+    "office": "Other",
+    "name": "FSC Forest Week 2026（森林週間 世界キャンペーン）",
+    "type": "External",
+    "location": "世界 / オンライン",
+    "from": "2026-09-21",
+    "to": "2026-09-27",
+    "mode": "オンライン",
+    "time": "",
+    "signup": "",
+    "related": "https://fsc.org/en/newscentre/events"
+  },
+  {
+    "id": "ext-gots-roundtable-canada-2026",
+    "office": "Other",
+    "name": "GOTS Canadian Roundtable（GOTS カナダ・ラウンドテーブル）",
+    "type": "External",
+    "location": "Toronto, Canada（Seneca College）",
+    "from": "2026-10-05",
+    "to": "2026-10-05",
+    "mode": "対面",
+    "time": "",
+    "signup": "",
+    "related": "https://global-standard.org/news/gots-canada-roundtable"
+  },
+  {
+    "id": "ext-te-conference-2026",
+    "office": "Other",
+    "name": "Textile Exchange Conference 2026「The Implementation Era」",
+    "type": "External",
+    "location": "Vancouver, Canada",
+    "from": "2026-10-12",
+    "to": "2026-10-16",
+    "mode": "オンライン＋対面",
+    "time": "",
+    "signup": "https://na.eventscloud.com/ereg/index.php?eventid=872254",
+    "related": "https://textileexchange.org/conference-2026/"
+  },
+  {
+    "id": "ext-fff-fall-2026",
+    "office": "Other",
+    "name": "Functional Fabric Fair – Fall（機能性素材見本市）",
+    "type": "External",
+    "location": "Portland, USA",
+    "from": "2026-10-26",
+    "to": "2026-10-28",
+    "mode": "対面",
+    "time": "",
+    "signup": "",
+    "related": "https://www.functionalfabricfair.com/"
   }
 ]
