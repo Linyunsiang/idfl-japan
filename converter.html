@@ -334,6 +334,11 @@ if (sessionStorage.getItem('converter_auth') === '1') {
         <label class="opt"><input type="radio" name="g" value="fill"> 数値を入力する</label>
       </div>
       <div class="row">
+        <span class="muted">クリーニング:</span>
+        <label class="opt"><input type="checkbox" id="optClean" checked> 重複製品を統合・原材料の重複/空白を除去</label>
+        <label class="opt"><input type="checkbox" id="optOrg"> Organic Cotton→Cotton</label>
+      </div>
+      <div class="row">
         <button id="run" disabled>▶ 変換開始</button>
         <button class="sec" id="dl" disabled>⬇ Excel ダウンロード</button>
         <button class="sec" id="dllog" disabled>📝 ログ</button>
@@ -582,6 +587,60 @@ function expandProduct(r,pid){
           component:"",grades:grades.map(g=>g.name),materials:materialsU,_catWarn:cat.score<0.6,_pid:pid};
 }
 // product -> output rows (stack grades in B, materials in F; continuation A,C,D,E blank)
+// --- cleanup / repair pass ---------------------------------------------------
+// optClean (default ON): strip surrounding spaces, drop duplicate raw materials
+//   inside a product, and merge duplicate products (same category+detail+component
+//   +raw-material set) by stacking their label grades in column B.
+// optOrg (default OFF): replace "Organic Cotton (...)" with "Cotton (RM0102)".
+function _cuStrip(v){return typeof v==="string"?v.trim():v;}
+function _cuLabel(s){if(typeof s!=="string")return s;var i=s.lastIndexOf(" (");return i>=0?s.slice(0,i).trim():s;}
+function _cuSortGrades(gl){return gl.slice().sort(function(a,b){var an=/No label/i.test(a)?1:0,bn=/No label/i.test(b)?1:0;return an!==bn?an-bn:(a<b?-1:a>b?1:0);});}
+function cleanupProducts(prods){
+  var doClean=$("#optClean")?$("#optClean").checked:true;
+  var doOrg=$("#optOrg")?$("#optOrg").checked:false;
+  if(!doClean&&!doOrg) return prods;
+  var rawFix=0;
+  var cleaned=prods.map(function(p){
+    var grades=(p.grades||[]).map(function(g){return doClean?_cuStrip(g):g;}).filter(function(g){return g&&String(g).trim();});
+    var seen={},mats=[],dup=0;
+    (p.materials||[]).forEach(function(m){
+      var rm=doClean?_cuStrip(m.raw_material):m.raw_material;
+      if(doOrg&&typeof rm==="string"&&_cuLabel(rm).toLowerCase()==="organic cotton") rm="Cotton (RM0102)";
+      if(rm===null||rm===undefined||rm==="") return;
+      if(seen[rm]){dup++;return;}
+      seen[rm]=1;mats.push({raw_material:rm,exact:m.exact,min:m.min,max:m.max,_warn:m._warn});
+    });
+    if(dup>0)rawFix++;
+    return {audit_standard:p.audit_standard,
+            product_category:doClean?_cuStrip(p.product_category):p.product_category,
+            product_detail:doClean?_cuStrip(p.product_detail):p.product_detail,
+            component:doClean?_cuStrip(p.component||""):(p.component||""),
+            grades:grades,materials:mats,_catWarn:p._catWarn};
+  });
+  var mergedCount=0;
+  if(doClean){
+    var groups={},order=[];
+    cleaned.forEach(function(p){
+      var matset=p.materials.map(function(m){return m.raw_material;}).filter(Boolean).slice().sort().join("||");
+      var key=[p.product_category,p.product_detail,p.component||"",matset].join("##");
+      if(groups[key]){
+        p.grades.forEach(function(g){if(groups[key].grades.indexOf(g)<0)groups[key].grades.push(g);});
+        if(p._catWarn)groups[key]._catWarn=true;
+        mergedCount++;
+      }else{groups[key]=p;order.push(key);}
+    });
+    cleaned=order.map(function(k){var g=groups[k];g.grades=_cuSortGrades(g.grades);return g;});
+  }
+  try{
+    var bits=[];
+    if(mergedCount)bits.push("重複製品 "+mergedCount+" 件を統合");
+    if(rawFix)bits.push("製品内の原材料重複 "+rawFix+" 件を除去");
+    if(doOrg)bits.push("Organic Cotton→Cotton 置換");
+    if(bits.length&&typeof log==="function")log("🧹 クリーニング："+bits.join(" / "),"o");
+  }catch(e){}
+  return cleaned;
+}
+
 function buildOutRows(p){
   const n=Math.max(p.grades.length,p.materials.length,1),rows=[];
   for(let k=0;k<n;k++){
@@ -640,7 +699,9 @@ async function convert(){
     if(_seen.has(key)) continue; _seen.add(key); _uniq.push(p);
   }
   const _removed=PRODUCTS.length-_uniq.length;
-  PRODUCTS=_uniq; PRODUCTS.forEach((p,i)=>p._pid=i);
+  PRODUCTS=_uniq;
+  PRODUCTS=cleanupProducts(PRODUCTS);
+  PRODUCTS.forEach((p,i)=>p._pid=i);
   OUTROWS=[]; PRODUCTS.forEach(p=>{OUTROWS=OUTROWS.concat(buildOutRows(p));});
   // 警告：同一製品に GOTS と Textile Exchange 標準が混在
   let mixCount=0; const mixList=[];
