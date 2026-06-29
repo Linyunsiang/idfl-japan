@@ -291,6 +291,35 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
   </div>
 </section>
 
+<!-- ===== 国際認証の目的 ===== -->
+<section class="max-w-5xl mx-auto px-4 py-12">
+  <div class="text-center mb-8">
+    <p class="text-brand-400 text-sm font-semibold tracking-widest uppercase mb-2">Why Certification Matters</p>
+    <h2 class="text-2xl md:text-3xl font-bold text-brand-800">国際認証とは — なぜ大切なのか</h2>
+  </div>
+  <div class="grid md:grid-cols-2 gap-6 mb-8">
+    <div class="glass-card p-6">
+      <h3 class="font-bold text-brand-700 mb-2">🛍 消費者の皆さまへ</h3>
+      <p class="text-sm text-brand-600 leading-relaxed">国際認証（GOTS・GRS・RWS・FSC など）は、独立した第三者機関が、原材料の調達から製造・流通までを審査し、環境配慮・リサイクル素材・社会的責任に関する基準を満たしていることを確認した証です。認証マークのある製品を選ぶことは、サステナブルなものづくりを応援することにつながります。</p>
+    </div>
+    <div class="glass-card p-6">
+      <h3 class="font-bold text-brand-700 mb-2">🏭 企業の皆さまへ</h3>
+      <p class="text-sm text-brand-600 leading-relaxed">認証取得は、サプライチェーンの透明性と信頼性を客観的に示す手段です。IDFL JAPAN と「ウェブサイト・リンク掲載に関する契約」を締結いただいた認証企業さまは、本ページに公式サイト・製品販売ページのリンクを無償で掲載し、世界の消費者・取引先へ取り組みを発信できます。</p>
+    </div>
+  </div>
+  <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-6">
+    <div class="bg-white rounded-lg border border-brand-100 p-4"><span class="cert-badge badge-GOTS">GOTS</span><p class="text-xs text-brand-600 mt-2">オーガニック繊維の世界基準。原料から最終製品まで環境・社会基準を網羅。</p></div>
+    <div class="bg-white rounded-lg border border-brand-100 p-4"><span class="cert-badge badge-OCS">OCS</span><p class="text-xs text-brand-600 mt-2">製品中のオーガニック原料の含有・追跡を証明（Textile Exchange）。</p></div>
+    <div class="bg-white rounded-lg border border-brand-100 p-4"><span class="cert-badge badge-GRS">GRS</span><p class="text-xs text-brand-600 mt-2">リサイクル原料の含有率＋環境・社会・化学物質管理を審査。</p></div>
+    <div class="bg-white rounded-lg border border-brand-100 p-4"><span class="cert-badge badge-RWS">RWS</span><p class="text-xs text-brand-600 mt-2">責任ある羊毛生産（アニマルウェルフェア・土地管理）。</p></div>
+    <div class="bg-white rounded-lg border border-brand-100 p-4"><span class="cert-badge badge-FSC">FSC</span><p class="text-xs text-brand-600 mt-2">適切に管理された森林由来の木材・繊維（レーヨン等）。</p></div>
+    <div class="bg-white rounded-lg border border-brand-100 p-4"><span class="cert-badge badge-DOWN">ダウン・フェザー</span><p class="text-xs text-brand-600 mt-2">RDS / IDS 等。トレーサビリティとアニマルウェルフェアを担保。</p></div>
+  </div>
+  <p class="text-xs text-brand-400 leading-relaxed" style="background:#f5f8ff;border:1px solid var(--brand-100);border-radius:10px;padding:14px">
+    ※ 当ページのリンク掲載は、各企業が有効な認証を保有している事実を示すものであり、IDFL JAPAN が製品の品質を保証・推奨するものではありません。掲載は第三者認証機関としての中立・公正な基準に基づき無償で行っています（IDFL は売買取引の当事者ではありません）。
+  </p>
+</section>
+
 <!-- ADMIN PANEL -->
 <div id="adminPanel" class="bg-amber-50 border-b-2 border-amber-200">
   <div class="max-w-5xl mx-auto px-4 py-5">
@@ -304,6 +333,8 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
         class="flex items-center gap-2 bg-brand-700 hover:bg-brand-800 text-white px-4 py-2 rounded-lg text-sm font-bold transition">
         ＋ 新しい企業を追加
       </button>
+      <button onclick="publishFactories()" class="flex items-center gap-2 bg-brand-700 hover:bg-brand-800 text-white px-4 py-2 rounded-lg text-sm font-bold">🌐 オンラインに公開</button>
+      <span id="cfDraftNote" style="display:none" class="text-xs text-amber-600 font-bold">● 未公開の変更があります</span>
       <button onclick="exportJSON()"
         class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition">
         📥 保存・ダウンロード
@@ -398,8 +429,12 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
           </select>
         </div>
         <div class="col-span-2">
-          <label class="label">公式サイト・販売サイト URL</label>
+          <label class="label">公式サイト URL</label>
           <input id="f_website" type="url" placeholder="https://www.example.com" class="field text-xs"/>
+        </div>
+        <div class="col-span-2">
+          <label class="label">製品販売ページ URL（任意）</label>
+          <input id="f_sales" type="url" placeholder="https://shop.example.com" class="field text-xs"/>
         </div>
         <div>
           <label class="label">認証番号</label>
@@ -457,6 +492,7 @@ async function loadFactories() {
     if (r.ok) factories = await r.json();
     else factories = [];
   } catch { factories = []; }
+  try { var _d=JSON.parse(localStorage.getItem('idflFactories_draft')); if(Array.isArray(_d)&&_d.length){ factories=_d; var _n=document.getElementById('cfDraftNote'); if(_n)_n.style.display='inline'; } } catch(e){}
   renderCards();
 }
 
@@ -479,12 +515,12 @@ function renderCards() {
   grid.innerHTML = filtered.map((f,i) => {
     const badges = (f.certs||[]).map(c=>`<span class="cert-badge badge-${c}">${CERT_LABEL[c]||c}</span>`).join('');
     const webBtn = f.website
-      ? `<a href="${f.website}" target="_blank" rel="noopener"
-           class="flex items-center justify-center gap-1.5 w-full mt-3 py-2 rounded-lg bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold transition">
-           <svg style="width:14px;height:14px" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/>
-           </svg>公式サイトへ</a>`
-      : `<p class="text-center text-xs text-brand-300 mt-3 py-2">サイト未登録</p>`;
+      ? `<a href="${f.website}" target="_blank" rel="noopener" class="flex items-center justify-center gap-1.5 w-full mt-2 py-2 rounded-lg bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold transition">🌐 公式サイトへ</a>`
+      : '';
+    const salesBtn = f.sales
+      ? `<a href="${f.sales}" target="_blank" rel="noopener" class="flex items-center justify-center gap-1.5 w-full mt-2 py-2 rounded-lg bg-white border border-brand-300 text-brand-700 hover:bg-brand-50 text-xs font-bold transition">🛒 製品を見る・購入</a>`
+      : '';
+    const noLink = (!f.website && !f.sales) ? `<p class="text-center text-xs text-brand-300 mt-3 py-2">サイト未登録</p>` : '';
     const delBtn = adminMode
       ? `<button onclick="deleteFactory('${f.id}')" title="削除"
            style="position:absolute;top:12px;right:12px;padding:6px;border-radius:50%;background:#fff5f5;border:none;cursor:pointer;color:#f87171" 
@@ -500,12 +536,8 @@ function renderCards() {
         <p class="text-xs text-brand-400 mt-0.5">${f.prefecture||''} · ${f.region||''}</p>
       </div>
       <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">${badges}</div>
-      <div style="border-top:1px solid var(--brand-100);padding-top:12px" class="space-y-1 text-xs text-brand-600">
-        ${f.certNo   ? `<p><span class="text-brand-400">証明書番号：</span>${f.certNo}</p>`  : ''}
-        ${f.since    ? `<p><span class="text-brand-400">認証取得：</span>${f.since}年〜</p>` : ''}
-        ${f.products ? `<p><span class="text-brand-400">製品：</span>${f.products}</p>`       : ''}
-      </div>
-      ${webBtn}
+      ${f.products ? `<div style="border-top:1px solid var(--brand-100);padding-top:10px" class="text-xs text-brand-600"><span class="text-brand-400">製品：</span>${f.products}</div>` : ''}
+      ${webBtn}${salesBtn}${noLink}
     </div>`;
   }).join('');
 }
@@ -558,12 +590,13 @@ function submitAdd() {
   factories.push({ id:crypto.randomUUID(), name, prefecture,
     region:   document.getElementById('f_region').value,
     website:  document.getElementById('f_website').value.trim(),
+    sales:    document.getElementById('f_sales').value.trim(),
     certNo:   document.getElementById('f_certNo').value.trim(),
     since:    document.getElementById('f_since').value.trim(),
     products: document.getElementById('f_products').value.trim(),
     certs });
-  closeAddModal(); renderCards(); showToast(`${name} を追加しました`);
-  ['f_name','f_prefecture','f_website','f_certNo','f_since','f_products'].forEach(id=>document.getElementById(id).value='');
+  closeAddModal(); renderCards(); cfSaveDraft(); showToast(`${name} を追加しました`);
+  ['f_name','f_prefecture','f_website','f_sales','f_certNo','f_since','f_products'].forEach(id=>document.getElementById(id).value='');
   document.querySelectorAll('.cert-cb').forEach(c=>c.checked=false);
 }
 
@@ -573,10 +606,22 @@ function deleteFactory(id) {
   const f = factories.find(x=>x.id===id);
   factories = factories.filter(x=>x.id!==id);
   renderCards();
+  cfSaveDraft();
   showToast(`${f?.name||'企業'} を削除しました`);
 }
 
 // ─── JSONエクスポート ──────────────────────────────────────
+function cfSaveDraft(){ try{localStorage.setItem('idflFactories_draft',JSON.stringify(factories));}catch(e){} var n=document.getElementById('cfDraftNote'); if(n)n.style.display='inline'; }
+async function publishFactories(){
+  if(!confirm('現在の認証企業リストをオンラインに公開しますか？\n全てのお客様の画面に反映されます（1〜2分）。'))return;
+  showToast('公開中…');
+  try{
+    const res=await fetch('/.netlify/functions/publish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'factories',password:ADMIN_PASSWORD,data:factories})});
+    let j={}; try{j=await res.json();}catch(e){}
+    if(res.ok&&j.ok){ localStorage.removeItem('idflFactories_draft'); var n=document.getElementById('cfDraftNote'); if(n)n.style.display='none'; showToast('公開しました。1〜2分で反映されます（'+(j.count||factories.length)+'社）'); }
+    else { showToast('公開失敗: '+(j.error||('HTTP '+res.status))); }
+  }catch(e){ showToast('公開失敗: '+e.message); }
+}
 function exportJSON() {
   const blob = new Blob([JSON.stringify(factories, null, 2)], { type:'application/json' });
   const a = document.createElement('a');

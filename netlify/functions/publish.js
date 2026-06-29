@@ -3,7 +3,7 @@
 const OWNER = 'Linyunsiang';
 const REPO  = 'idfl-japan';
 const BRANCH = 'main';
-const ALLOWED = { qa:'data/qa.json', news:'data/news.json', downloads:'downloads-data.json', schedule:'schedule-data.json' };
+const ALLOWED = { qa:'data/qa.json', news:'data/news.json', downloads:'downloads-data.json', schedule:'schedule-data.json' , factories:'factories-data.json' };
 
 function resp(code, obj){
   return { statusCode: code,
