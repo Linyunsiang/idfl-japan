@@ -331,6 +331,7 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
     <button class="chip" id="chip_Indonesia">🇮🇩 Indonesia</button>
     <button class="chip" id="chip_India">🇮🇳 India</button>
     <button class="chip" id="chip_Philippines">🇵🇭 Philippines</button>
+    <button class="chip" id="chip_Other">🌐 Other</button>
     <div style="margin-left:auto;display:flex;gap:6px">
       <button class="chip" id="chip_External">External</button>
       <button class="chip" id="chip_Internal">Internal</button>
@@ -649,7 +650,7 @@ function deleteEvent(id, name) {
 }
 
 /* ── Filter chips ── */
-var officeChips = ['all','Japan','Korea','China','Taiwan','Indonesia','India','Philippines'];
+var officeChips = ['all','Japan','Korea','China','Taiwan','Indonesia','India','Philippines','Other'];
 officeChips.forEach(function(o) {
   var btn = document.getElementById('chip_' + o);
   if (!btn) return;
