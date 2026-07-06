@@ -184,5 +184,57 @@
     "time": "",
     "signup": "",
     "related": "https://www.functionalfabricfair.com/"
+  },
+  {
+    "id": "ext-pis-seoul-2026",
+    "office": "Korea",
+    "name": "Preview in Seoul 2026（PIS・韓国最大級の繊維見本市）",
+    "type": "External",
+    "location": "Seoul, Korea（Coex）",
+    "from": "2026-08-19",
+    "to": "2026-08-21",
+    "mode": "対面",
+    "time": "",
+    "signup": "",
+    "related": "https://previewinseoul.com/"
+  },
+  {
+    "id": "ext-intertextile-shanghai-autumn-2026",
+    "office": "China",
+    "name": "Intertextile Shanghai Apparel Fabrics – Autumn 2026（上海国際紡織展 秋）",
+    "type": "External",
+    "location": "Shanghai, China（NECC）",
+    "from": "2026-08-25",
+    "to": "2026-08-27",
+    "mode": "対面",
+    "time": "",
+    "signup": "",
+    "related": "https://intertextile-shanghai-apparel-fabrics-autumn.hk.messefrankfurt.com/shanghai/en.html"
+  },
+  {
+    "id": "ext-yarn-expo-autumn-2026",
+    "office": "China",
+    "name": "Yarn Expo Autumn 2026（上海国際糸・繊維見本市 秋）",
+    "type": "External",
+    "location": "Shanghai, China（NECC）",
+    "from": "2026-08-25",
+    "to": "2026-08-27",
+    "mode": "対面",
+    "time": "",
+    "signup": "",
+    "related": "https://yarn-expo-autumn.hk.messefrankfurt.com/shanghai/en.html"
+  },
+  {
+    "id": "ext-titas-2026",
+    "office": "Taiwan",
+    "name": "TITAS 2026（台北國際紡織展 / Taipei Innovative Textile Application Show）",
+    "type": "External",
+    "location": "Taipei, Taiwan（Nangang Exhibition Center）",
+    "from": "2026-10-06",
+    "to": "2026-10-08",
+    "mode": "対面",
+    "time": "",
+    "signup": "",
+    "related": "https://titas.tw/"
   }
 ]
