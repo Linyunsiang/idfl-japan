@@ -492,7 +492,7 @@ async function loadFactories() {
     if (r.ok) factories = await r.json();
     else factories = [];
   } catch { factories = []; }
-  try { var _d=JSON.parse(localStorage.getItem('idflFactories_draft')); if(Array.isArray(_d)&&_d.length){ factories=_d; var _n=document.getElementById('cfDraftNote'); if(_n)_n.style.display='inline'; } } catch(e){}
+  try { var _d=JSON.parse(localStorage.getItem('idflFactories_draft')); if(Array.isArray(_d)&&_d.length && adminMode){ factories=_d; var _n=document.getElementById('cfDraftNote'); if(_n)_n.style.display='inline'; } } catch(e){}
   renderCards();
 }
 
@@ -567,6 +567,7 @@ function doAdminLogin() {
   adminMode = true;
   closeAdminLogin();
   document.getElementById('adminPanel').classList.add('open');
+  try { var _d=JSON.parse(localStorage.getItem('idflFactories_draft')); if(Array.isArray(_d)&&_d.length){ factories=_d; var _n=document.getElementById('cfDraftNote'); if(_n)_n.style.display='inline'; } } catch(e){}
   renderCards();
   showToast('管理者モードに入りました');
 }

@@ -550,9 +550,9 @@ async function qaBoot(){
   try{const r=await fetch('/data/qa.json?ts='+Date.now(),{cache:'no-store'}); if(r.ok)pub=await r.json();}catch(e){}
   if(!Array.isArray(pub)||!pub.length) pub=defaultQA.slice();
   let draft=null; try{draft=JSON.parse(localStorage.getItem('idflQA_draft'));}catch(e){}
-  QA_DATA=(Array.isArray(draft)&&draft.length)?draft:pub.slice();
+  QA_DATA=(Array.isArray(draft)&&draft.length&&qaIsAdmin)?draft:pub.slice();
   qaRender();
-  if(Array.isArray(draft)&&draft.length){var b=document.getElementById('qaDraftNote');if(b)b.style.display='inline';}
+  if(Array.isArray(draft)&&draft.length&&qaIsAdmin){var b=document.getElementById('qaDraftNote');if(b)b.style.display='inline';}
 }
 function qaLoad(){return QA_DATA;}
 function qaSave(arr){QA_DATA=arr;localStorage.setItem('idflQA_draft',JSON.stringify(arr));var b=document.getElementById('qaDraftNote');if(b)b.style.display='inline';}
@@ -627,7 +627,7 @@ document.querySelectorAll('.qa-anchor-pill').forEach(function(a){
 function qaLockClick(){ if(qaIsAdmin){qaToast('既にログイン中です');}else{qaOpenModal('qaLoginModal');setTimeout(function(){document.getElementById('qaPassInput').focus();},50);} }
 function qaDoLogin(){
   const v=document.getElementById('qaPassInput').value;
-  if(v===QA_PASS){qaIsAdmin=true;document.body.classList.add('qa-admin');document.getElementById('qaAdminBar').classList.add('on');document.getElementById('qaPassInput').value='';qaCloseModal('qaLoginModal');qaRender();qaToast('管理者モードになりました');}
+  if(v===QA_PASS){qaIsAdmin=true;document.body.classList.add('qa-admin');document.getElementById('qaAdminBar').classList.add('on');document.getElementById('qaPassInput').value='';qaCloseModal('qaLoginModal');try{var _qd=JSON.parse(localStorage.getItem('idflQA_draft'));if(Array.isArray(_qd)&&_qd.length){QA_DATA=_qd;var _qb=document.getElementById('qaDraftNote');if(_qb)_qb.style.display='inline';}}catch(e){}qaRender();qaToast('管理者モードになりました');}
   else{qaToast('パスワードが違います');}
 }
 function qaLogout(){qaIsAdmin=false;document.body.classList.remove('qa-admin');document.getElementById('qaAdminBar').classList.remove('on');qaRender();qaToast('ログアウトしました');}
