@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>統合管理コンソール | IDFL JAPAN</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{--accent:#1255A0;--accent2:#0d4383;--ink:#17171b;--muted:#6b7280;--line:#e5e7eb;--bg:#f5f7fa;--warn:#b45309;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Zen Kaku Gothic New",system-ui,sans-serif;color:var(--ink);background:var(--bg);}
+  header{background:#fff;border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:5}
+  header h1{font-size:16px;margin:0;font-weight:900;color:var(--accent)}
+  .badge{font-size:11px;font-weight:700;color:#fff;background:var(--accent);border-radius:999px;padding:3px 10px}
+  .wrap{max-width:1080px;margin:0 auto;padding:20px}
+  .tabs{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px}
+  .tab{padding:8px 16px;border-radius:999px;border:1.5px solid var(--line);background:#fff;font-weight:700;font-size:13px;cursor:pointer;color:#374151}
+  .tab.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .tab .dot{color:var(--warn);font-weight:900}
+  .panel{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px}
+  .bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:14px}
+  .bar .count{font-size:13px;color:var(--muted)}
+  .grow{flex:1}
+  button{font-family:inherit}
+  .btn{border:none;border-radius:9px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer}
+  .btn-p{background:var(--accent);color:#fff}
+  .btn-p:hover{background:var(--accent2)}
+  .btn-o{background:#fff;color:var(--accent);border:1.5px solid var(--accent)}
+  .btn-g{background:#eef1f5;color:#374151}
+  .btn-d{background:#fee2e2;color:#b91c1c}
+  .btn:disabled{opacity:.5;cursor:not-allowed}
+  .dirty-note{color:var(--warn);font-size:12.5px;font-weight:700;display:none}
+  .row{display:flex;align-items:center;gap:10px;padding:10px 8px;border-bottom:1px solid var(--line)}
+  .row:last-child{border-bottom:none}
+  .row .main{flex:1;min-width:0}
+  .row .t{font-weight:700;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .row .s{font-size:12px;color:var(--muted);margin-top:2px}
+  .mini{border:1px solid var(--line);background:#fff;border-radius:7px;width:30px;height:30px;cursor:pointer;font-size:14px;line-height:1}
+  .mini:hover{background:#f3f4f6}
+  .ov{position:fixed;inset:0;background:rgba(9,31,62,.55);display:none;align-items:flex-start;justify-content:center;z-index:20;padding:30px 14px;overflow:auto}
+  .ov.open{display:flex}
+  .modal{background:#fff;border-radius:14px;max-width:640px;width:100%;padding:22px}
+  .modal h3{margin:0 0 14px;font-size:16px}
+  label.f{display:block;margin-bottom:12px;font-size:12.5px;font-weight:700;color:#374151}
+  label.f .req{color:#b91c1c}
+  .f input[type=text],.f input[type=date],.f textarea,.f select{width:100%;margin-top:5px;padding:9px 11px;border:1.5px solid var(--line);border-radius:8px;font-size:13.5px;font-family:inherit;font-weight:400}
+  .f textarea{min-height:90px;resize:vertical}
+  .f.cb{display:flex;align-items:center;gap:8px}
+  .f.cb input{width:18px;height:18px}
+  .modal .acts{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+  #login{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:40}
+  #login .box{background:#fff;border:1px solid var(--line);border-radius:16px;padding:30px;width:340px;text-align:center}
+  #login input{width:100%;padding:11px;border:1.5px solid var(--line);border-radius:9px;margin:14px 0;font-size:14px;font-family:inherit}
+  #login .err{color:#b91c1c;font-size:12.5px;height:16px;margin-top:6px}
+  .app{display:none}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#063372;color:#fff;padding:12px 22px;border-radius:12px;font-size:13.5px;font-weight:700;box-shadow:0 8px 24px rgba(4,34,88,.25);opacity:0;transition:opacity .3s;pointer-events:none;z-index:50}
+  .hint{font-size:12px;color:var(--muted);margin-top:4px}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="box">
+    <h1 style="color:var(--accent);margin:0 0 4px;font-size:18px">IDFL JAPAN 管理コンソール</h1>
+    <p style="color:var(--muted);font-size:12.5px;margin:0">パスワードを入力してください</p>
+    <input id="pw" type="password" placeholder="パスワード" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn btn-p" style="width:100%" onclick="doLogin()">ログイン</button>
+    <div class="err" id="loginErr"></div>
+  </div>
+</div>
+
+<div class="app" id="app">
+  <header>
+    <h1>統合管理コンソール</h1><span class="badge">IDFL JAPAN</span>
+    <div class="grow"></div>
+    <button class="btn btn-g" onclick="logout()">ログアウト</button>
+  </header>
+  <div class="wrap">
+    <div class="tabs" id="tabs"></div>
+    <div class="panel">
+      <div class="bar">
+        <span class="count" id="count"></span>
+        <span class="dirty-note" id="dirty">● 未公開の変更があります</span>
+        <div class="grow"></div>
+        <button class="btn btn-g" onclick="reloadCur()">🔄 サーバーから再読込</button>
+        <button class="btn btn-o" onclick="openEdit(-1)">＋ 新規追加</button>
+        <button class="btn btn-p" id="pubBtn" onclick="publishCur()">✔ 変更を公開</button>
+      </div>
+      <div id="list"></div>
+      <div class="hint" id="hint"></div>
+    </div>
+  </div>
+</div>
+
+<div class="ov" id="ov"><div class="modal"><h3 id="mTitle">編集</h3><div id="mBody"></div>
+  <div class="acts"><button class="btn btn-g" onclick="closeModal()">キャンセル</button><button class="btn btn-p" onclick="saveModal()">OK</button></div>
+</div></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const PUBLISH_URL='/.netlify/functions/publish';
+
+const SCHEMAS={
+  news:{label:'お知らせ',file:'/data/news.json',
+    fields:[
+      {k:'id',t:'text',label:'ID',req:true,hint:'例: news-xxxx-YYYYMMDD（一意）'},
+      {k:'cat',t:'select',label:'カテゴリ',opts:['idfl','gots','te','fsc','others']},
+      {k:'title',t:'text',label:'タイトル'},
+      {k:'body',t:'textarea',label:'本文'},
+      {k:'link',t:'text',label:'リンクURL'},
+      {k:'linkLabel',t:'text',label:'リンク表示名'},
+      {k:'pinned',t:'checkbox',label:'先頭に固定'},
+      {k:'date',t:'date',label:'日付'},
+      {k:'author',t:'text',label:'投稿者',def:'IDFL JAPAN'},
+    ],
+    title:e=>e.title||'(無題)',sub:e=>[e.date,e.cat].filter(Boolean).join(' · '),
+    idp:'news',sort:(a,b)=>(b.pinned?1:0)-(a.pinned?1:0)||String(b.date||'').localeCompare(String(a.date||''))},
+
+  schedule:{label:'展示会・セミナー',file:'/schedule-data.json',
+    fields:[
+      {k:'id',t:'text',label:'ID',req:true},
+      {k:'office',t:'select',label:'地域',opts:['Japan','Korea','China','Taiwan','Indonesia','India','Philippines','Other']},
+      {k:'name',t:'text',label:'名称'},
+      {k:'type',t:'select',label:'区分',opts:['External','Internal']},
+      {k:'location',t:'text',label:'会場・場所'},
+      {k:'from',t:'date',label:'開始日'},
+      {k:'to',t:'date',label:'終了日'},
+      {k:'mode',t:'text',label:'形式',def:'対面'},
+      {k:'time',t:'text',label:'時間(任意)'},
+      {k:'signup',t:'text',label:'申込リンク(任意)'},
+      {k:'related',t:'text',label:'関連リンク(任意)'},
+    ],
+    title:e=>e.name||'(無題)',sub:e=>[e.from,e.office,e.location].filter(Boolean).join(' · '),
+    idp:'ext',sort:(a,b)=>String(a.from||'').localeCompare(String(b.from||''))},
+
+  downloads:{label:'資料ダウンロード',file:'/downloads-data.json',
+    fields:[
+      {k:'id',t:'text',label:'ID',req:true},
+      {k:'title',t:'text',label:'タイトル'},
+      {k:'category',t:'select',label:'カテゴリ',opts:['GOTS','FSC','MMS','RWS','DOWN','General']},
+      {k:'ftype',t:'select',label:'種類',opts:['PDF','PPT','XLSX','DOC','ZIP','LINK']},
+      {k:'url',t:'text',label:'URL',hint:'/files/... 空白は %20 に'},
+      {k:'size',t:'text',label:'サイズ',def:''},
+      {k:'date',t:'text',label:'日付',hint:'YYYY-MM'},
+      {k:'isNew',t:'checkbox',label:'NEW 表示'},
+      {k:'expiry',t:'text',label:'公開期限(任意)',hint:'YYYY-MM-DD'},
+    ],
+    title:e=>e.title||'(無題)',sub:e=>[e.category,e.ftype,e.date].filter(Boolean).join(' · '),
+    idp:'d',sort:null},
+
+  factories:{label:'認証工場・企業',file:'/factories-data.json',
+    fields:[
+      {k:'id',t:'text',label:'ID',req:true},
+      {k:'name',t:'text',label:'企業・工場名'},
+      {k:'prefecture',t:'text',label:'都道府県'},
+      {k:'region',t:'text',label:'地域'},
+      {k:'certs',t:'multi',label:'認証（カンマ区切り）',hint:'例: GOTS, FSC, RWS, DOWN'},
+      {k:'products',t:'text',label:'製品(任意)'},
+      {k:'website',t:'text',label:'公式サイト(任意)'},
+      {k:'sales',t:'text',label:'販売リンク(任意)'},
+    ],
+    title:e=>e.name||'(無題)',sub:e=>[e.prefecture,e.region,(e.certs||[]).join('/')].filter(Boolean).join(' · '),
+    idp:'f',sort:null},
+
+  qa:{label:'よくある質問',file:'/data/qa.json',
+    fields:[
+      {k:'id',t:'text',label:'ID',req:true},
+      {k:'section',t:'text',label:'セクション',def:'audit'},
+      {k:'q',t:'text',label:'質問'},
+      {k:'a',t:'textarea',label:'回答'},
+    ],
+    title:e=>e.q||'(無題)',sub:e=>e.section||'',
+    idp:'qa',sort:null},
+};
+
+let PW=null;
+const DATA={}, DIRTY={};
+let CUR='news', EDIT_IDX=-1;
+
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.style.opacity='1';clearTimeout(t._t);t._t=setTimeout(()=>t.style.opacity='0',2600);}
+
+async function doLogin(){
+  const pw=document.getElementById('pw').value;
+  const err=document.getElementById('loginErr');err.textContent='';
+  if(!pw){err.textContent='パスワードを入力してください';return;}
+  try{
+    const r=await fetch(PUBLISH_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'news',password:pw,validateOnly:true})});
+    const j=await r.json().catch(()=>({}));
+    if(r.ok&&j.ok){PW=pw;document.getElementById('login').style.display='none';document.getElementById('app').style.display='block';initApp();}
+    else{err.textContent=j.error||('エラー: HTTP '+r.status);}
+  }catch(e){err.textContent='通信エラー: '+e.message;}
+}
+function logout(){PW=null;location.reload();}
+
+function initApp(){
+  const tabs=document.getElementById('tabs');
+  tabs.innerHTML=Object.keys(SCHEMAS).map(k=>`<button class="tab" data-k="${k}" onclick="switchTab('${k}')">${SCHEMAS[k].label} <span class="dot" id="dot-${k}" style="display:none">●</span></button>`).join('');
+  switchTab('news');
+}
+
+async function switchTab(k){
+  CUR=k;
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.k===k));
+  if(!DATA[k]){await loadData(k);} else {render();}
+}
+
+async function loadData(k){
+  document.getElementById('list').innerHTML='<div style="padding:16px;color:#6b7280">読込中…</div>';
+  try{
+    const r=await fetch(SCHEMAS[k].file,{cache:'no-store'});
+    const j=r.ok?await r.json():[];
+    DATA[k]=Array.isArray(j)?j:(j.posts||j.items||[]);
+  }catch(e){DATA[k]=[];toast('読込失敗: '+e.message);}
+  DIRTY[k]=false; updateDirty(); render();
+}
+function reloadCur(){ if(DIRTY[CUR] && !confirm('未公開の変更があります。破棄してサーバーから再読込しますか？'))return; delete DATA[CUR]; switchTab(CUR); }
+
+function render(){
+  const s=SCHEMAS[CUR], arr=DATA[CUR]||[];
+  document.getElementById('count').textContent=arr.length+' 件';
+  document.getElementById('hint').textContent='※「変更を公開」を押すまで、追加・編集・削除・並べ替えはこのブラウザ内だけの状態です。公開すると全ての閲覧者に反映されます（GitHub へ保存 → 自動デプロイ、1〜2分）。';
+  const list=document.getElementById('list');
+  if(!arr.length){list.innerHTML='<div style="padding:16px;color:#6b7280">項目がありません。「＋ 新規追加」から追加できます。</div>';return;}
+  list.innerHTML=arr.map((e,i)=>`<div class="row">
+    <div style="display:flex;flex-direction:column;gap:2px">
+      <button class="mini" onclick="move(${i},-1)" ${i===0?'disabled':''}>▲</button>
+      <button class="mini" onclick="move(${i},1)" ${i===arr.length-1?'disabled':''}>▼</button>
+    </div>
+    <div class="main"><div class="t">${esc(s.title(e))}</div><div class="s">${esc(s.sub(e))}</div></div>
+    <button class="btn btn-g" onclick="openEdit(${i})">編集</button>
+    <button class="btn btn-d" onclick="delItem(${i})">削除</button>
+  </div>`).join('');
+}
+function esc(x){return String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+
+function markDirty(){DIRTY[CUR]=true;updateDirty();}
+function updateDirty(){
+  document.getElementById('dirty').style.display=DIRTY[CUR]?'inline':'none';
+  Object.keys(SCHEMAS).forEach(k=>{const d=document.getElementById('dot-'+k);if(d)d.style.display=DIRTY[k]?'inline':'none';});
+}
+function move(i,dir){const a=DATA[CUR];const j=i+dir;if(j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];markDirty();render();}
+function delItem(i){const a=DATA[CUR];if(!confirm('「'+SCHEMAS[CUR].title(a[i])+'」を削除しますか？（公開するまで確定しません）'))return;a.splice(i,1);markDirty();render();}
+
+function openEdit(idx){
+  EDIT_IDX=idx;const s=SCHEMAS[CUR];
+  const e = idx>=0 ? DATA[CUR][idx] : newItem(s);
+  document.getElementById('mTitle').textContent=(idx>=0?'編集':'新規追加')+'：'+s.label;
+  document.getElementById('mBody').innerHTML=s.fields.map(f=>fieldHtml(f,e[f.k])).join('');
+  document.getElementById('ov').classList.add('open');
+}
+function newItem(s){const o={};s.fields.forEach(f=>{o[f.k]=f.def!=null?f.def:(f.t==='checkbox'?false:(f.t==='multi'?[]:''));});o.id=s.idp+'-'+Date.now();return o;}
+function fieldHtml(f,v){
+  const id='fld_'+f.k;const hint=f.hint?`<div class="hint">${esc(f.hint)}</div>`:'';
+  if(f.t==='checkbox')return `<label class="f cb"><input type="checkbox" id="${id}" ${v?'checked':''}> ${f.label}</label>`;
+  if(f.t==='textarea')return `<label class="f">${f.label}${f.req?' <span class=req>*</span>':''}<textarea id="${id}">${esc(v)}</textarea>${hint}</label>`;
+  if(f.t==='select')return `<label class="f">${f.label}<select id="${id}">${f.opts.map(o=>`<option ${o===v?'selected':''}>${o}</option>`).join('')}</select>${hint}</label>`;
+  if(f.t==='multi')return `<label class="f">${f.label}<input type="text" id="${id}" value="${esc((v||[]).join(', '))}">${hint}</label>`;
+  const type=f.t==='date'?'date':'text';
+  return `<label class="f">${f.label}${f.req?' <span class=req>*</span>':''}<input type="${type}" id="${id}" value="${esc(v)}">${hint}</label>`;
+}
+function saveModal(){
+  const s=SCHEMAS[CUR];const o={};
+  for(const f of s.fields){
+    const el=document.getElementById('fld_'+f.k);
+    if(f.t==='checkbox')o[f.k]=el.checked;
+    else if(f.t==='multi')o[f.k]=el.value.split(',').map(x=>x.trim()).filter(Boolean);
+    else o[f.k]=el.value.trim();
+  }
+  if(!o.id){toast('ID は必須です');return;}
+  const a=DATA[CUR];
+  const dup=a.findIndex((x,i)=>x.id===o.id&&i!==EDIT_IDX);
+  if(dup>=0){toast('同じ ID が既にあります');return;}
+  if(EDIT_IDX>=0)a[EDIT_IDX]=o; else a.unshift(o);
+  markDirty();closeModal();render();
+}
+function closeModal(){document.getElementById('ov').classList.remove('open');EDIT_IDX=-1;}
+
+async function publishCur(){
+  const s=SCHEMAS[CUR],arr=DATA[CUR]||[];
+  if(s.sort){arr.sort(s.sort);}
+  if(!confirm(s.label+' を公開します（'+arr.length+'件）。全ての閲覧者に反映されます。よろしいですか？'))return;
+  const btn=document.getElementById('pubBtn');btn.disabled=true;toast('公開中…');
+  try{
+    const r=await fetch(PUBLISH_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:CUR,password:PW,data:arr})});
+    const j=await r.json().catch(()=>({}));
+    if(r.ok&&j.ok){DIRTY[CUR]=false;updateDirty();render();toast('✅ 公開しました（'+(j.count||arr.length)+'件）反映まで約1〜2分');}
+    else{toast('⚠️ 公開失敗: '+(j.error||('HTTP '+r.status)));}
+  }catch(e){toast('⚠️ 公開失敗: '+e.message);}
+  btn.disabled=false;
+}
+document.getElementById('ov').addEventListener('click',e=>{if(e.target.id==='ov')closeModal();});
+</script>
+</body>
+</html>
