@@ -510,7 +510,7 @@ async function init() {
   } catch(err) {
     events = DEFAULT.slice();
   }
-  try { var _d=JSON.parse(localStorage.getItem('idflSchedule_draft')); if(Array.isArray(_d)&&_d.length){ events=_d; var _n=document.getElementById('schedDraftNote'); if(_n)_n.style.display='inline'; } } catch(e){}
+  try { var _d=JSON.parse(localStorage.getItem('idflSchedule_draft')); if(Array.isArray(_d)&&_d.length && isAdmin){ events=_d; var _n=document.getElementById('schedDraftNote'); if(_n)_n.style.display='inline'; } } catch(e){}
   renderEvents();
 }
 
@@ -690,6 +690,7 @@ function doLogin() {
   document.getElementById('loginModal').classList.remove('open');
   document.getElementById('adminBar').style.display = 'block';
   document.getElementById('adminFloatBtn').classList.add('active');
+  try { var _d=JSON.parse(localStorage.getItem('idflSchedule_draft')); if(Array.isArray(_d)&&_d.length){ events=_d; var _n=document.getElementById('schedDraftNote'); if(_n)_n.style.display='inline'; } } catch(e){}
   renderEvents();
   showToast('管理者モードに入りました');
 }
