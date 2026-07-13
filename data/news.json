@@ -1,5 +1,16 @@
 [
   {
+    "id": "news-ghg-iso14064-20260713",
+    "cat": "others",
+    "title": "GHG算定・検証の最新動向 — GHG Protocol（Scope 3）改訂と ISO 14064",
+    "body": "企業の温室効果ガス（GHG）算定・報告の事実上の国際標準である GHG Protocol が、Scope 3（サプライチェーン間接排出）基準の改訂を進めています。2026年3月31日に「フェーズ1進捗アップデート」が公表され、排出データの種類別の分解報告や、企業レベルデータの割当制限など、算定の一貫性を高める方向性が示されました。完全な改訂ドラフトは今後の公開諮問にかけられる予定です。また2026年第1四半期には ISO の技術コミュニティが GHG Protocol の各技術作業部会（コーポレート／Scope 2／Scope 3 など）に参加し、GHG Protocol と ISO 14064（GHGの算定・報告・検証に関する国際規格。-1 組織／-2 プロジェクト／-3 検証の3部構成、現行は2018年版）との整合が進められています。DPP（ESPR）の第2段階でカーボンデータが求められる流れの中、GHG 算定と第三者検証（ISO 14064-3）の重要性が一層高まる見込みです。最新情報は随時お知らせします。",
+    "link": "https://ghgprotocol.org/scope-3-standard-revisions-phase-1-progress-update",
+    "linkLabel": "GHG Protocol 公式",
+    "pinned": false,
+    "date": "2026-07-13",
+    "author": "IDFL JAPAN"
+  },
+  {
     "id": "news-eu-dpp-textile-20260706",
     "cat": "others",
     "title": "EU「デジタル製品パスポート（DPP）」導入へ — 繊維ブランドが今から備えるべきこと",
