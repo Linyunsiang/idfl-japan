@@ -416,9 +416,21 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
         </div>
       </div>
       <div>
+        <label class="flabel">📤 ファイルを直接アップロード（任意）</label>
+        <div id="dropZone" style="border:2px dashed var(--b200);border-radius:10px;padding:16px;text-align:center;cursor:pointer;background:var(--b050);transition:all .15s">
+          <div id="dropIdle">
+            <div style="font-size:20px">📄⬆️</div>
+            <p style="font-size:12.5px;color:var(--b700);margin:6px 0 0;font-weight:700">ここにファイルをドラッグ＆ドロップ / クリックで選択</p>
+            <p style="font-size:11px;color:var(--b400);margin:3px 0 0">アップロードすると URL・種類・サイズが自動入力されます（最大約4MB）</p>
+          </div>
+          <div id="dropBusy" style="display:none;font-size:12.5px;color:var(--b700);font-weight:700"></div>
+        </div>
+        <input id="fileInput" type="file" style="display:none">
+      </div>
+      <div>
         <label class="flabel">URL（任意・後で設定可）</label>
         <input id="inp_url" class="finput" type="text" placeholder="例：/files/doc.pdf または https://...">
-        <p style="font-size:11px;color:var(--b400);margin:4px 0 0">空欄の場合は「準備中」と表示されます</p>
+        <p style="font-size:11px;color:var(--b400);margin:4px 0 0">空欄の場合は「準備中」と表示されます。ファイルをアップロードすると自動で入ります。</p>
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
         <div>
@@ -684,6 +696,7 @@ function openAddModal() {
   document.getElementById('inp_expiry').value = '';
   document.getElementById('inp_new').checked = false;
   document.getElementById('addFormErr').style.display = 'none';
+  (function(){var b=document.getElementById('dropBusy');if(b){b.style.display='none';b.textContent='';}var i=document.getElementById('dropIdle');if(i)i.style.display='block';})();
   document.getElementById('addModal').classList.add('open');
   document.body.style.overflow = 'hidden';
 }
@@ -713,6 +726,42 @@ function closeAddModal() {
 }
 
 document.getElementById('addDocBtn').addEventListener('click', openAddModal);
+
+/* ── Direct file upload to GitHub (via Netlify function) ── */
+(function(){
+  var dz=document.getElementById('dropZone'), fi=document.getElementById('fileInput');
+  var idle=document.getElementById('dropIdle'), busy=document.getElementById('dropBusy');
+  if(!dz||!fi) return;
+  function setBusy(msg){ idle.style.display=msg?'none':'block'; busy.style.display=msg?'block':'none'; busy.textContent=msg||''; }
+  function ftypeFromName(n){ n=(n||'').toLowerCase(); if(n.endsWith('.pdf'))return'PDF'; if(n.endsWith('.pptx')||n.endsWith('.ppt'))return'PPT'; if(n.endsWith('.xlsx')||n.endsWith('.xls')||n.endsWith('.csv'))return'XLSX'; if(n.endsWith('.docx')||n.endsWith('.doc'))return'DOC'; if(n.endsWith('.zip'))return'ZIP'; return''; }
+  function humanSize(b){ return (b/1048576).toFixed(1)+' MB'; }
+  function showErr(m){ var e=document.getElementById('addFormErr'); e.style.display='block'; e.textContent=m; }
+  async function handleFile(file){
+    if(!file) return;
+    if(file.size > 4*1024*1024){ setBusy(''); showErr('ファイルが大きすぎます（約4MBまで）。大きい資料は担当者へご依頼ください。'); return; }
+    document.getElementById('addFormErr').style.display='none';
+    setBusy('アップロード中… ' + file.name);
+    try{
+      var b64 = await new Promise(function(res,rej){ var r=new FileReader(); r.onload=function(){ res(String(r.result).split(',')[1]); }; r.onerror=function(){ rej(new Error('読込失敗')); }; r.readAsDataURL(file); });
+      var resp = await fetch('/.netlify/functions/upload-file', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ password:PASS, filename:file.name, contentBase64:b64 }) });
+      var j={}; try{ j=await resp.json(); }catch(e){}
+      if(resp.ok && j.ok){
+        document.getElementById('inp_url').value = j.path;
+        var ft=ftypeFromName(j.name||file.name); if(ft) document.getElementById('inp_ftype').value=ft;
+        if(!document.getElementById('inp_size').value) document.getElementById('inp_size').value=humanSize(file.size);
+        setBusy('\u2705 アップロード完了：' + j.path);
+        setTimeout(function(){ setBusy(''); }, 4000);
+      } else {
+        setBusy(''); showErr('アップロード失敗: ' + (j.error||('HTTP '+resp.status)));
+      }
+    }catch(e){ setBusy(''); showErr('アップロード失敗: ' + e.message); }
+  }
+  dz.addEventListener('click', function(){ fi.click(); });
+  fi.addEventListener('change', function(){ if(fi.files&&fi.files[0]) handleFile(fi.files[0]); fi.value=''; });
+  ['dragenter','dragover'].forEach(function(ev){ dz.addEventListener(ev, function(e){ e.preventDefault(); e.stopPropagation(); dz.style.background='#dbeafe'; dz.style.borderColor='var(--b500)'; }); });
+  ['dragleave','drop'].forEach(function(ev){ dz.addEventListener(ev, function(e){ e.preventDefault(); e.stopPropagation(); dz.style.background='var(--b050)'; dz.style.borderColor='var(--b200)'; }); });
+  dz.addEventListener('drop', function(e){ var f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0]; if(f) handleFile(f); });
+})();
 document.getElementById('closeAddModalBtn').addEventListener('click', closeAddModal);
 document.getElementById('addModal').addEventListener('click', function(e){ if(e.target===this) closeAddModal(); });
 
