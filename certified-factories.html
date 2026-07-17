@@ -513,7 +513,7 @@ function renderCards() {
   const filtered = factories.filter(f => {
     const mk = !kw   || (f.name||'').toLowerCase().includes(kw) || (f.prefecture||'').toLowerCase().includes(kw);
     const mc = !cert || (f.certs||[]).includes(cert);
-    const mr = !reg  || f.region === reg;
+    const mr = !reg  || (f.region||'').indexOf(reg) >= 0;
     return mk && mc && mr;
   });
   document.getElementById('resultCount').textContent = filtered.length;
@@ -527,8 +527,9 @@ function renderCards() {
     const webBtn = f.website
       ? `<a href="${f.website}" target="_blank" rel="noopener" class="flex items-center justify-center gap-1.5 w-full mt-2 py-2 rounded-lg bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold transition">🌐 公式サイトへ</a>`
       : '';
+    const _isInsta = /instagram\.com/i.test(f.sales||'');
     const salesBtn = f.sales
-      ? `<a href="${f.sales}" target="_blank" rel="noopener" class="flex items-center justify-center gap-1.5 w-full mt-2 py-2 rounded-lg bg-white border border-brand-300 text-brand-700 hover:bg-brand-50 text-xs font-bold transition">🛒 製品を見る・購入</a>`
+      ? `<a href="${f.sales}" target="_blank" rel="noopener" class="flex items-center justify-center gap-1.5 w-full mt-2 py-2 rounded-lg bg-white border border-brand-300 text-brand-700 hover:bg-brand-50 text-xs font-bold transition">${_isInsta?'\uD83D\uDCF7 Instagram で見る':'\uD83D\uDED2 製品を見る・購入'}</a>`
       : '';
     const noLink = (!f.website && !f.sales) ? `<p class="text-center text-xs text-brand-300 mt-3 py-2">サイト未登録</p>` : '';
     const delBtn = adminMode
