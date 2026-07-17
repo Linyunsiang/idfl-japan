@@ -1,7 +1,7 @@
 [
   {
     "id": "fcplanning-office",
-    "name": "FC Planning Office Co., Ltd.",
+    "name": "FC Planning Office Co., Ltd.（株式会社エフシープランニングオフィス）",
     "prefecture": "和歌山県・東京都",
     "region": "関西・関東",
     "certs": [
@@ -10,6 +10,6 @@
     "products": "天然繊維の糸・生地企画、素材開発、繊維リサイクル",
     "website": "https://fcplanning.jp/",
     "sales": "https://www.instagram.com/fcplanning/",
-    "logo": ""
+    "logo": "/files/fcplanning-logo.png"
   }
 ]
