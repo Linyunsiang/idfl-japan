@@ -522,8 +522,12 @@ function fmtD(s) {
 }
 
 function renderEvents() {
+  var _today = new Date(); _today.setHours(0,0,0,0);
   var fil = events.filter(function(e) {
-    return (filterOffice === 'all' || e.office === filterOffice) &&
+    var _end = e.to ? new Date(e.to+'T00:00:00') : (e.from ? new Date(e.from+'T00:00:00') : null);
+    var _isPast = _end && _end < _today;
+    return (isAdmin || !_isPast) &&
+           (filterOffice === 'all' || e.office === filterOffice) &&
            (filterType   === 'all' || e.type   === filterType);
   }).sort(function(a,b){ return (a.from||'').localeCompare(b.from||''); });
 
