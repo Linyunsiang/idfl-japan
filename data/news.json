@@ -1,5 +1,16 @@
 [
   {
+    "id": "news-te-mms-timeline-20260720",
+    "cat": "te",
+    "title": "Textile Exchange「Materials Matter Standard」施行スケジュール確定 — 2026年12月31日発効・2027年12月31日義務化",
+    "body": "Textile Exchange の新しい統合基準「Materials Matter Standard（MMS）」の施行スケジュールが確定しました。MMS は2025年12月12日に公表され、2026年12月31日に発効、2027年12月31日から完全義務化されます。2027年は「任意移行（ブリッジ）年」と位置づけられ、RAF や GRS/RCS の認証を持つ Tier 4 事業者（農場・リサイクル施設・一次加工者）は、義務化前に新基準での審査を任意で受けることができます。GRS・RCS・RWS などの現行 Textile Exchange 各基準は MMS へ統合されるため、認証事業者は自社の対象範囲と移行スケジュールを早めに確認されることをおすすめします。",
+    "link": "https://textileexchange.org/materials-matter-standards-transition/",
+    "linkLabel": "Textile Exchange 公式",
+    "pinned": false,
+    "date": "2026-07-20",
+    "author": "IDFL JAPAN"
+  },
+  {
     "id": "news-ghg-iso14064-20260713",
     "cat": "others",
     "title": "GHG算定・検証の最新動向 — GHG Protocol（Scope 3）改訂と ISO 14064",
