@@ -236,5 +236,44 @@
     "time": "",
     "signup": "",
     "related": "https://titas.tw/"
+  },
+  {
+    "id": "ext-heimtextil-2027",
+    "office": "Other",
+    "name": "Heimtextil 2027（国際ホーム・コントラクトテキスタイル見本市）",
+    "type": "External",
+    "location": "Frankfurt, Germany（Messe Frankfurt）",
+    "from": "2027-01-12",
+    "to": "2027-01-15",
+    "mode": "対面",
+    "time": "",
+    "signup": "",
+    "related": "https://heimtextil.messefrankfurt.com/frankfurt/en.html"
+  },
+  {
+    "id": "ext-performance-days-munich-2026",
+    "office": "Other",
+    "name": "Performance Days ミュンヘン 2026 秋（機能性素材見本市 / Functional Fabric Fair）",
+    "type": "External",
+    "location": "Munich, Germany（Messe München）",
+    "from": "2026-10-13",
+    "to": "2026-10-14",
+    "mode": "対面",
+    "time": "",
+    "signup": "",
+    "related": "https://www.performancedays.com/"
+  },
+  {
+    "id": "ext-intertextile-shanghai-hometextiles-autumn-2026",
+    "office": "China",
+    "name": "Intertextile 上海ホームテキスタイル 2026 秋（Home Textiles – Autumn）",
+    "type": "External",
+    "location": "Shanghai, China（NECC）",
+    "from": "2026-08-18",
+    "to": "2026-08-20",
+    "mode": "対面",
+    "time": "",
+    "signup": "",
+    "related": "https://intertextile-shanghai-hometextiles-autumn.hk.messefrankfurt.com/shanghai/en.html"
   }
 ]
