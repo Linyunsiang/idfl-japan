@@ -1212,11 +1212,12 @@ function renderCards() {
     const noPosts = document.getElementById('noPosts');
 
     let filtered = posts.filter(p => {
+        const matchPub = isAdmin || p.published !== false;
         const matchCat = currentCat === 'all' || p.cat === currentCat;
         const matchSearch = !search ||
             p.title.toLowerCase().includes(search) ||
             p.body.toLowerCase().includes(search);
-        return matchCat && matchSearch;
+        return matchPub && matchCat && matchSearch;
     });
 
     filtered.sort((a, b) => {

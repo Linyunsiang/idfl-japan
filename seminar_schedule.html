@@ -530,7 +530,7 @@ function renderEvents() {
   var fil = events.filter(function(e) {
     var _end = e.to ? new Date(e.to+'T00:00:00') : (e.from ? new Date(e.from+'T00:00:00') : null);
     var _isPast = _end && _end < _today;
-    return (isAdmin || !_isPast) &&
+    return (isAdmin || (!_isPast && e.published !== false)) &&
            (filterOffice === 'all' || e.office === filterOffice) &&
            (filterType   === 'all' || e.type   === filterType);
   }).sort(function(a,b){ return (a.from||'').localeCompare(b.from||''); });

@@ -120,8 +120,9 @@ const SCHEMAS={
       {k:'pinned',t:'checkbox',label:'先頭に固定'},
       {k:'date',t:'date',label:'日付'},
       {k:'author',t:'text',label:'投稿者',def:'IDFL JAPAN'},
+      {k:'published',t:'checkbox',label:'公開する',def:true},
     ],
-    title:e=>e.title||'(無題)',sub:e=>[e.date,e.cat].filter(Boolean).join(' · '),
+    title:e=>e.title||'(無題)',sub:e=>[(e.published===false?'⛔未公開':''),e.date,e.cat].filter(Boolean).join(' · '),
     idp:'news',sort:(a,b)=>(b.pinned?1:0)-(a.pinned?1:0)||String(b.date||'').localeCompare(String(a.date||''))},
 
   schedule:{label:'展示会・セミナー',file:'/schedule-data.json',
@@ -137,8 +138,9 @@ const SCHEMAS={
       {k:'time',t:'text',label:'時間(任意)'},
       {k:'signup',t:'text',label:'申込リンク(任意)'},
       {k:'related',t:'text',label:'関連リンク(任意)'},
+      {k:'published',t:'checkbox',label:'公開する',def:true},
     ],
-    title:e=>e.name||'(無題)',sub:e=>[e.from,e.office,e.location].filter(Boolean).join(' · '),
+    title:e=>e.name||'(無題)',sub:e=>[(e.published===false?'⛔未公開':''),e.from,e.office,e.location].filter(Boolean).join(' · '),
     idp:'ext',sort:(a,b)=>String(a.from||'').localeCompare(String(b.from||''))},
 
   downloads:{label:'資料ダウンロード',file:'/downloads-data.json',
