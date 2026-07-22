@@ -1,15 +1,26 @@
 [
   {
     "id": "fcplanning-office",
-    "name": "FC Planning Office Co., Ltd.（株式会社エフシープランニングオフィス）",
+    "companyName": "FC Planning Office Co., Ltd.（株式会社エフシープランニングオフィス）",
+    "companyNameEnglish": "",
+    "logo": "/files/fcplanning-logo.png",
     "prefecture": "和歌山県・東京都",
     "region": "関西・関東",
-    "certs": [
+    "officialWebsiteUrl": "https://fcplanning.jp/",
+    "salesPageUrl": "https://www.instagram.com/fcplanning/",
+    "certificateNumber": "",
+    "certificationYear": "",
+    "certificationTypes": [
       "GOTS"
     ],
-    "products": "天然繊維の糸・生地企画、素材開発、繊維リサイクル",
-    "website": "https://fcplanning.jp/",
-    "sales": "https://www.instagram.com/fcplanning/",
-    "logo": "/files/fcplanning-logo.png"
+    "productCategories": "天然繊維の糸・生地企画、素材開発、繊維リサイクル",
+    "shortDescription": "",
+    "promotionText": "",
+    "featured": false,
+    "published": true,
+    "displayOrder": 0,
+    "createdAt": "2026-07-22T02:07:15Z",
+    "updatedAt": "2026-07-22T02:07:15Z",
+    "updatedBy": "migration"
   }
 ]

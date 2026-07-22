@@ -271,20 +271,6 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
 
 
 
-<!-- ADMIN LOGIN STRIP -->
-<div id="adminLoginStrip" class="hidden bg-brand-900 text-white px-4 py-3" style="padding-top:65px">
-  <div class="max-w-6xl mx-auto flex flex-wrap items-center gap-3 pt-3 pb-1">
-    <span class="text-sm text-brand-200 font-medium">🔒 管理者パスワード</span>
-    <input id="adminPassInput" type="password" placeholder="パスワードを入力..."
-      class="flex-1 sm:w-56 px-3 py-1.5 rounded-lg bg-white/10 border border-white/20 text-white placeholder-white/40 text-sm"
-      onkeydown="if(event.key==='Enter')doAdminLogin()"/>
-    <button onclick="doAdminLogin()" class="px-4 py-1.5 bg-brand-500 hover:bg-brand-400 text-white rounded-lg text-sm font-medium transition">ログイン</button>
-    <button onclick="closeAdminLogin()" class="text-white/50 hover:text-white text-sm px-2">✕</button>
-    <span id="adminLoginError" class="hidden text-red-300 text-xs w-full">パスワードが正しくありません</span>
-  </div>
-</div>
-
-<!-- HERO -->
 <section class="hero-bg text-white py-14 px-4" style="padding-top:calc(65px + 3.5rem)">
   <div class="max-w-4xl mx-auto text-center">
     <p class="text-brand-200 text-sm font-semibold tracking-widest uppercase mb-2">IDFL Certified</p>
@@ -324,33 +310,6 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
   </p>
 </section>
 
-<!-- ADMIN PANEL -->
-<div id="adminPanel" class="bg-amber-50 border-b-2 border-amber-200">
-  <div class="max-w-5xl mx-auto px-4 py-5">
-    <div class="flex flex-wrap items-center gap-3 mb-3">
-      <span class="text-amber-600 font-bold text-sm">🛠 管理者モード</span>
-      <span class="text-xs text-amber-500 bg-amber-100 px-2 py-0.5 rounded-full">IDFL ADMIN</span>
-      <button onclick="exitAdmin()" class="ml-auto text-xs text-amber-500 hover:text-amber-700 underline">終了</button>
-    </div>
-    <div class="flex flex-wrap gap-2">
-      <button onclick="openAddModal()"
-        class="flex items-center gap-2 bg-brand-700 hover:bg-brand-800 text-white px-4 py-2 rounded-lg text-sm font-bold transition">
-        ＋ 新しい企業を追加
-      </button>
-      <button onclick="publishFactories()" class="flex items-center gap-2 bg-brand-700 hover:bg-brand-800 text-white px-4 py-2 rounded-lg text-sm font-bold">🌐 オンラインに公開</button>
-      <span id="cfDraftNote" style="display:none" class="text-xs text-amber-600 font-bold">● 未公開の変更があります</span>
-      <button onclick="exportJSON()"
-        class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-bold transition">
-        📥 保存・ダウンロード
-      </button>
-    </div>
-    <p class="text-xs text-amber-500 mt-2">
-      ① 企業を追加・削除 → ② 「保存・ダウンロード」→ ③ <code class="bg-amber-100 px-1 rounded">factories-data.json</code> をNetlifyのルートにアップロード
-    </p>
-  </div>
-</div>
-
-<!-- SEARCH -->
 <section class="max-w-5xl mx-auto px-4 pt-6">
   <div class="glass-card p-5">
     <div class="flex flex-col md:flex-row gap-3">
@@ -408,291 +367,70 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
   <p class="mt-1">〒541-0056 大阪市中央区久太郎町1丁目6番地21 シャンクレール本町 2階 ｜ TEL: +81 06 6484 5656</p>
 </footer>
 
-<!-- ADD MODAL -->
-<div id="addModal" class="modal-overlay" onclick="if(event.target===this)closeAddModal()">
-  <div class="modal-box">
-    <div class="flex items-center justify-between px-6 pt-5 pb-4 border-b border-brand-100 sticky top-0 bg-white rounded-t-2xl">
-      <h2 class="font-bold text-brand-800">認証企業を追加</h2>
-      <button onclick="closeAddModal()" class="text-brand-300 hover:text-brand-600 text-xl leading-none">✕</button>
-    </div>
-    <div class="px-6 py-5 space-y-4">
-      <div class="grid grid-cols-2 gap-3">
-        <div class="col-span-2">
-          <label class="label">会社名 <span class="text-red-400">*</span></label>
-          <input id="f_name" type="text" placeholder="株式会社〇〇" class="field"/>
-        </div>
-        <div class="col-span-2">
-          <label class="label">会社ロゴ（任意・画像）</label>
-          <div id="logoDrop" style="border:2px dashed var(--brand-200);border-radius:.6rem;padding:14px;text-align:center;cursor:pointer;background:#f8fafc;transition:all .15s;display:flex;align-items:center;gap:12px;justify-content:center">
-            <img id="f_logoPreview" alt="ロゴプレビュー" style="display:none;max-height:44px;max-width:120px;object-fit:contain">
-            <div id="logoDropText"><div style="font-size:18px">🖼️⬆️</div><p style="font-size:12px;color:var(--brand-600);margin:4px 0 0;font-weight:700">ロゴをドラッグ＆ドロップ / クリックで選択</p><p style="font-size:10.5px;color:var(--brand-400);margin:2px 0 0">PNG・JPG・SVG（最大約4MB）</p></div>
-          </div>
-          <input id="f_logo" type="hidden">
-          <input id="f_logoFile" type="file" accept="image/*" style="display:none">
-        </div>
-        <div>
-          <label class="label">都道府県 <span class="text-red-400">*</span></label>
-          <input id="f_prefecture" type="text" placeholder="大阪府" class="field"/>
-        </div>
-        <div>
-          <label class="label">地域</label>
-          <select id="f_region" class="field">
-            <option>関東</option><option>関西</option><option>中部</option>
-            <option>九州</option><option>東北</option><option>海外</option>
-          </select>
-        </div>
-        <div class="col-span-2">
-          <label class="label">公式サイト URL</label>
-          <input id="f_website" type="url" placeholder="https://www.example.com" class="field text-xs"/>
-        </div>
-        <div class="col-span-2">
-          <label class="label">製品販売ページ URL（任意）</label>
-          <input id="f_sales" type="url" placeholder="https://shop.example.com" class="field text-xs"/>
-        </div>
-        <div>
-          <label class="label">認証番号</label>
-          <input id="f_certNo" type="text" placeholder="IDFL-JP-2024-XXXX" class="field text-xs"/>
-        </div>
-        <div>
-          <label class="label">認証取得年</label>
-          <input id="f_since" type="text" placeholder="2022" class="field"/>
-        </div>
-        <div class="col-span-2">
-          <label class="label">製品カテゴリ</label>
-          <input id="f_products" type="text" placeholder="ニット・織物、染色加工 など" class="field"/>
-        </div>
-        <div class="col-span-2">
-          <label class="label">認証種別 <span class="text-red-400">*</span></label>
-          <div class="cert-checkbox mt-1">
-            <label><input type="checkbox" value="GOTS" class="cert-cb sr-only"><span class="cert-badge badge-GOTS">GOTS</span></label>
-            <label><input type="checkbox" value="OCS"  class="cert-cb sr-only"><span class="cert-badge badge-OCS">OCS</span></label>
-            <label><input type="checkbox" value="RWS"  class="cert-cb sr-only"><span class="cert-badge badge-RWS">RWS</span></label>
-            <label><input type="checkbox" value="GRS"  class="cert-cb sr-only"><span class="cert-badge badge-GRS">GRS</span></label>
-            <label><input type="checkbox" value="FSC"  class="cert-cb sr-only"><span class="cert-badge badge-FSC">FSC</span></label>
-            <label><input type="checkbox" value="DOWN" class="cert-cb sr-only"><span class="cert-badge badge-DOWN">ダウン・フェザー</span></label>
-          </div>
-        </div>
-      </div>
-      <div id="addError" class="hidden text-xs text-red-500 bg-red-50 rounded px-3 py-2"></div>
-      <button onclick="submitAdd()" class="w-full bg-brand-700 hover:bg-brand-800 text-white font-bold py-3 rounded-lg text-sm transition">追加する</button>
-    </div>
-  </div>
-</div>
-
-<!-- TOAST -->
-<div id="toast" style="position:fixed;bottom:1.5rem;right:1.5rem;z-index:200;background:var(--brand-800);color:#fff;padding:.75rem 1.25rem;border-radius:.75rem;font-size:.85rem;display:flex;align-items:center;gap:.6rem;box-shadow:0 8px 24px rgba(9,31,62,.25);transition:opacity .3s" class="hidden">
-  <svg style="width:16px;height:16px;flex-shrink:0;color:#4ade80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
-  </svg>
-  <span id="toastMsg"></span>
-</div>
-
 <script>
-// ─── パスワード（変更する場合はここだけ修正） ───────────────
-const ADMIN_PASSWORD = 'idfl2026';
-
-// ─── 状態 ─────────────────────────────────────────────────
-let factories = [];
-let adminMode = false;
-const CERT_LABEL = { DOWN:'ダウン・フェザー' };
-
-// ─── データ読み込み（factories-data.json から。なければ空） ──
-async function loadFactories() {
-  try {
-    const ctrl = new AbortController();
-    setTimeout(() => ctrl.abort(), 5000);
-    const r = await fetch('/factories-data.json', { signal: ctrl.signal, cache: 'no-cache' });
-    if (r.ok) factories = await r.json();
-    else factories = [];
-  } catch { factories = []; }
-  try { var _d=JSON.parse(localStorage.getItem('idflFactories_draft')); if(Array.isArray(_d)&&_d.length && adminMode){ factories=_d; var _n=document.getElementById('cfDraftNote'); if(_n)_n.style.display='inline'; } } catch(e){}
-  renderCards();
-}
-
-// ─── カード描画 ───────────────────────────────────────────
-function renderCards() {
-  const kw   = document.getElementById('searchInput').value.toLowerCase();
-  const cert = document.getElementById('certFilter').value;
-  const reg  = document.getElementById('regionFilter').value;
-  const filtered = factories.filter(f => {
-    const mk = !kw   || (f.name||'').toLowerCase().includes(kw) || (f.prefecture||'').toLowerCase().includes(kw);
-    const mc = !cert || (f.certs||[]).includes(cert);
-    const mr = !reg  || (f.region||'').indexOf(reg) >= 0;
-    return mk && mc && mr;
-  });
-  document.getElementById('resultCount').textContent = filtered.length;
-  const grid = document.getElementById('factoryGrid');
-  const none = document.getElementById('noResults');
-  if (!filtered.length) { grid.innerHTML=''; none.classList.remove('hidden'); return; }
-  none.classList.add('hidden');
-  grid.innerHTML = filtered.map((f,i) => {
-    const badges = (f.certs||[]).map(c=>`<span class="cert-badge badge-${c}">${CERT_LABEL[c]||c}</span>`).join('');
-    const logoBox = `<div style="height:74px;border-radius:12px;background:linear-gradient(135deg,#ffffff,#f1f5fb);border:1px solid var(--brand-100);display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:12px">${ f.logo ? `<img src="${f.logo}" alt="${(f.name||'')}" style="max-height:52px;max-width:82%;object-fit:contain">` : `<span style="font-size:24px;font-weight:800;color:var(--brand-400);letter-spacing:.04em">${(f.name||'?').trim().charAt(0)}</span>` }</div>`;
-    const webBtn = f.website
-      ? `<a href="${f.website}" target="_blank" rel="noopener" class="flex items-center justify-center gap-1.5 w-full mt-2 py-2 rounded-lg bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold transition">🌐 公式サイトへ</a>`
-      : '';
-    const _isInsta = /instagram\.com/i.test(f.sales||'');
-    const salesBtn = f.sales
-      ? `<a href="${f.sales}" target="_blank" rel="noopener" class="flex items-center justify-center gap-1.5 w-full mt-2 py-2 rounded-lg bg-white border border-brand-300 text-brand-700 hover:bg-brand-50 text-xs font-bold transition">${_isInsta?'\uD83D\uDCF7 Instagram で見る':'\uD83D\uDED2 製品を見る・購入'}</a>`
-      : '';
-    const noLink = (!f.website && !f.sales) ? `<p class="text-center text-xs text-brand-300 mt-3 py-2">サイト未登録</p>` : '';
-    const delBtn = adminMode
-      ? `<button onclick="deleteFactory('${f.id}')" title="削除"
-           style="position:absolute;top:12px;right:12px;padding:6px;border-radius:50%;background:#fff5f5;border:none;cursor:pointer;color:#f87171" 
-           onmouseover="this.style.background='#fee2e2'" onmouseout="this.style.background='#fff5f5'">
-           <svg style="width:14px;height:14px" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-               d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-           </svg></button>` : '';
-    return `<div class="factory-card glass-card p-5" style="position:relative;animation-delay:${i*.04}s">
-      ${delBtn}
-      ${logoBox}
-      <div class="mb-2" style="${adminMode?'padding-right:2rem':''}">
-        <p class="font-bold text-brand-800 text-sm">${f.name}</p>
-        <p class="text-xs text-brand-400 mt-0.5">${f.prefecture||''} · ${f.region||''}</p>
-      </div>
-      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">${badges}</div>
-      ${f.products ? `<div style="border-top:1px solid var(--brand-100);padding-top:10px" class="text-xs text-brand-600"><span class="text-brand-400">製品：</span>${f.products}</div>` : ''}
-      ${webBtn}${salesBtn}${noLink}
-    </div>`;
-  }).join('');
-}
-
-function quickFilter(c){ document.getElementById('certFilter').value=c; renderCards(); }
-document.getElementById('searchInput').addEventListener('input', renderCards);
-document.getElementById('certFilter').addEventListener('change', renderCards);
-document.getElementById('regionFilter').addEventListener('change', renderCards);
-
-// ─── 管理者 ───────────────────────────────────────────────
-function toggleAdminLogin() {
-  if (adminMode) { exitAdmin(); return; }
-  document.getElementById('adminLoginStrip').classList.toggle('hidden');
-  if (!document.getElementById('adminLoginStrip').classList.contains('hidden'))
-    document.getElementById('adminPassInput').focus();
-}
-function closeAdminLogin() {
-  document.getElementById('adminLoginStrip').classList.add('hidden');
-  document.getElementById('adminLoginError').classList.add('hidden');
-  document.getElementById('adminPassInput').value = '';
-}
-function doAdminLogin() {
-  if (document.getElementById('adminPassInput').value !== ADMIN_PASSWORD) {
-    document.getElementById('adminLoginError').classList.remove('hidden');
-    return;
-  }
-  adminMode = true;
-  closeAdminLogin();
-  document.getElementById('adminPanel').classList.add('open');
-  try { var _d=JSON.parse(localStorage.getItem('idflFactories_draft')); if(Array.isArray(_d)&&_d.length){ factories=_d; var _n=document.getElementById('cfDraftNote'); if(_n)_n.style.display='inline'; } } catch(e){}
-  renderCards();
-  showToast('管理者モードに入りました');
-}
-function exitAdmin() {
-  adminMode = false;
-  document.getElementById('adminPanel').classList.remove('open');
-  renderCards();
-}
-
-// ─── 追加 ─────────────────────────────────────────────────
-function openAddModal()  { document.getElementById('addModal').classList.add('open'); document.body.style.overflow='hidden'; }
-function closeAddModal() { document.getElementById('addModal').classList.remove('open'); document.body.style.overflow=''; }
-
-/* ── Logo upload to GitHub (via Netlify function) ── */
+/* 認証企業ディレクトリ — 公開専用（管理機能は /admin に分離） */
 (function(){
-  var dz=document.getElementById('logoDrop'), fi=document.getElementById('f_logoFile');
-  var prev=document.getElementById('f_logoPreview'), txt=document.getElementById('logoDropText');
-  if(!dz||!fi) return;
-  function showErr(m){ var e=document.getElementById('addError'); if(e){ e.textContent=m; e.classList.remove('hidden'); } }
-  async function up(file){
-    if(!file) return;
-    if(!/^image\//.test(file.type||'')){ showErr('画像ファイルを選んでください（PNG/JPG/SVG）'); return; }
-    if(file.size>4*1024*1024){ showErr('画像が大きすぎます（約4MBまで）'); return; }
-    var e=document.getElementById('addError'); if(e) e.classList.add('hidden');
-    txt.innerHTML='<p style="font-size:12px;color:var(--brand-700);font-weight:700;margin:0">アップロード中…</p>';
-    try{
-      var b64=await new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(String(r.result).split(',')[1]);};r.onerror=function(){rej(new Error('読込失敗'));};r.readAsDataURL(file);});
-      var resp=await fetch('/.netlify/functions/upload-file',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:ADMIN_PASSWORD,filename:file.name,contentBase64:b64})});
-      var j={};try{j=await resp.json();}catch(_){}
-      if(resp.ok&&j.ok){ document.getElementById('f_logo').value=j.path; prev.src=j.path; prev.style.display='block'; txt.innerHTML='<p style="font-size:11.5px;color:var(--brand-600);font-weight:700;margin:0">✅ アップロード完了<br><span style="color:var(--brand-400);font-weight:600">クリックで変更</span></p>'; }
-      else{ txt.innerHTML='<p style="font-size:12px;color:#dc2626;font-weight:700;margin:0">失敗しました。再度お試しください</p>'; showErr('ロゴのアップロード失敗: '+(j.error||('HTTP '+resp.status))); }
-    }catch(err){ showErr('ロゴのアップロード失敗: '+err.message); }
+  var CERT_LABEL={DOWN:'ダウン・フェザー','Down & Feather':'ダウン・フェザー'};
+  var factories=[], loadState='loading';
+  var $=function(id){return document.getElementById(id);};
+  function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function safeUrl(u){u=String(u||'').trim();return /^https?:\/\//i.test(u)?u:'';}
+  function G(f){return {
+    name:f.companyName||f.name||'', nameEn:f.companyNameEnglish||'', logo:f.logo||'',
+    prefecture:f.prefecture||'', region:f.region||'',
+    website:f.officialWebsiteUrl||f.website||'', sales:f.salesPageUrl||f.sales||'',
+    certs:f.certificationTypes||f.certs||[], products:f.productCategories||f.products||'',
+    desc:f.shortDescription||'', featured:!!f.featured,
+    published:f.published!==false, order:(typeof f.displayOrder==='number')?f.displayOrder:9999
+  };}
+  function skeleton(n){var s='';for(var i=0;i<(n||6);i++)s+='<div class="glass-card p-5" style="opacity:.65"><div style="height:74px;border-radius:12px;background:#eef2f7;margin-bottom:12px"></div><div style="height:14px;width:60%;background:#eef2f7;border-radius:6px;margin-bottom:8px"></div><div style="height:10px;width:40%;background:#f1f5f9;border-radius:6px;margin-bottom:14px"></div><div style="height:32px;background:#f1f5f9;border-radius:8px"></div></div>';return s;}
+  function render(){
+    var grid=$('factoryGrid'),none=$('noResults'),cnt=$('resultCount');
+    if(loadState==='loading'){grid.innerHTML=skeleton(6);none.classList.add('hidden');if(cnt)cnt.textContent='…';return;}
+    if(loadState==='error'){grid.innerHTML='';none.classList.remove('hidden');none.innerHTML='<p style="font-size:2rem">⚠️</p><p class="text-brand-500">データの読み込みに失敗しました。<br>時間をおいて再度お試しください。</p><button onclick="location.reload()" class="mt-3 px-4 py-2 rounded-lg bg-brand-700 text-white text-sm font-bold">再読み込み</button>';if(cnt)cnt.textContent='0';return;}
+    var kw=($('searchInput').value||'').toLowerCase(),cert=$('certFilter').value,reg=$('regionFilter').value;
+    var list=factories.map(G).filter(function(f){return f.published;}).filter(function(f){
+      var mk=!kw||f.name.toLowerCase().indexOf(kw)>-1||f.nameEn.toLowerCase().indexOf(kw)>-1||f.prefecture.toLowerCase().indexOf(kw)>-1;
+      var mc=!cert||(f.certs||[]).indexOf(cert)>-1;
+      var mr=!reg||(f.region||'').indexOf(reg)>-1;
+      return mk&&mc&&mr;});
+    list.sort(function(a,b){return (b.featured?1:0)-(a.featured?1:0)||a.order-b.order||a.name.localeCompare(b.name);});
+    if(cnt)cnt.textContent=list.length;
+    if(!list.length){grid.innerHTML='';none.classList.remove('hidden');none.innerHTML='<p style="font-size:2.5rem">🔍</p><p class="text-brand-500">該当する認証企業が見つかりませんでした。</p>';return;}
+    none.classList.add('hidden');
+    grid.innerHTML=list.map(function(f,i){
+      var badges=(f.certs||[]).map(function(c){return '<span class="cert-badge badge-'+esc(c)+'">'+esc(CERT_LABEL[c]||c)+'</span>';}).join('');
+      var logoBox='<div style="height:74px;border-radius:12px;background:linear-gradient(135deg,#fff,#f1f5fb);border:1px solid var(--brand-100);display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:12px">'+(f.logo?'<img src="'+esc(f.logo)+'" alt="'+esc(f.name)+' ロゴ" loading="lazy" style="max-height:52px;max-width:82%;object-fit:contain">':'<span style="font-size:24px;font-weight:800;color:var(--brand-400)">'+esc((f.name||'?').trim().charAt(0))+'</span>')+'</div>';
+      var web=safeUrl(f.website),sal=safeUrl(f.sales);
+      var webBtn=web?'<a href="'+esc(web)+'" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-1.5 w-full mt-2 py-2 rounded-lg bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold transition">🌐 公式サイトへ</a>':'';
+      var isInsta=/instagram\.com/i.test(sal);
+      var salBtn=sal?'<a href="'+esc(sal)+'" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-1.5 w-full mt-2 py-2 rounded-lg bg-white border border-brand-300 text-brand-700 hover:bg-brand-50 text-xs font-bold transition">'+(isInsta?'📷 Instagram で見る':'🛒 製品を見る・購入')+'</a>':'';
+      var noLink=(!web&&!sal)?'<p class="text-center text-xs text-brand-300 mt-3 py-2">サイト未登録</p>':'';
+      var star=f.featured?'<span style="position:absolute;top:12px;right:12px;background:#f59e0b;color:#fff;font-size:10px;font-weight:800;padding:3px 9px;border-radius:999px">★ 注目</span>':'';
+      return '<div class="factory-card glass-card p-5" style="position:relative;animation-delay:'+(i*.04)+'s">'+star+logoBox
+        +'<div class="mb-2"><p class="font-bold text-brand-800 text-sm">'+esc(f.name)+'</p>'
+        +(f.nameEn?'<p style="font-size:11px" class="text-brand-400">'+esc(f.nameEn)+'</p>':'')
+        +'<p class="text-xs text-brand-400 mt-0.5">'+esc(f.prefecture)+(f.region?' · '+esc(f.region):'')+'</p></div>'
+        +'<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px">'+badges+'</div>'
+        +(f.desc?'<p class="text-xs text-brand-600 leading-relaxed" style="margin-bottom:10px">'+esc(f.desc)+'</p>':'')
+        +(f.products?'<div style="border-top:1px solid var(--brand-100);padding-top:10px" class="text-xs text-brand-600"><span class="text-brand-400">製品：</span>'+esc(f.products)+'</div>':'')
+        +webBtn+salBtn+noLink+'</div>';
+    }).join('');
   }
-  dz.addEventListener('click',function(){ fi.click(); });
-  fi.addEventListener('change',function(){ if(fi.files&&fi.files[0]) up(fi.files[0]); fi.value=''; });
-  ['dragenter','dragover'].forEach(function(ev){dz.addEventListener(ev,function(e){e.preventDefault();e.stopPropagation();dz.style.borderColor='var(--brand-500)';dz.style.background='#eef4ff';});});
-  ['dragleave','drop'].forEach(function(ev){dz.addEventListener(ev,function(e){e.preventDefault();e.stopPropagation();dz.style.borderColor='var(--brand-200)';dz.style.background='#f8fafc';});});
-  dz.addEventListener('drop',function(e){var f=e.dataTransfer&&e.dataTransfer.files&&e.dataTransfer.files[0];if(f)up(f);});
+  window.quickFilter=function(c){$('certFilter').value=c;render();};
+  ['searchInput','certFilter','regionFilter'].forEach(function(id){var el=$(id);if(el)el.addEventListener(id==='searchInput'?'input':'change',render);});
+  (async function(){
+    render();
+    try{
+      var ctrl=new AbortController();setTimeout(function(){ctrl.abort();},7000);
+      var r=await fetch('/factories-data.json?ts='+Date.now(),{signal:ctrl.signal,cache:'no-cache'});
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      var d=await r.json();factories=Array.isArray(d)?d:[];loadState='ok';
+    }catch(e){loadState='error';}
+    render();
+  })();
 })();
-function submitAdd() {
-  const name       = document.getElementById('f_name').value.trim();
-  const prefecture = document.getElementById('f_prefecture').value.trim();
-  const errEl      = document.getElementById('addError');
-  if (!name||!prefecture){ errEl.textContent='会社名と都道府県は必須です'; errEl.classList.remove('hidden'); return; }
-  const certs = [...document.querySelectorAll('.cert-cb:checked')].map(c=>c.value);
-  if (!certs.length){ errEl.textContent='認証種別を1つ以上選んでください'; errEl.classList.remove('hidden'); return; }
-  errEl.classList.add('hidden');
-  factories.push({ id:crypto.randomUUID(), name, prefecture,
-    region:   document.getElementById('f_region').value,
-    website:  document.getElementById('f_website').value.trim(),
-    sales:    document.getElementById('f_sales').value.trim(),
-    certNo:   document.getElementById('f_certNo').value.trim(),
-    since:    document.getElementById('f_since').value.trim(),
-    products: document.getElementById('f_products').value.trim(),
-    logo:     document.getElementById('f_logo').value.trim(),
-    certs });
-  closeAddModal(); renderCards(); cfSaveDraft(); showToast(`${name} を追加しました`);
-  ['f_name','f_prefecture','f_website','f_sales','f_certNo','f_since','f_products','f_logo'].forEach(id=>document.getElementById(id).value='');
-  document.querySelectorAll('.cert-cb').forEach(c=>c.checked=false);
-  (function(){var _p=document.getElementById('f_logoPreview');if(_p){_p.style.display='none';_p.src='';}var _t=document.getElementById('logoDropText');if(_t)_t.innerHTML=`<div style="font-size:18px">🖼️⬆️</div><p style="font-size:12px;color:var(--brand-600);margin:4px 0 0;font-weight:700">ロゴをドラッグ＆ドロップ / クリックで選択</p><p style="font-size:10.5px;color:var(--brand-400);margin:2px 0 0">PNG・JPG・SVG（最大約4MB）</p>`;})();
-}
-
-// ─── 削除 ─────────────────────────────────────────────────
-function deleteFactory(id) {
-  if (!confirm('この企業を削除しますか？')) return;
-  const f = factories.find(x=>x.id===id);
-  factories = factories.filter(x=>x.id!==id);
-  renderCards();
-  cfSaveDraft();
-  showToast(`${f?.name||'企業'} を削除しました`);
-}
-
-// ─── JSONエクスポート ──────────────────────────────────────
-function cfSaveDraft(){ try{localStorage.setItem('idflFactories_draft',JSON.stringify(factories));}catch(e){} var n=document.getElementById('cfDraftNote'); if(n)n.style.display='inline'; }
-async function publishFactories(){
-  if(!confirm('現在の認証企業リストをオンラインに公開しますか？\n全てのお客様の画面に反映されます（1〜2分）。'))return;
-  showToast('公開中…');
-  try{
-    const res=await fetch('/.netlify/functions/publish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'factories',password:ADMIN_PASSWORD,data:factories})});
-    let j={}; try{j=await res.json();}catch(e){}
-    if(res.ok&&j.ok){ localStorage.removeItem('idflFactories_draft'); var n=document.getElementById('cfDraftNote'); if(n)n.style.display='none'; showToast('公開しました。1〜2分で反映されます（'+(j.count||factories.length)+'社）'); }
-    else { showToast('公開失敗: '+(j.error||('HTTP '+res.status))); }
-  }catch(e){ showToast('公開失敗: '+e.message); }
-}
-function exportJSON() {
-  const blob = new Blob([JSON.stringify(factories, null, 2)], { type:'application/json' });
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'factories-data.json';
-  a.click();
-  showToast('ダウンロード完了。Netlifyにアップロードしてください。');
-}
-
-// ─── Toast ────────────────────────────────────────────────
-let toastTimer;
-function showToast(msg) {
-  const t = document.getElementById('toast');
-  document.getElementById('toastMsg').textContent = msg;
-  t.classList.remove('hidden');
-  clearTimeout(toastTimer);
-  toastTimer = setTimeout(()=>t.classList.add('hidden'), 3500);
-}
-
-document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeAddModal(); });
-
-// ─── 起動 ─────────────────────────────────────────────────
-loadFactories();
 </script>
-
 <!-- ============ FOOTER (synced with index) ============ -->
 <footer class="site-footer">
   <div class="footer-wrap footer-grid">
