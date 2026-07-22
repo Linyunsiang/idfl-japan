@@ -383,7 +383,7 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
     desc:f.shortDescription||'', featured:!!f.featured,
     published:f.published!==false, order:(typeof f.displayOrder==='number')?f.displayOrder:9999
   };}
-  function skeleton(n){var s='';for(var i=0;i<(n||6);i++)s+='<div class="glass-card p-5" style="opacity:.65"><div style="height:74px;border-radius:12px;background:#eef2f7;margin-bottom:12px"></div><div style="height:14px;width:60%;background:#eef2f7;border-radius:6px;margin-bottom:8px"></div><div style="height:10px;width:40%;background:#f1f5f9;border-radius:6px;margin-bottom:14px"></div><div style="height:32px;background:#f1f5f9;border-radius:8px"></div></div>';return s;}
+  function skeleton(n){var s='';for(var i=0;i<(n||6);i++)s+='<div class="glass-card p-5" style="opacity:.65"><div style="height:112px;border-radius:12px;background:#eef2f7;margin-bottom:12px"></div><div style="height:14px;width:60%;background:#eef2f7;border-radius:6px;margin-bottom:8px"></div><div style="height:10px;width:40%;background:#f1f5f9;border-radius:6px;margin-bottom:14px"></div><div style="height:32px;background:#f1f5f9;border-radius:8px"></div></div>';return s;}
   function render(){
     var grid=$('factoryGrid'),none=$('noResults'),cnt=$('resultCount');
     if(loadState==='loading'){grid.innerHTML=skeleton(6);none.classList.add('hidden');if(cnt)cnt.textContent='…';return;}
@@ -400,7 +400,7 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
     none.classList.add('hidden');
     grid.innerHTML=list.map(function(f,i){
       var badges=(f.certs||[]).map(function(c){return '<span class="cert-badge badge-'+esc(c)+'">'+esc(CERT_LABEL[c]||c)+'</span>';}).join('');
-      var logoBox='<div style="height:74px;border-radius:12px;background:linear-gradient(135deg,#fff,#f1f5fb);border:1px solid var(--brand-100);display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:12px">'+(f.logo?'<img src="'+esc(f.logo)+'" alt="'+esc(f.name)+' ロゴ" loading="lazy" style="max-height:52px;max-width:82%;object-fit:contain">':'<span style="font-size:24px;font-weight:800;color:var(--brand-400)">'+esc((f.name||'?').trim().charAt(0))+'</span>')+'</div>';
+      var logoBox='<div style="height:112px;border-radius:12px;background:#ffffff;border:1px solid var(--brand-100);display:flex;align-items:center;justify-content:center;overflow:hidden;margin-bottom:12px;padding:14px">'+(f.logo?'<img src="'+esc(f.logo)+'" alt="'+esc(f.name)+' ロゴ" loading="lazy" style="max-height:84px;max-width:90%;object-fit:contain">':'<span style="font-size:32px;font-weight:800;color:var(--brand-300)">'+esc((f.name||'?').trim().charAt(0))+'</span>')+'</div>';
       var web=safeUrl(f.website),sal=safeUrl(f.sales);
       var webBtn=web?'<a href="'+esc(web)+'" target="_blank" rel="noopener noreferrer" class="flex items-center justify-center gap-1.5 w-full mt-2 py-2 rounded-lg bg-brand-700 hover:bg-brand-800 text-white text-xs font-bold transition">🌐 公式サイトへ</a>':'';
       var isInsta=/instagram\.com/i.test(sal);
