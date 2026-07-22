@@ -228,14 +228,16 @@ async function loadData(k){
     const j=r.ok?await r.json():[];
     DATA[k]=Array.isArray(j)?j:(j.posts||j.items||[]);
   }catch(e){DATA[k]=[];toast('読込失敗: '+e.message);}
-  DIRTY[k]=false; updateDirty(); render();
+  DIRTY[k]=false;
+  try{ var _dft=JSON.parse(localStorage.getItem('idflAdminDraft_'+k)); if(Array.isArray(_dft)){ DATA[k]=_dft; DIRTY[k]=true; } }catch(e){}
+  updateDirty(); render();
 }
-function reloadCur(){ if(DIRTY[CUR] && !confirm('未公開の変更があります。破棄してサーバーから再読込しますか？'))return; delete DATA[CUR]; switchTab(CUR); }
+function reloadCur(){ if(DIRTY[CUR] && !confirm('未公開の変更があります。破棄してサーバーから再読込しますか？'))return; try{localStorage.removeItem('idflAdminDraft_'+CUR);}catch(e){} delete DATA[CUR]; switchTab(CUR); }
 
 function render(){
   const s=SCHEMAS[CUR], arr=DATA[CUR]||[];
   document.getElementById('count').textContent=arr.length+' 件';
-  document.getElementById('hint').textContent='※「変更を公開」を押すまで、追加・編集・削除・並べ替えはこのブラウザ内だけの状態です。公開すると全ての閲覧者に反映されます（GitHub へ保存 → 自動デプロイ、1〜2分）。';
+  document.getElementById('hint').textContent='※「変更を公開」を押すまで、追加・編集・削除・並べ替えはこのブラウザ内だけの状態です（自動保存され、再読み込みしても復元されます）。公開すると全ての閲覧者に反映されます（GitHub へ保存 → 自動デプロイ、1〜2分）。';
   const list=document.getElementById('list');
   if(!arr.length){list.innerHTML='<div style="padding:16px;color:#6b7280">項目がありません。「＋ 新規追加」から追加できます。</div>';return;}
   list.innerHTML=arr.map((e,i)=>`<div class="row">
@@ -251,7 +253,7 @@ function render(){
 }
 function esc(x){return String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
-function markDirty(){DIRTY[CUR]=true;updateDirty();}
+function markDirty(){DIRTY[CUR]=true;updateDirty();try{localStorage.setItem('idflAdminDraft_'+CUR,JSON.stringify(DATA[CUR]||[]));}catch(e){}}
 function updateDirty(){
   document.getElementById('dirty').style.display=DIRTY[CUR]?'inline':'none';
   Object.keys(SCHEMAS).forEach(k=>{const d=document.getElementById('dot-'+k);if(d)d.style.display=DIRTY[k]?'inline':'none';});
@@ -334,12 +336,12 @@ async function publishCur(){
   try{
     const r=await fetch(PUBLISH_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:CUR,password:PW,data:arr})});
     const j=await r.json().catch(()=>({}));
-    if(r.ok&&j.ok){DIRTY[CUR]=false;updateDirty();render();toast('✅ 公開しました（'+(j.count||arr.length)+'件）反映まで約1〜2分');}
+    if(r.ok&&j.ok){DIRTY[CUR]=false;try{localStorage.removeItem('idflAdminDraft_'+CUR);}catch(e){}updateDirty();render();toast('✅ 公開しました（'+(j.count||arr.length)+'件）反映まで約1〜2分');}
     else{toast('⚠️ 公開失敗: '+(j.error||('HTTP '+r.status)));}
   }catch(e){toast('⚠️ 公開失敗: '+e.message);}
   btn.disabled=false;
 }
-document.getElementById('ov').addEventListener('click',e=>{if(e.target.id==='ov')closeModal();});
+document.getElementById('ov').addEventListener('click',e=>{ if(e.target.id==='ov'){ if(confirm('編集を閉じますか？入力中の内容は保存されません。')) closeModal(); } });
 window.addEventListener('beforeunload',function(e){ if(Object.values(DIRTY).some(Boolean)){ e.preventDefault(); e.returnValue=''; } });
 </script>
 </body>
