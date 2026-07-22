@@ -89,6 +89,7 @@
         <span class="dirty-note" id="dirty">● 未公開の変更があります</span>
         <div class="grow"></div>
         <button class="btn btn-g" onclick="reloadCur()">🔄 サーバーから再読込</button>
+        <button class="btn btn-g" onclick="previewCur()">🔎 プレビュー</button>
         <button class="btn btn-o" onclick="openEdit(-1)">＋ 新規追加</button>
         <button class="btn btn-p" id="pubBtn" onclick="publishCur()">✔ 変更を公開</button>
       </div>
@@ -157,17 +158,26 @@ const SCHEMAS={
 
   factories:{label:'認証工場・企業',file:'/factories-data.json',
     fields:[
-      {k:'id',t:'text',label:'ID',req:true},
-      {k:'name',t:'text',label:'企業・工場名'},
+      {k:'id',t:'text',label:'ID',req:true,hint:'一意（英数字とハイフン）'},
+      {k:'companyName',t:'text',label:'会社名',req:true},
+      {k:'companyNameEnglish',t:'text',label:'会社名（英語）'},
+      {k:'logo',t:'logo',label:'会社ロゴ'},
       {k:'prefecture',t:'text',label:'都道府県'},
       {k:'region',t:'text',label:'地域'},
-      {k:'certs',t:'multi',label:'認証（カンマ区切り）',hint:'例: GOTS, FSC, RWS, DOWN'},
-      {k:'products',t:'text',label:'製品(任意)'},
-      {k:'website',t:'text',label:'公式サイト(任意)'},
-      {k:'sales',t:'text',label:'販売リンク(任意)'},
+      {k:'certificationTypes',t:'multi',label:'認証（カンマ区切り）',hint:'GOTS, OCS, GRS, RWS, FSC, RDS, IDS, Down & Feather'},
+      {k:'officialWebsiteUrl',t:'text',label:'公式サイトURL',hint:'https://…'},
+      {k:'salesPageUrl',t:'text',label:'製品販売ページURL',hint:'https://…'},
+      {k:'productCategories',t:'text',label:'製品カテゴリ'},
+      {k:'certificateNumber',t:'text',label:'認証番号（任意）'},
+      {k:'certificationYear',t:'text',label:'認証取得年（任意）'},
+      {k:'shortDescription',t:'textarea',label:'企業紹介（短文）'},
+      {k:'promotionText',t:'textarea',label:'宣伝文（任意）'},
+      {k:'featured',t:'checkbox',label:'注目企業として表示'},
+      {k:'published',t:'checkbox',label:'公開する',def:true},
     ],
-    title:e=>e.name||'(無題)',sub:e=>[e.prefecture,e.region,(e.certs||[]).join('/')].filter(Boolean).join(' · '),
-    idp:'f',sort:null},
+    title:e=>e.companyName||e.name||'(無題)',
+    sub:e=>[(e.published===false?'⛔非公開':'✅公開'),(e.featured?'★注目':''),e.prefecture,e.region,((e.certificationTypes||e.certs)||[]).join('/')].filter(Boolean).join(' · '),
+    idp:'company',sort:(a,b)=>(b.featured?1:0)-(a.featured?1:0)||((a.displayOrder!=null?a.displayOrder:9999)-(b.displayOrder!=null?b.displayOrder:9999))},
 
   qa:{label:'よくある質問',file:'/data/qa.json',
     fields:[
@@ -235,6 +245,7 @@ function render(){
     </div>
     <div class="main"><div class="t">${esc(s.title(e))}</div><div class="s">${esc(s.sub(e))}</div></div>
     <button class="btn btn-g" onclick="openEdit(${i})">編集</button>
+    <button class="btn btn-g" onclick="dupItem(${i})">複製</button>
     <button class="btn btn-d" onclick="delItem(${i})">削除</button>
   </div>`).join('');
 }
@@ -246,6 +257,9 @@ function updateDirty(){
   Object.keys(SCHEMAS).forEach(k=>{const d=document.getElementById('dot-'+k);if(d)d.style.display=DIRTY[k]?'inline':'none';});
 }
 function move(i,dir){const a=DATA[CUR];const j=i+dir;if(j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];markDirty();render();}
+const PREVIEW={news:'/idfl_news.html',schedule:'/seminar_schedule.html',downloads:'/download.html',factories:'/certified-factories.html',qa:'/qa.html'};
+function previewCur(){window.open(PREVIEW[CUR]||'/','_blank','noopener');}
+function dupItem(i){const a=DATA[CUR];const c=JSON.parse(JSON.stringify(a[i]));c.id=(SCHEMAS[CUR].idp||'item')+'-'+Date.now();const now=new Date().toISOString();c.createdAt=now;c.updatedAt=now;a.splice(i+1,0,c);markDirty();render();toast('複製しました');}
 function delItem(i){const a=DATA[CUR];if(!confirm('「'+SCHEMAS[CUR].title(a[i])+'」を削除しますか？（公開するまで確定しません）'))return;a.splice(i,1);markDirty();render();}
 
 function openEdit(idx){
@@ -253,11 +267,38 @@ function openEdit(idx){
   const e = idx>=0 ? DATA[CUR][idx] : newItem(s);
   document.getElementById('mTitle').textContent=(idx>=0?'編集':'新規追加')+'：'+s.label;
   document.getElementById('mBody').innerHTML=s.fields.map(f=>fieldHtml(f,e[f.k])).join('');
+  document.querySelectorAll('#mBody [id$="_file"]').forEach(function(fi){
+    var base=fi.id.replace(/_file$/,'');
+    var box=document.getElementById(base+'_box');
+    if(box)box.addEventListener('click',function(){fi.click();});
+    fi.addEventListener('change',function(){ if(fi.files&&fi.files[0]) uploadLogo(fi.files[0], base); fi.value=''; });
+  });
   document.getElementById('ov').classList.add('open');
+}
+async function uploadLogo(file, base){
+  if(!/^image\//.test(file.type||'')){toast('画像ファイルを選んでください（PNG/JPG/WebP/SVG）');return;}
+  if(file.size>4*1024*1024){toast('画像が大きすぎます（約4MBまで）');return;}
+  var txt=document.getElementById(base+'_txt');if(txt)txt.textContent='アップロード中…';
+  try{
+    var b64=await new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(String(r.result).split(',')[1]);};r.onerror=function(){rej(new Error('読込失敗'));};r.readAsDataURL(file);});
+    var r=await fetch('/.netlify/functions/upload-file',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:PW,filename:file.name,contentBase64:b64})});
+    var j=await r.json().catch(function(){return {};});
+    if(r.ok&&j.ok){ document.getElementById(base).value=j.path; var p=document.getElementById(base+'_prev'); if(p){p.src=j.path;p.style.display='';} if(txt)txt.textContent='✅ アップロード完了（クリックで変更）'; markDirty(); }
+    else{ if(txt)txt.textContent='失敗しました'; toast('ロゴのアップロード失敗: '+(j.error||('HTTP '+r.status))); }
+  }catch(e){ toast('ロゴのアップロード失敗: '+e.message); }
 }
 function newItem(s){const o={};s.fields.forEach(f=>{o[f.k]=f.def!=null?f.def:(f.t==='checkbox'?false:(f.t==='multi'?[]:''));});o.id=s.idp+'-'+Date.now();return o;}
 function fieldHtml(f,v){
   const id='fld_'+f.k;const hint=f.hint?`<div class="hint">${esc(f.hint)}</div>`:'';
+  if(f.t==='logo'){
+    return `<label class="f">${f.label}
+      <div id="${id}_box" style="border:1.5px dashed var(--line);border-radius:8px;padding:12px;text-align:center;cursor:pointer;margin-top:5px;display:flex;align-items:center;gap:10px;justify-content:center">
+        <img id="${id}_prev" alt="ロゴプレビュー" style="max-height:40px;max-width:110px;object-fit:contain;${v?'':'display:none'}" ${v?`src="${esc(v)}"`:''}>
+        <span id="${id}_txt" style="font-size:12px;color:#6b7280">${v?'クリックで変更':'クリックしてロゴを選択（PNG/JPG/WebP/SVG・最大4MB）'}</span>
+      </div>
+      <input type="file" id="${id}_file" accept="image/png,image/jpeg,image/webp,image/svg+xml" style="display:none">
+      <input type="hidden" id="${id}" value="${esc(v||'')}">${hint}</label>`;
+  }
   if(f.t==='checkbox')return `<label class="f cb"><input type="checkbox" id="${id}" ${v?'checked':''}> ${f.label}</label>`;
   if(f.t==='textarea')return `<label class="f">${f.label}${f.req?' <span class=req>*</span>':''}<textarea id="${id}">${esc(v)}</textarea>${hint}</label>`;
   if(f.t==='select')return `<label class="f">${f.label}<select id="${id}">${f.opts.map(o=>`<option ${o===v?'selected':''}>${o}</option>`).join('')}</select>${hint}</label>`;
@@ -266,7 +307,7 @@ function fieldHtml(f,v){
   return `<label class="f">${f.label}${f.req?' <span class=req>*</span>':''}<input type="${type}" id="${id}" value="${esc(v)}">${hint}</label>`;
 }
 function saveModal(){
-  const s=SCHEMAS[CUR];const o={};
+  const s=SCHEMAS[CUR];const o=EDIT_IDX>=0?Object.assign({},DATA[CUR][EDIT_IDX]):{};
   for(const f of s.fields){
     const el=document.getElementById('fld_'+f.k);
     if(f.t==='checkbox')o[f.k]=el.checked;
@@ -277,6 +318,8 @@ function saveModal(){
   const a=DATA[CUR];
   const dup=a.findIndex((x,i)=>x.id===o.id&&i!==EDIT_IDX);
   if(dup>=0){toast('同じ ID が既にあります');return;}
+  const now=new Date().toISOString();
+  if(!o.createdAt)o.createdAt=now; o.updatedAt=now; o.updatedBy='admin';
   if(EDIT_IDX>=0)a[EDIT_IDX]=o; else a.unshift(o);
   markDirty();closeModal();render();
 }
@@ -284,6 +327,7 @@ function closeModal(){document.getElementById('ov').classList.remove('open');EDI
 
 async function publishCur(){
   const s=SCHEMAS[CUR],arr=DATA[CUR]||[];
+  if(CUR==='factories'){arr.forEach((e,i)=>{e.displayOrder=i;});}
   if(s.sort){arr.sort(s.sort);}
   if(!confirm(s.label+' を公開します（'+arr.length+'件）。全ての閲覧者に反映されます。よろしいですか？'))return;
   const btn=document.getElementById('pubBtn');btn.disabled=true;toast('公開中…');
@@ -296,6 +340,7 @@ async function publishCur(){
   btn.disabled=false;
 }
 document.getElementById('ov').addEventListener('click',e=>{if(e.target.id==='ov')closeModal();});
+window.addEventListener('beforeunload',function(e){ if(Object.values(DIRTY).some(Boolean)){ e.preventDefault(); e.returnValue=''; } });
 </script>
 </body>
 </html>

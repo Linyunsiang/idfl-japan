@@ -28,6 +28,16 @@ exports.handler = async (event) => {
   const path = ALLOWED[type];
   if (!path) return resp(400, {error:'unknown type'});
   if (!Array.isArray(data)) return resp(400, {error:'data must be an array'});
+  if (data.length > 5000) return resp(413, {error:'データが大きすぎます'});
+  if (type === 'factories') {
+    const okUrl  = u => !u || /^https:\/\//i.test(String(u));
+    const okLogo = u => !u || /^\/files\//.test(String(u)) || /^https:\/\//i.test(String(u));
+    for (const r of data) {
+      if (typeof r !== 'object' || r === null) return resp(400, {error:'不正なデータ形式です'});
+      if (!okUrl(r.officialWebsiteUrl) || !okUrl(r.salesPageUrl) || !okUrl(r.website) || !okUrl(r.sales)) return resp(400, {error:'URLは https:// で始まる必要があります'});
+      if (!okLogo(r.logo)) return resp(400, {error:'ロゴのパスが不正です'});
+    }
+  }
 
   const token = process.env.GITHUB_TOKEN || process.env.GITHUB_TOKEN1;
   if (!token) return resp(500, {error:'server not configured: GITHUB_TOKEN'});
@@ -48,6 +58,5 @@ exports.handler = async (event) => {
 
   const put = await fetch(api, { method:'PUT', headers:{...H,'Content-Type':'application/json'}, body: JSON.stringify(payload) });
   if (put.status >= 200 && put.status < 300) return resp(200, {ok:true, count:data.length});
-  let msg=''; try{ msg=(await put.json()).message||''; }catch(e){}
-  return resp(502, {error:`GitHub ${put.status} ${msg}`});
+  return resp(502, {error:'GitHub error '+put.status});
 };
