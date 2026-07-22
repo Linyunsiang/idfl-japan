@@ -1,9 +1,9 @@
 [
   {
     "id": "fcplanning-office",
-    "companyName": "FC Planning Office Co., Ltd.（株式会社エフシープランニングオフィス）",
-    "companyNameEnglish": "",
-    "logo": "/files/fcplanning-logo.png",
+    "companyName": "株式会社エフシープランニングオフィス",
+    "companyNameEnglish": "FC Planning Office Co., Ltd.",
+    "logo": "/files/mrvj8ye4-nkiy-FC_planning.png",
     "prefecture": "和歌山県・東京都",
     "region": "関西・関東",
     "officialWebsiteUrl": "https://fcplanning.jp/",
@@ -20,7 +20,7 @@
     "published": true,
     "displayOrder": 0,
     "createdAt": "2026-07-22T02:07:15Z",
-    "updatedAt": "2026-07-22T02:07:15Z",
-    "updatedBy": "migration"
+    "updatedAt": "2026-07-22T03:38:45.085Z",
+    "updatedBy": "admin"
   }
 ]
