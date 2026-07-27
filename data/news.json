@@ -1,5 +1,53 @@
 [
   {
+    "id": "news-gots-v81-20260722",
+    "cat": "gots",
+    "title": "GOTS Version 8.1 公開 — 実施期限は2027年3月1日のまま変更なし",
+    "body": "GOTSを運営するGlobal Standardsは2026年7月22日、3月に公開されたVersion 8.0に続く最新版「GOTS Version 8.1」を公開しました。本更新では、GOTS製品の販売促進に関する記述が明確化され、「認証事業者（Certified Entity）が製造し、承認された認証機関の認証を受けた製品のみが、GOTS製品として表示・宣伝・販売できる」ことが明記されました。あわせて、Version 8.0公開後に認証機関等から寄せられたフィードバックの反映や表記の修正も行われています。実施期限はVersion 8.0と同じ2027年3月1日で変更ありません。最新の基準文書・実施マニュアル・変更履歴（Changelog）は公式サイトからダウンロードできます。",
+    "link": "https://global-standards.org/news/announcing-standard-updates-in-gots-version-8-1",
+    "linkLabel": "GOTS公式ニュース",
+    "pinned": false,
+    "date": "2026-07-22",
+    "author": "IDFL JAPAN",
+    "published": false
+  },
+  {
+    "id": "news-gots-foundation-20260706",
+    "cat": "gots",
+    "title": "GOTS運営団体が新ガバナンス体制へ — 非営利財団「Global Standards Foundation」を設立",
+    "body": "GOTSを運営するGlobal Standards gGmbH（独シュツットガルト）は2026年7月7日、標準運営の独立性を強化するため、新しい非営利財団「Global Standards Foundation」の設立を発表しました。財団は運営組織の単独株主となり、戦略的な意思決定を担う評議会「Governing Council」が新設されます。評議会には日本からTeam O-Three代表で日本オーガニックコットン協会会長の前田剛氏も参加します。GOTSに加え、オーガニック以外の繊維へ対象を広げる新基準GRTSを含むマルチスタンダード体制への発展を支える組織改革と位置付けられており、認証要件そのものへの直接の影響はありませんが、制度運営の枠組みに関わる重要な発表です。",
+    "link": "https://global-standards.org/news/global-standards-the-organisation-behind-gots-establishes-new-non-profit-foundation-to-strengthen-the-independent-governance-of-textile-sustainability-standards",
+    "linkLabel": "GOTS公式ニュース",
+    "pinned": false,
+    "date": "2026-07-06",
+    "author": "IDFL JAPAN",
+    "published": false
+  },
+  {
+    "id": "news-fsc-gmo-interpretation-20260720",
+    "cat": "fsc",
+    "title": "FSC、GMO（遺伝子組換え生物）の定義に関する新しい解釈を公表 — ゲノム編集技術も対象に",
+    "body": "FSCは2026年7月20日、GMO（遺伝子組換え生物）の定義に関する森林管理（FM）分野の新しい解釈を公表しました。CRISPR/Cas9などの現代のゲノム編集技術で遺伝子を改変した生物も、FSCの基準文書（FSC-STD-01-001 V5-3「原則と基準」およびFSC-POL-30-602）にいうGMOの定義に含まれることが明確化されています。各国の法律でゲノム編集生物がGMOに分類されない場合でも、FSC認証林では使用は認められません。解釈の全文はFSC Document Centreの「Forest Management Interpretations」文書に掲載されています。",
+    "link": "https://fsc.org/en/newscentre/general-news/new-interpretation-on-the-definition-of-gmos-published",
+    "linkLabel": "FSC公式ニュース",
+    "pinned": false,
+    "date": "2026-07-20",
+    "author": "IDFL JAPAN",
+    "published": false
+  },
+  {
+    "id": "news-te-ecd-certification-20260701",
+    "cat": "te",
+    "title": "Textile Exchange、EU「消費者エンパワーメント指令（ECD）」の認証スキーム要件への適合性を解説",
+    "body": "Textile Exchangeは、EUのグリーンウォッシング規制「消費者エンパワーメント指令（ECD／EmpCo）」が定める「認証スキーム」の定義に、同団体の基準システム（Materials Matter Standard・RDS・GRS・RCS・OCS・CCS等）がどのように適合するかを整理した解説記事を公開しました。公開された基準文書、第三者認証機関による審査、不適合時のラベル使用停止手続き、ISO 17065に基づく認証機関の認定などの観点から適合性を説明しています。EU域内で環境主張（グリーンクレーム）を行うブランドにとって、認証に基づく主張の裏付けを検討するうえで参考になる内容です。",
+    "link": "https://textileexchange.org/how-textile-exchanges-standards-system-meets-the-empowering-consumers-directives-definition-of-a-certification-scheme/",
+    "linkLabel": "Textile Exchange公式",
+    "pinned": false,
+    "date": "2026-07-01",
+    "author": "IDFL JAPAN",
+    "published": false
+  },
+  {
     "id": "news-te-mms-timeline-20260720",
     "cat": "te",
     "title": "Textile Exchange「Materials Matter Standard」施行スケジュール確定 — 2026年12月31日発効・2027年12月31日義務化",
