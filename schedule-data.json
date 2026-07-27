@@ -275,5 +275,19 @@
     "time": "",
     "signup": "",
     "related": "https://intertextile-shanghai-hometextiles-autumn.hk.messefrankfurt.com/shanghai/en.html"
+  },
+  {
+    "id": "ext-ispo-2026",
+    "office": "Other",
+    "name": "ISPO 2026（世界最大級のスポーツ・アウトドア用品見本市）",
+    "type": "External",
+    "location": "Amsterdam, Netherlands（RAI Amsterdam）",
+    "from": "2026-11-03",
+    "to": "2026-11-05",
+    "mode": "対面",
+    "time": "",
+    "signup": "https://www.ispo.com/",
+    "related": "https://messe-muenchen.de/en/events/ispo-2026.html",
+    "published": false
   }
 ]
