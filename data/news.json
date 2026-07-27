@@ -1,5 +1,16 @@
 [
   {
+    "id": "sample-1",
+    "cat": "idfl",
+    "title": "【IDFL JAPAN】2026年8月7日セミナー開催のお知らせ",
+    "body": "大阪・御堂会館にて「IDFL JAPAN サステナビリティ認証セミナー」を開催いたします。GOTS 8.0 移行・MMS 対応・FSC 新規取得を中心に、グループディスカッション形式で実務課題を解決する場です。参加費無料・事前申込制です。",
+    "link": "/",
+    "linkLabel": "セミナー詳細はこちら",
+    "pinned": true,
+    "date": "2026-05-01",
+    "author": "IDFL JAPAN"
+  },
+  {
     "id": "news-gots-v81-20260722",
     "cat": "gots",
     "title": "GOTS Version 8.1 公開 — 実施期限は2027年3月1日のまま変更なし",
@@ -12,18 +23,6 @@
     "published": false
   },
   {
-    "id": "news-gots-foundation-20260706",
-    "cat": "gots",
-    "title": "GOTS運営団体が新ガバナンス体制へ — 非営利財団「Global Standards Foundation」を設立",
-    "body": "GOTSを運営するGlobal Standards gGmbH（独シュツットガルト）は2026年7月7日、標準運営の独立性を強化するため、新しい非営利財団「Global Standards Foundation」の設立を発表しました。財団は運営組織の単独株主となり、戦略的な意思決定を担う評議会「Governing Council」が新設されます。評議会には日本からTeam O-Three代表で日本オーガニックコットン協会会長の前田剛氏も参加します。GOTSに加え、オーガニック以外の繊維へ対象を広げる新基準GRTSを含むマルチスタンダード体制への発展を支える組織改革と位置付けられており、認証要件そのものへの直接の影響はありませんが、制度運営の枠組みに関わる重要な発表です。",
-    "link": "https://global-standards.org/news/global-standards-the-organisation-behind-gots-establishes-new-non-profit-foundation-to-strengthen-the-independent-governance-of-textile-sustainability-standards",
-    "linkLabel": "GOTS公式ニュース",
-    "pinned": false,
-    "date": "2026-07-06",
-    "author": "IDFL JAPAN",
-    "published": false
-  },
-  {
     "id": "news-fsc-gmo-interpretation-20260720",
     "cat": "fsc",
     "title": "FSC、GMO（遺伝子組換え生物）の定義に関する新しい解釈を公表 — ゲノム編集技術も対象に",
@@ -32,18 +31,6 @@
     "linkLabel": "FSC公式ニュース",
     "pinned": false,
     "date": "2026-07-20",
-    "author": "IDFL JAPAN",
-    "published": false
-  },
-  {
-    "id": "news-te-ecd-certification-20260701",
-    "cat": "te",
-    "title": "Textile Exchange、EU「消費者エンパワーメント指令（ECD）」の認証スキーム要件への適合性を解説",
-    "body": "Textile Exchangeは、EUのグリーンウォッシング規制「消費者エンパワーメント指令（ECD／EmpCo）」が定める「認証スキーム」の定義に、同団体の基準システム（Materials Matter Standard・RDS・GRS・RCS・OCS・CCS等）がどのように適合するかを整理した解説記事を公開しました。公開された基準文書、第三者認証機関による審査、不適合時のラベル使用停止手続き、ISO 17065に基づく認証機関の認定などの観点から適合性を説明しています。EU域内で環境主張（グリーンクレーム）を行うブランドにとって、認証に基づく主張の裏付けを検討するうえで参考になる内容です。",
-    "link": "https://textileexchange.org/how-textile-exchanges-standards-system-meets-the-empowering-consumers-directives-definition-of-a-certification-scheme/",
-    "linkLabel": "Textile Exchange公式",
-    "pinned": false,
-    "date": "2026-07-01",
     "author": "IDFL JAPAN",
     "published": false
   },
@@ -70,6 +57,18 @@
     "author": "IDFL JAPAN"
   },
   {
+    "id": "news-gots-foundation-20260706",
+    "cat": "gots",
+    "title": "GOTS運営団体が新ガバナンス体制へ — 非営利財団「Global Standards Foundation」を設立",
+    "body": "GOTSを運営するGlobal Standards gGmbH（独シュツットガルト）は2026年7月7日、標準運営の独立性を強化するため、新しい非営利財団「Global Standards Foundation」の設立を発表しました。財団は運営組織の単独株主となり、戦略的な意思決定を担う評議会「Governing Council」が新設されます。評議会には日本からTeam O-Three代表で日本オーガニックコットン協会会長の前田剛氏も参加します。GOTSに加え、オーガニック以外の繊維へ対象を広げる新基準GRTSを含むマルチスタンダード体制への発展を支える組織改革と位置付けられており、認証要件そのものへの直接の影響はありませんが、制度運営の枠組みに関わる重要な発表です。",
+    "link": "https://global-standards.org/news/global-standards-the-organisation-behind-gots-establishes-new-non-profit-foundation-to-strengthen-the-independent-governance-of-textile-sustainability-standards",
+    "linkLabel": "GOTS公式ニュース",
+    "pinned": false,
+    "date": "2026-07-06",
+    "author": "IDFL JAPAN",
+    "published": false
+  },
+  {
     "id": "news-eu-dpp-textile-20260706",
     "cat": "others",
     "title": "EU「デジタル製品パスポート（DPP）」導入へ — 繊維ブランドが今から備えるべきこと",
@@ -79,6 +78,18 @@
     "pinned": false,
     "date": "2026-07-06",
     "author": "IDFL JAPAN"
+  },
+  {
+    "id": "news-te-ecd-certification-20260701",
+    "cat": "te",
+    "title": "Textile Exchange、EU「消費者エンパワーメント指令（ECD）」の認証スキーム要件への適合性を解説",
+    "body": "Textile Exchangeは、EUのグリーンウォッシング規制「消費者エンパワーメント指令（ECD／EmpCo）」が定める「認証スキーム」の定義に、同団体の基準システム（Materials Matter Standard・RDS・GRS・RCS・OCS・CCS等）がどのように適合するかを整理した解説記事を公開しました。公開された基準文書、第三者認証機関による審査、不適合時のラベル使用停止手続き、ISO 17065に基づく認証機関の認定などの観点から適合性を説明しています。EU域内で環境主張（グリーンクレーム）を行うブランドにとって、認証に基づく主張の裏付けを検討するうえで参考になる内容です。",
+    "link": "https://textileexchange.org/how-textile-exchanges-standards-system-meets-the-empowering-consumers-directives-definition-of-a-certification-scheme/",
+    "linkLabel": "Textile Exchange公式",
+    "pinned": false,
+    "date": "2026-07-01",
+    "author": "IDFL JAPAN",
+    "published": false
   },
   {
     "id": "news-fsc-trademark-etraining-20260626",
@@ -125,6 +136,17 @@
     "author": "IDFL JAPAN"
   },
   {
+    "id": "news-te-calibration-log-v2026-6",
+    "cat": "te",
+    "title": "Textile Exchange、Calibration Log を最新版（TE-TXL-LOG-221 V2026.6）に更新",
+    "body": "Textile Exchangeは2026年6月1日付で、認証機関向けの解釈統一文書「Calibration Log（TE-TXL-LOG-221）」を最新版V2026.6に更新しました。Calibration LogはGRS・OCS・RCS・RWS・RDSなど各基準の運用解釈を統一するための重要文書であり、認証の取得・維持にあたっては最新版の確認が推奨されます。",
+    "link": "https://textileexchange.org/knowledge-center/documents/calibration-log/",
+    "linkLabel": "TE Calibration Log",
+    "pinned": false,
+    "date": "2026-06-01",
+    "author": "IDFL JAPAN"
+  },
+  {
     "id": "news-gots-intertextile-shenzhen-20260525",
     "cat": "gots",
     "title": "GOTS、Intertextile Shenzhen Apparel Fabrics 2026 に出展",
@@ -155,50 +177,6 @@
     "linkLabel": "FSC Connect 公式ページ",
     "pinned": false,
     "date": "2026-05-15",
-    "author": "IDFL JAPAN"
-  },
-  {
-    "id": "news-te-mms-transition-20260401",
-    "cat": "te",
-    "title": "Textile Exchange「Materials Matter Standard」移行ポリシーを公表 — 現行基準からの移行要件",
-    "body": "Textile Exchangeは2026年4月1日付で、新基準「Materials Matter Standard（MMS）」への移行ポリシー（TE-MM-POL-102 バージョン1.0）を公表しました。同ポリシーは、GRS・OCS・RCS・RWSなどの現行基準で認証を保有する事業者が、MMSへ円滑に移行するための具体的な要件を示すものです。MMSは2026年12月31日に発効し、2027年12月31日から義務化される予定で、あわせて新たなクレーム・ラベリング方針や認証マークも導入されます。TE系認証を保有する事業者は、移行スケジュールと必要な準備を早めに確認することが推奨されます。",
-    "link": "https://textileexchange.org/materials-matter-standards-transition/",
-    "linkLabel": "Textile Exchange 移行ページ",
-    "pinned": false,
-    "date": "2026-04-01",
-    "author": "IDFL JAPAN"
-  },
-  {
-    "id": "news-fsc-trademark-v3-20260101",
-    "cat": "fsc",
-    "title": "FSC商標基準（FSC-STD-50-001 V3-0）改訂 — 2026年7月1日より施行",
-    "body": "FSCは、認証保有者によるFSC商標の使用ルールを定めた基準「FSC-STD-50-001 Use of the FSC Trademarks by Certificate Holders」をバージョン3-0に改訂しました。あわせて販促表現に関する付随文書 FSC-STD-50-001a（バージョン1-0）も発行されています。主な変更点は、FSC QRラベルの導入、製品にラベルを表示する際の必須要素の更新、グラフィックデザインの自由度向上、二重ラベリング制限の撤廃、「Forests For All Forever」マークの廃止などです。改訂はラベル運用の明確化に加え、グリーンウォッシュ防止規制への対応も狙いとしています。新しい要求事項は2026年7月1日に施行され、2029年1月1日までの2年半の移行期間が設けられています。FSC認証を保有するブランド・事業者は早めの対応をご確認ください。",
-    "link": "https://fsc.org/en/newscentre/general-news/fsc-releases-revised-trademark-standard-for-certificate-holders",
-    "linkLabel": "FSC公式ニュース",
-    "pinned": false,
-    "date": "2026-01-21",
-    "author": "IDFL JAPAN"
-  },
-  {
-    "id": "news-te-calibration-log-v2026-6",
-    "cat": "te",
-    "title": "Textile Exchange、Calibration Log を最新版（TE-TXL-LOG-221 V2026.6）に更新",
-    "body": "Textile Exchangeは2026年6月1日付で、認証機関向けの解釈統一文書「Calibration Log（TE-TXL-LOG-221）」を最新版V2026.6に更新しました。Calibration LogはGRS・OCS・RCS・RWS・RDSなど各基準の運用解釈を統一するための重要文書であり、認証の取得・維持にあたっては最新版の確認が推奨されます。",
-    "link": "https://textileexchange.org/knowledge-center/documents/calibration-log/",
-    "linkLabel": "TE Calibration Log",
-    "pinned": false,
-    "date": "2026-06-01",
-    "author": "IDFL JAPAN"
-  },
-  {
-    "id": "news-gots-grts-consultation-20260331",
-    "cat": "gots",
-    "title": "GOTS、有機繊維の枠を超える新基準「GRTS（Global Responsible Textile Standard）」第2次公開諮問を実施",
-    "body": "Global Standard gGmbHは2026年4月、新基準「Global Responsible Textile Standard（GRTS）」ドラフト2について第2次公開諮問（2026年4月1日〜30日）を実施しました。GRTSはGOTSの枠組みを有機繊維以外にも拡大する新しい責任繊維基準で、2025年次報告書でも今後の重点施策として位置づけられています。従来のGOTS認証を補完・拡張し、サプライチェーン全体の責任ある調達を後押しすることが期待されています。",
-    "link": "https://global-standard.org/news/global-standard-ggmbh-launches-second-public-consultation-for-grts-draft-2-for-the-textile-industry-1-30-april-2026",
-    "linkLabel": "GOTS公式ニュース（GRTS）",
-    "pinned": false,
-    "date": "2026-03-31",
     "author": "IDFL JAPAN"
   },
   {
@@ -246,17 +224,6 @@
     "author": "IDFL JAPAN"
   },
   {
-    "id": "sample-1",
-    "cat": "idfl",
-    "title": "【IDFL JAPAN】2026年8月7日セミナー開催のお知らせ",
-    "body": "大阪・御堂会館にて「IDFL JAPAN サステナビリティ認証セミナー」を開催いたします。GOTS 8.0 移行・MMS 対応・FSC 新規取得を中心に、グループディスカッション形式で実務課題を解決する場です。参加費無料・事前申込制です。",
-    "link": "/",
-    "linkLabel": "セミナー詳細はこちら",
-    "pinned": true,
-    "date": "2026-05-01",
-    "author": "IDFL JAPAN"
-  },
-  {
     "id": "sample-2",
     "cat": "gots",
     "title": "GOTS Version 8.0 施行日のご案内（2026年6月1日より）",
@@ -276,6 +243,39 @@
     "linkLabel": "Textile Exchange 公式",
     "pinned": false,
     "date": "2026-04-10",
+    "author": "IDFL JAPAN"
+  },
+  {
+    "id": "news-te-mms-transition-20260401",
+    "cat": "te",
+    "title": "Textile Exchange「Materials Matter Standard」移行ポリシーを公表 — 現行基準からの移行要件",
+    "body": "Textile Exchangeは2026年4月1日付で、新基準「Materials Matter Standard（MMS）」への移行ポリシー（TE-MM-POL-102 バージョン1.0）を公表しました。同ポリシーは、GRS・OCS・RCS・RWSなどの現行基準で認証を保有する事業者が、MMSへ円滑に移行するための具体的な要件を示すものです。MMSは2026年12月31日に発効し、2027年12月31日から義務化される予定で、あわせて新たなクレーム・ラベリング方針や認証マークも導入されます。TE系認証を保有する事業者は、移行スケジュールと必要な準備を早めに確認することが推奨されます。",
+    "link": "https://textileexchange.org/materials-matter-standards-transition/",
+    "linkLabel": "Textile Exchange 移行ページ",
+    "pinned": false,
+    "date": "2026-04-01",
+    "author": "IDFL JAPAN"
+  },
+  {
+    "id": "news-gots-grts-consultation-20260331",
+    "cat": "gots",
+    "title": "GOTS、有機繊維の枠を超える新基準「GRTS（Global Responsible Textile Standard）」第2次公開諮問を実施",
+    "body": "Global Standard gGmbHは2026年4月、新基準「Global Responsible Textile Standard（GRTS）」ドラフト2について第2次公開諮問（2026年4月1日〜30日）を実施しました。GRTSはGOTSの枠組みを有機繊維以外にも拡大する新しい責任繊維基準で、2025年次報告書でも今後の重点施策として位置づけられています。従来のGOTS認証を補完・拡張し、サプライチェーン全体の責任ある調達を後押しすることが期待されています。",
+    "link": "https://global-standard.org/news/global-standard-ggmbh-launches-second-public-consultation-for-grts-draft-2-for-the-textile-industry-1-30-april-2026",
+    "linkLabel": "GOTS公式ニュース（GRTS）",
+    "pinned": false,
+    "date": "2026-03-31",
+    "author": "IDFL JAPAN"
+  },
+  {
+    "id": "news-fsc-trademark-v3-20260101",
+    "cat": "fsc",
+    "title": "FSC商標基準（FSC-STD-50-001 V3-0）改訂 — 2026年7月1日より施行",
+    "body": "FSCは、認証保有者によるFSC商標の使用ルールを定めた基準「FSC-STD-50-001 Use of the FSC Trademarks by Certificate Holders」をバージョン3-0に改訂しました。あわせて販促表現に関する付随文書 FSC-STD-50-001a（バージョン1-0）も発行されています。主な変更点は、FSC QRラベルの導入、製品にラベルを表示する際の必須要素の更新、グラフィックデザインの自由度向上、二重ラベリング制限の撤廃、「Forests For All Forever」マークの廃止などです。改訂はラベル運用の明確化に加え、グリーンウォッシュ防止規制への対応も狙いとしています。新しい要求事項は2026年7月1日に施行され、2029年1月1日までの2年半の移行期間が設けられています。FSC認証を保有するブランド・事業者は早めの対応をご確認ください。",
+    "link": "https://fsc.org/en/newscentre/general-news/fsc-releases-revised-trademark-standard-for-certificate-holders",
+    "linkLabel": "FSC公式ニュース",
+    "pinned": false,
+    "date": "2026-01-21",
     "author": "IDFL JAPAN"
   },
   {
