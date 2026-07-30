@@ -478,7 +478,9 @@ section{position:relative;}
   .c-banner a{ color:#cfe0f5; font-weight:700; }
   /* hero */
   .c-hero{ padding:clamp(56px,7vw,104px) 0 0; }
-  .c-hero__inner{ max-width:820px; }
+  .c-hero__inner{ max-width:1000px; }
+  .c-hero h1 .c-nb{ white-space:normal; }
+  @media (min-width:768px){ .c-hero h1 .c-nb{ white-space:nowrap; } }
   .c-hero h1{ font-size:clamp(30px,4.8vw,52px); line-height:1.26; font-weight:700; color:var(--c-ink); margin:0 0 18px; letter-spacing:-.01em; }
   .c-hero__sub{ font-size:clamp(15px,1.6vw,18px); line-height:1.9; color:var(--c-muted); margin:0 0 30px; }
   .c-hero__actions{ display:flex; gap:14px; flex-wrap:wrap; align-items:center; margin-bottom:18px; }
@@ -623,7 +625,7 @@ section{position:relative;}
 <section class="c-hero" aria-label="ヒーロー">
   <div class="c-wrap">
     <div class="c-hero__inner">
-      <h1>サステナビリティ認証を、<br>もっと分かりやすく、実務に強く。</h1>
+      <h1>サステナビリティ認証を、<br><span class="c-nb">もっと分かりやすく、実務に強く。</span></h1>
       <p class="c-hero__sub">GOTS・GRS・OCS・RWS・FSC・ダウン／フェザー認証を、<br>日本語で一貫してサポートします。</p>
       <div class="c-hero__actions">
         <a class="c-btn c-btn--primary" href="https://idfl.com/ja/idfl-japan/" target="_blank" rel="noopener noreferrer">認証について相談する</a>
