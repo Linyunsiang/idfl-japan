@@ -4,11 +4,29 @@
     "category": "General",
     "ftype": "PDF",
     "url": "/files/Website-Link-Listing-Agreement.pdf",
-    "size": "0.8 MB",
+    "size": "801 KB",
     "date": "2026-07",
     "expiry": "",
     "isNew": true,
-    "id": "doc_1784158305900"
+    "id": "doc_1784158305900",
+    "originalFileName": "ウェブサイト・リンク掲載に関する契約書_Website_Link_Listing_Agreement- JH Reviewed.pdf",
+    "sizeBytes": 820355,
+    "updatedAt": "2026-07-31T20:16:12.073+09:00",
+    "updatedBy": "admin",
+    "lastCommit": "f178d341e7a55c89e48067b6398b6be9b6285dfd",
+    "versions": [
+      {
+        "v": 1,
+        "path": "/files/_history/doc_1784158305900/v1_1785496569958.pdf",
+        "repoPath": "files/_history/doc_1784158305900/v1_1785496569958.pdf",
+        "originalFileName": "Website-Link-Listing-Agreement.pdf",
+        "size": 820355,
+        "sizeLabel": "0.8 MB",
+        "updatedAt": "",
+        "updatedBy": "admin",
+        "commit": "68a62ea178efade42b9010c1882f267e19f1131e"
+      }
+    ]
   },
   {
     "title": "厚生労働省　化学物質の使用実態に応じた職場の安全衛生教育のための資料",
