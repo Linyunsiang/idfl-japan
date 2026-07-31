@@ -502,7 +502,8 @@ async function init() {
 function renderDocs() {
   var kw = document.getElementById('searchBox').value.toLowerCase();
   var fil = docs.filter(function(d) {
-    return (activeCat === 'all' || d.category === activeCat) &&
+    return (d.published !== false) &&
+           (activeCat === 'all' || d.category === activeCat) &&
            (!kw || d.title.toLowerCase().indexOf(kw) >= 0);
   });
 

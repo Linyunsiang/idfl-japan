@@ -61,6 +61,31 @@
   .app{display:none}
   .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#063372;color:#fff;padding:12px 22px;border-radius:12px;font-size:13.5px;font-weight:700;box-shadow:0 8px 24px rgba(4,34,88,.25);opacity:0;transition:opacity .3s;pointer-events:none;z-index:50}
   .hint{font-size:12px;color:var(--muted);margin-top:4px}
+
+  /* ===== ファイル管理 ===== */
+  .dropzone{border:2px dashed var(--accent);border-radius:14px;padding:24px;text-align:center;background:#f0f6fc;cursor:pointer;transition:.15s;margin-bottom:14px;outline:none}
+  .dropzone:hover,.dropzone:focus-visible{background:#e3eef9}
+  .dropzone.drag{background:#d8e8f8;border-color:var(--accent2)}
+  .dz-big{font-weight:900;color:var(--accent);font-size:15px}
+  .dz-sub{font-size:12.5px;color:var(--muted);margin-top:4px;text-decoration:underline}
+  .dz-hint{font-size:11.5px;color:var(--muted);margin-top:8px}
+  .frow{border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px;transition:.15s}
+  .frow.drop{border-color:var(--accent);background:#f0f6fc;box-shadow:0 0 0 2px rgba(18,85,160,.18)}
+  .frow .ftitle{font-weight:700;font-size:14px}
+  .frow .fmeta{font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.75;word-break:break-all}
+  .frow .facts{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}
+  .chip{display:inline-block;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:999px;vertical-align:middle}
+  .chip.on{background:#dcfce7;color:#166534}.chip.off{background:#fee2e2;color:#b91c1c}.chip.pend{background:#fef3c7;color:#92400e}
+  .progress{height:8px;background:#e5e7eb;border-radius:999px;overflow:hidden;margin-top:9px;display:none}
+  .progress.show{display:block}
+  .progress .bar2{height:100%;width:0;background:var(--accent);transition:width .2s}
+  .statusline{font-size:11.5px;margin-top:6px;min-height:14px;word-break:break-all}
+  .vtable{width:100%;border-collapse:collapse;font-size:12px}
+  .vtable th,.vtable td{border-bottom:1px solid var(--line);padding:7px 6px;text-align:left;vertical-align:top}
+  .vtable th{color:#6b7280;font-weight:700}
+  .cmp{display:flex;gap:12px;flex-wrap:wrap}
+  .cmp .box{flex:1;min-width:200px;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:12px}
+  .cmp .box h4{margin:0 0 6px;font-size:11px;color:#6b7280}
 </style>
 </head>
 <body>
@@ -83,7 +108,7 @@
   </header>
   <div class="wrap">
     <div class="tabs" id="tabs"></div>
-    <div class="panel">
+    <div class="panel" id="genericPanel">
       <div class="bar">
         <span class="count" id="count"></span>
         <span class="dirty-note" id="dirty">● 未公開の変更があります</span>
@@ -96,12 +121,33 @@
       <div id="list"></div>
       <div class="hint" id="hint"></div>
     </div>
+
+    <div class="panel" id="filePanel" style="display:none">
+      <div class="bar">
+        <span class="count" id="fCount"></span>
+        <span class="dirty-note" id="fDirty">● 未公開の変更があります</span>
+        <div class="grow"></div>
+        <button class="btn btn-g" onclick="fReload()">🔄 サーバーから再読込</button>
+        <button class="btn btn-g" onclick="fPreview()">🔎 プレビュー</button>
+        <button class="btn btn-p" id="fPubBtn" onclick="fPublish()">✔ 変更を公開</button>
+      </div>
+      <div id="fDrop" class="dropzone" tabindex="0" role="button" aria-label="ファイルをアップロード">
+        <div class="dz-big">ここにファイルをドラッグ＆ドロップしてください</div>
+        <div class="dz-sub">またはファイルを選択</div>
+        <div class="dz-hint" id="fDzHint"></div>
+      </div>
+      <input type="file" id="fInput" style="display:none">
+      <div id="fList"></div>
+      <div class="hint">※「変更を公開」を押すまで、追加・置換・削除はこのブラウザ内の下書きです。公開時に GitHub へ保存→自動デプロイ（1〜2分）。置換しても公開URLは変わりません。</div>
+    </div>
   </div>
 </div>
 
 <div class="ov" id="ov"><div class="modal"><h3 id="mTitle">編集</h3><div id="mBody"></div>
   <div class="acts"><button class="btn btn-g" onclick="closeModal()">キャンセル</button><button class="btn btn-p" onclick="saveModal()">OK</button></div>
 </div></div>
+
+<div class="ov" id="fov"><div class="modal"><h3 id="fmTitle"></h3><div id="fmBody"></div><div class="acts" id="fmActs"></div></div></div>
 
 <div class="toast" id="toast"></div>
 
@@ -214,12 +260,17 @@ function logout(){PW=null;location.reload();}
 function initApp(){
   const tabs=document.getElementById('tabs');
   tabs.innerHTML=Object.keys(SCHEMAS).map(k=>`<button class="tab" data-k="${k}" onclick="switchTab('${k}')">${SCHEMAS[k].label} <span class="dot" id="dot-${k}" style="display:none">●</span></button>`).join('');
+  tabs.innerHTML+=`<button class="tab" data-k="files" onclick="switchTab('files')">\uD83D\uDCC1 ファイル管理 <span class="dot" id="dot-files" style="display:none">●</span></button>`;
   switchTab('news');
 }
 
 async function switchTab(k){
   CUR=k;
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.k===k));
+  const filesMode=(k==='files');
+  document.getElementById('genericPanel').style.display=filesMode?'none':'';
+  document.getElementById('filePanel').style.display=filesMode?'':'none';
+  if(filesMode){ if(!FLOADED){await fInit();} else {fRender();} return; }
   if(!DATA[k]){await loadData(k);} else {render();}
 }
 
@@ -343,6 +394,295 @@ async function publishCur(){
   }catch(e){toast('⚠️ 公開失敗: '+e.message);}
   btn.disabled=false;
 }
+/* ================= ファイル管理モジュール ================= */
+const FM_URL='/.netlify/functions/file-manager';
+let FCONFIG={allowedExt:['pdf','doc','docx','xls','xlsx','ppt','pptx','zip','jpg','jpeg','png'],maxBytes:4*1024*1024,maxLabel:'4.0 MB'};
+let FDATA=[], FLOADED=false, FDIRTY=false, FBUSY=false;
+
+function fHuman(b){return b>=1048576?(b/1048576).toFixed(1)+' MB':Math.max(1,Math.round(b/1024))+' KB';}
+function fExt(n){return (String(n).split('.').pop()||'').toLowerCase();}
+function fIsFileDoc(it){ if(it._pending) return true; const u=String(it.url||''); if(/^https?:/i.test(u)) return false; if(it.ftype==='LINK') return false; return /^\/files\//.test(u) || it._new; }
+function fMarkDirty(){FDIRTY=true;DIRTY.files=true;document.getElementById('fDirty').style.display='inline';const d=document.getElementById('dot-files');if(d)d.style.display='inline';}
+function fClearDirty(){FDIRTY=false;DIRTY.files=false;document.getElementById('fDirty').style.display='none';const d=document.getElementById('dot-files');if(d)d.style.display='none';}
+
+async function fInit(){
+  try{const r=await fetch(FM_URL+'?action=config');const j=await r.json();if(r.ok&&j.ok){FCONFIG=j;}}catch(e){}
+  document.getElementById('fInput').setAttribute('accept', FCONFIG.allowedExt.map(e=>'.'+e).join(','));
+  document.getElementById('fDzHint').textContent='対応形式: '+FCONFIG.allowedExt.join(' / ').toUpperCase()+'　最大 '+FCONFIG.maxLabel;
+  fWireDrop();
+  await fLoad();
+  FLOADED=true;
+}
+async function fLoad(){
+  document.getElementById('fList').innerHTML='<div style="padding:16px;color:#6b7280">読込中…</div>';
+  try{const r=await fetch(SCHEMAS.downloads.file,{cache:'no-store'});const j=r.ok?await r.json():[];FDATA=Array.isArray(j)?j:[];}
+  catch(e){FDATA=[];toast('読込失敗: '+e.message);}
+  fClearDirty(); fRender();
+}
+function fReload(){ if(FDIRTY&&!confirm('未公開の変更があります。破棄してサーバーから再読込しますか？'))return; fLoad(); }
+function fPreview(){ window.open('/download.html','_blank','noopener'); }
+
+function fRender(){
+  const items=FDATA.filter(fIsFileDoc);
+  document.getElementById('fCount').textContent=items.length+' 件のファイル';
+  const list=document.getElementById('fList');
+  if(!items.length){list.innerHTML='<div style="padding:16px;color:#6b7280">ファイルがありません。上のエリアにドラッグ＆ドロップして追加できます。</div>';return;}
+  list.innerHTML=items.map(it=>{
+    const idx=FDATA.indexOf(it);
+    const pend=it._pending;
+    const pubChip=it.published===false?'<span class="chip off">非公開</span>':'<span class="chip on">公開中</span>';
+    const pendChip=pend?'<span class="chip pend">未公開の置換あり</span>':'';
+    const vcount=(it.versions&&it.versions.length)||0;
+    const url=esc(it.url||'（未公開）');
+    return `<div class="frow" data-idx="${idx}">
+      <div class="ftitle">${esc(it.title||'(無題)')} ${pubChip} ${pendChip}</div>
+      <div class="fmeta">
+        実ファイル名: ${esc(it.originalFileName|| (it.url? it.url.split('/').pop():'—'))}<br>
+        種類: ${esc(it.ftype||fExt(it.url).toUpperCase()||'—')}　サイズ: ${esc(it.size||'—')}　更新: ${esc(it.updatedAt||it.date||'—')}<br>
+        公開URL: ${it.url?`<a href="${url}" target="_blank" rel="noopener">${url}</a>`:'（公開後に発行）'}
+        ${pend?`<br><b style="color:#92400e">新ファイル: ${esc(pend.originalFileName)}（${esc(pend.sizeLabel)}）</b>`:''}
+      </div>
+      <div class="facts">
+        <button class="mini" title="上へ" onclick="fMove(${idx},-1)">▲</button>
+        <button class="mini" title="下へ" onclick="fMove(${idx},1)">▼</button>
+        ${it.url?`<button class="btn btn-g" onclick="fPreviewFile(${idx})">プレビュー</button>`:''}
+        ${it.url?`<a class="btn btn-g" href="${url}" download>ダウンロード</a>`:''}
+        <button class="btn btn-o" onclick="fPickReplace(${idx})">置換</button>
+        <button class="btn btn-g" onclick="fVersions(${idx})">版数履歴${vcount?`（${vcount}）`:''}</button>
+        <button class="btn btn-g" onclick="fTogglePub(${idx})">${it.published===false?'公開する':'非公開にする'}</button>
+        <button class="btn btn-d" onclick="fDelete(${idx})">削除</button>
+      </div>
+    </div>`;
+  }).join('');
+  // wire per-row drop targets (置換)
+  list.querySelectorAll('.frow').forEach(row=>{
+    const idx=+row.dataset.idx;
+    row.addEventListener('dragover',e=>{e.preventDefault();row.classList.add('drop');});
+    row.addEventListener('dragleave',()=>row.classList.remove('drop'));
+    row.addEventListener('drop',e=>{e.preventDefault();e.stopPropagation();row.classList.remove('drop');const f=e.dataTransfer.files&&e.dataTransfer.files[0];if(f)fReplaceConfirm(idx,f);});
+  });
+}
+function fMove(i,dir){const j=i+dir;if(j<0||j>=FDATA.length)return;[FDATA[i],FDATA[j]]=[FDATA[j],FDATA[i]];fMarkDirty();fRender();}
+function fPreviewFile(idx){const it=FDATA[idx];if(it&&it.url)window.open(it.url,'_blank','noopener');}
+function fTogglePub(idx){const it=FDATA[idx];it.published=(it.published===false);fMarkDirty();fRender();}
+
+/* ---- drag zone wiring ---- */
+function fWireDrop(){
+  const dz=document.getElementById('fDrop'), inp=document.getElementById('fInput');
+  dz.addEventListener('click',()=>inp.click());
+  dz.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();inp.click();}});
+  dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag');});
+  dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+  dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');const f=e.dataTransfer.files&&e.dataTransfer.files[0];if(f)fNewDoc(f);});
+  inp.addEventListener('change',()=>{if(inp.files&&inp.files[0])fNewDoc(inp.files[0]);inp.value='';});
+}
+
+/* ---- client-side pre-validation ---- */
+function fValidate(file){
+  const ext=fExt(file.name);
+  if(!FCONFIG.allowedExt.includes(ext)) return 'ファイル形式が対応していません（対応: '+FCONFIG.allowedExt.join(', ').toUpperCase()+'）';
+  if(file.size>FCONFIG.maxBytes) return 'ファイルサイズが上限（'+FCONFIG.maxLabel+'）を超えています';
+  if(file.size===0) return '空のファイルです';
+  return null;
+}
+
+/* ---- base64 + XHR upload with progress ---- */
+function fReadB64(file){return new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(String(r.result).split(',')[1]);r.onerror=()=>rej(new Error('ファイルの読込に失敗しました'));r.readAsDataURL(file);});}
+function fStage(file,opts,onStatus){
+  return new Promise(async(resolve,reject)=>{
+    let b64; try{b64=await fReadB64(file);}catch(e){return reject(e);}
+    const payload=JSON.stringify({action:'stage-upload',password:PW,docId:opts.docId,isReplace:!!opts.isReplace,currentUrl:opts.currentUrl||'',filename:file.name,contentBase64:b64});
+    const xhr=new XMLHttpRequest();
+    xhr.open('POST',FM_URL);
+    xhr.setRequestHeader('Content-Type','application/json');
+    xhr.upload.onprogress=e=>{if(e.lengthComputable&&onStatus)onStatus('upload',Math.round(e.loaded/e.total*100));};
+    xhr.onload=()=>{let j={};try{j=JSON.parse(xhr.responseText);}catch(e){}
+      if(xhr.status>=200&&xhr.status<300&&j.ok){if(onStatus)onStatus('done',100);resolve(j.pending);}
+      else{reject(new Error(j.error||('サーバーへのアップロードに失敗しました（HTTP '+xhr.status+'）')));}};
+    xhr.onerror=()=>reject(new Error('通信エラーが発生しました'));
+    if(onStatus)onStatus('validate',0);
+    xhr.send(payload);
+  });
+}
+
+/* ---- NEW document flow (metadata first, then upload) ---- */
+function fNewDoc(file){
+  const err=fValidate(file);
+  const ext=fExt(file.name);
+  const genId=(file.name.replace(/\.[^.]+$/,'').toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'').slice(0,40)||'doc')+'-'+Date.now().toString(36);
+  const body=`
+    ${err?`<div class="statusline" style="color:#b91c1c">${esc(err)}</div>`:''}
+    <div class="cmp"><div class="box"><h4>選択したファイル</h4>${esc(file.name)}<br>${fHuman(file.size)}　.${ext.toUpperCase()}</div></div>
+    <label class="f">表示名（サイト上の名称）<input type="text" id="nd_title" value="${esc(file.name.replace(/\.[^.]+$/,''))}"></label>
+    <label class="f">ファイルID（固定・英数字/ハイフン）<input type="text" id="nd_id" value="${esc(genId)}"></label>
+    <label class="f">分類<select id="nd_cat">${['GOTS','FSC','MMS','RWS','DOWN','General'].map(o=>`<option ${o==='General'?'selected':''}>${o}</option>`).join('')}</select></label>
+    <label class="f">説明（任意）<input type="text" id="nd_desc" value=""></label>
+    <label class="f">日付（任意・YYYY-MM）<input type="text" id="nd_date" value="${new Date().toISOString().slice(0,7)}"></label>
+    <label class="f cb"><input type="checkbox" id="nd_pub" checked> 資料ダウンロードページに公開する</label>
+    <label class="f cb"><input type="checkbox" id="nd_new" checked> NEW 表示</label>
+    <div class="progress" id="nd_prog"><div class="bar2" id="nd_bar"></div></div>
+    <div class="statusline" id="nd_status"></div>`;
+  fModal('新しいファイルを追加', body, err?[{label:'キャンセル',cls:'btn-g',fn:fCloseModal}]:[
+    {label:'キャンセル',cls:'btn-g',fn:fCloseModal},
+    {label:'追加する',cls:'btn-p',fn:()=>fNewDocSubmit(file,ext)}
+  ]);
+}
+async function fNewDocSubmit(file,ext){
+  if(FBUSY)return; 
+  const id=(document.getElementById('nd_id').value||'').trim();
+  if(!/^[A-Za-z0-9_-]{1,80}$/.test(id)){document.getElementById('nd_status').innerHTML='<span style="color:#b91c1c">ファイルIDは英数字とハイフンのみ使用できます</span>';return;}
+  if(FDATA.some(x=>x.id===id)){document.getElementById('nd_status').innerHTML='<span style="color:#b91c1c">同じIDが既に存在します</span>';return;}
+  FBUSY=true; fSetBtnsBusy(true);
+  const prog=document.getElementById('nd_prog'), bar=document.getElementById('nd_bar'), st=document.getElementById('nd_status');
+  prog.classList.add('show');
+  try{
+    const pending=await fStage(file,{docId:id,isReplace:false},(phase,pct)=>{
+      if(phase==='validate')st.textContent='ファイルを検証中…';
+      if(phase==='upload'){bar.style.width=pct+'%';st.textContent='アップロード中… '+pct+'%';}
+      if(phase==='done'){bar.style.width='100%';st.textContent='サーバーで検証完了';}
+    });
+    const item={ id, title:(document.getElementById('nd_title').value||file.name).trim(), category:document.getElementById('nd_cat').value,
+      ftype:ext.toUpperCase()==='JPEG'?'JPG':ext.toUpperCase(), url:'', size:pending.sizeLabel, sizeBytes:pending.size,
+      date:document.getElementById('nd_date').value.trim(), isNew:document.getElementById('nd_new').checked,
+      expiry:'', published:document.getElementById('nd_pub').checked, originalFileName:pending.originalFileName,
+      versions:[], _pending:pending, _new:true };
+    FDATA.unshift(item); fMarkDirty(); fCloseModal(); fRender();
+    toast('追加しました（未公開）。「変更を公開」で確定します');
+  }catch(e){ st.innerHTML='<span style="color:#b91c1c">'+esc(e.message)+'</span>'; }
+  FBUSY=false; fSetBtnsBusy(false);
+}
+
+/* ---- REPLACE flow ---- */
+function fPickReplace(idx){
+  const inp=document.createElement('input');inp.type='file';inp.accept=FCONFIG.allowedExt.map(e=>'.'+e).join(',');
+  inp.onchange=()=>{if(inp.files&&inp.files[0])fReplaceConfirm(idx,inp.files[0]);};inp.click();
+}
+function fReplaceConfirm(idx,file){
+  const it=FDATA[idx]; const err=fValidate(file);
+  const curExt=fExt(it.url), upExt=fExt(file.name);
+  const extErr=(!err&&it.url&&curExt&&curExt!==upExt)?('置換ファイルの形式（.'+upExt+'）が現在のファイル（.'+curExt+'）と異なります。同じ形式でアップロードしてください'):null;
+  const e2=err||extErr;
+  const body=`
+    ${e2?`<div class="statusline" style="color:#b91c1c">${esc(e2)}</div>`:''}
+    <div class="cmp">
+      <div class="box"><h4>現在のファイル</h4>${esc(it.originalFileName||(it.url?it.url.split('/').pop():'—'))}<br>${esc(it.size||'—')}</div>
+      <div class="box"><h4>新しいファイル</h4>${esc(file.name)}<br>${fHuman(file.size)}</div>
+    </div>
+    <p style="font-size:12px;color:#166534;margin:12px 0 0">✔ 更新後も公開URLは変更されません：<br><code style="word-break:break-all">${esc(it.url||'—')}</code></p>
+    <div class="progress" id="rp_prog"><div class="bar2" id="rp_bar"></div></div>
+    <div class="statusline" id="rp_status"></div>`;
+  fModal('現在のファイルを新しいファイルに置き換えますか？', body, e2?[{label:'キャンセル',cls:'btn-g',fn:fCloseModal}]:[
+    {label:'キャンセル',cls:'btn-g',fn:fCloseModal},
+    {label:'ファイルを置き換える',cls:'btn-p',fn:()=>fReplaceSubmit(idx,file)}
+  ]);
+}
+async function fReplaceSubmit(idx,file){
+  if(FBUSY)return; const it=FDATA[idx];
+  FBUSY=true; fSetBtnsBusy(true);
+  const prog=document.getElementById('rp_prog'), bar=document.getElementById('rp_bar'), st=document.getElementById('rp_status');
+  prog.classList.add('show');
+  try{
+    const pending=await fStage(file,{docId:it.id,isReplace:true,currentUrl:it.url},(phase,pct)=>{
+      if(phase==='validate')st.textContent='ファイルを検証中…';
+      if(phase==='upload'){bar.style.width=pct+'%';st.textContent='アップロード中… '+pct+'%';}
+      if(phase==='done'){bar.style.width='100%';st.textContent='サーバーで検証完了';}
+    });
+    it._pending=pending; fMarkDirty(); fCloseModal(); fRender();
+    toast('置換を準備しました（未公開）。「変更を公開」で確定します');
+  }catch(e){ st.innerHTML='<span style="color:#b91c1c">'+esc(e.message)+'</span>'; }
+  FBUSY=false; fSetBtnsBusy(false);
+}
+
+/* ---- PUBLISH (promote pending -> live, update json) ---- */
+async function fPublish(){
+  if(FBUSY)return;
+  if(!FDIRTY){toast('未公開の変更はありません');return;}
+  const pendCount=FDATA.filter(x=>x._pending).length;
+  if(!confirm('ファイルの変更を公開します（新規/置換 '+pendCount+' 件を含む）。全ての閲覧者に反映されます。よろしいですか？'))return;
+  FBUSY=true; fSetBtnsBusy(true);
+  const btn=document.getElementById('fPubBtn'); btn.textContent='公開中…';
+  try{
+    const r=await fetch(FM_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'publish',password:PW,items:FDATA})});
+    const j=await r.json().catch(()=>({}));
+    if(r.ok&&j.ok){
+      FDATA=j.items||FDATA; fClearDirty(); fRender();
+      const urls=(j.published||[]).map(p=>p.url).join('  /  ');
+      toast('✅ ファイルを更新しました（反映まで約1〜2分）'+(urls?'  '+urls:''));
+    }else{ toast('⚠️ 公開に失敗しました: '+(j.error||('HTTP '+r.status))); }
+  }catch(e){ toast('⚠️ 公開に失敗しました: '+e.message); }
+  btn.textContent='✔ 変更を公開'; FBUSY=false; fSetBtnsBusy(false);
+}
+
+/* ---- VERSION history + restore ---- */
+function fVersions(idx){
+  const it=FDATA[idx]; const vs=(it.versions||[]).slice().reverse();
+  const body=vs.length?`<table class="vtable"><thead><tr><th>版</th><th>更新日時</th><th>元ファイル名</th><th>更新者</th><th>サイズ</th><th>commit</th><th></th></tr></thead><tbody>
+    ${vs.map(v=>`<tr>
+      <td>v${v.v}</td><td>${esc(v.updatedAt||'—')}</td><td>${esc(v.originalFileName||'—')}</td><td>${esc(v.updatedBy||'admin')}</td><td>${esc(v.sizeLabel||'—')}</td>
+      <td><code>${esc((v.commit||'').slice(0,7))}</code></td>
+      <td><a class="btn btn-g" href="${esc(v.path)}" download>旧版DL</a>
+          <button class="btn btn-o" onclick="fRestore('${esc(it.id)}','${esc(v.repoPath)}')">この版に戻す</button></td>
+    </tr>`).join('')}
+    </tbody></table>`:'<p style="color:#6b7280;font-size:13px">まだ版数履歴はありません（置換すると自動的に旧版が保存されます）。</p>';
+  fModal('版数履歴：'+esc(it.title||it.id), body, [{label:'閉じる',cls:'btn-g',fn:fCloseModal}]);
+}
+function fRestore(docId,versionRepoPath){
+  if(!confirm('このバージョンに戻しますか？（現在のファイルは履歴に自動保存されます）'))return;
+  fCloseModal();
+  (async()=>{
+    if(FBUSY)return; FBUSY=true; fSetBtnsBusy(true); toast('復元中…');
+    try{
+      const r=await fetch(FM_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'restore',password:PW,docId,versionRepoPath})});
+      const j=await r.json().catch(()=>({}));
+      if(r.ok&&j.ok){ toast('✅ 復元しました（反映まで約1〜2分）'); await fLoad(); }
+      else{ toast('⚠️ 復元に失敗しました: '+(j.error||('HTTP '+r.status))); }
+    }catch(e){ toast('⚠️ 復元に失敗しました: '+e.message); }
+    FBUSY=false; fSetBtnsBusy(false);
+  })();
+}
+
+/* ---- DELETE ---- */
+function fDelete(idx){
+  const it=FDATA[idx];
+  const local=(it._new&&!/^\/files\//.test(it.url||''));
+  const body=`<p style="font-size:13px">「<b>${esc(it.title||it.id)}</b>」を削除します。</p>
+    ${local?'<p style="font-size:12px;color:#6b7280">この項目はまだ公開されていない下書きです。ローカルから削除します。</p>':
+    '<p style="font-size:12px;color:#92400e">現在の公開ファイルは削除前に版数履歴へ自動退避され、後から復元できます。公開URLは無効になります。</p>'}
+    <div class="statusline" id="del_status"></div>`;
+  fModal('この書類を削除しますか？', body, [
+    {label:'キャンセル',cls:'btn-g',fn:fCloseModal},
+    {label:'削除する',cls:'btn-d',fn:()=>local?fDeleteLocal(idx):fDeleteServer(it)}
+  ]);
+}
+function fDeleteLocal(idx){
+  const it=FDATA[idx];
+  if(it._pending){ fetch(FM_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'discard',password:PW,repoPath:it._pending.repoPath})}).catch(()=>{}); }
+  FDATA.splice(idx,1); fMarkDirty(); fCloseModal(); fRender(); toast('削除しました');
+}
+async function fDeleteServer(it){
+  if(FBUSY)return; FBUSY=true; fSetBtnsBusy(true);
+  const st=document.getElementById('del_status'); if(st)st.textContent='削除中…';
+  try{
+    const r=await fetch(FM_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete',password:PW,docId:it.id})});
+    const j=await r.json().catch(()=>({}));
+    if(r.ok&&j.ok){ fCloseModal(); toast('✅ 削除しました（反映まで約1〜2分）'); await fLoad(); }
+    else{ if(st)st.innerHTML='<span style="color:#b91c1c">'+esc(j.error||('HTTP '+r.status))+'</span>'; }
+  }catch(e){ if(st)st.innerHTML='<span style="color:#b91c1c">'+esc(e.message)+'</span>'; }
+  FBUSY=false; fSetBtnsBusy(false);
+}
+
+/* ---- shared modal + busy ---- */
+function fModal(title,bodyHtml,actions){
+  document.getElementById('fmTitle').textContent=title;
+  document.getElementById('fmBody').innerHTML=bodyHtml;
+  const acts=document.getElementById('fmActs'); acts.innerHTML='';
+  (actions||[]).forEach(a=>{const b=document.createElement('button');b.className='btn '+(a.cls||'btn-g');b.textContent=a.label;b.onclick=a.fn;acts.appendChild(b);});
+  document.getElementById('fov').classList.add('open');
+}
+function fCloseModal(){document.getElementById('fov').classList.remove('open');}
+function fSetBtnsBusy(b){document.querySelectorAll('#fov .acts button, #filePanel .bar button').forEach(x=>x.disabled=b);}
+document.getElementById('fov').addEventListener('click',e=>{if(e.target.id==='fov'&&!FBUSY)fCloseModal();});
+
 document.getElementById('ov').addEventListener('click',e=>{ if(e.target.id==='ov'){ if(confirm('編集を閉じますか？入力中の内容は保存されません。')) closeModal(); } });
 window.addEventListener('beforeunload',function(e){ if(Object.values(DIRTY).some(Boolean)){ e.preventDefault(); e.returnValue=''; } });
 </script>
