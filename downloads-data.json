@@ -1,34 +1,48 @@
 [
   {
-    "id": "d-1785632722380",
-    "title": "カーボンフットプリント ガイドライン（経済産業省、環境省）",
+    "id": "d-1785633054437",
+    "title": "厚生労働省-職場における熱中症予防対策の周知事業",
     "category": "General",
-    "ftype": "PDF",
+    "ftype": "LINK",
+    "url": "https://www.meti.go.jp/shingikai/energy_environment/carbon_footprint/pdf/20230526_3.pdf",
+    "size": "",
+    "date": "",
+    "isNew": false,
+    "expiry": "",
+    "createdAt": "2026-08-02T01:11:33.284Z",
+    "updatedAt": "2026-08-02T01:11:33.284Z",
+    "updatedBy": "admin"
+  },
+  {
+    "id": "d-1785632722380",
+    "title": "経済産業省、環境省-カーボンフットプリント ガイドライン",
+    "category": "General",
+    "ftype": "LINK",
     "url": "https://www.meti.go.jp/shingikai/energy_environment/carbon_footprint/pdf/20230526_3.pdf",
     "size": "",
     "date": "2023-05",
     "isNew": false,
     "expiry": "",
     "createdAt": "2026-08-02T01:05:59.464Z",
-    "updatedAt": "2026-08-02T01:05:59.464Z",
+    "updatedAt": "2026-08-02T01:13:56.737Z",
     "updatedBy": "admin"
   },
   {
     "id": "d-1785632085637",
     "title": "ＥＵのＰＰＷＲ （包装・包装廃棄物規則）の概要",
     "category": "General",
-    "ftype": "PDF",
+    "ftype": "LINK",
     "url": "https://www.eu.emb-japan.go.jp/files/100788023.pdf",
     "size": "",
     "date": "2026-07",
     "isNew": false,
     "expiry": "",
     "createdAt": "2026-08-02T00:55:09.025Z",
-    "updatedAt": "2026-08-02T00:55:09.025Z",
+    "updatedAt": "2026-08-02T01:14:02.869Z",
     "updatedBy": "admin"
   },
   {
-    "title": "ウェブサイト・リンク掲載に関する契約書",
+    "title": "IDFL-ウェブサイト・リンク掲載に関する契約書",
     "category": "General",
     "ftype": "PDF",
     "url": "/files/file:///C:/Users/AldenLin/OneDrive%20-%20IDFL/Japan%20Office%20documents/05.%20%E7%94%B3%E8%AB%8B%E6%9B%B8/Website%20Link%20contact/%E3%82%A6%E3%82%A7%E3%83%96%E3%82%B5%E3%82%A4%E3%83%88%E3%83%BB%E3%83%AA%E3%83%B3%E3%82%AF%E6%8E%B2%E8%BC%89%E3%81%AB%E9%96%A2%E3%81%99%E3%82%8B%E5%A5%91%E7%B4%84%E6%9B%B8_Website_Link_Listing_Agreement_JP-EN.pdf",
@@ -38,7 +52,7 @@
     "isNew": true,
     "id": "doc_1784158305900",
     "createdAt": "2026-07-31T02:33:29.844Z",
-    "updatedAt": "2026-07-31T02:33:29.844Z",
+    "updatedAt": "2026-08-02T01:12:58.215Z",
     "updatedBy": "admin"
   },
   {
@@ -53,7 +67,7 @@
     "id": "doc_1782962388027"
   },
   {
-    "title": "厚生労働省　騒音障害防止のためのガイドライン　パンフレット",
+    "title": "厚生労働省-騒音障害防止のためのガイドライン　パンフレット",
     "category": "General",
     "ftype": "LINK",
     "url": "https://www.mhlw.go.jp/content/001195349.pdf",
@@ -61,10 +75,13 @@
     "date": "",
     "expiry": "",
     "isNew": false,
-    "id": "doc_1782962286291"
+    "id": "doc_1782962286291",
+    "createdAt": "2026-08-02T01:13:16.578Z",
+    "updatedAt": "2026-08-02T01:13:16.578Z",
+    "updatedBy": "admin"
   },
   {
-    "title": "ILO 中核的労働基準　ハンドブック",
+    "title": "ILO -中核的労働基準　ハンドブック",
     "category": "GOTS",
     "ftype": "LINK",
     "url": "https://www.ilo.org/sites/default/files/2024-11/BHR%20checkbook.pdf",
@@ -72,7 +89,10 @@
     "date": "",
     "expiry": "",
     "isNew": false,
-    "id": "doc_1782961909571"
+    "id": "doc_1782961909571",
+    "createdAt": "2026-08-02T01:13:30.491Z",
+    "updatedAt": "2026-08-02T01:13:30.491Z",
+    "updatedBy": "admin"
   },
   {
     "id": "d2",
