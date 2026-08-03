@@ -11,6 +11,30 @@
     "author": "IDFL JAPAN"
   },
   {
+    "id": "news-ghgp-iso-consolidation-20260729",
+    "cat": "others",
+    "title": "GHG ProtocolとISO、企業向けGHG算定基準を単一の共同基準へ統合すると発表",
+    "body": "GHG Protocol は2026年7月29日、企業向け温室効果ガス算定基準に関する一連の更新を発表しました。最も大きな変更は、GHG Protocol の Scope 1・Scope 2・Scope 3 および Actions and Market Instruments（AMI）と、ISO 14064-1 を統合し、両者の共同ブランドによる単一のコーポレート基準を策定する方針です。統合された将来基準の公開諮問は2027年第2四半期に予定されています。あわせて Scope 2 基準の公開諮問結果（56か国から約1,100件の回答）と、AMI に関する情報提供依頼（RFI）の暫定フィードバックも公表されました。AMI では、自社および バリューチェーンの実排出量、市場性証書等に基づく排出量、削減行動の影響を分けて示す「マルチステートメント方式」が提案されています。",
+    "link": "https://ghgprotocol.org/blog/ghg-protocol-announces-key-standard-development-updates",
+    "linkLabel": "GHG Protocol 公式発表",
+    "pinned": false,
+    "date": "2026-07-29",
+    "author": "IDFL JAPAN",
+    "published": false
+  },
+  {
+    "id": "news-fsc-indonesia-svlk-mou-20260728",
+    "cat": "fsc",
+    "title": "FSC、インドネシア林業省と覚書を締結 — SVLKとFSC認証の統合審査へ",
+    "body": "FSC は2026年7月28日、インドネシア林業省の持続可能な森林管理総局（Ditjen PHL）と覚書（MoU）を締結したと発表しました。中心となるのは、インドネシアの木材合法性・持続可能性保証制度である SVLK と FSC 認証を組み合わせた「統合審査（combined audit）」の仕組みで、一つの審査チームが両制度の要求事項を同時に評価することにより、信頼性を保ちながら審査の時間と費用を削減することを目指します。対象範囲は、森林から輸出者・輸入者に至るサプライチェーン全体の統合審査、森林管理パフォーマンスの向上と是正枠組みの整合、能力構築とネットワーク強化・市場データの交換、SVLK および FSC に適合したインドネシア産林産物の市場アクセス拡大に及びます。",
+    "link": "https://fsc.org/en/newscentre/general-news/indonesias-ministry-of-forestry-and-fsc-sign-mou-to-combine-svlk-and-fsc",
+    "linkLabel": "FSC公式ニュース",
+    "pinned": false,
+    "date": "2026-07-28",
+    "author": "IDFL JAPAN",
+    "published": false
+  },
+  {
     "id": "news-gots-v81-20260722",
     "cat": "gots",
     "title": "GOTS Version 8.1 公開 — 実施期限は2027年3月1日のまま変更なし",
@@ -44,6 +68,30 @@
     "pinned": false,
     "date": "2026-07-20",
     "author": "IDFL JAPAN"
+  },
+  {
+    "id": "news-te-cashmere-lca-20260716",
+    "cat": "te",
+    "title": "Textile Exchange、カシミヤ生産のライフサイクルアセスメント（LCA）研究を公表",
+    "body": "Textile Exchange は2026年7月16日、カシミヤ生産に関するライフサイクルアセスメント（LCA）研究を公表しました。広く一般に利用できるカシミヤの LCA としては初めてとされ、世界の主要生産国2か国において、飼育型と遊牧型の双方の生産システムを対象に、170名の牧畜農家・生産者から直接収集したデータに基づいています。同団体の他の LCA と同様に「LCA+」の考え方を採用し、土壌の健全性を追加の影響領域として調査したほか、地域社会・生計・人権への影響を扱う社会的評価も別途実施されました。従来はベンチマークやモデル推計に依存しがちだったカシミヤの環境データの空白を埋める一歩と位置づけられています。",
+    "link": "https://textileexchange.org/news/life-cycle-assessment-study-for-cashmere/",
+    "linkLabel": "Textile Exchange 公式ニュース",
+    "pinned": false,
+    "date": "2026-07-16",
+    "author": "IDFL JAPAN",
+    "published": false
+  },
+  {
+    "id": "news-te-supply-chain-taxonomy-v2-20260714",
+    "cat": "te",
+    "title": "apparel alliance、Supply Chain Taxonomy バージョン2を公開 — 業界共通の分類体系を刷新",
+    "body": "Apparel Impact Institute、Cascale、Textile Exchange、ZDHC Foundation の4団体で構成される apparel alliance は2026年7月14日、Supply Chain Taxonomy（サプライチェーン分類体系）のバージョン2を公開しました。2024年11月の初版で課題となっていた工程の重複、境界の未定義、分類の抜けを整理し、繊維・衣料・皮革・履物（TCLF）分野で一貫した分類を可能にする構造へ改めています。特に、湿式加工（wet processing）が Tier 2 に限らず全ティアで発生する点を明確にし、排出がどこで生じているかをより正確に把握できるようにした点が強調されています。今後は年次で更新される予定です。",
+    "link": "https://textileexchange.org/news/supply-chain-taxonomy-advances-apparel-alignment/",
+    "linkLabel": "Textile Exchange 公式ニュース",
+    "pinned": false,
+    "date": "2026-07-14",
+    "author": "IDFL JAPAN",
+    "published": false
   },
   {
     "id": "news-ghg-iso14064-20260713",
@@ -134,6 +182,18 @@
     "pinned": false,
     "date": "2026-06-18",
     "author": "IDFL JAPAN"
+  },
+  {
+    "id": "news-te-ccs-v31-revision-20260617",
+    "cat": "te",
+    "title": "Textile Exchange、Content Claim Standard（CCS）v3.1 の改訂に着手 — Materials Matter との整合が主眼",
+    "body": "Textile Exchange は2026年6月17日、チェーン・オブ・カストディ基準である Content Claim Standard（CCS）v3.1 の改訂に着手すると発表しました。今回の改訂は、新たに策定された Materials Matter Standard との整合、トレーサビリティ技術の進展への対応、これまでに寄せられた関係者の意見の反映を主な目的としています。CCS を汎用的なチェーン・オブ・カストディ基準として維持しつつ、認証サプライチェーン追跡プラットフォーム Trackit との連携を強化し、社会・環境面の検証を任意モジュールとして組み込むことも検討されます。EU の透明性・トレーサビリティに関する規制動向への対応も論点で、60日以上の公開諮問を経て2027年末の完成を目指すとしています。",
+    "link": "https://textileexchange.org/news/ccs-content-claim-standard-chain-of-custody-standard-revision/",
+    "linkLabel": "Textile Exchange 公式ニュース",
+    "pinned": false,
+    "date": "2026-06-17",
+    "author": "IDFL JAPAN",
+    "published": false
   },
   {
     "id": "news-te-calibration-log-v2026-6",
