@@ -1,5 +1,18 @@
 [
   {
+    "id": "tool-cert-material-calc",
+    "title": "認証原料混率・原料構成計算ツール",
+    "category": "CERTIFICATION",
+    "ftype": "TOOL",
+    "url": "/tools/certified-material-calculator/",
+    "size": "WEB",
+    "date": "2026-08",
+    "expiry": "",
+    "isNew": true,
+    "published": true,
+    "desc": "認証原料、非認証原料、Supplemental Weightを入力し、複数のインプット材料について、認証相当重量および原料構成割合を計算します。"
+  },
+  {
     "id": "d-1785633552328",
     "title": "経済産業省-繊維製品の資源循環に向けて",
     "category": "General",
