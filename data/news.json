@@ -20,7 +20,10 @@
     "pinned": false,
     "date": "2026-07-29",
     "author": "IDFL JAPAN",
-    "published": false
+    "published": true,
+    "createdAt": "2026-08-03T07:18:38.113Z",
+    "updatedAt": "2026-08-03T07:18:38.113Z",
+    "updatedBy": "admin"
   },
   {
     "id": "news-fsc-indonesia-svlk-mou-20260728",
@@ -32,7 +35,10 @@
     "pinned": false,
     "date": "2026-07-28",
     "author": "IDFL JAPAN",
-    "published": false
+    "published": true,
+    "createdAt": "2026-08-03T07:18:42.221Z",
+    "updatedAt": "2026-08-03T07:18:42.221Z",
+    "updatedBy": "admin"
   },
   {
     "id": "news-gots-v81-20260722",
@@ -44,7 +50,10 @@
     "pinned": false,
     "date": "2026-07-22",
     "author": "IDFL JAPAN",
-    "published": false
+    "published": true,
+    "createdAt": "2026-08-03T07:18:45.237Z",
+    "updatedAt": "2026-08-03T07:18:45.237Z",
+    "updatedBy": "admin"
   },
   {
     "id": "news-fsc-gmo-interpretation-20260720",
@@ -56,7 +65,10 @@
     "pinned": false,
     "date": "2026-07-20",
     "author": "IDFL JAPAN",
-    "published": false
+    "published": true,
+    "createdAt": "2026-08-03T07:18:47.757Z",
+    "updatedAt": "2026-08-03T07:18:47.757Z",
+    "updatedBy": "admin"
   },
   {
     "id": "news-te-mms-timeline-20260720",
@@ -79,7 +91,10 @@
     "pinned": false,
     "date": "2026-07-16",
     "author": "IDFL JAPAN",
-    "published": false
+    "published": true,
+    "createdAt": "2026-08-03T07:18:51.177Z",
+    "updatedAt": "2026-08-03T07:18:51.177Z",
+    "updatedBy": "admin"
   },
   {
     "id": "news-te-supply-chain-taxonomy-v2-20260714",
@@ -91,7 +106,10 @@
     "pinned": false,
     "date": "2026-07-14",
     "author": "IDFL JAPAN",
-    "published": false
+    "published": true,
+    "createdAt": "2026-08-03T07:18:54.681Z",
+    "updatedAt": "2026-08-03T07:18:54.681Z",
+    "updatedBy": "admin"
   },
   {
     "id": "news-ghg-iso14064-20260713",
@@ -114,7 +132,10 @@
     "pinned": false,
     "date": "2026-07-06",
     "author": "IDFL JAPAN",
-    "published": false
+    "published": true,
+    "createdAt": "2026-08-03T07:18:58.557Z",
+    "updatedAt": "2026-08-03T07:18:58.557Z",
+    "updatedBy": "admin"
   },
   {
     "id": "news-eu-dpp-textile-20260706",
@@ -137,7 +158,10 @@
     "pinned": false,
     "date": "2026-07-01",
     "author": "IDFL JAPAN",
-    "published": false
+    "published": true,
+    "createdAt": "2026-08-03T07:19:02.271Z",
+    "updatedAt": "2026-08-03T07:19:02.271Z",
+    "updatedBy": "admin"
   },
   {
     "id": "news-fsc-trademark-etraining-20260626",
@@ -193,7 +217,10 @@
     "pinned": false,
     "date": "2026-06-17",
     "author": "IDFL JAPAN",
-    "published": false
+    "published": true,
+    "createdAt": "2026-08-03T07:19:08.365Z",
+    "updatedAt": "2026-08-03T07:19:08.365Z",
+    "updatedBy": "admin"
   },
   {
     "id": "news-te-calibration-log-v2026-6",
