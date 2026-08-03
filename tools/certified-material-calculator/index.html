@@ -93,7 +93,9 @@ body{margin:0;font-family:"Zen Kaku Gothic New",system-ui,-apple-system,"Hiragin
 .cmc button:focus-visible,.cmc input:focus-visible,.cmc select:focus-visible{outline:3px solid #1255A055;outline-offset:1px;}
 .cmc .privacy-note{font-size:12.5px;color:#3f6b34;background:#eef8ee;border:1px solid #cfe8cf;border-radius:10px;padding:10px 13px;margin-bottom:16px;line-height:1.7;}
 .cmc .product-card{overflow:hidden;}
-.cmc .product-head{display:grid;grid-template-columns:1fr 210px auto;gap:12px;align-items:end;padding:16px 18px;background:linear-gradient(90deg,#eef4fb,#f8fbff);border-bottom:1px solid var(--line);}
+.cmc .product-head{display:flex;flex-wrap:wrap;gap:14px;align-items:flex-end;padding:16px 18px;background:linear-gradient(90deg,#eef4fb,#f8fbff);border-bottom:1px solid var(--line);}
+.cmc .product-head .field{flex:1 1 180px;min-width:150px;}
+.cmc .product-head .delete-product{flex:0 0 auto;margin-left:auto;}
 .cmc .field label{display:block;color:var(--muted);font-size:12px;font-weight:700;margin-bottom:6px;}
 .cmc input,.cmc select{width:100%;padding:10px 11px;border:1px solid #bfd0de;border-radius:9px;background:#fff;color:var(--text);font-size:14px;font-family:inherit;min-height:44px;}
 .cmc td input,.cmc td select{min-height:40px;}
@@ -101,7 +103,7 @@ body{margin:0;font-family:"Zen Kaku Gothic New",system-ui,-apple-system,"Hiragin
 .cmc .weight-box input{border-radius:9px 0 0 9px;}
 .cmc .weight-box span{padding:10px 12px;background:#edf4f8;border:1px solid #bfd0de;border-left:0;border-radius:0 9px 9px 0;font-weight:700;color:var(--navy);display:flex;align-items:center;}
 .cmc .table-wrap{overflow-x:auto;padding:15px 18px;}
-.cmc .scroll-hint{display:none;font-size:11.5px;color:#64748b;padding:0 18px;margin:-6px 0 6px;}
+.cmc .scroll-hint{display:block;font-size:12px;color:#8a5a00;background:#fff7d6;border:1px solid #f2e2a8;border-radius:8px;padding:7px 12px;margin:10px 18px 4px;font-weight:700;}
 .cmc table{width:100%;min-width:1150px;border-collapse:separate;border-spacing:0;}
 .cmc th{background:var(--navy);color:#fff;padding:10px 7px;font-size:12px;position:sticky;top:0;z-index:1;text-align:left;}
 .cmc td{padding:7px;border-bottom:1px solid var(--line);vertical-align:middle;}
@@ -257,6 +259,7 @@ body{margin:0;font-family:"Zen Kaku Gothic New",system-ui,-apple-system,"Hiragin
 
   <div class="cmc hide-process" id="cmc">
     <p class="privacy-note">入力内容はお客様のブラウザ内にのみ保存され、IDFL JAPANのサーバーには送信されません。</p>
+    <p class="privacy-note" style="background:#eef4fb;border-color:#cfe0f2;color:#274b73">入力は kg 基準です。結果の「表示単位」で換算できます（1 lb＝0.4536 kg／1 匁＝0.00375 kg／1 貫目＝3.75 kg／1 丸＝4.536 kg／1 梱＝181.44 kg。IDFL Unit Converter 準拠）。</p>
 
     <section class="toolbar" aria-label="操作">
       <button type="button" class="primary" data-act="addProduct">＋ インプット材料を追加</button>
@@ -265,6 +268,12 @@ body{margin:0;font-family:"Zen Kaku Gothic New",system-ui,-apple-system,"Hiragin
       <button type="button" class="secondary" data-act="print">印刷 / PDF</button>
       <button type="button" class="danger" data-act="delSaved">保存データを削除</button>
       <button type="button" class="danger" data-act="reset">すべてクリア</button>
+      <span style="flex:1"></span>
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#0f3a63">表示単位
+        <select id="dispUnit" aria-label="結果の表示単位" style="width:auto;min-height:44px;padding:8px 10px">
+          <option value="kg">kg</option><option value="g">g</option><option value="lb">lb（ポンド）</option>
+          <option value="匁">匁</option><option value="貫目">貫目</option><option value="丸">丸</option><option value="梱">梱</option>
+        </select></label>
     </section>
 
     <div class="process-toggle">
@@ -274,19 +283,22 @@ body{margin:0;font-family:"Zen Kaku Gothic New",system-ui,-apple-system,"Hiragin
     <div id="products"></div>
 
     <section class="summary" aria-label="全インプット材料の認証集計">
-      <div class="section-title">全インプット材料の認証集計</div>
+      <div class="section-title">全インプット材料の認証集計（投入基準・産出基準）</div>
       <div class="summary-grid">
         <div class="kpi"><span>インプット材料数</span><strong id="sumProducts" aria-live="polite">0</strong></div>
-        <div class="kpi"><span>総インプット材料重量</span><strong id="sumWeight" aria-live="polite">0 kg</strong></div>
-        <div class="kpi"><span>認証相当重量</span><strong id="sumCertKg" aria-live="polite">0 kg</strong></div>
-        <div class="kpi"><span>非認証相当重量</span><strong id="sumNonKg" aria-live="polite">0 kg</strong></div>
-        <div class="kpi"><span>認証割合</span><strong id="sumCertPct" aria-live="polite">0%</strong></div>
-        <div class="kpi"><span>非認証割合</span><strong id="sumNonPct" aria-live="polite">0%</strong></div>
+        <div class="kpi"><span>総投入重量</span><strong id="sumInWeight" aria-live="polite">0</strong></div>
+        <div class="kpi"><span>総産出重量（損耗後）</span><strong id="sumOutWeight" aria-live="polite">0</strong></div>
+        <div class="kpi"><span>総損耗重量</span><strong id="sumLossKg" aria-live="polite">0</strong></div>
+        <div class="kpi"><span>投入基準 認証割合</span><strong id="sumCertPctIn" aria-live="polite">0%</strong></div>
+        <div class="kpi"><span>産出基準 認証割合</span><strong id="sumCertPctOut" aria-live="polite">0%</strong></div>
+        <div class="kpi"><span>産出基準 非認証割合</span><strong id="sumNonPctOut" aria-live="polite">0%</strong></div>
+        <div class="kpi"><span>認証相当重量（産出）</span><strong id="sumCertKgOut" aria-live="polite">0</strong></div>
+        <div class="kpi"><span>非認証相当重量（産出）</span><strong id="sumNonKgOut" aria-live="polite">0</strong></div>
       </div>
       <div class="ratio-bars">
-        <div class="bar-label"><span>認証</span><span id="certBarText">0%</span></div>
+        <div class="bar-label"><span>認証（産出基準）</span><span id="certBarText">0%</span></div>
         <div class="bar"><div class="fill-cert" id="certBar"></div></div>
-        <div class="bar-label"><span>非認証</span><span id="nonBarText">0%</span></div>
+        <div class="bar-label"><span>非認証（産出基準）</span><span id="nonBarText">0%</span></div>
         <div class="bar"><div class="fill-non" id="nonBar"></div></div>
       </div>
       <div class="overall-process" id="overallProcess">インプット材料を追加してください。</div>
@@ -294,15 +306,15 @@ body{margin:0;font-family:"Zen Kaku Gothic New",system-ui,-apple-system,"Hiragin
 
     <section class="composition" aria-label="同名原料の自動合算・原料別構成割合">
       <div class="section-title">同名原料の自動合算・原料別構成割合</div>
-      <div class="scroll-hint">← 横にスクロールできます →</div>
+      <div class="scroll-hint">← 表を横にスクロールすると、原料ごとの『損耗率(%)・産出重量』などの列があります →</div>
       <div class="table-wrap">
         <table class="material-table">
           <caption class="center" style="caption-side:top;padding:4px;color:#64748b;font-size:12px">同名・同一認証状態・同一認証割合の原料を自動合算します</caption>
           <thead>
             <tr>
               <th scope="col">No.</th><th scope="col">原料名</th><th scope="col">区分</th><th scope="col">原料認証割合</th>
-              <th scope="col">使用インプット材料</th><th scope="col">合計重量</th><th scope="col">全インプット材料に対する割合</th>
-              <th scope="col">認証相当重量</th><th scope="col">非認証相当重量</th>
+              <th scope="col">使用インプット材料</th><th scope="col">投入合計</th><th scope="col">産出合計</th>
+              <th scope="col">産出基準割合</th><th scope="col">認証相当重量（産出）</th><th scope="col">非認証相当重量（産出）</th>
             </tr>
           </thead>
           <tbody id="materialSummaryBody"></tbody>
@@ -362,6 +374,7 @@ body{margin:0;font-family:"Zen Kaku Gothic New",system-ui,-apple-system,"Hiragin
 </script>
 <script>
 /* ===== 認証原料混率・原料構成計算ツール (scoped, no global pollution) ===== */
+/* v3: 損耗率(loss%)＝投入/産出基準を併記 ＋ 表示単位換算(kg/g/lb/匁/貫目/丸/梱) */
 (function(){
   "use strict";
   var STORE_KEY='idflJapanCertifiedMaterialCalculatorV1';
@@ -369,34 +382,42 @@ body{margin:0;font-family:"Zen Kaku Gothic New",system-ui,-apple-system,"Hiragin
   var productsEl=document.getElementById('products');
   var products=[];
 
+  /* 表示単位（IDFL Unit Converter 準拠：1単位=Xkg） */
+  var UNITS={
+    'kg':{label:'kg',kg:1},
+    'g':{label:'g',kg:0.001},
+    'lb':{label:'lb',kg:0.4536},
+    '匁':{label:'匁',kg:0.00375},
+    '貫目':{label:'貫目',kg:3.75},
+    '丸':{label:'丸',kg:4.536},
+    '梱':{label:'梱',kg:181.44}
+  };
+  var dispUnit='kg';
+  function uFactor(){return (UNITS[dispUnit]||UNITS.kg).kg;}
+  function uLabel(){return (UNITS[dispUnit]||UNITS.kg).label;}
+
   var $=function(id){return document.getElementById(id);};
   var n=function(v){var x=Number(v);return isFinite(x)?x:0;};
+  var clamp=function(v,lo,hi){return Math.min(hi,Math.max(lo,v));};
   var fmt=function(v){return Number(isFinite(v)?v:0).toLocaleString('ja-JP',{maximumFractionDigits:3});};
+  var wt=function(kg){return fmt((isFinite(kg)?kg:0)/uFactor())+' '+uLabel();}; /* kg値→表示単位 */
   var pct=function(v){return Number(isFinite(v)?v:0).toLocaleString('ja-JP',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';};
   var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(m){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m];});};
   function normalizeName(value){return String(value||'').normalize('NFKC').trim().replace(/\s+/g,' ').toLocaleLowerCase('ja-JP');}
 
   function defaultComponents(){
     return[
-      {type:'原料',status:'認証原料',name:'認証原料',basis:'%',amount:70,certPct:100},
-      {type:'原料',status:'非認証原料',name:'非認証原料1',basis:'%',amount:10,certPct:0},
-      {type:'原料',status:'非認証原料',name:'非認証原料2',basis:'%',amount:10,certPct:0},
-      {type:'原料',status:'非認証原料',name:'非認証原料3',basis:'%',amount:10,certPct:0}
+      {type:'原料',status:'認証原料',name:'認証原料',basis:'%',amount:70,certPct:100,loss:0},
+      {type:'原料',status:'非認証原料',name:'非認証原料1',basis:'%',amount:10,certPct:0,loss:0},
+      {type:'原料',status:'非認証原料',name:'非認証原料2',basis:'%',amount:10,certPct:0,loss:0},
+      {type:'原料',status:'非認証原料',name:'非認証原料3',basis:'%',amount:10,certPct:0,loss:0}
     ];
   }
-  function addProduct(data){
-    var i=products.length+1;
-    products.push(data||{name:'インプット材料'+i,weight:100,components:defaultComponents()});
-    render();
-  }
+  function addProduct(data){var i=products.length+1;products.push(data||{name:'インプット材料'+i,weight:100,components:defaultComponents()});render();}
   function removeProduct(pi){products.splice(pi,1);if(!products.length)addProduct();else render();}
   function addComponent(pi,type){
     type=type||'原料';
-    products[pi].components.push({
-      type:type,status:type==='Supplemental'?'非認証原料':'認証原料',
-      name:type==='Supplemental'?'Supplemental Weight':'追加原料',
-      basis:type==='Supplemental'?'kg':'%',amount:0,certPct:type==='Supplemental'?0:100
-    });
+    products[pi].components.push({type:type,status:type==='Supplemental'?'非認証原料':'認証原料',name:type==='Supplemental'?'Supplemental Weight':'追加原料',basis:type==='Supplemental'?'kg':'%',amount:0,certPct:type==='Supplemental'?0:100,loss:0});
     render();
   }
   function removeComponent(pi,ci){products[pi].components.splice(ci,1);render();}
@@ -407,24 +428,25 @@ body{margin:0;font-family:"Zen Kaku Gothic New",system-ui,-apple-system,"Hiragin
     calculate();
   }
 
-  /* ===== 計算式（原本の公式を保持） ===== */
+  /* ===== 計算式（投入基準を保持し、産出＝投入×(1-損耗率) を追加。内部は全てkg） ===== */
   function componentCalc(product,c){
     var w=Math.max(0,n(product.weight));
     var amount=Math.max(0,n(c.amount));
-    var kg=c.basis==='%'?w*amount/100:amount;
-    var share=w>0?kg/w*100:0;
-    var certPct=Math.min(100,Math.max(0,n(c.certPct)));
-    var certKg=kg*certPct/100;
-    return{kg:kg,share:share,certPct:certPct,certKg:certKg,nonKg:kg-certKg};
+    var inKg=c.basis==='%'?w*amount/100:amount;
+    var certPct=clamp(n(c.certPct),0,100);
+    var lossPct=clamp(n(c.loss),0,100);
+    var outKg=inKg*(1-lossPct/100);
+    var certKgIn=inKg*certPct/100, nonKgIn=inKg-certKgIn;
+    var certKgOut=outKg*certPct/100, nonKgOut=outKg-certKgOut;
+    return{inKg:inKg,share:w>0?inKg/w*100:0,certPct:certPct,lossPct:lossPct,outKg:outKg,certKgIn:certKgIn,nonKgIn:nonKgIn,certKgOut:certKgOut,nonKgOut:nonKgOut};
   }
   function groupProductMaterials(p){
     var map=new Map();
     p.components.forEach(function(c){
-      var x=componentCalc(p,c);
-      var name=(c.name||'未命名原料').trim()||'未命名原料';
+      var x=componentCalc(p,c);var name=(c.name||'未命名原料').trim()||'未命名原料';
       var key=[normalizeName(name),c.status,x.certPct,c.type].join('|');
-      if(!map.has(key))map.set(key,{name:name,status:c.status,type:c.type,certPct:x.certPct,kg:0,certKg:0,nonKg:0});
-      var g=map.get(key);g.kg+=x.kg;g.certKg+=x.certKg;g.nonKg+=x.nonKg;
+      if(!map.has(key))map.set(key,{name:name,status:c.status,type:c.type,certPct:x.certPct,inKg:0,outKg:0,certKgOut:0,nonKgOut:0,productNames:new Set()});
+      var g=map.get(key);g.inKg+=x.inKg;g.outKg+=x.outKg;g.certKgOut+=x.certKgOut;g.nonKgOut+=x.nonKgOut;
     });
     return Array.from(map.values());
   }
@@ -432,76 +454,63 @@ body{margin:0;font-family:"Zen Kaku Gothic New",system-ui,-apple-system,"Hiragin
     var map=new Map();
     products.forEach(function(p,pi){
       p.components.forEach(function(c){
-        var x=componentCalc(p,c);
-        var name=(c.name||'未命名原料').trim()||'未命名原料';
+        var x=componentCalc(p,c);var name=(c.name||'未命名原料').trim()||'未命名原料';
         var key=[normalizeName(name),c.status,x.certPct,c.type].join('|');
-        if(!map.has(key))map.set(key,{name:name,status:c.status,type:c.type,certPct:x.certPct,kg:0,certKg:0,nonKg:0,productNames:new Set()});
-        var g=map.get(key);g.kg+=x.kg;g.certKg+=x.certKg;g.nonKg+=x.nonKg;
+        if(!map.has(key))map.set(key,{name:name,status:c.status,type:c.type,certPct:x.certPct,inKg:0,outKg:0,certKgOut:0,nonKgOut:0,productNames:new Set()});
+        var g=map.get(key);g.inKg+=x.inKg;g.outKg+=x.outKg;g.certKgOut+=x.certKgOut;g.nonKgOut+=x.nonKgOut;
         g.productNames.add(p.name||('インプット材料'+(pi+1)));
       });
     });
     return Array.from(map.values());
   }
-  function materialDisplayName(g){
-    if(g.status==='認証原料'&&g.certPct<100)return g.name+'（原料認証 '+pct(g.certPct)+'）';
-    return g.name;
-  }
+  function materialDisplayName(g){if(g.status==='認証原料'&&g.certPct<100)return g.name+'（原料認証 '+pct(g.certPct)+'）';return g.name;}
 
-  /* ===== 描画（inline onclick を排除、data 属性で委譲） ===== */
   function render(){
     productsEl.innerHTML=products.map(function(p,pi){
       var rows=p.components.map(function(c,ci){
-        return ''+
-        '<tr>'+
+        return '<tr>'+
           '<td class="center" data-label="No.">'+(ci+1)+'</td>'+
-          '<td data-label="区分"><label class="sr-only">区分</label><select data-pi="'+pi+'" data-ci="'+ci+'" data-key="type">'+
-            '<option '+(c.type==='原料'?'selected':'')+'>原料</option>'+
-            '<option '+(c.type==='Supplemental'?'selected':'')+'>Supplemental</option>'+
-          '</select></td>'+
-          '<td data-label="認証状態"><select data-pi="'+pi+'" data-ci="'+ci+'" data-key="status">'+
-            '<option '+(c.status==='認証原料'?'selected':'')+'>認証原料</option>'+
-            '<option '+(c.status==='非認証原料'?'selected':'')+'>非認証原料</option>'+
-          '</select></td>'+
+          '<td data-label="区分"><select data-pi="'+pi+'" data-ci="'+ci+'" data-key="type"><option '+(c.type==='原料'?'selected':'')+'>原料</option><option '+(c.type==='Supplemental'?'selected':'')+'>Supplemental</option></select></td>'+
+          '<td data-label="認証状態"><select data-pi="'+pi+'" data-ci="'+ci+'" data-key="status"><option '+(c.status==='認証原料'?'selected':'')+'>認証原料</option><option '+(c.status==='非認証原料'?'selected':'')+'>非認証原料</option></select></td>'+
           '<td data-label="原料名"><input aria-label="原料名" value="'+esc(c.name)+'" data-pi="'+pi+'" data-ci="'+ci+'" data-key="name"></td>'+
-          '<td data-label="入力方法"><select data-pi="'+pi+'" data-ci="'+ci+'" data-key="basis">'+
-            '<option value="%" '+(c.basis==='%'?'selected':'')+'>割合 %</option>'+
-            '<option value="kg" '+(c.basis==='kg'?'selected':'')+'>重量 kg</option>'+
-          '</select></td>'+
-          '<td data-label="割合／重量"><input aria-label="割合または重量" type="number" min="0" step="0.001" value="'+esc(c.amount)+'" data-pi="'+pi+'" data-ci="'+ci+'" data-key="amount"></td>'+
+          '<td data-label="入力方法"><select data-pi="'+pi+'" data-ci="'+ci+'" data-key="basis"><option value="%" '+(c.basis==='%'?'selected':'')+'>割合 %</option><option value="kg" '+(c.basis==='kg'?'selected':'')+'>重量 kg</option></select></td>'+
+          '<td data-label="割合／重量(kg)"><input aria-label="割合または重量(kg)" type="number" min="0" step="0.001" value="'+esc(c.amount)+'" data-pi="'+pi+'" data-ci="'+ci+'" data-key="amount"></td>'+
           '<td data-label="原料認証割合"><input aria-label="原料認証割合(%)" type="number" min="0" max="100" step="0.01" value="'+esc(c.certPct)+'" '+(c.status==='非認証原料'?'readonly':'')+' data-pi="'+pi+'" data-ci="'+ci+'" data-key="certPct"></td>'+
-          '<td class="calc" data-label="構成重量" id="kg-'+pi+'-'+ci+'">0 kg</td>'+
-          '<td class="calc" data-label="構成割合" id="share-'+pi+'-'+ci+'">0%</td>'+
-          '<td class="calc" data-label="認証相当重量" id="cert-'+pi+'-'+ci+'">0 kg</td>'+
-          '<td class="calc" data-label="非認証相当重量" id="non-'+pi+'-'+ci+'">0 kg</td>'+
+          '<td data-label="損耗率(%)"><input aria-label="損耗率(%)" type="number" min="0" max="100" step="0.01" value="'+esc(c.loss==null?0:c.loss)+'" data-pi="'+pi+'" data-ci="'+ci+'" data-key="loss"></td>'+
+          '<td class="calc" data-label="構成重量(投入)" id="kg-'+pi+'-'+ci+'">0</td>'+
+          '<td class="calc" data-label="産出重量" id="out-'+pi+'-'+ci+'">0</td>'+
+          '<td class="calc" data-label="構成割合(投入)" id="share-'+pi+'-'+ci+'">0%</td>'+
+          '<td class="calc" data-label="認証相当(産出)" id="cert-'+pi+'-'+ci+'">0</td>'+
+          '<td class="calc" data-label="非認証相当(産出)" id="non-'+pi+'-'+ci+'">0</td>'+
           '<td data-label="操作"><button type="button" class="danger" data-act="delComp" data-pi="'+pi+'" data-ci="'+ci+'">削除</button></td>'+
         '</tr>';
       }).join('');
-      return ''+
-      '<section class="product-card">'+
+      var _uf=p.components.length&&p.components.every(function(x){return String(x.loss||0)===String(p.components[0].loss||0);});var _ul=_uf?(p.components[0].loss==null?0:p.components[0].loss):'';
+      return '<section class="product-card">'+
         '<div class="product-head">'+
-          '<div class="field"><label for="pname-'+pi+'">インプット材料</label>'+
-            '<input id="pname-'+pi+'" value="'+esc(p.name)+'" data-pi="'+pi+'" data-key="name"></div>'+
-          '<div class="field"><label for="pw-'+pi+'">インプット材料総重量</label>'+
-            '<div class="weight-box"><input id="pw-'+pi+'" type="number" min="0" step="0.001" value="'+esc(p.weight)+'" data-pi="'+pi+'" data-key="weight"><span>kg</span></div></div>'+
+          '<div class="field"><label for="pname-'+pi+'">インプット材料</label><input id="pname-'+pi+'" value="'+esc(p.name)+'" data-pi="'+pi+'" data-key="name"></div>'+
+          '<div class="field"><label for="pw-'+pi+'">インプット材料総重量（投入・kg）</label><div class="weight-box"><input id="pw-'+pi+'" type="number" min="0" step="0.001" value="'+esc(p.weight)+'" data-pi="'+pi+'" data-key="weight"><span>kg</span></div></div>'+
+          '<div class="field"><label for="pl-'+pi+'">損耗率(%)（全体一括）</label><input id="pl-'+pi+'" type="number" min="0" max="100" step="0.01" placeholder="0" value="'+esc(_ul)+'" data-pi="'+pi+'" data-key="bulkloss"></div>'+
+          '<div class="field"><label for="mo-'+pi+'">実測産出重量（kg）→損耗率を算出</label><input id="mo-'+pi+'" type="number" min="0" step="0.001" placeholder="任意" value="'+esc(p.measuredOut==null?'':p.measuredOut)+'" data-pi="'+pi+'" data-key="measured-out"></div>'+
           '<button type="button" class="danger delete-product" data-act="delProduct" data-pi="'+pi+'">インプット材料を削除</button>'+
         '</div>'+
         '<div class="scroll-hint">← 横にスクロールできます →</div>'+
         '<div class="table-wrap"><table class="prod-table"><caption class="sr-only">原料構成入力表</caption><thead><tr>'+
           '<th scope="col">No.</th><th scope="col">区分</th><th scope="col">認証状態</th><th scope="col">原料名</th><th scope="col">入力方法</th>'+
-          '<th scope="col">割合／重量</th><th scope="col">原料認証割合</th><th scope="col">構成重量</th><th scope="col">構成割合</th>'+
-          '<th scope="col">認証相当重量</th><th scope="col">非認証相当重量</th><th scope="col">操作</th>'+
+          '<th scope="col">割合／重量(kg)</th><th scope="col">原料認証割合</th><th scope="col">損耗率(%)</th><th scope="col">構成重量(投入)</th><th scope="col">産出重量</th>'+
+          '<th scope="col">構成割合(投入)</th><th scope="col">認証相当(産出)</th><th scope="col">非認証相当(産出)</th><th scope="col">操作</th>'+
         '</tr></thead><tbody>'+rows+'</tbody></table></div>'+
         '<div class="row-actions">'+
           '<button type="button" class="primary" data-act="addComp" data-pi="'+pi+'" data-type="原料">＋ 原料を追加</button>'+
           '<button type="button" class="secondary" data-act="addComp" data-pi="'+pi+'" data-type="Supplemental">＋ Supplemental Weightを追加</button>'+
         '</div>'+
         '<div class="product-result">'+
-          '<div class="kpi"><span>インプット材料重量</span><strong id="p-weight-'+pi+'">0 kg</strong></div>'+
-          '<div class="kpi"><span>構成重量合計</span><strong id="p-comp-'+pi+'">0 kg</strong></div>'+
-          '<div class="kpi"><span>認証相当重量</span><strong id="p-certkg-'+pi+'">0 kg</strong></div>'+
-          '<div class="kpi"><span>非認証相当重量</span><strong id="p-nonkg-'+pi+'">0 kg</strong></div>'+
-          '<div class="kpi"><span>認証割合</span><strong id="p-certpct-'+pi+'">0%</strong></div>'+
-          '<div class="kpi"><span>非認証割合</span><strong id="p-nonpct-'+pi+'">0%</strong></div>'+
+          '<div class="kpi"><span>投入重量</span><strong id="p-inw-'+pi+'">0</strong></div>'+
+          '<div class="kpi"><span>産出重量（損耗後）</span><strong id="p-outw-'+pi+'">0</strong></div>'+
+          '<div class="kpi"><span>投入基準 認証割合</span><strong id="p-certpin-'+pi+'">0%</strong></div>'+
+          '<div class="kpi"><span>産出基準 認証割合</span><strong id="p-certpout-'+pi+'">0%</strong></div>'+
+          '<div class="kpi"><span>認証相当重量（産出）</span><strong id="p-certkgout-'+pi+'">0</strong></div>'+
+          '<div class="kpi"><span>非認証相当重量（産出）</span><strong id="p-nonkgout-'+pi+'">0</strong></div>'+
         '</div>'+
         '<div class="warning" id="warn-'+pi+'" role="status"></div>'+
         '<div class="final-expression" id="final-'+pi+'"></div>'+
@@ -512,116 +521,116 @@ body{margin:0;font-family:"Zen Kaku Gothic New",system-ui,-apple-system,"Hiragin
   }
 
   function calculate(){
-    var totalWeight=0,totalCert=0,totalNon=0;
+    var totIn=0,totOut=0,totCertOut=0,totNonOut=0,totCertIn=0;
     var overallLines=[];var formulaCards=[];
     products.forEach(function(p,pi){
-      var productWeight=Math.max(0,n(p.weight));
-      var compTotal=0,certTotal=0,nonTotal=0;
-      var lines=['【'+(p.name||'インプット材料'+(pi+1))+'：'+fmt(productWeight)+' kg】'];
+      var inputWeight=Math.max(0,n(p.weight));
+      var compIn=0,compOut=0,certIn=0,certOut=0,nonOut=0;
+      var lines=['【'+(p.name||'インプット材料'+(pi+1))+'：投入 '+wt(inputWeight)+'】'];
       p.components.forEach(function(c,ci){
         var x=componentCalc(p,c);
-        compTotal+=x.kg;certTotal+=x.certKg;nonTotal+=x.nonKg;
-        var kgEl=$('kg-'+pi+'-'+ci),shareEl=$('share-'+pi+'-'+ci),certEl=$('cert-'+pi+'-'+ci),nonEl=$('non-'+pi+'-'+ci);
-        if(kgEl)kgEl.textContent=fmt(x.kg)+' kg';
-        if(shareEl)shareEl.textContent=pct(x.share);
-        if(certEl)certEl.textContent=fmt(x.certKg)+' kg';
-        if(nonEl)nonEl.textContent=fmt(x.nonKg)+' kg';
-        var inputText=c.basis==='%'?(fmt(n(c.amount))+'% × '+fmt(productWeight)+' kg'):(fmt(n(c.amount))+' kg');
-        lines.push(
-          (ci+1)+'. '+(c.name||'原料')+'（'+c.status+'／'+c.type+'）\n'+
-          '   構成重量：'+inputText+' ＝ '+fmt(x.kg)+' kg\n'+
-          '   構成割合：'+fmt(x.kg)+' kg ÷ '+fmt(productWeight)+' kg ×100 ＝ '+pct(x.share)+'\n'+
-          '   認証相当：'+fmt(x.kg)+' kg × '+fmt(x.certPct)+'% ＝ '+fmt(x.certKg)+' kg'
-        );
+        compIn+=x.inKg;compOut+=x.outKg;certIn+=x.certKgIn;certOut+=x.certKgOut;nonOut+=x.nonKgOut;
+        var e;
+        if((e=$('kg-'+pi+'-'+ci)))e.textContent=wt(x.inKg);
+        if((e=$('out-'+pi+'-'+ci)))e.textContent=wt(x.outKg);
+        if((e=$('share-'+pi+'-'+ci)))e.textContent=pct(x.share);
+        if((e=$('cert-'+pi+'-'+ci)))e.textContent=wt(x.certKgOut);
+        if((e=$('non-'+pi+'-'+ci)))e.textContent=wt(x.nonKgOut);
+        var inputText=c.basis==='%'?(fmt(n(c.amount))+'% × '+wt(inputWeight)):(fmt(n(c.amount))+' kg');
+        lines.push((ci+1)+'. '+(c.name||'原料')+'（'+c.status+'／'+c.type+'）\n'+
+          '   投入構成重量：'+inputText+' ＝ '+wt(x.inKg)+'\n'+
+          '   損耗：'+fmt(x.lossPct)+'% → 産出重量 ＝ '+wt(x.inKg)+' ×（1 − '+fmt(x.lossPct)+'%）＝ '+wt(x.outKg)+'\n'+
+          '   投入構成割合：'+pct(x.share)+'\n'+
+          '   認証相当（産出）：'+wt(x.outKg)+' × '+fmt(x.certPct)+'% ＝ '+wt(x.certKgOut));
       });
-      var certPct=productWeight>0?certTotal/productWeight*100:0;
-      var nonPct=productWeight>0?nonTotal/productWeight*100:0;
-      var diff=compTotal-productWeight;
-      if($('p-weight-'+pi)){
-        $('p-weight-'+pi).textContent=fmt(productWeight)+' kg';
-        $('p-comp-'+pi).textContent=fmt(compTotal)+' kg';
-        $('p-certkg-'+pi).textContent=fmt(certTotal)+' kg';
-        $('p-nonkg-'+pi).textContent=fmt(nonTotal)+' kg';
-        $('p-certpct-'+pi).textContent=pct(certPct);
-        $('p-nonpct-'+pi).textContent=pct(nonPct);
-      }
+      var certPctIn=inputWeight>0?certIn/inputWeight*100:0;
+      var certPctOut=compOut>0?certOut/compOut*100:0;
+      var nonPctOut=compOut>0?nonOut/compOut*100:0;
+      var diff=compIn-inputWeight;var e2;
+      if((e2=$('p-inw-'+pi)))e2.textContent=wt(inputWeight);
+      if((e2=$('p-outw-'+pi)))e2.textContent=wt(compOut);
+      if((e2=$('p-certpin-'+pi)))e2.textContent=pct(certPctIn);
+      if((e2=$('p-certpout-'+pi)))e2.textContent=pct(certPctOut);
+      if((e2=$('p-certkgout-'+pi)))e2.textContent=wt(certOut);
+      if((e2=$('p-nonkgout-'+pi)))e2.textContent=wt(nonOut);
       var warn=$('warn-'+pi);
       if(warn){
-        if(Math.abs(diff)<=0.001){warn.innerHTML='<span class="ic">✓</span><span>構成重量合計とインプット材料重量が一致しています。</span>';warn.className='warning';}
-        else if(diff<0){warn.innerHTML='<span class="ic">⚠</span><span>未配分重量：'+fmt(Math.abs(diff))+' kg。原料またはSupplemental Weightを追加してください。</span>';warn.className='warning';}
-        else{warn.innerHTML='<span class="ic">⚠</span><span>構成重量がインプット材料重量を '+fmt(diff)+' kg 超えています。</span>';warn.className='warning error';}
+        if(Math.abs(diff)<=0.001){warn.innerHTML='<span class="ic">✓</span><span>投入構成重量合計とインプット材料重量が一致しています。</span>';warn.className='warning';}
+        else if(diff<0){warn.innerHTML='<span class="ic">⚠</span><span>未配分重量：'+wt(Math.abs(diff))+'（投入基準）。原料またはSupplemental Weightを追加してください。</span>';warn.className='warning';}
+        else{warn.innerHTML='<span class="ic">⚠</span><span>投入構成重量がインプット材料重量を '+wt(diff)+' 超えています。</span>';warn.className='warning error';}
       }
       var grouped=groupProductMaterials(p);
-      var parts=grouped.map(function(g){var share=productWeight>0?g.kg/productWeight*100:0;return materialDisplayName(g)+' '+pct(share);});
-      if(diff<-0.001&&productWeight>0)parts.push('未配分 '+pct(Math.abs(diff)/productWeight*100));
-      if($('final-'+pi))$('final-'+pi).textContent=(p.name||'インプット材料'+(pi+1))+' ＝ '+(parts.length?parts.join(' ＋ '):'原料未入力');
-      lines.push('\nインプット材料の認証計算：\n認証相当重量合計 ＝ '+fmt(certTotal)+' kg\n非認証相当重量合計 ＝ '+fmt(nonTotal)+' kg\n認証割合 ＝ '+fmt(certTotal)+' kg ÷ '+fmt(productWeight)+' kg ×100 ＝ '+pct(certPct)+'\n非認証割合 ＝ '+fmt(nonTotal)+' kg ÷ '+fmt(productWeight)+' kg ×100 ＝ '+pct(nonPct));
+      var partsIn=grouped.map(function(g){var s=inputWeight>0?g.inKg/inputWeight*100:0;return materialDisplayName(g)+' '+pct(s);});
+      if(diff<-0.001&&inputWeight>0)partsIn.push('未配分 '+pct(Math.abs(diff)/inputWeight*100));
+      var partsOut=grouped.map(function(g){var s=compOut>0?g.outKg/compOut*100:0;return materialDisplayName(g)+' '+pct(s);});
+      if($('final-'+pi))$('final-'+pi).textContent='【投入基準】'+(p.name||'インプット材料'+(pi+1))+' ＝ '+(partsIn.length?partsIn.join(' ＋ '):'原料未入力')+'\n【産出基準】'+(p.name||'インプット材料'+(pi+1))+' ＝ '+(partsOut.length?partsOut.join(' ＋ '):'原料未入力');
+      lines.push('\nインプット材料の認証計算：\n産出重量合計 ＝ '+wt(compOut)+'\n認証相当重量（産出）＝ '+wt(certOut)+'\n非認証相当重量（産出）＝ '+wt(nonOut)+'\n投入基準 認証割合 ＝ '+pct(certPctIn)+'\n産出基準 認証割合 ＝ '+pct(certPctOut));
       if($('process-'+pi))$('process-'+pi).innerHTML='<b>計算過程</b>\n'+esc(lines.join('\n'));
-      formulaCards.push('<div class="formula-card"><h3>'+esc(p.name||'インプット材料'+(pi+1))+'</h3><div class="formula">'+esc(parts.length?parts.join(' ＋ '):'原料未入力')+'</div><div>認証割合：'+pct(certPct)+' ／ 非認証割合：'+pct(nonPct)+'</div></div>');
-      totalWeight+=productWeight;totalCert+=certTotal;totalNon+=nonTotal;
-      overallLines.push((p.name||'インプット材料'+(pi+1))+'：'+fmt(productWeight)+' kg、認証相当 '+fmt(certTotal)+' kg、非認証相当 '+fmt(nonTotal)+' kg');
+      formulaCards.push('<div class="formula-card"><h3>'+esc(p.name||'インプット材料'+(pi+1))+'</h3><div class="formula">'+esc(partsOut.length?partsOut.join(' ＋ '):'原料未入力')+'</div><div>投入基準 認証割合：'+pct(certPctIn)+' ／ 産出基準 認証割合：'+pct(certPctOut)+'</div></div>');
+      totIn+=inputWeight;totOut+=compOut;totCertOut+=certOut;totNonOut+=nonOut;totCertIn+=certIn;
+      overallLines.push((p.name||'インプット材料'+(pi+1))+'：投入 '+wt(inputWeight)+' → 産出 '+wt(compOut)+'、認証相当（産出）'+wt(certOut));
     });
-    var overallCertPct=totalWeight>0?totalCert/totalWeight*100:0;
-    var overallNonPct=totalWeight>0?totalNon/totalWeight*100:0;
+    var certPctInAll=totIn>0?totCertIn/totIn*100:0;
+    var certPctOutAll=totOut>0?totCertOut/totOut*100:0;
+    var nonPctOutAll=totOut>0?totNonOut/totOut*100:0;
+    var lossKg=totIn-totOut;
     $('sumProducts').textContent=products.length;
-    $('sumWeight').textContent=fmt(totalWeight)+' kg';
-    $('sumCertKg').textContent=fmt(totalCert)+' kg';
-    $('sumNonKg').textContent=fmt(totalNon)+' kg';
-    $('sumCertPct').textContent=pct(overallCertPct);
-    $('sumNonPct').textContent=pct(overallNonPct);
-    $('certBarText').textContent=pct(overallCertPct);
-    $('nonBarText').textContent=pct(overallNonPct);
-    $('certBar').style.width=Math.min(100,Math.max(0,overallCertPct))+'%';
-    $('nonBar').style.width=Math.min(100,Math.max(0,overallNonPct))+'%';
+    $('sumInWeight').textContent=wt(totIn);
+    $('sumOutWeight').textContent=wt(totOut);
+    $('sumLossKg').textContent=wt(lossKg>0?lossKg:0);
+    $('sumCertPctIn').textContent=pct(certPctInAll);
+    $('sumCertPctOut').textContent=pct(certPctOutAll);
+    $('sumNonPctOut').textContent=pct(nonPctOutAll);
+    $('sumCertKgOut').textContent=wt(totCertOut);
+    $('sumNonKgOut').textContent=wt(totNonOut);
+    $('certBarText').textContent=pct(certPctOutAll);
+    $('nonBarText').textContent=pct(nonPctOutAll);
+    $('certBar').style.width=clamp(certPctOutAll,0,100)+'%';
+    $('nonBar').style.width=clamp(nonPctOutAll,0,100)+'%';
     $('overallProcess').textContent=products.length?
       '【全インプット材料の認証計算】\n'+overallLines.join('\n')+
-      '\n\n認証相当重量合計 ＝ '+fmt(totalCert)+' kg'+
-      '\n非認証相当重量合計 ＝ '+fmt(totalNon)+' kg'+
-      '\n全体認証割合 ＝ '+fmt(totalCert)+' kg ÷ '+fmt(totalWeight)+' kg ×100 ＝ '+pct(overallCertPct)+
-      '\n全体非認証割合 ＝ '+fmt(totalNon)+' kg ÷ '+fmt(totalWeight)+' kg ×100 ＝ '+pct(overallNonPct)
+      '\n\n総投入重量 ＝ '+wt(totIn)+'\n総産出重量（損耗後）＝ '+wt(totOut)+'（総損耗 '+wt(lossKg>0?lossKg:0)+'）\n認証相当重量（産出）＝ '+wt(totCertOut)+
+      '\n投入基準 全体認証割合 ＝ '+pct(certPctInAll)+'\n産出基準 全体認証割合 ＝ '+pct(certPctOutAll)
       :'インプット材料を追加してください。';
     var materialGroups=groupAllMaterials();
     $('materialSummaryBody').innerHTML=materialGroups.map(function(g,i){
-      var overallShare=totalWeight>0?g.kg/totalWeight*100:0;
-      var tagClass=g.status==='認証原料'?'cert-tag':'non-tag';
+      var shareOut=totOut>0?g.outKg/totOut*100:0;var tagClass=g.status==='認証原料'?'cert-tag':'non-tag';
       return '<tr>'+
         '<td class="center" data-label="No.">'+(i+1)+'</td>'+
         '<td data-label="原料名"><b>'+esc(g.name)+'</b></td>'+
         '<td data-label="区分"><span class="material-tag '+tagClass+'">'+esc(g.status)+'</span> <small>'+esc(g.type)+'</small></td>'+
         '<td class="calc" data-label="原料認証割合">'+pct(g.certPct)+'</td>'+
         '<td data-label="使用インプット材料">'+esc(Array.from(g.productNames).join('、'))+'</td>'+
-        '<td class="calc" data-label="合計重量">'+fmt(g.kg)+' kg</td>'+
-        '<td class="calc" data-label="全体割合">'+pct(overallShare)+'</td>'+
-        '<td class="calc" data-label="認証相当重量">'+fmt(g.certKg)+' kg</td>'+
-        '<td class="calc" data-label="非認証相当重量">'+fmt(g.nonKg)+' kg</td>'+
+        '<td class="calc" data-label="投入合計">'+wt(g.inKg)+'</td>'+
+        '<td class="calc" data-label="産出合計">'+wt(g.outKg)+'</td>'+
+        '<td class="calc" data-label="産出基準割合">'+pct(shareOut)+'</td>'+
+        '<td class="calc" data-label="認証相当(産出)">'+wt(g.certKgOut)+'</td>'+
+        '<td class="calc" data-label="非認証相当(産出)">'+wt(g.nonKgOut)+'</td>'+
       '</tr>';
     }).join('');
-    var overallParts=materialGroups.map(function(g){var share=totalWeight>0?g.kg/totalWeight*100:0;return materialDisplayName(g)+' '+pct(share);});
-    $('overallComposition').textContent=products.length?('全インプット材料 ＝ '+(overallParts.length?overallParts.join(' ＋ '):'原料未入力')):'インプット材料を追加してください。';
+    var overallParts=materialGroups.map(function(g){var s=totOut>0?g.outKg/totOut*100:0;return materialDisplayName(g)+' '+pct(s);});
+    $('overallComposition').textContent=products.length?('【産出基準】全インプット材料 ＝ '+(overallParts.length?overallParts.join(' ＋ '):'原料未入力')):'インプット材料を追加してください。';
     $('productFormulaCards').innerHTML=formulaCards.join('');
   }
 
   function saveData(){try{localStorage.setItem(STORE_KEY,JSON.stringify(products));alert('このブラウザに保存しました。');}catch(e){alert('保存できませんでした。');}}
   function deleteSaved(){if(confirm('このツールの保存データを削除しますか？（他のページのデータには影響しません）')){try{localStorage.removeItem(STORE_KEY);}catch(e){}alert('保存データを削除しました。');}}
   function resetAll(){if(confirm('すべてのインプット材料と原料を削除しますか？')){try{localStorage.removeItem(STORE_KEY);}catch(e){}products=[];addProduct();}}
-  function toggleProcess(){
-    var hidden=root.classList.toggle('hide-process');
-    var b=$('procBtn');b.textContent=hidden?'計算過程を表示':'計算過程を閉じる';b.setAttribute('aria-expanded',String(!hidden));
-  }
+  function toggleProcess(){var hidden=root.classList.toggle('hide-process');var b=$('procBtn');b.textContent=hidden?'計算過程を表示':'計算過程を閉じる';b.setAttribute('aria-expanded',String(!hidden));}
   function exportCsv(){
     calculate();
-    var totalWeight=products.reduce(function(s,p){return s+n(p.weight);},0);
-    var rows=[['インプット材料','インプット材料総重量kg','区分','認証状態','原料名','入力方法','入力値','原料認証割合%','構成重量kg','インプット材料内割合%','認証相当重量kg','非認証相当重量kg']];
-    products.forEach(function(p){p.components.forEach(function(c){var x=componentCalc(p,c);rows.push([p.name,p.weight,c.type,c.status,c.name,c.basis,c.amount,c.certPct,x.kg,x.share,x.certKg,x.nonKg]);});});
+    var totIn=products.reduce(function(s,p){return s+n(p.weight);},0);
+    var totOut=0;products.forEach(function(p){p.components.forEach(function(c){totOut+=componentCalc(p,c).outKg;});});
+    var rows=[['インプット材料','投入総重量kg','区分','認証状態','原料名','入力方法','入力値','原料認証割合%','損耗率%','投入構成重量kg','産出重量kg','投入構成割合%','認証相当重量kg(産出)','非認証相当重量kg(産出)']];
+    products.forEach(function(p){p.components.forEach(function(c){var x=componentCalc(p,c);rows.push([p.name,p.weight,c.type,c.status,c.name,c.basis,c.amount,c.certPct,x.lossPct,x.inKg,x.outKg,x.share,x.certKgOut,x.nonKgOut]);});});
     rows.push([]);
-    rows.push(['同名原料集計','','認証状態','原料名','','','','原料認証割合%','合計重量kg','全体割合%','認証相当重量kg','非認証相当重量kg']);
-    groupAllMaterials().forEach(function(g){rows.push(['','',g.status,g.name,'','','',g.certPct,g.kg,totalWeight?g.kg/totalWeight*100:0,g.certKg,g.nonKg]);});
+    rows.push(['同名原料集計','','認証状態','原料名','','','','原料認証割合%','','投入合計kg','産出合計kg','産出基準割合%','認証相当重量kg(産出)','非認証相当重量kg(産出)']);
+    groupAllMaterials().forEach(function(g){rows.push(['','',g.status,g.name,'','','',g.certPct,'',g.inKg,g.outKg,totOut?g.outKg/totOut*100:0,g.certKgOut,g.nonKgOut]);});
     var csv=rows.map(function(r){return r.map(function(v){return '"'+String(v==null?'':v).replace(/"/g,'""')+'"';}).join(',');}).join('\r\n');
     var blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
     var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='認証原料混率_原料構成計算.csv';document.body.appendChild(a);a.click();a.remove();
   }
 
-  /* ===== event delegation (inline onclick 不使用) ===== */
   root.addEventListener('click',function(e){
     var t=e.target.closest('[data-act]');if(!t)return;
     var act=t.getAttribute('data-act');
@@ -639,23 +648,24 @@ body{margin:0;font-family:"Zen Kaku Gothic New",system-ui,-apple-system,"Hiragin
     else if(act==='delComp')removeComponent(pi,ci);
   });
   function onField(e){
-    var el=e.target;if(!el.hasAttribute('data-key'))return;
+    var el=e.target;
+    if(el.id==='dispUnit'){dispUnit=el.value;calculate();return;}
+    if(!el.hasAttribute('data-key'))return;
     var key=el.getAttribute('data-key');
     var pi=parseInt(el.getAttribute('data-pi'),10);
     var ci=el.hasAttribute('data-ci')?parseInt(el.getAttribute('data-ci'),10):null;
-    if(ci==null)updateProduct(pi,key,el.value);
-    else updateComponent(pi,ci,key,el.value);
+    if(ci==null){ if(key==='bulkloss'){ if(e.type!=='change')return; var bl=el.value; products[pi].components.forEach(function(c){c.loss=(bl===''?0:bl);}); var w=Math.max(0,n(products[pi].weight)); products[pi].measuredOut=(bl===''?'':(Math.round(w*(1-clamp(n(bl),0,100)/100)*1000)/1000)); render(); return; } if(key==='measured-out'){ if(e.type!=='change')return; var mo=el.value; products[pi].measuredOut=mo; var w2=Math.max(0,n(products[pi].weight)); var lr=(mo===''||w2<=0)?0:clamp((w2-n(mo))/w2*100,0,100); products[pi].components.forEach(function(c){c.loss=lr;}); render(); return; } updateProduct(pi,key,el.value); } else updateComponent(pi,ci,key,el.value);
   }
   root.addEventListener('input',onField);
   root.addEventListener('change',onField);
 
-  /* ===== init ===== */
   (function init(){
     var saved=null;try{saved=localStorage.getItem(STORE_KEY);}catch(e){}
     if(saved){try{var d=JSON.parse(saved);if(Array.isArray(d)&&d.length){products=d;render();return;}}catch(e){}}
     addProduct();
   })();
 })();
+
 </script>
 </body>
 </html>
