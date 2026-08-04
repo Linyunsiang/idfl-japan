@@ -1,5 +1,32 @@
 [
   {
+    "id": "company-1785820007904",
+    "companyName": "信友株式会社",
+    "companyNameEnglish": "Shinatomo Co.,Ltd.",
+    "logo": "/files/mse7cnbo-oaw7-.svg",
+    "prefecture": "愛知県 / 大阪府",
+    "region": "関西・関東",
+    "certificationTypes": [
+      "GOTS",
+      "OCS",
+      "GRS",
+      "RWS"
+    ],
+    "officialWebsiteUrl": "https://www.shinatomo.co.jp/",
+    "salesPageUrl": "",
+    "productCategories": "",
+    "certificateNumber": "",
+    "certificationYear": "",
+    "shortDescription": "守ってきた歴史と信頼。\nそしてこれからも革新を進め続けるのが私たちの使命です。",
+    "promotionText": "",
+    "featured": false,
+    "published": true,
+    "createdAt": "2026-08-04T05:13:17.219Z",
+    "updatedAt": "2026-08-04T05:13:17.219Z",
+    "updatedBy": "admin",
+    "displayOrder": 0
+  },
+  {
     "id": "fcplanning-office",
     "companyName": "株式会社エフシープランニングオフィス",
     "companyNameEnglish": "FC Planning Office Co., Ltd.",
@@ -18,7 +45,7 @@
     "promotionText": "",
     "featured": false,
     "published": true,
-    "displayOrder": 0,
+    "displayOrder": 1,
     "createdAt": "2026-07-22T02:07:15Z",
     "updatedAt": "2026-07-22T03:38:45.085Z",
     "updatedBy": "admin"
