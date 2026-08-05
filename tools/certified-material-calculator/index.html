@@ -186,6 +186,38 @@ body{margin:0;font-family:"Zen Kaku Gothic New",system-ui,-apple-system,"Hiragin
   .cmc .product-card,.cmc .summary,.cmc .composition,.cmc .guide{box-shadow:none;break-inside:avoid;}
   .cmc table{min-width:0;}
 }
+
+/* v5 multi-input calculator */
+.cmc .language-switch{display:flex;justify-content:flex-end;gap:6px;flex-wrap:wrap;margin:0 0 12px;}
+.cmc .language-switch button{background:#e8f1f7;color:var(--navy);border:1px solid #c7dbea;}
+.cmc .language-switch button.active{background:var(--navy);color:#fff;border-color:var(--navy);}
+.cmc .value-box{display:flex;}
+.cmc .value-box input{border-radius:9px 0 0 9px;}
+.cmc .unit{min-width:48px;padding:10px 9px;background:#edf4f8;border:1px solid #bfd0de;border-left:0;border-radius:0 9px 9px 0;font-weight:700;color:var(--navy);text-align:center;}
+.cmc .product-head{display:grid;grid-template-columns:minmax(220px,1fr) 285px 210px auto;}
+.cmc .section-bar{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 18px;background:#f8fbfd;border-bottom:1px solid var(--line);}
+.cmc .section-bar h2{font-size:17px;margin:0;color:var(--navy);}
+.cmc .inputs{padding:14px 18px 4px;}
+.cmc .input-card{border:1px solid var(--line);border-radius:14px;margin-bottom:14px;overflow:hidden;background:#fff;}
+.cmc .input-head{display:grid;grid-template-columns:minmax(220px,1fr) 210px auto;gap:10px;align-items:end;padding:12px;background:#eef4fb;}
+.cmc .input-card .table-wrap{padding:0 12px 12px;}
+.cmc .input-card table{min-width:1050px;}
+.cmc .supp-section{margin:0 18px 16px;border:1px solid #d8ccef;border-radius:14px;overflow:hidden;}
+.cmc .supp-section .section-bar{background:#f7f3ff;}
+.cmc .supp-section .section-bar h2{color:var(--purple);}
+.cmc .supp-table{padding:0 12px 12px;overflow:auto;}
+.cmc .supp-table table{min-width:800px;}
+.cmc .result-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;padding:15px 18px;background:#fbfdff;border-top:1px solid var(--line);}
+.cmc .warning{display:block;white-space:pre-wrap;}
+.cmc .warning.inline{display:inline-block;margin:0;padding:8px 11px;}
+.cmc .warning.ok{background:#eaf7ee;color:#166534;}
+.cmc .composition h3{margin:0;padding:11px 13px;background:#eaf7ee;color:#166534;font-size:15px;}
+.cmc .composition .table-wrap{padding:0;}
+.cmc .composition table{min-width:850px;}
+.cmc .summary-title,.cmc .guide-title{padding:14px 18px;background:var(--navy);color:#fff;font-weight:700;font-size:18px;}
+.cmc .guide-title{background:var(--teal);}
+@media(max-width:1050px){.cmc .product-head{grid-template-columns:1fr 1fr}.cmc .product-head .delete-product{grid-column:1/-1}.cmc .result-grid,.cmc .summary-grid{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:700px){.cmc .language-switch{justify-content:flex-start}.cmc .product-head,.cmc .input-head{grid-template-columns:1fr}.cmc .result-grid,.cmc .summary-grid{grid-template-columns:repeat(2,1fr)}}
 </style>
 </head>
 <body>
@@ -253,91 +285,23 @@ body{margin:0;font-family:"Zen Kaku Gothic New",system-ui,-apple-system,"Hiragin
 
   <div class="cmc-intro">
     <p class="eyebrow">CERTIFICATION CALCULATION TOOL</p>
-    <h1>認証原料混率・原料構成計算ツール</h1>
-    <p class="sub">複数のインプット材料について、認証原料、非認証原料、Supplemental Weightを入力し、インプット材料別および全体の原料構成割合を確認できます。</p>
+    <h1 data-t="appTitle">複数原料・認証混率計算ツール</h1>
+    <p class="sub" data-t="appSubtitle">複数のInputと各原料の混率をまとめ、総Lossまたは加工後Outputから、TC申請に必要な製品の認証混率・非認証原料別混率を迅速に計算します。</p>
   </div>
 
-  <div class="cmc hide-process" id="cmc">
-    <p class="privacy-note">入力内容はお客様のブラウザ内にのみ保存され、IDFL JAPANのサーバーには送信されません。</p>
-    <p class="privacy-note" style="background:#eef4fb;border-color:#cfe0f2;color:#274b73">入力は kg 基準です。結果の「表示単位」で換算できます（1 lb＝0.4536 kg／1 匁＝0.00375 kg／1 貫目＝3.75 kg／1 丸＝4.536 kg／1 梱＝181.44 kg。IDFL Unit Converter 準拠）。</p>
-
-    <section class="toolbar" aria-label="操作">
-      <button type="button" class="primary" data-act="addProduct">＋ インプット材料を追加</button>
-      <button type="button" class="secondary" data-act="save">ブラウザに保存</button>
-      <button type="button" class="secondary" data-act="csv">CSV出力</button>
-      <button type="button" class="secondary" data-act="print">印刷 / PDF</button>
-      <button type="button" class="danger" data-act="delSaved">保存データを削除</button>
-      <button type="button" class="danger" data-act="reset">すべてクリア</button>
-      <span style="flex:1"></span>
-      <label style="display:flex;align-items:center;gap:6px;font-size:13px;font-weight:700;color:#0f3a63">表示単位
-        <select id="dispUnit" aria-label="結果の表示単位" style="width:auto;min-height:44px;padding:8px 10px">
-          <option value="kg">kg</option><option value="g">g</option><option value="lb">lb（ポンド）</option>
-          <option value="匁">匁</option><option value="貫目">貫目</option><option value="丸">丸</option><option value="梱">梱</option>
-        </select></label>
-    </section>
-
-    <div class="process-toggle">
-      <button type="button" class="secondary" data-act="toggleProcess" id="procBtn" aria-expanded="false">計算過程を表示</button>
+  <div class="cmc" id="cmc">
+    <div class="language-switch" aria-label="Language">
+      <button type="button" data-lang="ja" onclick="setLanguage('ja')">日本語</button>
+      <button type="button" data-lang="en" onclick="setLanguage('en')">English</button>
+      <button type="button" data-lang="zh" onclick="setLanguage('zh')">中文</button>
     </div>
-
-    <div id="products"></div>
-
-    <section class="summary" aria-label="全インプット材料の認証集計">
-      <div class="section-title">全インプット材料の認証集計（投入基準・産出基準）</div>
-      <div class="summary-grid">
-        <div class="kpi"><span>インプット材料数</span><strong id="sumProducts" aria-live="polite">0</strong></div>
-        <div class="kpi"><span>総投入重量</span><strong id="sumInWeight" aria-live="polite">0</strong></div>
-        <div class="kpi"><span>総産出重量（損耗後）</span><strong id="sumOutWeight" aria-live="polite">0</strong></div>
-        <div class="kpi"><span>総損耗重量</span><strong id="sumLossKg" aria-live="polite">0</strong></div>
-        <div class="kpi"><span>投入基準 認証割合</span><strong id="sumCertPctIn" aria-live="polite">0%</strong></div>
-        <div class="kpi"><span>産出基準 認証割合</span><strong id="sumCertPctOut" aria-live="polite">0%</strong></div>
-        <div class="kpi"><span>産出基準 非認証割合</span><strong id="sumNonPctOut" aria-live="polite">0%</strong></div>
-        <div class="kpi"><span>認証相当重量（産出）</span><strong id="sumCertKgOut" aria-live="polite">0</strong></div>
-        <div class="kpi"><span>非認証相当重量（産出）</span><strong id="sumNonKgOut" aria-live="polite">0</strong></div>
-      </div>
-      <div class="ratio-bars">
-        <div class="bar-label"><span>認証（産出基準）</span><span id="certBarText">0%</span></div>
-        <div class="bar"><div class="fill-cert" id="certBar"></div></div>
-        <div class="bar-label"><span>非認証（産出基準）</span><span id="nonBarText">0%</span></div>
-        <div class="bar"><div class="fill-non" id="nonBar"></div></div>
-      </div>
-      <div class="overall-process" id="overallProcess">インプット材料を追加してください。</div>
-    </section>
-
-    <section class="composition" aria-label="同名原料の自動合算・原料別構成割合">
-      <div class="section-title">同名原料の自動合算・原料別構成割合</div>
-      <div class="scroll-hint">← 表を横にスクロールすると、原料ごとの『損耗率(%)・産出重量』などの列があります →</div>
-      <div class="table-wrap">
-        <table class="material-table">
-          <caption class="center" style="caption-side:top;padding:4px;color:#64748b;font-size:12px">同名・同一認証状態・同一認証割合の原料を自動合算します</caption>
-          <thead>
-            <tr>
-              <th scope="col">No.</th><th scope="col">原料名</th><th scope="col">区分</th><th scope="col">原料認証割合</th>
-              <th scope="col">使用インプット材料</th><th scope="col">投入合計</th><th scope="col">産出合計</th>
-              <th scope="col">産出基準割合</th><th scope="col">認証相当重量（産出）</th><th scope="col">非認証相当重量（産出）</th>
-            </tr>
-          </thead>
-          <tbody id="materialSummaryBody"></tbody>
-        </table>
-      </div>
-      <div class="composition-expression" id="overallComposition">インプット材料を追加してください。</div>
-      <div class="product-formulas" id="productFormulaCards"></div>
-    </section>
-
-    <section class="guide" aria-label="ご利用にあたって">
-      <div class="section-title">ご利用にあたって</div>
-      <div class="guide-body">
-        本ツールは、認証原料、非認証原料およびSupplemental Weightの構成を整理し、認証相当重量と原料構成割合を計算するための参考ツールです。
-        <div class="name-rule">
-          各認証制度によって、認証原料の最低割合、追加原料の許容範囲、ラベルグレード、認証表示および取引証明の要件は異なります。
-          実際の適合性および認証表示の可否については、適用される認証基準、Implementation Manual、認証範囲、取引証明書および認証機関の判断をご確認ください。
-        </div>
-        <div class="guide-example">
-          同じ原料として自動集計する場合は、原料名、認証状態および原料認証割合を統一して入力してください。
-        </div>
-        本ツールの計算結果のみを根拠として、特定の認証制度への適合または認証製品であることを宣言することはできません。
-      </div>
-    </section>
+<section class="toolbar"><button class="primary" onclick="addProduct()" data-t="addProduct"></button><button class="danger" onclick="resetAll()" data-t="clear"></button></section>
+  <div id="products"></div>
+  <section class="summary"><div class="summary-title" data-t="allSummary"></div><div class="summary-grid">
+    <div class="kpi"><span data-t="productCount"></span><strong id="sumProducts">0</strong></div><div class="kpi"><span data-t="totalInput"></span><strong id="sumInput">0 kg</strong></div><div class="kpi"><span data-t="processedOutput"></span><strong id="sumOutput">0 kg</strong></div><div class="kpi"><span data-t="suppWeight"></span><strong id="sumSupp">0 kg</strong></div><div class="kpi"><span data-t="productNet"></span><strong id="sumNet">0 kg</strong></div>
+    <div class="kpi"><span data-t="totalLoss"></span><strong id="sumLoss">0 kg</strong></div><div class="kpi"><span data-t="lossRate"></span><strong id="sumLossPct">0%</strong></div><div class="kpi"><span data-t="certifiedWeight"></span><strong id="sumCertKg">0 kg</strong></div><div class="kpi"><span data-t="nonCertifiedWeight"></span><strong id="sumNonKg">0 kg</strong></div><div class="kpi"><span data-t="finalCertContent"></span><strong id="sumCertPct">0%</strong></div>
+  </div><div class="ratio-bars"><div class="bar-label"><span data-t="certMaterial"></span><span id="certBarText">0%</span></div><div class="bar"><div class="fill-cert" id="certBar"></div></div><div class="bar-label"><span data-t="nonCertMaterial"></span><span id="nonBarText">0%</span></div><div class="bar"><div class="fill-non" id="nonBar"></div></div></div><div class="overall-process" id="overallProcess"></div></section>
+  <section class="guide"><div class="guide-title" data-t="calculationMethod"></div><div class="guide-body" id="guideBody"></div></section>
   </div>
 </main>
 
@@ -373,299 +337,56 @@ body{margin:0;font-family:"Zen Kaku Gothic New",system-ui,-apple-system,"Hiragin
 })();
 </script>
 <script>
-/* ===== 認証原料混率・原料構成計算ツール (scoped, no global pollution) ===== */
-/* v3: 損耗率(loss%)＝投入/産出基準を併記 ＋ 表示単位換算(kg/g/lb/匁/貫目/丸/梱) */
-(function(){
-  "use strict";
-  var STORE_KEY='idflJapanCertifiedMaterialCalculatorV1';
-  var root=document.getElementById('cmc');
-  var productsEl=document.getElementById('products');
-  var products=[];
+const I={
+ja:{appTitle:'複数原料・認証混率計算ツール',appSubtitle:'複数のInputと各原料の混率をまとめ、総Lossまたは加工後Outputから、TC申請に必要な製品の認証混率・非認証原料別混率を迅速に計算します。',addProduct:'＋ 製品を追加',clear:'すべてクリア',allSummary:'全製品の集計結果',productCount:'製品数',totalInput:'Input総投入量',processedOutput:'加工後Output',suppWeight:'Supplementary Weight（補足重量）',productNet:'製品最終正味重量',totalLoss:'総Loss',lossRate:'Loss率',certifiedWeight:'認証重量',nonCertifiedWeight:'非認証重量',finalCertContent:'最終認証混率',certMaterial:'認証原料',nonCertMaterial:'非認証原料',calculationMethod:'計算方法',footer:'LossはInput投入量に対して比例配分します。原料別の実測Lossがある場合は、実測値を優先してください。',productName:'製品名',calculationMode:'計算モード',modeLossKg:'総Loss（kg）からOutputを計算',modeLossPct:'総Loss率（%）からOutputを計算',modeOutput:'加工後OutputからLossを逆算',enterLossKg:'総Lossを入力',enterLossPct:'総Loss率を入力',enterOutput:'加工後Outputを入力',removeProduct:'製品を削除',inputSection:'Input',addInput:'＋ Inputを追加',inputName:'原料名',inputWeight:'原料投入量',removeInput:'原料を削除',no:'No.',materialClass:'原料区分',compositionMaterial:'構成原料名',materialComposition:'原料の混率',inputComponentWeight:'投入構成重量',processedComponentWeight:'加工後構成重量',componentLoss:'構成原料Loss',delete:'削除',addCert:'＋ 認証原料',addNonCert:'＋ 非認証原料',suppTitle:'Supplementary Weight（加工後に追加・Loss 0 kg）',addSupp:'＋ 補足重量を追加',addedWeight:'追加重量',certContent:'認証割合',yield:'歩留まり',finalComposition:'製品の最終原料構成（同一原料名は自動合算）',source:'由来',inProductWeight:'製品内重量',finalContent:'最終混率',total:'合計',sourceInput:'Input',sourceSupp:'補足重量',sourceMultiple:'複数',ratioOk:'✓ 原料の混率合計 100%',ratioMismatch:'⚠ 原料の混率合計 {total}（{kind} {diff}）',over:'超過',under:'不足',issueLossOver:'総LossがInput総投入量を超えています。',issueOutputOver:'加工後OutputがInput総投入量を上回っています。',issueRatio:'{name}の原料の混率が100%ではありません。',issueComposition:'最終原料構成合計と製品最終正味重量に {diff} kg の差があります。',okEquation1:'✓ Input {input} kg − Loss {loss} kg ＝ Output {output} kg',okEquation2:'✓ Output {output} kg ＋ Supplementary Weight {supp} kg ＝ 製品最終正味重量 {net} kg',processTitle:'【{name}】',processInput:'Input総投入量',processLoss:'総Loss',processOutput:'加工後Output',processNet:'製品最終正味重量',processCert:'認証重量／最終認証混率',processNon:'非認証重量／最終非認証混率',noProducts:'製品を追加してください。',allProducts:'【全製品】',confirmClear:'すべての製品、Input、原料データを削除しますか？',defaultProduct:'製品1',defaultInput1:'原料1',defaultInput2:'原料2',defaultCert:'認証原料',defaultNon1:'非認証原料1',defaultNon2:'非認証原料2',defaultNon3:'非認証原料3',defaultNon4:'非認証原料4',defaultAddedNon:'追加非認証原料',defaultSupp:'Supplementary Weight'},
+en:{appTitle:'Multi-Input Certified Content Calculator',appSubtitle:'Combine multiple inputs and their material compositions to quickly calculate the product certified content and each non-claimed material content for a Transaction Certificate application, using either total production loss or processed output.',addProduct:'+ Add Product',clear:'Clear All',allSummary:'Summary of All Products',productCount:'Number of Products',totalInput:'Total Input Weight',processedOutput:'Processed Output',suppWeight:'Supplementary Weight',productNet:'Product Net Shipping Weight',totalLoss:'Total Production Loss',lossRate:'Production Loss Rate',certifiedWeight:'Certified Weight',nonCertifiedWeight:'Non-Certified Weight',finalCertContent:'Final Certified Content',certMaterial:'Claimed Material',nonCertMaterial:'Non-Claimed Material',calculationMethod:'Calculation Method',footer:'Production loss is allocated proportionally across all input materials. Use measured material-specific loss data when available.',productName:'Product Name',calculationMode:'Calculation Mode',modeLossKg:'Calculate Output from Total Loss (kg)',modeLossPct:'Calculate Output from Total Loss Rate (%)',modeOutput:'Calculate Loss from Processed Output',enterLossKg:'Enter Total Production Loss',enterLossPct:'Enter Production Loss Rate',enterOutput:'Enter Processed Output',removeProduct:'Remove Product',inputSection:'Input',addInput:'+ Add Input',inputName:'Input Name',inputWeight:'Input Weight',removeInput:'Remove Input',no:'No.',materialClass:'Material Classification',compositionMaterial:'Raw Material Name',materialComposition:'Material Composition',inputComponentWeight:'Input Material Weight',processedComponentWeight:'Processed Material Weight',componentLoss:'Material Loss',delete:'Delete',addCert:'+ Claimed Material',addNonCert:'+ Non-Claimed Material',suppTitle:'Supplementary Weight (added after processing; 0 kg loss)',addSupp:'+ Add Supplementary Weight',addedWeight:'Added Weight',certContent:'Certified Content',yield:'Yield',finalComposition:'Final Product Material Composition (identical material names are combined)',source:'Source',inProductWeight:'Weight in Product',finalContent:'Final Content',total:'Total',sourceInput:'Input',sourceSupp:'Supplementary Weight',sourceMultiple:'Multiple',ratioOk:'✓ Material composition total: 100%',ratioMismatch:'⚠ Material composition total: {total} ({kind} by {diff})',over:'over',under:'under',issueLossOver:'Total production loss exceeds the total input weight.',issueOutputOver:'Processed output exceeds the total input weight.',issueRatio:'The material composition of {name} does not equal 100%.',issueComposition:'The final material composition differs from the product net shipping weight by {diff} kg.',okEquation1:'✓ Input {input} kg − Loss {loss} kg = Output {output} kg',okEquation2:'✓ Output {output} kg + Supplementary Weight {supp} kg = Product Net Shipping Weight {net} kg',processTitle:'【{name}】',processInput:'Total Input Weight',processLoss:'Total Production Loss',processOutput:'Processed Output',processNet:'Product Net Shipping Weight',processCert:'Certified Weight / Final Certified Content',processNon:'Non-Certified Weight / Final Non-Certified Content',noProducts:'Add a product to begin.',allProducts:'【All Products】',confirmClear:'Delete all products, inputs, and material data?',defaultProduct:'Product 1',defaultInput1:'Input 1',defaultInput2:'Input 2',defaultCert:'Claimed Material',defaultNon1:'Non-Claimed Material 1',defaultNon2:'Non-Claimed Material 2',defaultNon3:'Non-Claimed Material 3',defaultNon4:'Non-Claimed Material 4',defaultAddedNon:'Additional Non-Claimed Material',defaultSupp:'Supplementary Weight'},
+zh:{appTitle:'多投入認證混率計算工具',appSubtitle:'整合多個投入及其原料組成，依照總損耗或加工後產出，快速計算TC申請所需的產品認證混率與各項非認證原料混率。',addProduct:'＋ 新增產品',clear:'全部清除',allSummary:'全部產品彙總結果',productCount:'產品數量',totalInput:'投入總重量',processedOutput:'加工後產出',suppWeight:'補充重量',productNet:'產品最終淨重',totalLoss:'總損耗',lossRate:'損耗率',certifiedWeight:'認證重量',nonCertifiedWeight:'非認證重量',finalCertContent:'最終認證混率',certMaterial:'認證原料',nonCertMaterial:'非認證原料',calculationMethod:'計算方法',footer:'損耗會依各投入原料的重量比例分配；若有各原料的實際損耗資料，請優先採用實測值。',productName:'產品名稱',calculationMode:'計算模式',modeLossKg:'由總損耗（kg）計算產出',modeLossPct:'由總損耗率（%）計算產出',modeOutput:'由加工後產出反算損耗',enterLossKg:'輸入總損耗',enterLossPct:'輸入總損耗率',enterOutput:'輸入加工後產出',removeProduct:'刪除產品',inputSection:'投入',addInput:'＋ 新增投入',inputName:'原料名稱',inputWeight:'原料投入量',removeInput:'刪除原料',no:'編號',materialClass:'原料類別',compositionMaterial:'組成原料名稱',materialComposition:'原料混率',inputComponentWeight:'投入組成重量',processedComponentWeight:'加工後組成重量',componentLoss:'組成原料損耗',delete:'刪除',addCert:'＋ 認證原料',addNonCert:'＋ 非認證原料',suppTitle:'補充重量（加工後追加，損耗為0 kg）',addSupp:'＋ 新增補充重量',addedWeight:'追加重量',certContent:'認證比例',yield:'良率',finalComposition:'產品最終原料組成（相同原料名稱自動合併）',source:'來源',inProductWeight:'產品內重量',finalContent:'最終混率',total:'合計',sourceInput:'投入',sourceSupp:'補充重量',sourceMultiple:'多個來源',ratioOk:'✓ 原料混率合計為100%',ratioMismatch:'⚠ 原料混率合計為{total}（{kind}{diff}）',over:'超出',under:'不足',issueLossOver:'總損耗超過投入總重量。',issueOutputOver:'加工後產出超過投入總重量。',issueRatio:'{name}的原料混率不等於100%。',issueComposition:'最終原料組成合計與產品最終淨重相差{diff} kg。',okEquation1:'✓ 投入 {input} kg − 損耗 {loss} kg ＝ 產出 {output} kg',okEquation2:'✓ 產出 {output} kg ＋ 補充重量 {supp} kg ＝ 產品最終淨重 {net} kg',processTitle:'【{name}】',processInput:'投入總重量',processLoss:'總損耗',processOutput:'加工後產出',processNet:'產品最終淨重',processCert:'認證重量／最終認證混率',processNon:'非認證重量／最終非認證混率',noProducts:'請新增產品。',allProducts:'【全部產品】',confirmClear:'確定要刪除全部產品、投入及原料資料嗎？',defaultProduct:'產品1',defaultInput1:'原料1',defaultInput2:'原料2',defaultCert:'認證原料',defaultNon1:'非認證原料1',defaultNon2:'非認證原料2',defaultNon3:'非認證原料3',defaultNon4:'非認證原料4',defaultAddedNon:'新增非認證原料',defaultSupp:'補充重量'}
+};
+const GUIDE={
+ja:`各Inputについて「原料投入量」と「原料の混率」を入力します。総LossはすべてのInput・構成原料に同じ率で比例配分します。Supplementary Weight（補足重量）は加工後に追加するため、Lossは0 kgです。<div class="guide-example"><b>入力例</b><br>原料1：500 kg＝認証原料87%＋非認証原料1 10%＋非認証原料2 3%<br>原料2：1,000 kg＝認証原料50%＋非認証原料3 20%＋非認証原料4 30%<br>総Loss：150 kg、加工後Output：1,350 kg、補足重量：10 kg<br>製品最終正味重量：1,360 kg<br>認証重量：841.5 kg＝61.88%、非認証重量：518.5 kg＝38.12%</div><div class="guide-example"><b>逆算モード</b><br>Input総投入量、加工後Output、補足重量を入力すると、総Loss＝Input総投入量－加工後Outputを自動計算します。<br>製品最終正味重量＝加工後Output＋Supplementary Weight</div>`,
+en:`Enter the input weight and material composition for each input. Total production loss is allocated proportionally across every input and raw material at the same rate. Supplementary weight is added after processing and therefore has 0 kg production loss.<div class="guide-example"><b>Example</b><br>Input 1: 500 kg = 87% claimed material + 10% non-claimed material 1 + 3% non-claimed material 2<br>Input 2: 1,000 kg = 50% claimed material + 20% non-claimed material 3 + 30% non-claimed material 4<br>Total production loss: 150 kg; processed output: 1,350 kg; supplementary weight: 10 kg<br>Product net shipping weight: 1,360 kg<br>Certified weight: 841.5 kg = 61.88%; non-certified weight: 518.5 kg = 38.12%</div><div class="guide-example"><b>Reverse Calculation</b><br>Enter the total input weight, processed output, and supplementary weight. The tool calculates total production loss as total input weight minus processed output.<br>Product net shipping weight = processed output + supplementary weight</div>`,
+zh:`請輸入各項投入的原料投入量與原料混率。總損耗會以相同損耗率，按比例分配至所有投入及組成原料。補充重量是在加工後追加，因此損耗為0 kg。<div class="guide-example"><b>輸入範例</b><br>原料1：500 kg＝認證原料87%＋非認證原料1 10%＋非認證原料2 3%<br>原料2：1,000 kg＝認證原料50%＋非認證原料3 20%＋非認證原料4 30%<br>總損耗：150 kg、加工後產出：1,350 kg、補充重量：10 kg<br>產品最終淨重：1,360 kg<br>認證重量：841.5 kg＝61.88%、非認證重量：518.5 kg＝38.12%</div><div class="guide-example"><b>反算模式</b><br>輸入投入總重量、加工後產出及補充重量後，工具會以「總損耗＝投入總重量－加工後產出」自動計算損耗。<br>產品最終淨重＝加工後產出＋補充重量</div>`};
 
-  /* 表示単位（IDFL Unit Converter 準拠：1単位=Xkg） */
-  var UNITS={
-    'kg':{label:'kg',kg:1},
-    'g':{label:'g',kg:0.001},
-    'lb':{label:'lb',kg:0.4536},
-    '匁':{label:'匁',kg:0.00375},
-    '貫目':{label:'貫目',kg:3.75},
-    '丸':{label:'丸',kg:4.536},
-    '梱':{label:'梱',kg:181.44}
-  };
-  var dispUnit='kg';
-  function uFactor(){return (UNITS[dispUnit]||UNITS.kg).kg;}
-  function uLabel(){return (UNITS[dispUnit]||UNITS.kg).label;}
+let lang='ja',products=[];
+const $=id=>document.getElementById(id),num=v=>Number(v)||0,clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+const fmt=v=>Number(v).toLocaleString(lang==='zh'?'zh-TW':lang==='en'?'en-US':'ja-JP',{maximumFractionDigits:3});
+const percent=v=>Number(v).toLocaleString(lang==='zh'?'zh-TW':lang==='en'?'en-US':'ja-JP',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
+const esc=s=>String(s??'').replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+function t(key,vars={}){let out=(I[lang]&&I[lang][key])||I.ja[key]||key;Object.entries(vars).forEach(([k,v])=>out=out.replaceAll(`{${k}}`,v));return out}
+function nameOf(item){return item.nameKey?t(item.nameKey):(item.name||'')}
+function setLanguage(next){lang=next;document.documentElement.lang=lang==='zh'?'zh-Hant':lang;render();applyStatic()}
+function applyStatic(){document.querySelectorAll('[data-t]').forEach(el=>el.textContent=t(el.dataset.t));document.querySelectorAll('[data-lang]').forEach(b=>b.classList.toggle('active',b.dataset.lang===lang));$('guideBody').innerHTML=GUIDE[lang];}
 
-  var $=function(id){return document.getElementById(id);};
-  var n=function(v){var x=Number(v);return isFinite(x)?x:0;};
-  var clamp=function(v,lo,hi){return Math.min(hi,Math.max(lo,v));};
-  var fmt=function(v){return Number(isFinite(v)?v:0).toLocaleString('ja-JP',{maximumFractionDigits:3});};
-  var wt=function(kg){return fmt((isFinite(kg)?kg:0)/uFactor())+' '+uLabel();}; /* kg値→表示単位 */
-  var pct=function(v){return Number(isFinite(v)?v:0).toLocaleString('ja-JP',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';};
-  var esc=function(s){return String(s==null?'':s).replace(/[&<>"']/g,function(m){return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m];});};
-  function normalizeName(value){return String(value||'').normalize('NFKC').trim().replace(/\s+/g,' ').toLocaleLowerCase('ja-JP');}
+function defaultProduct(){return{nameKey:'defaultProduct',mode:'lossKg',calcValue:150,inputs:[{nameKey:'defaultInput1',weightKg:500,materials:[{status:'cert',nameKey:'defaultCert',ratio:87},{status:'non',nameKey:'defaultNon1',ratio:10},{status:'non',nameKey:'defaultNon2',ratio:3}]},{nameKey:'defaultInput2',weightKg:1000,materials:[{status:'cert',nameKey:'defaultCert',ratio:50},{status:'non',nameKey:'defaultNon3',ratio:20},{status:'non',nameKey:'defaultNon4',ratio:30}]}],supplementaries:[{status:'non',nameKey:'defaultSupp',weightKg:10,certPct:0}]}}
+function addProduct(data){const p=data||defaultProduct();if(!data&&products.length)p.nameKey=null,p.name=t('defaultProduct').replace(/1$/,String(products.length+1));products.push(p);render()}
+function removeProduct(pi){products.splice(pi,1);render()}
+function addInput(pi){products[pi].inputs.push({name:`${t('inputName')} ${products[pi].inputs.length+1}`,weightKg:0,materials:[{status:'cert',nameKey:'defaultCert',ratio:100}]});render()}
+function removeInput(pi,ii){products[pi].inputs.splice(ii,1);render()}
+function addMaterial(pi,ii,status){products[pi].inputs[ii].materials.push({status,nameKey:status==='cert'?'defaultCert':'defaultAddedNon',ratio:0});render()}
+function removeMaterial(pi,ii,mi){products[pi].inputs[ii].materials.splice(mi,1);render()}
+function addSupplementary(pi){products[pi].supplementaries.push({status:'non',nameKey:'defaultSupp',weightKg:0,certPct:0});render()}
+function removeSupplementary(pi,si){products[pi].supplementaries.splice(si,1);render()}
+function updateName(item,value){item.name=value;delete item.nameKey;calculate()}
+function updateProduct(pi,key,value){products[pi][key]=value;key==='mode'?render():calculate()}
+function updateInput(pi,ii,key,value){products[pi].inputs[ii][key]=value;calculate()}
+function updateMaterial(pi,ii,mi,key,value){products[pi].inputs[ii].materials[mi][key]=value;calculate()}
+function updateSupplementary(pi,si,key,value){const s=products[pi].supplementaries[si];s[key]=value;if(key==='status'){s.certPct=value==='non'?0:(num(s.certPct)||100);render()}else calculate()}
+function modeInputLabel(mode){return mode==='lossKg'?t('enterLossKg'):mode==='lossPct'?t('enterLossPct'):t('enterOutput')}
+function productCalc(p){const inputKg=p.inputs.reduce((s,x)=>s+Math.max(0,num(x.weightKg)),0);let lossKg=0,outputKg=0;if(p.mode==='lossKg'){lossKg=Math.max(0,num(p.calcValue));outputKg=inputKg-lossKg}else if(p.mode==='lossPct'){lossKg=inputKg*clamp(num(p.calcValue),0,100)/100;outputKg=inputKg-lossKg}else{outputKg=Math.max(0,num(p.calcValue));lossKg=inputKg-outputKg}const yieldRate=inputKg>0?outputKg/inputKg:0,lossPct=inputKg>0?lossKg/inputKg*100:0,suppKg=p.supplementaries.reduce((s,x)=>s+Math.max(0,num(x.weightKg)),0);return{inputKg,lossKg,outputKg,yieldRate,lossPct,suppKg,netKg:outputKg+suppKg}}
+function materialCalc(input,m,c){const inputKg=Math.max(0,num(input.weightKg))*Math.max(0,num(m.ratio))/100,outputKg=inputKg*c.yieldRate;return{inputKg,outputKg,lossKg:inputKg-outputKg}}
+function aggregate(p,c){const map=new Map(),add=(status,name,inputKg,outputKg,lossKg,source)=>{const k=status+'::'+name.toLocaleLowerCase();if(!map.has(k))map.set(k,{status,name,inputKg:0,outputKg:0,lossKg:0,source});const r=map.get(k);r.inputKg+=inputKg;r.outputKg+=outputKg;r.lossKg+=lossKg;if(r.source!==source)r.source='multiple'};p.inputs.forEach(input=>input.materials.forEach(m=>{const x=materialCalc(input,m,c);add(m.status,nameOf(m)||'-',x.inputKg,x.outputKg,x.lossKg,'input')}));p.supplementaries.forEach(s=>{const w=Math.max(0,num(s.weightKg)),cp=clamp(num(s.certPct),0,100),ck=w*cp/100,nk=w-ck,nm=nameOf(s)||'-';if(ck)add('cert',nm,0,ck,0,'supp');if(nk)add('non',nm,0,nk,0,'supp')});return[...map.values()]}
+function statusText(s){return s==='cert'?t('certMaterial'):t('nonCertMaterial')}function sourceText(s){return s==='input'?t('sourceInput'):s==='supp'?t('sourceSupp'):t('sourceMultiple')}
 
-  function defaultComponents(){
-    return[
-      {type:'原料',status:'認証原料',name:'認証原料',basis:'%',amount:70,certPct:100,loss:0},
-      {type:'原料',status:'非認証原料',name:'非認証原料1',basis:'%',amount:10,certPct:0,loss:0},
-      {type:'原料',status:'非認証原料',name:'非認証原料2',basis:'%',amount:10,certPct:0,loss:0},
-      {type:'原料',status:'非認証原料',name:'非認証原料3',basis:'%',amount:10,certPct:0,loss:0}
-    ];
-  }
-  function addProduct(data){var i=products.length+1;products.push(data||{name:'インプット材料'+i,weight:100,components:defaultComponents()});render();}
-  function removeProduct(pi){products.splice(pi,1);if(!products.length)addProduct();else render();}
-  function addComponent(pi,type){
-    type=type||'原料';
-    products[pi].components.push({type:type,status:type==='Supplemental'?'非認証原料':'認証原料',name:type==='Supplemental'?'Supplemental Weight':'追加原料',basis:type==='Supplemental'?'kg':'%',amount:0,certPct:type==='Supplemental'?0:100,loss:0});
-    render();
-  }
-  function removeComponent(pi,ci){products[pi].components.splice(ci,1);render();}
-  function updateProduct(pi,key,value){products[pi][key]=value;calculate();}
-  function updateComponent(pi,ci,key,value){
-    var c=products[pi].components[ci];c[key]=value;
-    if(key==='status'){c.certPct=value==='非認証原料'?0:(n(c.certPct)||100);render();return;}
-    calculate();
-  }
+function render(){
+$('products').innerHTML=products.map((p,pi)=>`<section class="product-card"><div class="product-head"><div class="field"><label>${t('productName')}</label><input value="${esc(nameOf(p))}" oninput="updateName(products[${pi}],this.value)"></div><div class="field"><label>${t('calculationMode')}</label><select onchange="updateProduct(${pi},'mode',this.value)"><option value="lossKg" ${p.mode==='lossKg'?'selected':''}>${t('modeLossKg')}</option><option value="lossPct" ${p.mode==='lossPct'?'selected':''}>${t('modeLossPct')}</option><option value="outputKg" ${p.mode==='outputKg'?'selected':''}>${t('modeOutput')}</option></select></div><div class="field"><label>${modeInputLabel(p.mode)}</label><div class="value-box"><input type="number" min="0" step="0.001" value="${p.calcValue}" oninput="updateProduct(${pi},'calcValue',this.value)"><span class="unit">${p.mode==='lossPct'?'%':'kg'}</span></div></div><button class="danger delete-product" onclick="removeProduct(${pi})">${t('removeProduct')}</button></div>
+<div class="section-bar"><h2>${t('inputSection')}</h2><button class="primary" onclick="addInput(${pi})">${t('addInput')}</button></div><div class="inputs">${p.inputs.map((input,ii)=>`<section class="input-card"><div class="input-head"><div class="field"><label>${t('inputName')}</label><input value="${esc(nameOf(input))}" oninput="updateName(products[${pi}].inputs[${ii}],this.value)"></div><div class="field"><label>${t('inputWeight')}</label><div class="value-box"><input type="number" min="0" step="0.001" value="${input.weightKg}" oninput="updateInput(${pi},${ii},'weightKg',this.value)"><span class="unit">kg</span></div></div><button class="danger delete-input" onclick="removeInput(${pi},${ii})">${t('removeInput')}</button></div><div class="table-wrap"><table><thead><tr><th>${t('no')}</th><th>${t('materialClass')}</th><th>${t('compositionMaterial')}</th><th>${t('materialComposition')}</th><th>${t('inputComponentWeight')}</th><th>${t('processedComponentWeight')}</th><th>${t('componentLoss')}</th><th></th></tr></thead><tbody>${input.materials.map((m,mi)=>`<tr><td class="center">${mi+1}</td><td><select onchange="updateMaterial(${pi},${ii},${mi},'status',this.value)"><option value="cert" ${m.status==='cert'?'selected':''}>${t('certMaterial')}</option><option value="non" ${m.status==='non'?'selected':''}>${t('nonCertMaterial')}</option></select></td><td><input value="${esc(nameOf(m))}" oninput="updateName(products[${pi}].inputs[${ii}].materials[${mi}],this.value)"></td><td><div class="value-box"><input type="number" min="0" step="0.01" value="${m.ratio}" oninput="updateMaterial(${pi},${ii},${mi},'ratio',this.value)"><span class="unit">%</span></div></td><td class="calc" id="mi-${pi}-${ii}-${mi}">0 kg</td><td class="calc" id="mo-${pi}-${ii}-${mi}">0 kg</td><td class="calc" id="ml-${pi}-${ii}-${mi}">0 kg</td><td><button class="danger" onclick="removeMaterial(${pi},${ii},${mi})">${t('delete')}</button></td></tr>`).join('')}</tbody></table></div><div class="row-actions"><button class="primary" onclick="addMaterial(${pi},${ii},'cert')">${t('addCert')}</button><button class="secondary" onclick="addMaterial(${pi},${ii},'non')">${t('addNonCert')}</button><span class="warning inline" id="iw-${pi}-${ii}"></span></div></section>`).join('')}</div>
+<section class="supp-section"><div class="section-bar"><h2>${t('suppTitle')}</h2><button class="secondary" onclick="addSupplementary(${pi})">${t('addSupp')}</button></div><div class="supp-table"><table><thead><tr><th>${t('no')}</th><th>${t('materialClass')}</th><th>${t('compositionMaterial')}</th><th>${t('addedWeight')}</th><th>${t('certContent')}</th><th>${t('componentLoss')}</th><th></th></tr></thead><tbody>${p.supplementaries.map((s,si)=>`<tr><td class="center">${si+1}</td><td><select onchange="updateSupplementary(${pi},${si},'status',this.value)"><option value="cert" ${s.status==='cert'?'selected':''}>${t('certMaterial')}</option><option value="non" ${s.status==='non'?'selected':''}>${t('nonCertMaterial')}</option></select></td><td><input value="${esc(nameOf(s))}" oninput="updateName(products[${pi}].supplementaries[${si}],this.value)"></td><td><div class="value-box"><input type="number" min="0" step="0.001" value="${s.weightKg}" oninput="updateSupplementary(${pi},${si},'weightKg',this.value)"><span class="unit">kg</span></div></td><td><div class="value-box"><input type="number" min="0" max="100" step="0.01" value="${s.certPct}" ${s.status==='non'?'readonly':''} oninput="updateSupplementary(${pi},${si},'certPct',this.value)"><span class="unit">%</span></div></td><td class="calc">0 kg</td><td><button class="danger" onclick="removeSupplementary(${pi},${si})">${t('delete')}</button></td></tr>`).join('')}</tbody></table></div></section>
+<div class="result-grid"><div class="kpi"><span>${t('totalInput')}</span><strong id="pi-${pi}">0 kg</strong></div><div class="kpi"><span>${t('processedOutput')}</span><strong id="po-${pi}">0 kg</strong></div><div class="kpi"><span>${t('suppWeight')}</span><strong id="ps-${pi}">0 kg</strong></div><div class="kpi"><span>${t('productNet')}</span><strong id="pn-${pi}">0 kg</strong></div><div class="kpi"><span>${t('yield')}</span><strong id="py-${pi}">0%</strong></div><div class="kpi"><span>${t('totalLoss')}</span><strong id="pl-${pi}">0 kg</strong></div><div class="kpi"><span>${t('lossRate')}</span><strong id="plp-${pi}">0%</strong></div><div class="kpi"><span>${t('certifiedWeight')}</span><strong id="pc-${pi}">0 kg</strong></div><div class="kpi"><span>${t('nonCertifiedWeight')}</span><strong id="pnc-${pi}">0 kg</strong></div><div class="kpi"><span>${t('finalCertContent')}</span><strong id="pcp-${pi}">0%</strong></div></div><div class="warning" id="pw-${pi}"></div>
+<section class="composition"><h3>${t('finalComposition')}</h3><div class="table-wrap"><table><thead><tr><th>${t('materialClass')}</th><th>${t('compositionMaterial')}</th><th>${t('source')}</th><th>${t('inputComponentWeight')}</th><th>${t('inProductWeight')}</th><th>${t('componentLoss')}</th><th>${t('finalContent')}</th></tr></thead><tbody id="comp-${pi}"></tbody></table></div></section><div class="process" id="proc-${pi}"></div></section>`).join('');calculate();applyStatic()}
 
-  /* ===== 計算式（投入基準を保持し、産出＝投入×(1-損耗率) を追加。内部は全てkg） ===== */
-  function componentCalc(product,c){
-    var w=Math.max(0,n(product.weight));
-    var amount=Math.max(0,n(c.amount));
-    var inKg=c.basis==='%'?w*amount/100:amount;
-    var certPct=clamp(n(c.certPct),0,100);
-    var lossPct=clamp(n(c.loss),0,100);
-    var outKg=inKg*(1-lossPct/100);
-    var certKgIn=inKg*certPct/100, nonKgIn=inKg-certKgIn;
-    var certKgOut=outKg*certPct/100, nonKgOut=outKg-certKgOut;
-    return{inKg:inKg,share:w>0?inKg/w*100:0,certPct:certPct,lossPct:lossPct,outKg:outKg,certKgIn:certKgIn,nonKgIn:nonKgIn,certKgOut:certKgOut,nonKgOut:nonKgOut};
-  }
-  function groupProductMaterials(p){
-    var map=new Map();
-    p.components.forEach(function(c){
-      var x=componentCalc(p,c);var name=(c.name||'未命名原料').trim()||'未命名原料';
-      var key=[normalizeName(name),c.status,x.certPct,c.type].join('|');
-      if(!map.has(key))map.set(key,{name:name,status:c.status,type:c.type,certPct:x.certPct,inKg:0,outKg:0,certKgOut:0,nonKgOut:0,productNames:new Set()});
-      var g=map.get(key);g.inKg+=x.inKg;g.outKg+=x.outKg;g.certKgOut+=x.certKgOut;g.nonKgOut+=x.nonKgOut;
-    });
-    return Array.from(map.values());
-  }
-  function groupAllMaterials(){
-    var map=new Map();
-    products.forEach(function(p,pi){
-      p.components.forEach(function(c){
-        var x=componentCalc(p,c);var name=(c.name||'未命名原料').trim()||'未命名原料';
-        var key=[normalizeName(name),c.status,x.certPct,c.type].join('|');
-        if(!map.has(key))map.set(key,{name:name,status:c.status,type:c.type,certPct:x.certPct,inKg:0,outKg:0,certKgOut:0,nonKgOut:0,productNames:new Set()});
-        var g=map.get(key);g.inKg+=x.inKg;g.outKg+=x.outKg;g.certKgOut+=x.certKgOut;g.nonKgOut+=x.nonKgOut;
-        g.productNames.add(p.name||('インプット材料'+(pi+1)));
-      });
-    });
-    return Array.from(map.values());
-  }
-  function materialDisplayName(g){if(g.status==='認証原料'&&g.certPct<100)return g.name+'（原料認証 '+pct(g.certPct)+'）';return g.name;}
-
-  function render(){
-    productsEl.innerHTML=products.map(function(p,pi){
-      var rows=p.components.map(function(c,ci){
-        return '<tr>'+
-          '<td class="center" data-label="No.">'+(ci+1)+'</td>'+
-          '<td data-label="区分"><select data-pi="'+pi+'" data-ci="'+ci+'" data-key="type"><option '+(c.type==='原料'?'selected':'')+'>原料</option><option '+(c.type==='Supplemental'?'selected':'')+'>Supplemental</option></select></td>'+
-          '<td data-label="認証状態"><select data-pi="'+pi+'" data-ci="'+ci+'" data-key="status"><option '+(c.status==='認証原料'?'selected':'')+'>認証原料</option><option '+(c.status==='非認証原料'?'selected':'')+'>非認証原料</option></select></td>'+
-          '<td data-label="原料名"><input aria-label="原料名" value="'+esc(c.name)+'" data-pi="'+pi+'" data-ci="'+ci+'" data-key="name"></td>'+
-          '<td data-label="入力方法"><select data-pi="'+pi+'" data-ci="'+ci+'" data-key="basis"><option value="%" '+(c.basis==='%'?'selected':'')+'>割合 %</option><option value="kg" '+(c.basis==='kg'?'selected':'')+'>重量 kg</option></select></td>'+
-          '<td data-label="割合／重量(kg)"><input aria-label="割合または重量(kg)" type="number" min="0" step="0.001" value="'+esc(c.amount)+'" data-pi="'+pi+'" data-ci="'+ci+'" data-key="amount"></td>'+
-          '<td data-label="原料認証割合"><input aria-label="原料認証割合(%)" type="number" min="0" max="100" step="0.01" value="'+esc(c.certPct)+'" '+(c.status==='非認証原料'?'readonly':'')+' data-pi="'+pi+'" data-ci="'+ci+'" data-key="certPct"></td>'+
-          '<td data-label="損耗率(%)"><input aria-label="損耗率(%)" type="number" min="0" max="100" step="0.01" value="'+esc(c.loss==null?0:c.loss)+'" data-pi="'+pi+'" data-ci="'+ci+'" data-key="loss"></td>'+
-          '<td class="calc" data-label="構成重量(投入)" id="kg-'+pi+'-'+ci+'">0</td>'+
-          '<td class="calc" data-label="産出重量" id="out-'+pi+'-'+ci+'">0</td>'+
-          '<td class="calc" data-label="構成割合(投入)" id="share-'+pi+'-'+ci+'">0%</td>'+
-          '<td class="calc" data-label="認証相当(産出)" id="cert-'+pi+'-'+ci+'">0</td>'+
-          '<td class="calc" data-label="非認証相当(産出)" id="non-'+pi+'-'+ci+'">0</td>'+
-          '<td data-label="操作"><button type="button" class="danger" data-act="delComp" data-pi="'+pi+'" data-ci="'+ci+'">削除</button></td>'+
-        '</tr>';
-      }).join('');
-      var _uf=p.components.length&&p.components.every(function(x){return String(x.loss||0)===String(p.components[0].loss||0);});var _ul=_uf?(p.components[0].loss==null?0:p.components[0].loss):'';
-      return '<section class="product-card">'+
-        '<div class="product-head">'+
-          '<div class="field"><label for="pname-'+pi+'">インプット材料</label><input id="pname-'+pi+'" value="'+esc(p.name)+'" data-pi="'+pi+'" data-key="name"></div>'+
-          '<div class="field"><label for="pw-'+pi+'">インプット材料総重量（投入・kg）</label><div class="weight-box"><input id="pw-'+pi+'" type="number" min="0" step="0.001" value="'+esc(p.weight)+'" data-pi="'+pi+'" data-key="weight"><span>kg</span></div></div>'+
-          '<div class="field"><label for="pl-'+pi+'">損耗率(%)（全体一括）</label><input id="pl-'+pi+'" type="number" min="0" max="100" step="0.01" placeholder="0" value="'+esc(_ul)+'" data-pi="'+pi+'" data-key="bulkloss"></div>'+
-          '<div class="field"><label for="mo-'+pi+'">実測産出重量（kg）→損耗率を算出</label><input id="mo-'+pi+'" type="number" min="0" step="0.001" placeholder="任意" value="'+esc(p.measuredOut==null?'':p.measuredOut)+'" data-pi="'+pi+'" data-key="measured-out"></div>'+
-          '<button type="button" class="danger delete-product" data-act="delProduct" data-pi="'+pi+'">インプット材料を削除</button>'+
-        '</div>'+
-        '<div class="scroll-hint">← 横にスクロールできます →</div>'+
-        '<div class="table-wrap"><table class="prod-table"><caption class="sr-only">原料構成入力表</caption><thead><tr>'+
-          '<th scope="col">No.</th><th scope="col">区分</th><th scope="col">認証状態</th><th scope="col">原料名</th><th scope="col">入力方法</th>'+
-          '<th scope="col">割合／重量(kg)</th><th scope="col">原料認証割合</th><th scope="col">損耗率(%)</th><th scope="col">構成重量(投入)</th><th scope="col">産出重量</th>'+
-          '<th scope="col">構成割合(投入)</th><th scope="col">認証相当(産出)</th><th scope="col">非認証相当(産出)</th><th scope="col">操作</th>'+
-        '</tr></thead><tbody>'+rows+'</tbody></table></div>'+
-        '<div class="row-actions">'+
-          '<button type="button" class="primary" data-act="addComp" data-pi="'+pi+'" data-type="原料">＋ 原料を追加</button>'+
-          '<button type="button" class="secondary" data-act="addComp" data-pi="'+pi+'" data-type="Supplemental">＋ Supplemental Weightを追加</button>'+
-        '</div>'+
-        '<div class="product-result">'+
-          '<div class="kpi"><span>投入重量</span><strong id="p-inw-'+pi+'">0</strong></div>'+
-          '<div class="kpi"><span>産出重量（損耗後）</span><strong id="p-outw-'+pi+'">0</strong></div>'+
-          '<div class="kpi"><span>投入基準 認証割合</span><strong id="p-certpin-'+pi+'">0%</strong></div>'+
-          '<div class="kpi"><span>産出基準 認証割合</span><strong id="p-certpout-'+pi+'">0%</strong></div>'+
-          '<div class="kpi"><span>認証相当重量（産出）</span><strong id="p-certkgout-'+pi+'">0</strong></div>'+
-          '<div class="kpi"><span>非認証相当重量（産出）</span><strong id="p-nonkgout-'+pi+'">0</strong></div>'+
-        '</div>'+
-        '<div class="warning" id="warn-'+pi+'" role="status"></div>'+
-        '<div class="final-expression" id="final-'+pi+'"></div>'+
-        '<div class="process" id="process-'+pi+'"></div>'+
-      '</section>';
-    }).join('');
-    calculate();
-  }
-
-  function calculate(){
-    var totIn=0,totOut=0,totCertOut=0,totNonOut=0,totCertIn=0;
-    var overallLines=[];var formulaCards=[];
-    products.forEach(function(p,pi){
-      var inputWeight=Math.max(0,n(p.weight));
-      var compIn=0,compOut=0,certIn=0,certOut=0,nonOut=0;
-      var lines=['【'+(p.name||'インプット材料'+(pi+1))+'：投入 '+wt(inputWeight)+'】'];
-      p.components.forEach(function(c,ci){
-        var x=componentCalc(p,c);
-        compIn+=x.inKg;compOut+=x.outKg;certIn+=x.certKgIn;certOut+=x.certKgOut;nonOut+=x.nonKgOut;
-        var e;
-        if((e=$('kg-'+pi+'-'+ci)))e.textContent=wt(x.inKg);
-        if((e=$('out-'+pi+'-'+ci)))e.textContent=wt(x.outKg);
-        if((e=$('share-'+pi+'-'+ci)))e.textContent=pct(x.share);
-        if((e=$('cert-'+pi+'-'+ci)))e.textContent=wt(x.certKgOut);
-        if((e=$('non-'+pi+'-'+ci)))e.textContent=wt(x.nonKgOut);
-        var inputText=c.basis==='%'?(fmt(n(c.amount))+'% × '+wt(inputWeight)):(fmt(n(c.amount))+' kg');
-        lines.push((ci+1)+'. '+(c.name||'原料')+'（'+c.status+'／'+c.type+'）\n'+
-          '   投入構成重量：'+inputText+' ＝ '+wt(x.inKg)+'\n'+
-          '   損耗：'+fmt(x.lossPct)+'% → 産出重量 ＝ '+wt(x.inKg)+' ×（1 − '+fmt(x.lossPct)+'%）＝ '+wt(x.outKg)+'\n'+
-          '   投入構成割合：'+pct(x.share)+'\n'+
-          '   認証相当（産出）：'+wt(x.outKg)+' × '+fmt(x.certPct)+'% ＝ '+wt(x.certKgOut));
-      });
-      var certPctIn=inputWeight>0?certIn/inputWeight*100:0;
-      var certPctOut=compOut>0?certOut/compOut*100:0;
-      var nonPctOut=compOut>0?nonOut/compOut*100:0;
-      var diff=compIn-inputWeight;var e2;
-      if((e2=$('p-inw-'+pi)))e2.textContent=wt(inputWeight);
-      if((e2=$('p-outw-'+pi)))e2.textContent=wt(compOut);
-      if((e2=$('p-certpin-'+pi)))e2.textContent=pct(certPctIn);
-      if((e2=$('p-certpout-'+pi)))e2.textContent=pct(certPctOut);
-      if((e2=$('p-certkgout-'+pi)))e2.textContent=wt(certOut);
-      if((e2=$('p-nonkgout-'+pi)))e2.textContent=wt(nonOut);
-      var warn=$('warn-'+pi);
-      if(warn){
-        if(Math.abs(diff)<=0.001){warn.innerHTML='<span class="ic">✓</span><span>投入構成重量合計とインプット材料重量が一致しています。</span>';warn.className='warning';}
-        else if(diff<0){warn.innerHTML='<span class="ic">⚠</span><span>未配分重量：'+wt(Math.abs(diff))+'（投入基準）。原料またはSupplemental Weightを追加してください。</span>';warn.className='warning';}
-        else{warn.innerHTML='<span class="ic">⚠</span><span>投入構成重量がインプット材料重量を '+wt(diff)+' 超えています。</span>';warn.className='warning error';}
-      }
-      var grouped=groupProductMaterials(p);
-      var partsIn=grouped.map(function(g){var s=inputWeight>0?g.inKg/inputWeight*100:0;return materialDisplayName(g)+' '+pct(s);});
-      if(diff<-0.001&&inputWeight>0)partsIn.push('未配分 '+pct(Math.abs(diff)/inputWeight*100));
-      var partsOut=grouped.map(function(g){var s=compOut>0?g.outKg/compOut*100:0;return materialDisplayName(g)+' '+pct(s);});
-      if($('final-'+pi))$('final-'+pi).textContent='【投入基準】'+(p.name||'インプット材料'+(pi+1))+' ＝ '+(partsIn.length?partsIn.join(' ＋ '):'原料未入力')+'\n【産出基準】'+(p.name||'インプット材料'+(pi+1))+' ＝ '+(partsOut.length?partsOut.join(' ＋ '):'原料未入力');
-      lines.push('\nインプット材料の認証計算：\n産出重量合計 ＝ '+wt(compOut)+'\n認証相当重量（産出）＝ '+wt(certOut)+'\n非認証相当重量（産出）＝ '+wt(nonOut)+'\n投入基準 認証割合 ＝ '+pct(certPctIn)+'\n産出基準 認証割合 ＝ '+pct(certPctOut));
-      if($('process-'+pi))$('process-'+pi).innerHTML='<b>計算過程</b>\n'+esc(lines.join('\n'));
-      formulaCards.push('<div class="formula-card"><h3>'+esc(p.name||'インプット材料'+(pi+1))+'</h3><div class="formula">'+esc(partsOut.length?partsOut.join(' ＋ '):'原料未入力')+'</div><div>投入基準 認証割合：'+pct(certPctIn)+' ／ 産出基準 認証割合：'+pct(certPctOut)+'</div></div>');
-      totIn+=inputWeight;totOut+=compOut;totCertOut+=certOut;totNonOut+=nonOut;totCertIn+=certIn;
-      overallLines.push((p.name||'インプット材料'+(pi+1))+'：投入 '+wt(inputWeight)+' → 産出 '+wt(compOut)+'、認証相当（産出）'+wt(certOut));
-    });
-    var certPctInAll=totIn>0?totCertIn/totIn*100:0;
-    var certPctOutAll=totOut>0?totCertOut/totOut*100:0;
-    var nonPctOutAll=totOut>0?totNonOut/totOut*100:0;
-    var lossKg=totIn-totOut;
-    $('sumProducts').textContent=products.length;
-    $('sumInWeight').textContent=wt(totIn);
-    $('sumOutWeight').textContent=wt(totOut);
-    $('sumLossKg').textContent=wt(lossKg>0?lossKg:0);
-    $('sumCertPctIn').textContent=pct(certPctInAll);
-    $('sumCertPctOut').textContent=pct(certPctOutAll);
-    $('sumNonPctOut').textContent=pct(nonPctOutAll);
-    $('sumCertKgOut').textContent=wt(totCertOut);
-    $('sumNonKgOut').textContent=wt(totNonOut);
-    $('certBarText').textContent=pct(certPctOutAll);
-    $('nonBarText').textContent=pct(nonPctOutAll);
-    $('certBar').style.width=clamp(certPctOutAll,0,100)+'%';
-    $('nonBar').style.width=clamp(nonPctOutAll,0,100)+'%';
-    $('overallProcess').textContent=products.length?
-      '【全インプット材料の認証計算】\n'+overallLines.join('\n')+
-      '\n\n総投入重量 ＝ '+wt(totIn)+'\n総産出重量（損耗後）＝ '+wt(totOut)+'（総損耗 '+wt(lossKg>0?lossKg:0)+'）\n認証相当重量（産出）＝ '+wt(totCertOut)+
-      '\n投入基準 全体認証割合 ＝ '+pct(certPctInAll)+'\n産出基準 全体認証割合 ＝ '+pct(certPctOutAll)
-      :'インプット材料を追加してください。';
-    var materialGroups=groupAllMaterials();
-    $('materialSummaryBody').innerHTML=materialGroups.map(function(g,i){
-      var shareOut=totOut>0?g.outKg/totOut*100:0;var tagClass=g.status==='認証原料'?'cert-tag':'non-tag';
-      return '<tr>'+
-        '<td class="center" data-label="No.">'+(i+1)+'</td>'+
-        '<td data-label="原料名"><b>'+esc(g.name)+'</b></td>'+
-        '<td data-label="区分"><span class="material-tag '+tagClass+'">'+esc(g.status)+'</span> <small>'+esc(g.type)+'</small></td>'+
-        '<td class="calc" data-label="原料認証割合">'+pct(g.certPct)+'</td>'+
-        '<td data-label="使用インプット材料">'+esc(Array.from(g.productNames).join('、'))+'</td>'+
-        '<td class="calc" data-label="投入合計">'+wt(g.inKg)+'</td>'+
-        '<td class="calc" data-label="産出合計">'+wt(g.outKg)+'</td>'+
-        '<td class="calc" data-label="産出基準割合">'+pct(shareOut)+'</td>'+
-        '<td class="calc" data-label="認証相当(産出)">'+wt(g.certKgOut)+'</td>'+
-        '<td class="calc" data-label="非認証相当(産出)">'+wt(g.nonKgOut)+'</td>'+
-      '</tr>';
-    }).join('');
-    var overallParts=materialGroups.map(function(g){var s=totOut>0?g.outKg/totOut*100:0;return materialDisplayName(g)+' '+pct(s);});
-    $('overallComposition').textContent=products.length?('【産出基準】全インプット材料 ＝ '+(overallParts.length?overallParts.join(' ＋ '):'原料未入力')):'インプット材料を追加してください。';
-    $('productFormulaCards').innerHTML=formulaCards.join('');
-  }
-
-  function saveData(){try{localStorage.setItem(STORE_KEY,JSON.stringify(products));alert('このブラウザに保存しました。');}catch(e){alert('保存できませんでした。');}}
-  function deleteSaved(){if(confirm('このツールの保存データを削除しますか？（他のページのデータには影響しません）')){try{localStorage.removeItem(STORE_KEY);}catch(e){}alert('保存データを削除しました。');}}
-  function resetAll(){if(confirm('すべてのインプット材料と原料を削除しますか？')){try{localStorage.removeItem(STORE_KEY);}catch(e){}products=[];addProduct();}}
-  function toggleProcess(){var hidden=root.classList.toggle('hide-process');var b=$('procBtn');b.textContent=hidden?'計算過程を表示':'計算過程を閉じる';b.setAttribute('aria-expanded',String(!hidden));}
-  function exportCsv(){
-    calculate();
-    var totIn=products.reduce(function(s,p){return s+n(p.weight);},0);
-    var totOut=0;products.forEach(function(p){p.components.forEach(function(c){totOut+=componentCalc(p,c).outKg;});});
-    var rows=[['インプット材料','投入総重量kg','区分','認証状態','原料名','入力方法','入力値','原料認証割合%','損耗率%','投入構成重量kg','産出重量kg','投入構成割合%','認証相当重量kg(産出)','非認証相当重量kg(産出)']];
-    products.forEach(function(p){p.components.forEach(function(c){var x=componentCalc(p,c);rows.push([p.name,p.weight,c.type,c.status,c.name,c.basis,c.amount,c.certPct,x.lossPct,x.inKg,x.outKg,x.share,x.certKgOut,x.nonKgOut]);});});
-    rows.push([]);
-    rows.push(['同名原料集計','','認証状態','原料名','','','','原料認証割合%','','投入合計kg','産出合計kg','産出基準割合%','認証相当重量kg(産出)','非認証相当重量kg(産出)']);
-    groupAllMaterials().forEach(function(g){rows.push(['','',g.status,g.name,'','','',g.certPct,'',g.inKg,g.outKg,totOut?g.outKg/totOut*100:0,g.certKgOut,g.nonKgOut]);});
-    var csv=rows.map(function(r){return r.map(function(v){return '"'+String(v==null?'':v).replace(/"/g,'""')+'"';}).join(',');}).join('\r\n');
-    var blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8'});
-    var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='認証原料混率_原料構成計算.csv';document.body.appendChild(a);a.click();a.remove();
-  }
-
-  root.addEventListener('click',function(e){
-    var t=e.target.closest('[data-act]');if(!t)return;
-    var act=t.getAttribute('data-act');
-    var pi=t.hasAttribute('data-pi')?parseInt(t.getAttribute('data-pi'),10):null;
-    var ci=t.hasAttribute('data-ci')?parseInt(t.getAttribute('data-ci'),10):null;
-    if(act==='addProduct')addProduct();
-    else if(act==='save')saveData();
-    else if(act==='delSaved')deleteSaved();
-    else if(act==='csv')exportCsv();
-    else if(act==='print')window.print();
-    else if(act==='reset')resetAll();
-    else if(act==='toggleProcess')toggleProcess();
-    else if(act==='addComp')addComponent(pi,t.getAttribute('data-type'));
-    else if(act==='delProduct')removeProduct(pi);
-    else if(act==='delComp')removeComponent(pi,ci);
-  });
-  function onField(e){
-    var el=e.target;
-    if(el.id==='dispUnit'){dispUnit=el.value;calculate();return;}
-    if(!el.hasAttribute('data-key'))return;
-    var key=el.getAttribute('data-key');
-    var pi=parseInt(el.getAttribute('data-pi'),10);
-    var ci=el.hasAttribute('data-ci')?parseInt(el.getAttribute('data-ci'),10):null;
-    if(ci==null){ if(key==='bulkloss'){ if(e.type!=='change')return; var bl=el.value; products[pi].components.forEach(function(c){c.loss=(bl===''?0:bl);}); var w=Math.max(0,n(products[pi].weight)); products[pi].measuredOut=(bl===''?'':(Math.round(w*(1-clamp(n(bl),0,100)/100)*1000)/1000)); render(); return; } if(key==='measured-out'){ if(e.type!=='change')return; var mo=el.value; products[pi].measuredOut=mo; var w2=Math.max(0,n(products[pi].weight)); var lr=(mo===''||w2<=0)?0:clamp((w2-n(mo))/w2*100,0,100); products[pi].components.forEach(function(c){c.loss=lr;}); render(); return; } updateProduct(pi,key,el.value); } else updateComponent(pi,ci,key,el.value);
-  }
-  root.addEventListener('input',onField);
-  root.addEventListener('change',onField);
-
-  (function init(){
-    var saved=null;try{saved=localStorage.getItem(STORE_KEY);}catch(e){}
-    if(saved){try{var d=JSON.parse(saved);if(Array.isArray(d)&&d.length){products=d;render();return;}}catch(e){}}
-    addProduct();
-  })();
-})();
-
+function calculate(){let ti=0,to=0,ts=0,tn=0,tl=0,tc=0,tnc=0;const all=[];products.forEach((p,pi)=>{const c=productCalc(p),rows=aggregate(p,c);let cert=0,non=0;p.inputs.forEach((input,ii)=>{const rt=input.materials.reduce((s,m)=>s+Math.max(0,num(m.ratio)),0);input.materials.forEach((m,mi)=>{const x=materialCalc(input,m,c);$(`mi-${pi}-${ii}-${mi}`).textContent=fmt(x.inputKg)+' kg';$(`mo-${pi}-${ii}-${mi}`).textContent=fmt(x.outputKg)+' kg';$(`ml-${pi}-${ii}-${mi}`).textContent=fmt(x.lossKg)+' kg'});const w=$(`iw-${pi}-${ii}`),d=rt-100;if(Math.abs(d)<=.001){w.textContent=t('ratioOk');w.className='warning inline ok'}else{w.textContent=t('ratioMismatch',{total:percent(rt),kind:t(d>0?'over':'under'),diff:percent(Math.abs(d))});w.className='warning inline error'}});rows.forEach(r=>r.status==='cert'?cert+=r.outputKg:non+=r.outputKg);const cp=c.netKg>0?cert/c.netKg*100:0,np=c.netKg>0?non/c.netKg*100:0,ct=rows.reduce((s,r)=>s+r.outputKg,0);$(`pi-${pi}`).textContent=fmt(c.inputKg)+' kg';$(`po-${pi}`).textContent=fmt(c.outputKg)+' kg';$(`ps-${pi}`).textContent=fmt(c.suppKg)+' kg';$(`pn-${pi}`).textContent=fmt(c.netKg)+' kg';$(`py-${pi}`).textContent=percent(c.yieldRate*100);$(`pl-${pi}`).textContent=fmt(c.lossKg)+' kg';$(`plp-${pi}`).textContent=percent(c.lossPct);$(`pc-${pi}`).textContent=fmt(cert)+' kg';$(`pnc-${pi}`).textContent=fmt(non)+' kg';$(`pcp-${pi}`).textContent=percent(cp);$(`comp-${pi}`).innerHTML=rows.map(r=>`<tr><td>${statusText(r.status)}</td><td>${esc(r.name)}</td><td>${sourceText(r.source)}</td><td class="calc">${fmt(r.inputKg)} kg</td><td class="calc">${fmt(r.outputKg)} kg</td><td class="calc">${fmt(r.lossKg)} kg</td><td class="calc">${percent(c.netKg>0?r.outputKg/c.netKg*100:0)}</td></tr>`).join('')+`<tr><td colspan="3"><b>${t('total')}</b></td><td class="calc"><b>${fmt(rows.reduce((s,r)=>s+r.inputKg,0))} kg</b></td><td class="calc"><b>${fmt(ct)} kg</b></td><td class="calc"><b>${fmt(rows.reduce((s,r)=>s+r.lossKg,0))} kg</b></td><td class="calc"><b>${percent(c.netKg>0?ct/c.netKg*100:0)}</b></td></tr>`;const issues=[];if(c.outputKg<-.001)issues.push(t('issueLossOver'));if(p.mode==='outputKg'&&c.outputKg>c.inputKg+.001)issues.push(t('issueOutputOver'));p.inputs.forEach(x=>{const r=x.materials.reduce((s,m)=>s+Math.max(0,num(m.ratio)),0);if(Math.abs(r-100)>.001)issues.push(t('issueRatio',{name:nameOf(x)}))});if(Math.abs(ct-c.netKg)>.01)issues.push(t('issueComposition',{diff:fmt(Math.abs(ct-c.netKg))}));const w=$(`pw-${pi}`);if(issues.length){w.textContent='⚠ '+issues.join('\n⚠ ');w.className='warning error'}else{w.textContent=t('okEquation1',{input:fmt(c.inputKg),loss:fmt(c.lossKg),output:fmt(c.outputKg)})+'\n'+t('okEquation2',{output:fmt(c.outputKg),supp:fmt(c.suppKg),net:fmt(c.netKg)});w.className='warning ok'}$(`proc-${pi}`).textContent=[t('processTitle',{name:nameOf(p)}),`${t('processInput')} = ${p.inputs.map(x=>fmt(Math.max(0,num(x.weightKg)))).join(' + ')||'0'} = ${fmt(c.inputKg)} kg`,`${t('processLoss')} = ${fmt(c.lossKg)} kg (${percent(c.lossPct)})`,`${t('processOutput')} = ${fmt(c.inputKg)} kg - ${fmt(c.lossKg)} kg = ${fmt(c.outputKg)} kg`,`${t('processNet')} = ${fmt(c.outputKg)} kg + ${fmt(c.suppKg)} kg = ${fmt(c.netKg)} kg`,`${t('processCert')} = ${fmt(cert)} kg / ${percent(cp)}`,`${t('processNon')} = ${fmt(non)} kg / ${percent(np)}`].join('\n');ti+=c.inputKg;to+=c.outputKg;ts+=c.suppKg;tn+=c.netKg;tl+=c.lossKg;tc+=cert;tnc+=non;all.push(`${nameOf(p)}: ${fmt(c.inputKg)} kg - ${fmt(c.lossKg)} kg = ${fmt(c.outputKg)} kg; + ${fmt(c.suppKg)} kg = ${fmt(c.netKg)} kg`)});const lp=ti>0?tl/ti*100:0,cp=tn>0?tc/tn*100:0,np=tn>0?tnc/tn*100:0;$('sumProducts').textContent=products.length;$('sumInput').textContent=fmt(ti)+' kg';$('sumOutput').textContent=fmt(to)+' kg';$('sumSupp').textContent=fmt(ts)+' kg';$('sumNet').textContent=fmt(tn)+' kg';$('sumLoss').textContent=fmt(tl)+' kg';$('sumLossPct').textContent=percent(lp);$('sumCertKg').textContent=fmt(tc)+' kg';$('sumNonKg').textContent=fmt(tnc)+' kg';$('sumCertPct').textContent=percent(cp);$('certBarText').textContent=percent(cp);$('nonBarText').textContent=percent(np);$('certBar').style.width=clamp(cp,0,100)+'%';$('nonBar').style.width=clamp(np,0,100)+'%';$('overallProcess').textContent=products.length?t('allProducts')+'\n'+all.join('\n')+`\n\n${t('finalCertContent')} = ${fmt(tc)} kg / ${fmt(tn)} kg = ${percent(cp)}`:t('noProducts')}
+function resetAll(){if(confirm(t('confirmClear'))){products=[];addProduct()}}
+(function init(){addProduct();applyStatic()})();
 </script>
 </body>
 </html>
