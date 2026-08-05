@@ -193,7 +193,7 @@ const SCHEMAS={
     fields:[
       {k:'id',t:'text',label:'ID',req:true},
       {k:'title',t:'text',label:'タイトル'},
-      {k:'category',t:'select',label:'カテゴリ',opts:['GOTS','FSC','MMS','RWS','DOWN','General']},
+      {k:'category',t:'select',label:'カテゴリ',opts:['GOTS','FSC','MMS','RWS','DOWN','General','参考資料']},
       {k:'ftype',t:'select',label:'種類',opts:['PDF','PPT','XLSX','DOC','ZIP','LINK']},
       {k:'url',t:'text',label:'URL',hint:'/files/... 空白は %20 に'},
       {k:'size',t:'text',label:'サイズ',def:''},
@@ -515,7 +515,7 @@ function fNewDoc(file){
     <div class="cmp"><div class="box"><h4>選択したファイル</h4>${esc(file.name)}<br>${fHuman(file.size)}　.${ext.toUpperCase()}</div></div>
     <label class="f">表示名（サイト上の名称）<input type="text" id="nd_title" value="${esc(file.name.replace(/\.[^.]+$/,''))}"></label>
     <label class="f">ファイルID（固定・英数字/ハイフン）<input type="text" id="nd_id" value="${esc(genId)}"></label>
-    <label class="f">分類<select id="nd_cat">${['GOTS','FSC','MMS','RWS','DOWN','General'].map(o=>`<option ${o==='General'?'selected':''}>${o}</option>`).join('')}</select></label>
+    <label class="f">分類<select id="nd_cat">${['GOTS','FSC','MMS','RWS','DOWN','General','参考資料'].map(o=>`<option ${o==='General'?'selected':''}>${o}</option>`).join('')}</select></label>
     <label class="f">説明（任意）<input type="text" id="nd_desc" value=""></label>
     <label class="f">日付（任意・YYYY-MM）<input type="text" id="nd_date" value="${new Date().toISOString().slice(0,7)}"></label>
     <label class="f cb"><input type="checkbox" id="nd_pub" checked> 資料ダウンロードページに公開する</label>

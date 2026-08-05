@@ -32,7 +32,7 @@
     .tag{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;}
     .t-GOTS{background:#d1fae5;color:#065f46;}.t-FSC{background:#dcfce7;color:#14532d;}
     .t-MMS{background:#dbeafe;color:#1e40af;}.t-RWS{background:#fef3c7;color:#78350f;}
-    .t-DOWN{background:#ede9fe;color:#4c1d95;}.t-General{background:#f1f5f9;color:#475569;}
+    .t-DOWN{background:#ede9fe;color:#4c1d95;}.t-General{background:#f1f5f9;color:#475569;}.t-参考資料{background:#fef3c7;color:#92400e;}
     .t-CERTIFICATION{background:#e0e7ff;color:#3730a3;}.t-TOOL{background:#cffafe;color:#155e75;}
     .badge-new{background:#dc2626;color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:999px;}
     .dl-btn{display:flex;align-items:center;gap:5px;padding:7px 14px;border-radius:8px;background:var(--b050);color:var(--b700);font-size:12px;font-weight:700;text-decoration:none;border:1px solid var(--b200);transition:all .15s;flex-shrink:0;white-space:nowrap;cursor:pointer;font-family:inherit;}
@@ -343,6 +343,7 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
     <button class="cat-tab" id="tab_RWS">RWS / GRS</button>
     <button class="cat-tab" id="tab_DOWN">ダウン</button>
     <button class="cat-tab" id="tab_General">一般・申請書類</button>
+    <button class="cat-tab" id="tab_参考資料">参考資料</button>
   </div>
 
   <div id="docList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:10px"></div>
@@ -406,7 +407,7 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
           <select id="inp_cat" class="finput">
             <option value="GOTS">GOTS</option><option value="FSC">FSC</option>
             <option value="MMS">MMS</option><option value="RWS">RWS / GRS</option>
-            <option value="DOWN">ダウン</option><option value="General">一般・申請書類</option>
+            <option value="DOWN">ダウン</option><option value="General">一般・申請書類</option><option value="参考資料">参考資料</option>
           </select>
         </div>
         <div>
@@ -634,7 +635,7 @@ function deleteDoc(id, title) {
 document.getElementById('searchBox').addEventListener('input', renderDocs);
 
 /* ── Category tabs ── */
-var cats = ['all','GOTS','FSC','MMS','RWS','DOWN','General'];
+var cats = ['all','GOTS','FSC','MMS','RWS','DOWN','General','参考資料'];
 cats.forEach(function(c) {
   var btn = document.getElementById('tab_' + c);
   if (!btn) return;
