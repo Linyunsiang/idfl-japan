@@ -7,7 +7,8 @@
     "prefecture": "大阪府、愛知県、長野県",
     "region": "",
     "certificationTypes": [
-      "GOTS"
+      "GOTS",
+      "OCS"
     ],
     "officialWebsiteUrl": "https://www.kondobo.co.jp/",
     "salesPageUrl": "",
@@ -19,7 +20,7 @@
     "featured": false,
     "published": true,
     "createdAt": "2026-08-05T05:54:19.047Z",
-    "updatedAt": "2026-08-05T05:56:19.612Z",
+    "updatedAt": "2026-08-05T05:57:47.067Z",
     "updatedBy": "admin",
     "displayOrder": 0
   },
