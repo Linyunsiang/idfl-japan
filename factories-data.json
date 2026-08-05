@@ -3,7 +3,7 @@
     "id": "company-1785909116417",
     "companyName": "株式会社 近藤紡績所",
     "companyNameEnglish": "Kondo Cotton Spinning Co., Ltd",
-    "logo": "",
+    "logo": "/files/msfobuwm-mqmt-KONDOBO.svg",
     "prefecture": "大阪府、愛知県、長野県",
     "region": "",
     "certificationTypes": [
@@ -19,7 +19,7 @@
     "featured": false,
     "published": true,
     "createdAt": "2026-08-05T05:54:19.047Z",
-    "updatedAt": "2026-08-05T05:54:19.047Z",
+    "updatedAt": "2026-08-05T05:56:19.612Z",
     "updatedBy": "admin",
     "displayOrder": 0
   },
