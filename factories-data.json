@@ -1,5 +1,29 @@
 [
   {
+    "id": "company-1785909116417",
+    "companyName": "株式会社 近藤紡績所",
+    "companyNameEnglish": "Kondo Cotton Spinning Co., Ltd",
+    "logo": "",
+    "prefecture": "大阪府、愛知県、長野県",
+    "region": "",
+    "certificationTypes": [
+      "GOTS"
+    ],
+    "officialWebsiteUrl": "https://www.kondobo.co.jp/",
+    "salesPageUrl": "",
+    "productCategories": "",
+    "certificateNumber": "",
+    "certificationYear": "",
+    "shortDescription": "人・モノ・まち の調和した未来へ\n人、モノ、まちがお互いに調和した豊かな社会を実現したい。KONDOBOはそう考えます。常に世界最高水準のクオリティを追求し続けてきたKONDOBOだからこそできる、糸からの一貫生産体制を確立し、良質な製品を提供してまいりました。 これからも新しい価値を創造し、より良い生活のための製品づくりを続けていきます。",
+    "promotionText": "",
+    "featured": false,
+    "published": true,
+    "createdAt": "2026-08-05T05:54:19.047Z",
+    "updatedAt": "2026-08-05T05:54:19.047Z",
+    "updatedBy": "admin",
+    "displayOrder": 0
+  },
+  {
     "id": "company-1785820007904",
     "companyName": "信友株式会社",
     "companyNameEnglish": "Shinatomo Co.,Ltd.",
@@ -25,7 +49,7 @@
     "createdAt": "2026-08-04T05:13:17.219Z",
     "updatedAt": "2026-08-04T05:27:04.740Z",
     "updatedBy": "admin",
-    "displayOrder": 0
+    "displayOrder": 1
   },
   {
     "id": "fcplanning-office",
@@ -46,7 +70,7 @@
     "promotionText": "",
     "featured": false,
     "published": true,
-    "displayOrder": 1,
+    "displayOrder": 2,
     "createdAt": "2026-07-22T02:07:15Z",
     "updatedAt": "2026-07-22T03:38:45.085Z",
     "updatedBy": "admin"
