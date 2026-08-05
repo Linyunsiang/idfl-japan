@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>ログイン | IDFL JAPAN</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{--accent:#1255A0;--accent2:#0d4383;--ink:#17171b;--muted:#6b7280;--line:#e5e7eb;--bg:#f4f7fc;
+        --staff:#b91c1c;--staff-bg:#fee2e2;--cust:#166534;--cust-bg:#dcfce7;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Zen Kaku Gothic New",system-ui,-apple-system,sans-serif;color:var(--ink);
+       background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(244,247,252,.95)),url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=2000&q=80') center/cover fixed;
+       min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+  .card{background:#fff;border:1px solid var(--line);border-radius:18px;max-width:420px;width:100%;
+        padding:30px 28px;box-shadow:0 18px 50px rgba(4,34,88,.14);}
+  .brand{display:flex;align-items:center;gap:10px;justify-content:center;margin-bottom:18px}
+  .brand img{height:34px}
+  .brand span{font-weight:900;letter-spacing:.14em;font-size:13px;color:var(--ink)}
+  .role-badge{display:inline-block;font-size:11px;font-weight:900;padding:4px 12px;border-radius:999px;margin:0 auto 14px;}
+  .role-badge.staff{background:var(--staff-bg);color:var(--staff)}
+  .role-badge.cust{background:var(--cust-bg);color:var(--cust)}
+  h1{font-size:19px;margin:0 0 8px;text-align:center}
+  .desc{font-size:12.5px;color:var(--muted);line-height:1.8;text-align:center;margin:0 0 20px}
+  label{display:block;font-size:12.5px;font-weight:700;margin-bottom:6px;color:#374151}
+  .pw-wrap{position:relative}
+  input[type=password],input[type=text]{width:100%;padding:12px 44px 12px 12px;border:1.5px solid var(--line);
+        border-radius:10px;font-size:15px;font-family:inherit}
+  input:focus{outline:3px solid rgba(18,85,160,.25);border-color:var(--accent)}
+  .toggle{position:absolute;right:8px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;
+          font-size:12px;color:var(--accent);font-weight:700;padding:6px}
+  .btn{width:100%;margin-top:16px;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:900;
+       cursor:pointer;color:#fff;background:var(--accent);font-family:inherit;min-height:48px}
+  .btn:hover{background:var(--accent2)}
+  .btn.staff{background:var(--staff)}.btn.staff:hover{background:#991b1b}
+  .btn:disabled{opacity:.6;cursor:not-allowed}
+  .err{color:#b91c1c;font-size:12.5px;min-height:18px;margin-top:10px;text-align:center;font-weight:700}
+  .back{display:block;text-align:center;margin-top:18px;font-size:12.5px;color:var(--muted);text-decoration:none}
+  .back:hover{color:var(--accent)}
+  .note{font-size:11px;color:#94a3b8;text-align:center;margin-top:14px;line-height:1.7}
+</style>
+</head>
+<body>
+  <form class="card" id="loginForm" autocomplete="off">
+    <div class="brand"><img src="/IDFL-Logo.png" alt="IDFL JAPAN"><span>IDFL JAPAN</span></div>
+    <div style="text-align:center"><span class="role-badge" id="roleBadge"></span></div>
+    <h1 id="title"></h1>
+    <p class="desc" id="desc"></p>
+    <label for="pw" id="pwLabel"></label>
+    <div class="pw-wrap">
+      <input id="pw" type="password" autocomplete="current-password" inputmode="text">
+      <button type="button" class="toggle" id="toggle" aria-label="表示切替">表示</button>
+    </div>
+    <button type="submit" class="btn" id="submit"></button>
+    <div class="err" id="err" role="alert"></div>
+    <a class="back" href="/">← ホームに戻る</a>
+    <p class="note" id="note"></p>
+  </form>
+<script>
+(function(){
+  var q=new URLSearchParams(location.search);
+  var role=q.get('role')==='staff'?'staff':'customer';
+  var next=q.get('next')||'/';
+  // only allow local same-origin path as redirect target
+  if(!/^\/[^\/]/.test(next) || /^\/\//.test(next)) next='/';
+  var UI={
+    staff:{badge:'IDFL STAFF ONLY / 社外秘',badgeCls:'staff',title:'IDFLスタッフ専用ツール',
+      desc:'この機能はIDFLスタッフおよび許可された管理者のみ利用できます。',
+      pwLabel:'スタッフ用パスワードを入力してください',btn:'スタッフログイン',btnCls:'staff',
+      note:'※ 権限のない方はご利用いただけません。'},
+    customer:{badge:'お客様専用',badgeCls:'cust',title:'お客様専用ツール',
+      desc:'この機能はIDFLのお客様、認証企業およびセミナー参加者向けの限定機能です。',
+      pwLabel:'パスワードを入力してください',btn:'ログイン',btnCls:'',
+      note:'※ パスワードはIDFL担当者よりご案内します。'}
+  }[role];
+  var badge=document.getElementById('roleBadge');
+  badge.textContent=UI.badge; badge.className='role-badge '+UI.badgeCls;
+  document.getElementById('title').textContent=UI.title;
+  document.getElementById('desc').textContent=UI.desc;
+  document.getElementById('pwLabel').textContent=UI.pwLabel;
+  var sb=document.getElementById('submit'); sb.textContent=UI.btn; if(UI.btnCls)sb.classList.add(UI.btnCls);
+  document.getElementById('note').textContent=UI.note;
+  var pw=document.getElementById('pw'), err=document.getElementById('err');
+  document.getElementById('toggle').addEventListener('click',function(){
+    var t=pw.type==='password'?'text':'password'; pw.type=t; this.textContent=t==='password'?'表示':'隠す'; pw.focus();
+  });
+  document.getElementById('loginForm').addEventListener('submit',async function(e){
+    e.preventDefault(); err.textContent=''; if(!pw.value){err.textContent='パスワードを入力してください';return;}
+    sb.disabled=true; var orig=sb.textContent; sb.textContent='確認中…';
+    try{
+      var r=await fetch('/.netlify/functions/auth-login',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({role:role,password:pw.value})});
+      var j=await r.json().catch(function(){return {};});
+      if(r.ok&&j.ok){ location.replace(next); return; }
+      err.textContent=j.error||('エラー（'+r.status+'）'); pw.value=''; pw.focus();
+    }catch(ex){ err.textContent='通信エラーが発生しました。'; }
+    sb.disabled=false; sb.textContent=orig;
+  });
+  pw.focus();
+})();
+</script>
+</body>
+</html>

@@ -297,22 +297,9 @@ header.site-header{padding:0;border-bottom:0;display:block;background:color-mix(
 </div>
 
 <script>
-const CONVERTER_PW = 'idfl2026';
-function checkPw() {
-    if (document.getElementById('pwInput').value === CONVERTER_PW) {
-        document.getElementById('pwOverlay').style.display = 'none';
-        sessionStorage.setItem('converter_auth', '1');
-    } else {
-        document.getElementById('pwErr').style.display = 'block';
-        document.getElementById('pwInput').select();
-    }
-}
-// Auto-unlock if already authenticated this session
-if (sessionStorage.getItem('converter_auth') === '1') {
-    document.addEventListener('DOMContentLoaded', () => {
-        document.getElementById('pwOverlay').style.display = 'none';
-    });
-}
+/* アクセス制御は Netlify Edge Function + サーバ側ログインで実施。前端にパスワードは保持しない。 */
+function checkPw() { var o=document.getElementById('pwOverlay'); if(o) o.style.display='none'; }
+document.addEventListener('DOMContentLoaded', function(){ var o=document.getElementById('pwOverlay'); if(o) o.style.display='none'; });
 </script>
 
 <header>
