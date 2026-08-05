@@ -1,40 +1,38 @@
 [
   {
-    "id": "idfl-produccts-list-msfppok5",
-    "title": "IDFL produccts list",
+    "id": "d-1785911147639",
+    "title": "IDFL ‐IDFL product list.xlsx",
     "category": "General",
     "ftype": "XLSX",
-    "url": "/files/idfl-produccts-list-msfppok5.xlsx",
-    "size": "234 KB",
-    "sizeBytes": 239485,
-    "date": "2026-08",
+    "url": "",
+    "size": "",
+    "date": "2026-08-05",
     "isNew": true,
     "expiry": "",
-    "published": true,
-    "originalFileName": "IDFL produccts list.xlsx",
-    "versions": [],
-    "_new": true,
-    "updatedAt": "2026-08-05T15:35:16.053+09:00",
-    "updatedBy": "admin",
-    "lastCommit": "8480ede6ceb4c82df551899563f0a65f5c33e0f6"
+    "createdAt": "2026-08-05T06:26:46.455Z",
+    "updatedAt": "2026-08-05T08:15:40.780Z",
+    "updatedBy": "admin"
   },
   {
     "id": "tool-cert-material-calc",
     "title": "認証原料混率・原料構成計算ツール",
-    "category": "CERTIFICATION",
-    "ftype": "TOOL",
+    "category": "General",
+    "ftype": "PDF",
     "url": "/tools/certified-material-calculator/",
     "size": "WEB",
     "date": "2026-08",
     "expiry": "",
     "isNew": true,
     "published": true,
-    "desc": "認証原料、非認証原料、Supplemental Weightを入力し、複数のインプット材料について、認証相当重量および原料構成割合を計算します。"
+    "desc": "認証原料、非認証原料、Supplemental Weightを入力し、複数のインプット材料について、認証相当重量および原料構成割合を計算します。",
+    "createdAt": "2026-08-05T08:15:48.631Z",
+    "updatedAt": "2026-08-05T08:15:48.631Z",
+    "updatedBy": "admin"
   },
   {
     "id": "d-1785633552328",
     "title": "経済産業省-繊維製品の資源循環に向けて",
-    "category": "General",
+    "category": "参考資料",
     "ftype": "PDF",
     "url": "https://www.meti.go.jp/shingikai/sankoshin/seizo_sangyo/textile_industry/pdf/016_03_00.pdf?utm_source=chatgpt.com",
     "size": "",
@@ -42,13 +40,13 @@
     "isNew": false,
     "expiry": "",
     "createdAt": "2026-08-02T01:19:32.918Z",
-    "updatedAt": "2026-08-02T01:19:32.918Z",
+    "updatedAt": "2026-08-05T08:15:24.335Z",
     "updatedBy": "admin"
   },
   {
     "id": "d-1785633282709",
     "title": "環境省-一般向けマイクロプラチック発生抑制・流出抑制対策リーフレット",
-    "category": "General",
+    "category": "参考資料",
     "ftype": "LINK",
     "url": "https://www.env.go.jp/water/post_113_00001.html",
     "size": "",
@@ -56,13 +54,13 @@
     "isNew": false,
     "expiry": "",
     "createdAt": "2026-08-02T01:15:45.699Z",
-    "updatedAt": "2026-08-02T01:15:45.699Z",
+    "updatedAt": "2026-08-05T08:15:14.658Z",
     "updatedBy": "admin"
   },
   {
     "id": "d-1785633054437",
     "title": "厚生労働省-職場における熱中症予防対策の周知事業",
-    "category": "General",
+    "category": "参考資料",
     "ftype": "LINK",
     "url": "https://www.meti.go.jp/shingikai/energy_environment/carbon_footprint/pdf/20230526_3.pdf",
     "size": "",
@@ -70,13 +68,13 @@
     "isNew": false,
     "expiry": "",
     "createdAt": "2026-08-02T01:11:33.284Z",
-    "updatedAt": "2026-08-02T01:11:33.284Z",
+    "updatedAt": "2026-08-05T08:15:19.201Z",
     "updatedBy": "admin"
   },
   {
     "id": "d-1785632722380",
     "title": "経済産業省、環境省-カーボンフットプリント ガイドライン",
-    "category": "General",
+    "category": "参考資料",
     "ftype": "LINK",
     "url": "https://www.meti.go.jp/shingikai/energy_environment/carbon_footprint/pdf/20230526_3.pdf",
     "size": "",
@@ -84,13 +82,13 @@
     "isNew": false,
     "expiry": "",
     "createdAt": "2026-08-02T01:05:59.464Z",
-    "updatedAt": "2026-08-02T01:13:56.737Z",
+    "updatedAt": "2026-08-05T08:15:10.173Z",
     "updatedBy": "admin"
   },
   {
     "id": "d-1785632085637",
     "title": "ＥＵのＰＰＷＲ （包装・包装廃棄物規則）の概要",
-    "category": "General",
+    "category": "参考資料",
     "ftype": "LINK",
     "url": "https://www.eu.emb-japan.go.jp/files/100788023.pdf",
     "size": "",
@@ -98,7 +96,7 @@
     "isNew": false,
     "expiry": "",
     "createdAt": "2026-08-02T00:55:09.025Z",
-    "updatedAt": "2026-08-02T01:14:02.869Z",
+    "updatedAt": "2026-08-05T08:15:05.465Z",
     "updatedBy": "admin"
   },
   {
@@ -117,18 +115,21 @@
   },
   {
     "title": "厚生労働省　化学物質の使用実態に応じた職場の安全衛生教育のための資料",
-    "category": "General",
+    "category": "参考資料",
     "ftype": "LINK",
     "url": "https://www.mhlw.go.jp/stf/newpage_19390.html",
     "size": "",
     "date": "",
     "expiry": "",
     "isNew": false,
-    "id": "doc_1782962388027"
+    "id": "doc_1782962388027",
+    "createdAt": "2026-08-05T08:15:59.311Z",
+    "updatedAt": "2026-08-05T08:15:59.311Z",
+    "updatedBy": "admin"
   },
   {
     "title": "厚生労働省-騒音障害防止のためのガイドライン　パンフレット",
-    "category": "General",
+    "category": "参考資料",
     "ftype": "LINK",
     "url": "https://www.mhlw.go.jp/content/001195349.pdf",
     "size": "",
@@ -137,12 +138,12 @@
     "isNew": false,
     "id": "doc_1782962286291",
     "createdAt": "2026-08-02T01:13:16.578Z",
-    "updatedAt": "2026-08-02T01:13:16.578Z",
+    "updatedAt": "2026-08-05T08:14:59.175Z",
     "updatedBy": "admin"
   },
   {
     "title": "ILO -中核的労働基準　ハンドブック",
-    "category": "GOTS",
+    "category": "参考資料",
     "ftype": "LINK",
     "url": "https://www.ilo.org/sites/default/files/2024-11/BHR%20checkbook.pdf",
     "size": "",
@@ -151,7 +152,7 @@
     "isNew": false,
     "id": "doc_1782961909571",
     "createdAt": "2026-08-02T01:13:30.491Z",
-    "updatedAt": "2026-08-02T01:13:30.491Z",
+    "updatedAt": "2026-08-05T08:14:50.479Z",
     "updatedBy": "admin"
   },
   {
