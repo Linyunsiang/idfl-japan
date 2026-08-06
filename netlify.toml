@@ -8,3 +8,19 @@
   from = "/admin"
   to = "/admin.html"
   status = 200
+
+[[edge_functions]]
+  path = "/converter"
+  function = "gate"
+[[edge_functions]]
+  path = "/converter.html"
+  function = "gate"
+[[edge_functions]]
+  path = "/customer/*"
+  function = "gate"
+[[edge_functions]]
+  path = "/files/staff/*"
+  function = "gate"
+[[edge_functions]]
+  path = "/files/customer/*"
+  function = "gate"

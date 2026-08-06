@@ -297,9 +297,16 @@ header.site-header{padding:0;border-bottom:0;display:block;background:color-mix(
 </div>
 
 <script>
-/* アクセス制御は Netlify Edge Function + サーバ側ログインで実施。前端にパスワードは保持しない。 */
-function checkPw() { var o=document.getElementById('pwOverlay'); if(o) o.style.display='none'; }
-document.addEventListener('DOMContentLoaded', function(){ var o=document.getElementById('pwOverlay'); if(o) o.style.display='none'; });
+/* アクセス制御はサーバ側セッション（HttpOnly Cookie）で実施。前端にパスワードは保持しない。
+   サーバの auth-status でロールを検証し、STAFF でなければスタッフログインへ誘導。 */
+function checkPw(){ var o=document.getElementById('pwOverlay'); if(o) o.style.display='none'; }
+document.addEventListener('DOMContentLoaded', function(){
+  var o=document.getElementById('pwOverlay');
+  fetch('/.netlify/functions/auth-status',{cache:'no-store'})
+    .then(function(r){return r.json();})
+    .then(function(j){ if(j&&j.role==='STAFF'){ if(o)o.style.display='none'; } else { location.replace('/login.html?role=staff&next=%2Fconverter'); } })
+    .catch(function(){ location.replace('/login.html?role=staff&next=%2Fconverter'); });
+});
 </script>
 
 <header>
