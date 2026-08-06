@@ -39,4 +39,3 @@ export default async (request, context) => {
   return Response.redirect(`${url.origin}/login.html?role=${roleParam}&next=${next}`, 302);
 };
 
-export const config = { path: ['/converter*','/customer/*','/files/staff/*','/files/customer/*'] };
