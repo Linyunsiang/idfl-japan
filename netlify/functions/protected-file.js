@@ -8,7 +8,7 @@ exports.handler = async (event) => {
   try{ connectLambda(event); }catch(e){}
   const id=((event.queryStringParameters||{}).id)||'';
   if(!/^[A-Za-z0-9_-]{1,64}$/.test(id)) return resp(400,{error:'invalid id'});
-  let store; try{ store=getStore(STORE); }catch(e){ return resp(500,{error:'storage unavailable'}); }
+  let store; try{ store=getStore({ name: STORE, consistency: 'strong' }); }catch(e){ return resp(500,{error:'storage unavailable'}); }
   let index=[]; try{ const idx=await store.get('_index',{type:'json'}); if(Array.isArray(idx)) index=idx; }catch(e){}
   const meta=index.find(x=>x.id===id);
   if(!meta) return resp(404,{error:'not found'});

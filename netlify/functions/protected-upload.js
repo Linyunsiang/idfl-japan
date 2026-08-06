@@ -29,7 +29,7 @@ exports.handler = async (event) => {
   if(buf.length===0) return resp(400,{error:'空のファイルです'});
   if(buf.length>CFG.MAX_FILE_BYTES) return resp(413,{error:'サイズが上限（'+human(CFG.MAX_FILE_BYTES)+'）を超えています'});
   if(!magicOk(ext,buf)) return resp(400,{error:'ファイルの実体が拡張子と一致しません'});
-  let store; try{ store=getStore(STORE); }catch(e){ return resp(500,{error:'ストレージに接続できません'}); }
+  let store; try{ store=getStore({ name: STORE, consistency: 'strong' }); }catch(e){ return resp(500,{error:'ストレージに接続できません'}); }
   const id = Date.now().toString(36)+'-'+crypto.randomBytes(4).toString('hex');
   const contentType = (CFG.TYPES[ext]||{}).mime || 'application/octet-stream';
   const ab = buf.buffer.slice(buf.byteOffset, buf.byteOffset+buf.byteLength);
