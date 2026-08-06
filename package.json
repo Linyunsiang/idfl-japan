@@ -1,0 +1,9 @@
+{
+  "name": "idfl-japan-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "IDFL JAPAN static site + Netlify functions",
+  "dependencies": {
+    "@netlify/blobs": "^8.1.0"
+  }
+}
