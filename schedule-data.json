@@ -18,15 +18,6 @@
     "to": "2026-03-13"
   },
   {
-    "id": "e3",
-    "office": "Japan",
-    "name": "TES Online Seminar",
-    "type": "Internal",
-    "location": "Online",
-    "from": "2026-03-19",
-    "to": "2026-03-19"
-  },
-  {
     "id": "e4",
     "office": "China",
     "name": "Intertextile Shanghai APPAREL Fabrics Spring",
@@ -34,6 +25,15 @@
     "location": "Shanghai",
     "from": "2026-03-11",
     "to": "2026-03-13"
+  },
+  {
+    "id": "e3",
+    "office": "Japan",
+    "name": "TES Online Seminar",
+    "type": "Internal",
+    "location": "Online",
+    "from": "2026-03-19",
+    "to": "2026-03-19"
   },
   {
     "id": "e5",
@@ -63,6 +63,24 @@
     "to": "2026-04-15"
   },
   {
+    "id": "e13",
+    "office": "Philippines",
+    "name": "IDFL Annual Seminar - Manila",
+    "type": "Internal",
+    "location": "Manila",
+    "from": "2026-06-11",
+    "to": "2026-06-11"
+  },
+  {
+    "id": "ev_1780978437980",
+    "name": "ZDHC InCheck and MRSL internal webinar",
+    "office": "Japan",
+    "type": "Internal",
+    "location": "IDFL VN team",
+    "from": "2026-06-11",
+    "to": "2026-06-11"
+  },
+  {
     "id": "e10",
     "office": "Indonesia",
     "name": "Inspection Training for MDS Suppliers (Jakarta)",
@@ -90,24 +108,6 @@
     "to": "2026-06-25"
   },
   {
-    "id": "e13",
-    "office": "Philippines",
-    "name": "IDFL Annual Seminar - Manila",
-    "type": "Internal",
-    "location": "Manila",
-    "from": "2026-06-11",
-    "to": "2026-06-11"
-  },
-  {
-    "id": "ev_1780978437980",
-    "name": "ZDHC InCheck and MRSL internal webinar",
-    "office": "Japan",
-    "type": "Internal",
-    "location": "IDFL VN team",
-    "from": "2026-06-11",
-    "to": "2026-06-11"
-  },
-  {
     "id": "ext-fff-summer-2026",
     "office": "Other",
     "name": "Functional Fabric Fair – Summer（機能性素材見本市）",
@@ -121,69 +121,17 @@
     "related": "https://www.functionalfabricfair.com/"
   },
   {
-    "id": "ext-premiere-vision-paris-2026",
-    "office": "Other",
-    "name": "Première Vision Paris 2026",
+    "id": "ext-intertextile-shanghai-hometextiles-autumn-2026",
+    "office": "China",
+    "name": "Intertextile 上海ホームテキスタイル 2026 秋（Home Textiles – Autumn）",
     "type": "External",
-    "location": "Paris, France",
-    "from": "2026-09-01",
-    "to": "2026-09-03",
+    "location": "Shanghai, China（NECC）",
+    "from": "2026-08-18",
+    "to": "2026-08-20",
     "mode": "対面",
     "time": "",
     "signup": "",
-    "related": "https://paris.premierevision.com/en"
-  },
-  {
-    "id": "ext-fsc-forest-week-2026",
-    "office": "Other",
-    "name": "FSC Forest Week 2026（森林週間 世界キャンペーン）",
-    "type": "External",
-    "location": "世界 / オンライン",
-    "from": "2026-09-21",
-    "to": "2026-09-27",
-    "mode": "オンライン",
-    "time": "",
-    "signup": "",
-    "related": "https://fsc.org/en/newscentre/events"
-  },
-  {
-    "id": "ext-gots-roundtable-canada-2026",
-    "office": "Other",
-    "name": "GOTS Canadian Roundtable（GOTS カナダ・ラウンドテーブル）",
-    "type": "External",
-    "location": "Toronto, Canada（Seneca College）",
-    "from": "2026-10-05",
-    "to": "2026-10-05",
-    "mode": "対面",
-    "time": "",
-    "signup": "",
-    "related": "https://global-standard.org/news/gots-canada-roundtable"
-  },
-  {
-    "id": "ext-te-conference-2026",
-    "office": "Other",
-    "name": "Textile Exchange Conference 2026「The Implementation Era」",
-    "type": "External",
-    "location": "Vancouver, Canada",
-    "from": "2026-10-12",
-    "to": "2026-10-16",
-    "mode": "オンライン＋対面",
-    "time": "",
-    "signup": "https://na.eventscloud.com/ereg/index.php?eventid=872254",
-    "related": "https://textileexchange.org/conference-2026/"
-  },
-  {
-    "id": "ext-fff-fall-2026",
-    "office": "Other",
-    "name": "Functional Fabric Fair – Fall（機能性素材見本市）",
-    "type": "External",
-    "location": "Portland, USA",
-    "from": "2026-10-26",
-    "to": "2026-10-28",
-    "mode": "対面",
-    "time": "",
-    "signup": "",
-    "related": "https://www.functionalfabricfair.com/"
+    "related": "https://intertextile-shanghai-hometextiles-autumn.hk.messefrankfurt.com/shanghai/en.html"
   },
   {
     "id": "ext-pis-seoul-2026",
@@ -225,6 +173,45 @@
     "related": "https://yarn-expo-autumn.hk.messefrankfurt.com/shanghai/en.html"
   },
   {
+    "id": "ext-premiere-vision-paris-2026",
+    "office": "Other",
+    "name": "Première Vision Paris 2026",
+    "type": "External",
+    "location": "Paris, France",
+    "from": "2026-09-01",
+    "to": "2026-09-03",
+    "mode": "対面",
+    "time": "",
+    "signup": "",
+    "related": "https://paris.premierevision.com/en"
+  },
+  {
+    "id": "ext-fsc-forest-week-2026",
+    "office": "Other",
+    "name": "FSC Forest Week 2026（森林週間 世界キャンペーン）",
+    "type": "External",
+    "location": "世界 / オンライン",
+    "from": "2026-09-21",
+    "to": "2026-09-27",
+    "mode": "オンライン",
+    "time": "",
+    "signup": "",
+    "related": "https://fsc.org/en/newscentre/events"
+  },
+  {
+    "id": "ext-gots-roundtable-canada-2026",
+    "office": "Other",
+    "name": "GOTS Canadian Roundtable（GOTS カナダ・ラウンドテーブル）",
+    "type": "External",
+    "location": "Toronto, Canada（Seneca College）",
+    "from": "2026-10-05",
+    "to": "2026-10-05",
+    "mode": "対面",
+    "time": "",
+    "signup": "",
+    "related": "https://global-standard.org/news/gots-canada-roundtable"
+  },
+  {
     "id": "ext-titas-2026",
     "office": "Taiwan",
     "name": "TITAS 2026（台北國際紡織展 / Taipei Innovative Textile Application Show）",
@@ -238,17 +225,17 @@
     "related": "https://titas.tw/"
   },
   {
-    "id": "ext-heimtextil-2027",
+    "id": "ext-te-conference-2026",
     "office": "Other",
-    "name": "Heimtextil 2027（国際ホーム・コントラクトテキスタイル見本市）",
+    "name": "Textile Exchange Conference 2026「The Implementation Era」",
     "type": "External",
-    "location": "Frankfurt, Germany（Messe Frankfurt）",
-    "from": "2027-01-12",
-    "to": "2027-01-15",
-    "mode": "対面",
+    "location": "Vancouver, Canada",
+    "from": "2026-10-12",
+    "to": "2026-10-16",
+    "mode": "オンライン＋対面",
     "time": "",
-    "signup": "",
-    "related": "https://heimtextil.messefrankfurt.com/frankfurt/en.html"
+    "signup": "https://na.eventscloud.com/ereg/index.php?eventid=872254",
+    "related": "https://textileexchange.org/conference-2026/"
   },
   {
     "id": "ext-performance-days-munich-2026",
@@ -264,17 +251,17 @@
     "related": "https://www.performancedays.com/"
   },
   {
-    "id": "ext-intertextile-shanghai-hometextiles-autumn-2026",
-    "office": "China",
-    "name": "Intertextile 上海ホームテキスタイル 2026 秋（Home Textiles – Autumn）",
+    "id": "ext-fff-fall-2026",
+    "office": "Other",
+    "name": "Functional Fabric Fair – Fall（機能性素材見本市）",
     "type": "External",
-    "location": "Shanghai, China（NECC）",
-    "from": "2026-08-18",
-    "to": "2026-08-20",
+    "location": "Portland, USA",
+    "from": "2026-10-26",
+    "to": "2026-10-28",
     "mode": "対面",
     "time": "",
     "signup": "",
-    "related": "https://intertextile-shanghai-hometextiles-autumn.hk.messefrankfurt.com/shanghai/en.html"
+    "related": "https://www.functionalfabricfair.com/"
   },
   {
     "id": "ext-ispo-2026",
@@ -288,6 +275,22 @@
     "time": "",
     "signup": "https://www.ispo.com/",
     "related": "https://messe-muenchen.de/en/events/ispo-2026.html",
-    "published": false
+    "published": true,
+    "createdAt": "2026-08-06T03:47:40.117Z",
+    "updatedAt": "2026-08-06T03:47:40.117Z",
+    "updatedBy": "admin"
+  },
+  {
+    "id": "ext-heimtextil-2027",
+    "office": "Other",
+    "name": "Heimtextil 2027（国際ホーム・コントラクトテキスタイル見本市）",
+    "type": "External",
+    "location": "Frankfurt, Germany（Messe Frankfurt）",
+    "from": "2027-01-12",
+    "to": "2027-01-15",
+    "mode": "対面",
+    "time": "",
+    "signup": "",
+    "related": "https://heimtextil.messefrankfurt.com/frankfurt/en.html"
   }
 ]
