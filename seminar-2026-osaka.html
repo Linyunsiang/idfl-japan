@@ -548,21 +548,79 @@ section{position:relative;}
   </div>
 </div>
 
-<div style="background:linear-gradient(90deg,#0d4383,#1255A0);color:#fff">
-  <div style="max-width:1240px;margin:0 auto;padding:13px 24px;display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:center;text-align:center">
-    <span style="font-weight:700;font-size:14.5px">🔒 セミナー講師の発表資料（お客様専用）</span>
-    <a href="/customer/downloads.html" style="background:#fff;color:#0d4383;font-weight:800;padding:9px 22px;border-radius:999px;text-decoration:none;font-size:14px;white-space:nowrap">資料ダウンロードへ →</a>
-  </div>
-</div>
+<!-- ============ お客様専用リソース（Customer Resources） ============ -->
+<style>
+.chub{position:relative;background:linear-gradient(150deg,#0a2440 0%,#0f2f57 55%,#123a67 100%);color:#fff;border-top:3px solid #c7a253;}
+.chub-in{max-width:1240px;margin:0 auto;padding:34px 24px 40px;}
+.chub-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#e5c884;}
+.chub-eyebrow svg{width:15px;height:15px;stroke:#e5c884;}
+.chub-title{margin:11px 0 6px;font-size:clamp(18px,2.1vw,22px);font-weight:700;letter-spacing:.01em;line-height:1.4;}
+.chub-note{margin:0;font-size:13px;line-height:1.75;color:rgba(255,255,255,.66);max-width:760px;}
+.chub-grid{margin-top:24px;display:grid;grid-template-columns:1fr;gap:14px;}
+.chub-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.chub-card{position:relative;display:flex;align-items:center;gap:15px;padding:17px 20px;border-radius:14px;text-decoration:none;color:#fff;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.15);transition:transform .18s ease,border-color .18s ease,background .18s ease;}
+.chub-card:hover{transform:translateY(-2px);background:rgba(255,255,255,.09);border-color:rgba(199,162,83,.6);}
+.chub-card--primary{background:linear-gradient(120deg,rgba(199,162,83,.18),rgba(199,162,83,.06));border-color:rgba(199,162,83,.5);}
+.chub-card--primary:hover{border-color:#c7a253;background:linear-gradient(120deg,rgba(199,162,83,.26),rgba(199,162,83,.1));}
+.chub-ic{flex:none;width:42px;height:42px;border-radius:11px;display:grid;place-items:center;background:rgba(199,162,83,.16);border:1px solid rgba(199,162,83,.4);}
+.chub-ic svg{width:20px;height:20px;stroke:#e5c884;}
+.chub-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;}
+.chub-tag{align-self:flex-start;font-size:10.5px;font-weight:700;letter-spacing:.08em;color:#0f2f57;background:#e5c884;padding:2px 9px;border-radius:6px;margin-bottom:3px;}
+.chub-k{font-size:15px;font-weight:700;letter-spacing:.01em;}
+.chub-d{font-size:12.5px;color:rgba(255,255,255,.62);line-height:1.55;}
+.chub-arrow{flex:none;font-size:16px;color:#e5c884;opacity:.85;transition:transform .18s ease;}
+.chub-card:hover .chub-arrow{transform:translateX(3px);}
+@media(max-width:760px){.chub-row{grid-template-columns:1fr;}.chub-in{padding:26px 20px 30px;}}
+</style>
+<section class="chub" aria-label="お客様専用リソース">
+  <div class="chub-in">
+    <span class="chub-eyebrow">
+      <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+      Customer Resources ・ お客様専用
+    </span>
+    <h2 class="chub-title">セミナー講師の発表資料 ＆ オンライン練習教材</h2>
+    <p class="chub-note">ご参加のお客様は、ログイン後に全講師の発表資料のダウンロードと、規格ごとの復習用オンライン教材（閲覧のみ）をご利用いただけます。</p>
 
-<div style="background:#0f2c4d;color:#fff">
-  <div style="max-width:1240px;margin:0 auto;padding:14px 24px;display:flex;gap:12px;flex-wrap:wrap;align-items:center;justify-content:center;text-align:center">
-    <span style="font-weight:800;font-size:14.5px">🎓 オンライン練習（お客様専用・要ログイン）</span>
-    <a href="/customer/gots-v8.html" style="background:#dcfce7;color:#166534;font-weight:800;padding:8px 18px;border-radius:999px;text-decoration:none;font-size:13.5px;white-space:nowrap">GOTS Version 8 →</a>
-    <a href="/customer/mms.html" style="background:#dbeafe;color:#1e40af;font-weight:800;padding:8px 18px;border-radius:999px;text-decoration:none;font-size:13.5px;white-space:nowrap">MMS への移行 →</a>
-    <a href="/customer/fsc.html" style="background:#fef3c7;color:#92400e;font-weight:800;padding:8px 18px;border-radius:999px;text-decoration:none;font-size:13.5px;white-space:nowrap">新規FSC認証知識 →</a>
+    <div class="chub-grid">
+      <a class="chub-card chub-card--primary" href="/customer/downloads.html">
+        <span class="chub-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m8 11 4 4 4-4"/><path d="M4 19h16"/></svg></span>
+        <span class="chub-body">
+          <span class="chub-k">発表資料ダウンロード</span>
+          <span class="chub-d">全講師のスライド一式（お客様専用）</span>
+        </span>
+        <span class="chub-arrow">→</span>
+      </a>
+
+      <div class="chub-row">
+        <a class="chub-card" href="/customer/gots-v8.html">
+          <span class="chub-body">
+            <span class="chub-tag">GOTS 8.0</span>
+            <span class="chub-k">GOTS Version 8</span>
+            <span class="chub-d">7.0→8.0 改訂ポイント</span>
+          </span>
+          <span class="chub-arrow">→</span>
+        </a>
+        <a class="chub-card" href="/customer/mms.html">
+          <span class="chub-body">
+            <span class="chub-tag">MMS</span>
+            <span class="chub-k">MMS への移行</span>
+            <span class="chub-d">新モジュール制度の理解</span>
+          </span>
+          <span class="chub-arrow">→</span>
+        </a>
+        <a class="chub-card" href="/customer/fsc.html">
+          <span class="chub-body">
+            <span class="chub-tag">FSC</span>
+            <span class="chub-k">新規 FSC 認証知識</span>
+            <span class="chub-d">認証取得の基礎</span>
+          </span>
+          <span class="chub-arrow">→</span>
+        </a>
+      </div>
+    </div>
   </div>
-</div>
+</section>
+<!-- ============ /お客様専用リソース ============ -->
 
 <section class="hero">
   <div class="wrap">
