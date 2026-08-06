@@ -17,6 +17,9 @@ exports.handler = async (event) => {
     const rp = need==='STAFF'?'staff':'customer';
     return { statusCode:302, headers:{ 'Location':`/login.html?role=${rp}&next=${encodeURIComponent('/customer/downloads.html')}`, 'Cache-Control':'no-store' }, body:'' };
   }
+  if(meta.kind==='link' && meta.url){
+    return { statusCode:302, headers:{ 'Location':meta.url, 'Cache-Control':'no-store' }, body:'' };
+  }
   const buf=Buffer.from(res.data);
   return {
     statusCode:200,

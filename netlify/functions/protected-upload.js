@@ -32,7 +32,7 @@ exports.handler = async (event) => {
   const id = Date.now().toString(36)+'-'+crypto.randomBytes(4).toString('hex');
   const contentType = (CFG.TYPES[ext]||{}).mime || 'application/octet-stream';
   const ab = buf.buffer.slice(buf.byteOffset, buf.byteOffset+buf.byteLength);
-  const metadata = { role:targetRole, name, title:String(body.title||name).slice(0,200), contentType, size:buf.length, sizeLabel:human(buf.length), uploadedAt:nowJst(), uploadedBy:'staff' };
+  const metadata = { kind:'file', role:targetRole, name, title:String(body.title||name).slice(0,200), group:String(body.group||'').slice(0,120), contentType, size:buf.length, sizeLabel:human(buf.length), uploadedAt:nowJst(), uploadedBy:'staff' };
   try{ await store.set(id, ab, { metadata }); }catch(e){ return resp(502,{error:'保存に失敗しました: '+(e&&e.message||'')}); }
   return resp(200,{ ok:true, id, sizeLabel:human(buf.length) });
 };

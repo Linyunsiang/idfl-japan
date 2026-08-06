@@ -14,7 +14,7 @@ exports.handler = async (event) => {
     const meta=(m&&m.metadata)||{};
     if(!meta.role) continue;
     const need = meta.role==='staff'?'STAFF':'CUSTOMER';
-    if(A.meets(role,need)) files.push({ id:key, name:meta.name, title:meta.title||meta.name, role:meta.role, sizeLabel:meta.sizeLabel, contentType:meta.contentType, uploadedAt:meta.uploadedAt });
+    if(A.meets(role,need)) files.push({ id:key, kind:meta.kind||'file', url:(meta.kind==='link'?meta.url:undefined), name:meta.name, title:meta.title||meta.name, group:meta.group||'', role:meta.role, sizeLabel:meta.sizeLabel, contentType:meta.contentType, uploadedAt:meta.uploadedAt });
   }
   files.sort((a,b)=>String(b.uploadedAt||'').localeCompare(String(a.uploadedAt||'')));
   return resp(200,{ok:true,role,files});
