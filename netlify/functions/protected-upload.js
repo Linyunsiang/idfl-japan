@@ -1,6 +1,6 @@
 // POST /.netlify/functions/protected-upload  (STAFF session required)
 // Body: { filename, contentBase64, role:'staff'|'customer', title? } -> stores to Netlify Blobs
-const { getStore } = require('@netlify/blobs');
+const { getStore, connectLambda } = require('@netlify/blobs');
 const A = require('./_auth');
 const CFG = require('./_config');
 const crypto = require('crypto');
@@ -12,6 +12,7 @@ function human(b){return b>=1048576?(b/1048576).toFixed(1)+' MB':Math.max(1,Math
 function nowJst(){const d=new Date(Date.now()+9*3600*1000);return d.toISOString().replace('Z','+09:00');}
 function magicOk(ext,buf){const t=CFG.TYPES[ext];if(!t)return false;const head=buf.slice(0,8).toString('hex').toLowerCase();return t.magic.some(s=>head.startsWith(s.toLowerCase()));}
 exports.handler = async (event) => {
+  try{ connectLambda(event); }catch(e){}
   if(event.httpMethod!=='POST') return resp(405,{error:'method not allowed'});
   const origin=event.headers.origin||event.headers.referer||''; const host=event.headers.host||'';
   if(host&&origin&&origin.indexOf(host)<0) return resp(403,{error:'invalid origin'});

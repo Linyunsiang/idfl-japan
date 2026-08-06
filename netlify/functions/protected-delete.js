@@ -1,9 +1,10 @@
 // POST /.netlify/functions/protected-delete { id }  (STAFF session required)
-const { getStore } = require('@netlify/blobs');
+const { getStore, connectLambda } = require('@netlify/blobs');
 const A = require('./_auth');
 const STORE='idfl-protected';
 function resp(code,obj){return {statusCode:code,headers:{'Content-Type':'application/json','Cache-Control':'no-store'},body:JSON.stringify(obj)};}
 exports.handler = async (event) => {
+  try{ connectLambda(event); }catch(e){}
   if(event.httpMethod!=='POST') return resp(405,{error:'method not allowed'});
   if(A.roleFromCookies(event.headers.cookie)!=='STAFF') return resp(403,{error:'スタッフ権限が必要です'});
   let body; try{ body=JSON.parse(event.body||'{}'); }catch(e){ return resp(400,{error:'invalid'}); }

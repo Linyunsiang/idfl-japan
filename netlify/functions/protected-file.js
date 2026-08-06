@@ -1,10 +1,11 @@
 // GET /.netlify/functions/protected-file?id=xxx
 // Serves a role-protected file from Netlify Blobs after verifying the session cookie.
-const { getStore } = require('@netlify/blobs');
+const { getStore, connectLambda } = require('@netlify/blobs');
 const A = require('./_auth');
 const STORE='idfl-protected';
 function resp(code,obj){return {statusCode:code,headers:{'Content-Type':'application/json','Cache-Control':'no-store'},body:JSON.stringify(obj)};}
 exports.handler = async (event) => {
+  try{ connectLambda(event); }catch(e){}
   const id=((event.queryStringParameters||{}).id)||'';
   if(!/^[A-Za-z0-9_-]{1,64}$/.test(id)) return resp(400,{error:'invalid id'});
   let store; try{ store=getStore(STORE); }catch(e){ return resp(500,{error:'storage unavailable'}); }
