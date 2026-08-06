@@ -1,3 +1,4 @@
+# redeploy trigger: pick up access-control env vars (CUSTOMER/STAFF/SESSION_SECRET)
 [build]
   publish = "."
 [functions]
