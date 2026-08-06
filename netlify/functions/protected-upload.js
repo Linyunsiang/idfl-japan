@@ -1,5 +1,5 @@
 // POST /.netlify/functions/protected-upload  (STAFF session required)
-// Body: { filename, contentBase64, role:'staff'|'customer', title? } -> stores to Netlify Blobs
+// Body: { filename, contentBase64, role:'staff'|'customer', title? } -> Netlify Blobs (metadata on blob; no index)
 const { getStore, connectLambda } = require('@netlify/blobs');
 const A = require('./_auth');
 const CFG = require('./_config');
@@ -16,8 +16,7 @@ exports.handler = async (event) => {
   if(event.httpMethod!=='POST') return resp(405,{error:'method not allowed'});
   const origin=event.headers.origin||event.headers.referer||''; const host=event.headers.host||'';
   if(host&&origin&&origin.indexOf(host)<0) return resp(403,{error:'invalid origin'});
-  const role=A.roleFromCookies(event.headers.cookie);
-  if(role!=='STAFF') return resp(403,{error:'スタッフ権限が必要です。スタッフでログインしてください。'});
+  if(A.roleFromCookies(event.headers.cookie)!=='STAFF') return resp(403,{error:'スタッフ権限が必要です。スタッフでログインしてください。'});
   let body; try{ body=JSON.parse(event.body||'{}'); }catch(e){ return resp(400,{error:'invalid request'}); }
   const targetRole = body.role==='staff'?'staff':(body.role==='customer'?'customer':null);
   if(!targetRole) return resp(400,{error:'公開区分（staff/customer）が不正です'});
@@ -29,13 +28,11 @@ exports.handler = async (event) => {
   if(buf.length===0) return resp(400,{error:'空のファイルです'});
   if(buf.length>CFG.MAX_FILE_BYTES) return resp(413,{error:'サイズが上限（'+human(CFG.MAX_FILE_BYTES)+'）を超えています'});
   if(!magicOk(ext,buf)) return resp(400,{error:'ファイルの実体が拡張子と一致しません'});
-  let store; try{ store=getStore({ name: STORE, consistency: 'strong' }); }catch(e){ return resp(500,{error:'ストレージに接続できません'}); }
+  let store; try{ store=getStore(STORE); }catch(e){ return resp(500,{error:'ストレージに接続できません'}); }
   const id = Date.now().toString(36)+'-'+crypto.randomBytes(4).toString('hex');
   const contentType = (CFG.TYPES[ext]||{}).mime || 'application/octet-stream';
   const ab = buf.buffer.slice(buf.byteOffset, buf.byteOffset+buf.byteLength);
-  await store.set(id, ab, { metadata:{ role:targetRole, name, contentType } });
-  let index=[]; try{ const idx=await store.get('_index',{type:'json'}); if(Array.isArray(idx)) index=idx; }catch(e){}
-  index.unshift({ id, name, title:(body.title||name), role:targetRole, size:buf.length, sizeLabel:human(buf.length), contentType, uploadedAt:nowJst(), uploadedBy:'staff' });
-  await store.set('_index', JSON.stringify(index));
+  const metadata = { role:targetRole, name, title:String(body.title||name).slice(0,200), contentType, size:buf.length, sizeLabel:human(buf.length), uploadedAt:nowJst(), uploadedBy:'staff' };
+  try{ await store.set(id, ab, { metadata }); }catch(e){ return resp(502,{error:'保存に失敗しました: '+(e&&e.message||'')}); }
   return resp(200,{ ok:true, id, sizeLabel:human(buf.length) });
 };
