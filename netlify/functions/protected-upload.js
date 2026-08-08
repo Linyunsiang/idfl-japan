@@ -1,5 +1,5 @@
 // POST /.netlify/functions/protected-upload  (STAFF session required)
-// Body: { filename, contentBase64, role:'staff'|'customer', title? } -> Netlify Blobs (metadata on blob; no index)
+// Body: { filename, contentBase64, role:'staff'|'customer', title?, group?, status?:'draft'|'published' } -> Netlify Blobs
 const { getStore, connectLambda } = require('@netlify/blobs');
 const A = require('./_auth');
 const CFG = require('./_config');
@@ -20,6 +20,7 @@ exports.handler = async (event) => {
   let body; try{ body=JSON.parse(event.body||'{}'); }catch(e){ return resp(400,{error:'invalid request'}); }
   const targetRole = body.role==='staff'?'staff':(body.role==='customer'?'customer':null);
   if(!targetRole) return resp(400,{error:'公開区分（staff/customer）が不正です'});
+  const status = body.status==='draft' ? 'draft' : 'published';
   const name=baseName(body.filename); const ext=extOf(name);
   if(CFG.BLOCKED_EXT.includes(ext)) return resp(400,{error:'実行形式・スクリプトはアップロードできません'});
   if(!CFG.ALLOWED_EXT.includes(ext)) return resp(400,{error:'対応形式は '+CFG.ALLOWED_EXT.join(', ').toUpperCase()+' のみです'});
@@ -32,7 +33,8 @@ exports.handler = async (event) => {
   const id = Date.now().toString(36)+'-'+crypto.randomBytes(4).toString('hex');
   const contentType = (CFG.TYPES[ext]||{}).mime || 'application/octet-stream';
   const ab = buf.buffer.slice(buf.byteOffset, buf.byteOffset+buf.byteLength);
-  const metadata = { kind:'file', role:targetRole, name, title:String(body.title||name).slice(0,200), group:String(body.group||'').slice(0,120), contentType, size:buf.length, sizeLabel:human(buf.length), uploadedAt:nowJst(), uploadedBy:'staff' };
+  const ts = nowJst();
+  const metadata = { kind:'file', role:targetRole, status, name, title:String(body.title||name).slice(0,200), group:String(body.group||'').slice(0,120), contentType, size:buf.length, sizeLabel:human(buf.length), uploadedAt:ts, updatedAt:ts, uploadedBy:'staff' };
   try{ await store.set(id, ab, { metadata }); }catch(e){ return resp(502,{error:'保存に失敗しました: '+(e&&e.message||'')}); }
   return resp(200,{ ok:true, id, sizeLabel:human(buf.length) });
 };
