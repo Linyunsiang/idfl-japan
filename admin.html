@@ -86,6 +86,17 @@
   .cmp{display:flex;gap:12px;flex-wrap:wrap}
   .cmp .box{flex:1;min-width:200px;border:1px solid var(--line);border-radius:10px;padding:10px;font-size:12px}
   .cmp .box h4{margin:0 0 6px;font-size:11px;color:#6b7280}
+  /* ===== お客様専用ダウンロード管理 ===== */
+  .fpill{padding:6px 12px;border-radius:999px;border:1.5px solid var(--line);background:#fff;font-weight:700;font-size:12px;cursor:pointer;color:#374151;margin-left:4px}
+  .fpill.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+  .prow{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:9px;background:#fff;flex-wrap:wrap}
+  .prow.dover{border-color:var(--accent);box-shadow:0 0 0 2px rgba(18,85,160,.18)}
+  .prow.dragging{opacity:.45}
+  .phandle{cursor:grab;color:#9aa3af;font-size:17px;user-select:none;line-height:1}
+  .phandle.off{cursor:not-allowed;color:#d1d5db}
+  .pgrp{font-size:12.5px;font-weight:900;color:#0f2c4d;margin:16px 0 8px;padding-bottom:5px;border-bottom:2px solid #dbe7f3}
+  .pttl{font-weight:700;font-size:14px}
+  .pmeta{font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.7;word-break:break-all}
 </style>
 </head>
 <body>
@@ -140,6 +151,59 @@
       <div id="fList"></div>
       <div class="hint">※「変更を公開」を押すまで、追加・置換・削除はこのブラウザ内の下書きです。公開時に GitHub へ保存→自動デプロイ（1〜2分）。置換しても公開URLは変わりません。</div>
     </div>
+
+    <div class="panel" id="protectedPanel" style="display:none">
+      <div id="pGate" style="display:none;max-width:380px;margin:20px auto;text-align:center">
+        <div style="font-size:34px">🔒</div>
+        <p style="font-size:14px;color:#374151;font-weight:900;margin:8px 0 4px">スタッフ認証が必要です</p>
+        <p class="hint" style="margin:0 0 12px">お客様専用ダウンロード資料の管理には、スタッフ用パスワードでのログインが必要です（この管理コンソールのログインとは別の認証です）。</p>
+        <input id="pPw" type="password" placeholder="スタッフ用パスワード" style="width:100%;padding:11px;border:1.5px solid var(--line);border-radius:9px;font-family:inherit;font-size:14px" onkeydown="if(event.key==='Enter')pLogin()">
+        <div id="pGateErr" style="color:#b91c1c;font-size:12.5px;height:16px;margin:6px 0"></div>
+        <button class="btn btn-p" style="width:100%" onclick="pLogin()">スタッフとしてログイン</button>
+      </div>
+
+      <div id="pMain" style="display:none">
+        <div class="bar">
+          <span class="count" id="pCount"></span>
+          <span class="chip on">即時反映・お客様専用</span>
+          <div class="grow"></div>
+          <button class="btn btn-g" onclick="pLoad()">🔄 再読込</button>
+          <button class="btn btn-g" onclick="pPreview()">🔎 お客様ページ</button>
+          <button class="btn btn-o" onclick="pOpenLink()">🔗 リンク追加</button>
+        </div>
+
+        <div id="pDrop" class="dropzone" tabindex="0" role="button" aria-label="ファイルをアップロード">
+          <div class="dz-big" id="pDzBig">ファイルをここにドラッグ＆ドロップ</div>
+          <div class="dz-sub">またはクリックしてファイルを選択</div>
+          <div class="dz-hint" id="pDzHint"></div>
+        </div>
+        <input type="file" id="pInput" multiple style="display:none">
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin:2px 0 10px">
+          <label class="f" style="flex:2;min-width:190px;margin:0">追加時のグループ<input type="text" id="pUpGroup" list="pGroups" placeholder="例：2026 大阪セミナー"></label>
+          <label class="f" style="flex:1;min-width:130px;margin:0">公開区分<select id="pUpRole"><option value="customer">お客様専用</option><option value="staff">スタッフ専用</option></select></label>
+          <label class="f" style="flex:1;min-width:130px;margin:0">状態<select id="pUpStatus"><option value="published">公開</option><option value="draft">下書き</option></select></label>
+        </div>
+        <datalist id="pGroups"></datalist>
+        <div class="progress" id="pProg"><div class="bar2" id="pBar"></div></div>
+        <div class="statusline" id="pStatus"></div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0 10px">
+          <input type="text" id="pSearch" placeholder="🔍 タイトル・グループ・ファイル名で検索" style="flex:1;min-width:200px;padding:9px 11px;border:1.5px solid var(--line);border-radius:8px;font-family:inherit;font-size:13.5px" oninput="pRender()">
+          <div id="pFilters">
+            <button class="fpill on" data-f="all" onclick="pSetFilter('all')">すべて</button>
+            <button class="fpill" data-f="published" onclick="pSetFilter('published')">公開中</button>
+            <button class="fpill" data-f="draft" onclick="pSetFilter('draft')">下書き</button>
+            <button class="fpill" data-f="file" onclick="pSetFilter('file')">ファイル</button>
+            <button class="fpill" data-f="link" onclick="pSetFilter('link')">リンク</button>
+          </div>
+        </div>
+
+        <div id="pReorderNote" class="hint" style="display:none;color:#92400e">※ 並べ替えは「検索なし・すべて表示」のときのみ可能です。</div>
+        <div id="pList"></div>
+        <div class="hint">※ ここでの追加・編集・削除・並べ替え・公開/非公開は<strong>即時にお客様ページへ反映</strong>されます（Netlify Blobs 保存・GitHubの「変更を公開」は不要）。ファイルは公開リポジトリには保存されません。<strong>下書き（Draft）はお客様に表示されません。</strong>大容量（約4MB超）は「🔗 リンク追加」をご利用ください。</div>
+      </div>
+    </div>
   </div>
 </div>
 
@@ -148,6 +212,8 @@
 </div></div>
 
 <div class="ov" id="fov"><div class="modal"><h3 id="fmTitle"></h3><div id="fmBody"></div><div class="acts" id="fmActs"></div></div></div>
+
+<div class="ov" id="pov"><div class="modal"><h3 id="povTitle"></h3><div id="povBody"></div><div class="acts" id="povActs"></div></div></div>
 
 <div class="toast" id="toast"></div>
 
@@ -261,15 +327,18 @@ function initApp(){
   const tabs=document.getElementById('tabs');
   tabs.innerHTML=Object.keys(SCHEMAS).map(k=>`<button class="tab" data-k="${k}" onclick="switchTab('${k}')">${SCHEMAS[k].label} <span class="dot" id="dot-${k}" style="display:none">●</span></button>`).join('');
   tabs.innerHTML+=`<button class="tab" data-k="files" onclick="switchTab('files')">\uD83D\uDCC1 ファイル管理 <span class="dot" id="dot-files" style="display:none">●</span></button>`;
+  tabs.innerHTML+=`<button class="tab" data-k="protected" onclick="switchTab('protected')">\uD83D\uDCC1 ダウンロード資料管理（お客様専用）</button>`;
   switchTab('news');
 }
 
 async function switchTab(k){
   CUR=k;
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.k===k));
-  const filesMode=(k==='files');
-  document.getElementById('genericPanel').style.display=filesMode?'none':'';
+  const filesMode=(k==='files'), protMode=(k==='protected');
+  document.getElementById('genericPanel').style.display=(filesMode||protMode)?'none':'';
   document.getElementById('filePanel').style.display=filesMode?'':'none';
+  document.getElementById('protectedPanel').style.display=protMode?'':'none';
+  if(protMode){ pInit(); return; }
   if(filesMode){ if(!FLOADED){await fInit();} else {fRender();} return; }
   if(!DATA[k]){await loadData(k);} else {render();}
 }
@@ -685,6 +754,213 @@ document.getElementById('fov').addEventListener('click',e=>{if(e.target.id==='fo
 
 document.getElementById('ov').addEventListener('click',e=>{ if(e.target.id==='ov'){ if(confirm('編集を閉じますか？入力中の内容は保存されません。')) closeModal(); } });
 window.addEventListener('beforeunload',function(e){ if(Object.values(DIRTY).some(Boolean)){ e.preventDefault(); e.returnValue=''; } });
+
+/* ===================== お客様専用ダウンロード管理（Netlify Blobs / STAFF session） ===================== */
+var PFILES=[], PVIEW=[], PFILTER='all', PLOADED=false;
+var PCFG={allowedExt:['pdf','doc','docx','xls','xlsx','ppt','pptx','zip','jpg','jpeg','png'],maxBytes:4*1024*1024,maxLabel:'4.0 MB'};
+var PDEFGROUPS=['2026 大阪セミナー','GOTS','MMS','FSC','Down & Feather','IDFL Guide','Application Form'];
+var PDRAG=null;
+
+function pShow(id,show){var el=document.getElementById(id);if(el)el.style.display=show?'':'none';}
+function pInit(){
+  pShow('pGate',false); pShow('pMain',false);
+  fetch('/.netlify/functions/auth-status',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
+    if(j&&j.role==='STAFF'){ pShow('pMain',true); if(!PLOADED){pSetup();} pLoad(); }
+    else { pShow('pGate',true); var e=document.getElementById('pPw'); if(e) e.focus(); }
+  }).catch(function(){ pShow('pGate',true); });
+}
+function pLogin(){
+  var pw=document.getElementById('pPw').value, err=document.getElementById('pGateErr'); err.textContent='';
+  if(!pw){err.textContent='パスワードを入力してください';return;}
+  fetch('/.netlify/functions/auth-login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({role:'staff',password:pw})})
+   .then(function(r){return r.json().then(function(j){return {s:r.status,j:j};});})
+   .then(function(o){ if(o.s===200&&o.j.ok){ document.getElementById('pPw').value=''; pInit(); } else { err.textContent=(o.j&&o.j.error)||('エラー HTTP '+o.s); } })
+   .catch(function(){ err.textContent='通信エラー'; });
+}
+function pPreview(){ window.open('/customer/downloads.html','_blank','noopener'); }
+
+function pSetup(){
+  PLOADED=true;
+  fetch('/.netlify/functions/file-manager?action=config').then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){PCFG=j;} pDzHint(); }).catch(pDzHint);
+  var drop=document.getElementById('pDrop'), input=document.getElementById('pInput');
+  drop.addEventListener('click',function(){input.click();});
+  drop.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();input.click();}});
+  drop.addEventListener('dragover',function(e){e.preventDefault();drop.classList.add('drag');document.getElementById('pDzBig').textContent='ここにドロップしてアップロード';});
+  drop.addEventListener('dragleave',function(){drop.classList.remove('drag');document.getElementById('pDzBig').textContent='ファイルをここにドラッグ＆ドロップ';});
+  drop.addEventListener('drop',function(e){e.preventDefault();drop.classList.remove('drag');document.getElementById('pDzBig').textContent='ファイルをここにドラッグ＆ドロップ';if(e.dataTransfer.files&&e.dataTransfer.files.length)pUpload(e.dataTransfer.files);});
+  input.addEventListener('change',function(){if(input.files&&input.files.length)pUpload(input.files);input.value='';});
+}
+function pDzHint(){var h=document.getElementById('pDzHint');if(h)h.textContent='対応形式: '+PCFG.allowedExt.join('/').toUpperCase()+'　最大 '+PCFG.maxLabel+'（複数選択可）';}
+
+function pGroupsList(){ var set={}; PDEFGROUPS.forEach(function(g){set[g]=1;}); PFILES.forEach(function(f){if(f.group)set[f.group]=1;}); return Object.keys(set); }
+function pFillDatalist(){ var dl=document.getElementById('pGroups'); if(dl) dl.innerHTML=pGroupsList().map(function(g){return '<option value="'+esc(g)+'">';}).join(''); }
+
+function pLoad(){
+  var list=document.getElementById('pList'); list.innerHTML='<div style="padding:16px;color:#6b7280">読込中…</div>';
+  fetch('/.netlify/functions/protected-list',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
+    PFILES=(j&&j.files)||[]; pFillDatalist(); pBuildView(); pRender();
+  }).catch(function(){ list.innerHTML='<div style="padding:16px;color:#b91c1c">読込に失敗しました。</div>'; });
+}
+function pBuildView(){ var map={}, order=[]; PFILES.forEach(function(f){var g=f.group||'その他'; if(!map[g]){map[g]=[];order.push(g);} map[g].push(f);}); PVIEW=order.map(function(g){return {group:g,items:map[g]};}); }
+function pFlatIds(){ var ids=[]; PVIEW.forEach(function(gr){gr.items.forEach(function(f){ids.push(f.id);});}); return ids; }
+function pSetFilter(f){ PFILTER=f; var el=document.getElementById('pFilters'); if(el) el.querySelectorAll('.fpill').forEach(function(b){b.classList.toggle('on',b.dataset.f===f);}); pRender(); }
+function pReorderEnabled(){ var q=(document.getElementById('pSearch').value||'').trim(); return !q && PFILTER==='all'; }
+function pExt(n){return (String(n||'').split('.').pop()||'').toLowerCase();}
+function pFindFile(id){ for(var i=0;i<PFILES.length;i++) if(PFILES[i].id===id) return PFILES[i]; return null; }
+
+function pRender(){
+  var list=document.getElementById('pList');
+  var q=(document.getElementById('pSearch').value||'').trim().toLowerCase();
+  var reord=pReorderEnabled();
+  document.getElementById('pReorderNote').style.display=(!reord)?'':'none';
+  var total=0, html='';
+  PVIEW.forEach(function(gr){
+    var items=gr.items.filter(function(f){
+      if(PFILTER==='published'&&f.status==='draft') return false;
+      if(PFILTER==='draft'&&f.status!=='draft') return false;
+      if(PFILTER==='file'&&f.kind==='link') return false;
+      if(PFILTER==='link'&&f.kind!=='link') return false;
+      if(q&&![f.title,f.name,f.group].some(function(v){return String(v||'').toLowerCase().indexOf(q)>=0;})) return false;
+      return true;
+    });
+    if(!items.length) return;
+    total+=items.length;
+    html+='<div class="pgrp">'+esc(gr.group)+'　<span style="font-weight:400;color:#6b7280;font-size:11px">'+items.length+'件</span></div>';
+    items.forEach(function(f){
+      var gi=gr.items.indexOf(f);
+      var isLink=f.kind==='link';
+      var roleChip=f.role==='staff'?'<span class="chip off">STAFF</span>':'<span class="chip on">お客様</span>';
+      var statusChip=f.status==='draft'?'<span class="chip pend">下書き</span>':'<span class="chip on">公開中</span>';
+      var typeChip='<span class="chip" style="background:#e5edf7;color:#1255A0">'+(isLink?'LINK':(pExt(f.name).toUpperCase()||'FILE'))+'</span>';
+      var meta=[ (isLink?'外部リンク':(esc(f.name||'')+' / '+esc(f.sizeLabel||''))), esc((f.updatedAt||f.uploadedAt||'').slice(0,10)) ].filter(Boolean).join(' ・ ');
+      var handle= reord ? '<span class="phandle" draggable="true" title="ドラッグで並べ替え" data-id="'+esc(f.id)+'" data-g="'+esc(gr.group)+'">☰</span>' : '<span class="phandle off" title="検索/絞り込み中は並べ替え不可">☰</span>';
+      var upBtn = reord ? '<button class="mini" title="上へ" onclick="pMove(\''+esc(f.id)+'\',-1)" '+(gi===0?'disabled':'')+'>▲</button>' : '';
+      var dnBtn = reord ? '<button class="mini" title="下へ" onclick="pMove(\''+esc(f.id)+'\',1)" '+(gi===gr.items.length-1?'disabled':'')+'>▼</button>' : '';
+      var openBtn = isLink
+        ? '<a class="btn btn-g" href="/.netlify/functions/protected-file?id='+encodeURIComponent(f.id)+'" target="_blank" rel="noopener">開く↗</a>'
+        : '<a class="btn btn-g" href="/.netlify/functions/protected-file?id='+encodeURIComponent(f.id)+'" download>DL</a>';
+      html+='<div class="prow" data-id="'+esc(f.id)+'" data-g="'+esc(gr.group)+'">'
+        + handle
+        + '<div style="display:flex;flex-direction:column;gap:2px">'+upBtn+dnBtn+'</div>'
+        + '<div style="flex:1;min-width:0"><div class="pttl">'+esc(f.title||f.name)+' '+roleChip+statusChip+typeChip+'</div><div class="pmeta">'+meta+'</div></div>'
+        + openBtn
+        + '<button class="btn btn-o" onclick="pEdit(\''+esc(f.id)+'\')">編集</button>'
+        + '<button class="btn btn-g" onclick="pToggle(\''+esc(f.id)+'\')">'+(f.status==='draft'?'公開':'非公開')+'</button>'
+        + '<button class="btn btn-d" onclick="pDelete(\''+esc(f.id)+'\')">削除</button>'
+        + '</div>';
+    });
+  });
+  document.getElementById('pCount').textContent=PFILES.length+' 件';
+  list.innerHTML= total? html : '<div style="padding:16px;color:#6b7280">'+((q||PFILTER!=='all')?'条件に一致する資料はありません。':'まだ資料がありません。上のエリアからアップロード、または「🔗 リンク追加」で追加できます。')+'</div>';
+  if(reord) pWireDrag();
+}
+
+function pUpload(fileList){
+  var files=[].slice.call(fileList);
+  var st=document.getElementById('pStatus'), prog=document.getElementById('pProg'), bar=document.getElementById('pBar');
+  var group=document.getElementById('pUpGroup').value, role=document.getElementById('pUpRole').value, status=document.getElementById('pUpStatus').value;
+  var okc=0, failc=0, i=0;
+  function next(){
+    if(i>=files.length){ prog.classList.remove('show'); bar.style.width='0'; st.style.color=failc?'#b91c1c':'#166534'; st.textContent='完了：成功 '+okc+' 件'+(failc?(' / 失敗 '+failc+' 件'):''); pLoad(); return; }
+    var f=files[i], n=i+1;
+    if(PCFG.allowedExt.indexOf(pExt(f.name))<0){ failc++; st.style.color='#b91c1c'; st.textContent='('+n+'/'+files.length+') 対応形式外: '+f.name; i++; return next(); }
+    if(f.size>PCFG.maxBytes){ failc++; st.style.color='#b91c1c'; st.textContent='('+n+'/'+files.length+') 4MB超（リンク追加をご利用ください）: '+f.name; i++; return next(); }
+    var reader=new FileReader();
+    reader.onload=function(){
+      var b64=String(reader.result).split(',')[1];
+      var xhr=new XMLHttpRequest(); xhr.open('POST','/.netlify/functions/protected-upload'); xhr.setRequestHeader('Content-Type','application/json');
+      prog.classList.add('show'); st.style.color='#6b7280'; st.textContent='('+n+'/'+files.length+') アップロード中… '+f.name;
+      xhr.upload.onprogress=function(e){if(e.lengthComputable) bar.style.width=Math.round(e.loaded/e.total*100)+'%';};
+      xhr.onload=function(){ var j={}; try{j=JSON.parse(xhr.responseText);}catch(e){} if(xhr.status===200&&j.ok){okc++;}else{failc++; st.style.color='#b91c1c'; st.textContent='('+n+'/'+files.length+') 失敗: '+(j.error||('HTTP '+xhr.status)); } i++; next(); };
+      xhr.onerror=function(){ failc++; st.style.color='#b91c1c'; st.textContent='('+n+'/'+files.length+') 通信エラー'; i++; next(); };
+      xhr.send(JSON.stringify({filename:f.name,contentBase64:b64,role:role,title:f.name.replace(/\.[^.]+$/,''),group:group,status:status}));
+    };
+    reader.onerror=function(){ failc++; i++; next(); };
+    reader.readAsDataURL(f);
+  }
+  next();
+}
+
+function pOpenLink(){
+  document.getElementById('povTitle').textContent='🔗 リンクを追加（大容量向け）';
+  document.getElementById('povBody').innerHTML=
+    '<label class="f">タイトル（表示名）<input type="text" id="pk_title" placeholder="例：2026大阪 Session2 スライド一式"></label>'
+   +'<label class="f">グループ<input type="text" id="pk_group" list="pGroups" placeholder="例：2026 大阪セミナー"></label>'
+   +'<label class="f">リンクURL（Google Drive / Dropbox / OneDrive など・https）<input type="text" id="pk_url" placeholder="https://drive.google.com/..."></label>'
+   +'<div style="display:flex;gap:10px"><label class="f" style="flex:1">公開区分<select id="pk_role"><option value="customer">お客様専用</option><option value="staff">スタッフ専用</option></select></label>'
+   +'<label class="f" style="flex:1">状態<select id="pk_status"><option value="published">公開</option><option value="draft">下書き</option></select></label></div>'
+   +'<div class="statusline" id="pk_st"></div>';
+  document.getElementById('povActs').innerHTML='<button class="btn btn-g" onclick="pCloseModal()">キャンセル</button><button class="btn btn-p" onclick="pSaveLink()">追加</button>';
+  document.getElementById('pov').classList.add('open');
+}
+function pSaveLink(){
+  var url=document.getElementById('pk_url').value.trim(), st=document.getElementById('pk_st');
+  if(!/^https:\/\//i.test(url)){ st.style.color='#b91c1c'; st.textContent='https:// で始まるURLを入力してください'; return; }
+  st.style.color='#6b7280'; st.textContent='追加中…';
+  fetch('/.netlify/functions/protected-addlink',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({
+    url:url, title:document.getElementById('pk_title').value||url, group:document.getElementById('pk_group').value, role:document.getElementById('pk_role').value, status:document.getElementById('pk_status').value
+  })}).then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){ pCloseModal(); toast('リンクを追加しました'); pLoad(); } else { st.style.color='#b91c1c'; st.textContent='失敗: '+((j&&j.error)||''); } }).catch(function(){ st.style.color='#b91c1c'; st.textContent='通信エラー'; });
+}
+
+function pEdit(id){
+  var f=pFindFile(id); if(!f) return;
+  var isLink=f.kind==='link';
+  document.getElementById('povTitle').textContent='編集';
+  document.getElementById('povBody').innerHTML=
+    '<label class="f">表示タイトル<input type="text" id="pe_title" value="'+esc(f.title||f.name||'')+'"></label>'
+   +'<label class="f">グループ<input type="text" id="pe_group" list="pGroups" value="'+esc(f.group||'')+'"></label>'
+   +(isLink?'<label class="f">リンクURL（https）<input type="text" id="pe_url" value="'+esc(f.url||'')+'"></label>':'')
+   +'<div style="display:flex;gap:10px"><label class="f" style="flex:1">公開区分<select id="pe_role"><option value="customer"'+(f.role!=='staff'?' selected':'')+'>お客様専用</option><option value="staff"'+(f.role==='staff'?' selected':'')+'>スタッフ専用</option></select></label>'
+   +'<label class="f" style="flex:1">状態<select id="pe_status"><option value="published"'+(f.status!=='draft'?' selected':'')+'>公開</option><option value="draft"'+(f.status==='draft'?' selected':'')+'>下書き</option></select></label></div>'
+   +'<div class="statusline" id="pe_st"><span style="color:#6b7280">※ ファイル本体の再アップロードは不要です（メタ情報のみ更新）。</span></div>';
+  document.getElementById('povActs').innerHTML='<button class="btn btn-g" onclick="pCloseModal()">キャンセル</button><button class="btn btn-p" onclick="pSaveEdit(\''+esc(id)+'\','+(isLink?'true':'false')+')">保存</button>';
+  document.getElementById('pov').classList.add('open');
+}
+function pSaveEdit(id,isLink){
+  var st=document.getElementById('pe_st'); st.style.color='#6b7280'; st.textContent='保存中…';
+  var payload={ id:id, title:document.getElementById('pe_title').value, group:document.getElementById('pe_group').value, role:document.getElementById('pe_role').value, status:document.getElementById('pe_status').value };
+  if(isLink){ var u=document.getElementById('pe_url').value.trim(); if(u) payload.url=u; }
+  fetch('/.netlify/functions/protected-update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+   .then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){ pCloseModal(); toast('更新しました'); pLoad(); } else { st.style.color='#b91c1c'; st.textContent='失敗: '+((j&&j.error)||''); } }).catch(function(){ st.style.color='#b91c1c'; st.textContent='通信エラー'; });
+}
+function pCloseModal(){ document.getElementById('pov').classList.remove('open'); }
+
+function pToggle(id){
+  var f=pFindFile(id); if(!f) return;
+  var ns=f.status==='draft'?'published':'draft';
+  fetch('/.netlify/functions/protected-update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:id,status:ns})})
+   .then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){ toast(ns==='published'?'公開しました':'非公開にしました'); pLoad(); } else { toast('失敗: '+((j&&j.error)||'')); } }).catch(function(){ toast('通信エラー'); });
+}
+function pDelete(id){
+  var f=pFindFile(id); if(!f) return;
+  if(!confirm('この資料を削除してもよろしいですか？\n\n「'+(f.title||f.name)+'」\n'+(f.kind==='link'?'（外部リンク。メタ情報のみ削除されます）':'（ファイル本体も削除されます）')))return;
+  fetch('/.netlify/functions/protected-delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:id})})
+   .then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){ toast('削除しました'); pLoad(); } else { toast('失敗: '+((j&&j.error)||'')); } }).catch(function(){ toast('通信エラー'); });
+}
+function pMove(id,dir){
+  if(!pReorderEnabled()) return;
+  for(var g=0;g<PVIEW.length;g++){ var arr=PVIEW[g].items; var idx=-1; for(var k=0;k<arr.length;k++) if(arr[k].id===id){idx=k;break;}
+    if(idx>=0){ var j=idx+dir; if(j<0||j>=arr.length) return; var t=arr[idx]; arr[idx]=arr[j]; arr[j]=t; pRender(); pCommitOrder(); return; } }
+}
+function pWireDrag(){
+  document.querySelectorAll('#pList .phandle[draggable="true"]').forEach(function(h){
+    h.addEventListener('dragstart',function(e){ PDRAG={id:h.dataset.id,g:h.dataset.g}; var row=h.closest('.prow'); if(row)row.classList.add('dragging'); e.dataTransfer.effectAllowed='move'; try{e.dataTransfer.setData('text/plain',h.dataset.id);}catch(_){} });
+    h.addEventListener('dragend',function(){ document.querySelectorAll('#pList .prow').forEach(function(r){r.classList.remove('dragging','dover');}); PDRAG=null; });
+  });
+  document.querySelectorAll('#pList .prow').forEach(function(row){
+    row.addEventListener('dragover',function(e){ if(PDRAG&&row.dataset.g===PDRAG.g){ e.preventDefault(); row.classList.add('dover'); } });
+    row.addEventListener('dragleave',function(){ row.classList.remove('dover'); });
+    row.addEventListener('drop',function(e){ e.preventDefault(); row.classList.remove('dover'); if(!PDRAG) return; var tgt=row.dataset.id, src=PDRAG.id, gname=PDRAG.g; if(tgt===src||row.dataset.g!==gname) return;
+      for(var g=0;g<PVIEW.length;g++){ if(PVIEW[g].group===gname){ var arr=PVIEW[g].items; var si=-1,ti=-1; for(var k=0;k<arr.length;k++){if(arr[k].id===src)si=k;if(arr[k].id===tgt)ti=k;} if(si<0||ti<0) return; var m=arr.splice(si,1)[0]; arr.splice(ti,0,m); pRender(); pCommitOrder(); return; } }
+    });
+  });
+}
+function pCommitOrder(){
+  var ids=pFlatIds();
+  fetch('/.netlify/functions/protected-update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({orderIds:ids})})
+   .then(function(r){return r.json();}).then(function(j){ if(!(j&&j.ok)) toast('並び順の保存に失敗しました'); }).catch(function(){ toast('通信エラー'); });
+}
+
 </script>
 </body>
 </html>
