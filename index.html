@@ -542,6 +542,36 @@ section{position:relative;}
   }
   @media (prefers-reduced-motion:reduce){ *{ transition:none!important; } .c-card:hover,.c-find a:hover,.c-row a:hover{ transform:none; } }
 </style>
+<style id="visual-additions">
+/* ===== Standards accreditation strip ===== */
+.c-std-strip{ padding:22px 0; background:#f8f9fb; border-bottom:1px solid var(--c-line); }
+.c-std-inner{ display:flex; align-items:center; gap:clamp(14px,3vw,40px); flex-wrap:wrap; }
+.c-std-label{ font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:#a0a0a8; font-weight:600; white-space:nowrap; flex:none; }
+.c-std-badges{ display:flex; flex-wrap:wrap; gap:8px; align-items:center; }
+.c-std-badge{ font-size:11.5px; font-weight:700; letter-spacing:.04em; padding:5px 14px; border-radius:6px; border:1.5px solid; display:inline-block; white-space:nowrap; transition:transform .2s,box-shadow .2s; }
+.c-std-badge:hover{ transform:translateY(-1px); box-shadow:0 4px 12px rgba(0,0,0,.1); }
+.c-std-badge.gots{ color:#2e7d32; border-color:#2e7d32; background:rgba(46,125,50,.07); }
+.c-std-badge.ocs { color:#388e3c; border-color:#388e3c; background:rgba(56,142,60,.07); }
+.c-std-badge.grs { color:#1255A0; border-color:#1255A0; background:rgba(18,85,160,.07); }
+.c-std-badge.rws { color:#6a1b9a; border-color:#7b1fa2; background:rgba(123,31,162,.07); }
+.c-std-badge.fsc { color:#33691e; border-color:#33691e; background:rgba(51,105,30,.07); }
+.c-std-badge.dp  { color:#0d47a1; border-color:#0d47a1; background:rgba(13,71,161,.07); }
+.c-std-badge.jtas{ color:#b71c1c; border-color:#c62828; background:rgba(198,40,40,.07); }
+@media(max-width:640px){ .c-std-label{ width:100%; } }
+
+/* ===== Eco imagery grid ===== */
+.c-eco{ padding-block:clamp(48px,7vw,80px); background:var(--c-bg-soft); }
+.c-eco .c-eyebrow{ margin-bottom:10px; }
+.c-eco-grid{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-top:36px; }
+.c-eco-grid figure{ position:relative; margin:0; overflow:hidden; border-radius:10px; aspect-ratio:3/4; background:#e8ecf0; }
+.c-eco-grid img{ width:100%; height:100%; object-fit:cover; display:block; transition:transform .9s cubic-bezier(.2,.7,.3,1); }
+.c-eco-grid figure:hover img{ transform:scale(1.07); }
+.c-eco-grid figcaption{ position:absolute; left:0; right:0; bottom:0; padding:20px; display:flex; flex-direction:column; gap:4px; color:#fff; background:linear-gradient(to top,rgba(10,16,25,.80),rgba(10,16,25,.12) 65%,transparent); }
+.c-eco-cert{ font-size:11px; letter-spacing:.1em; font-weight:700; opacity:.9; text-transform:uppercase; }
+.c-eco-label{ font-size:20px; font-weight:700; letter-spacing:.02em; line-height:1.2; }
+@media(max-width:768px){ .c-eco-grid{ grid-template-columns:repeat(2,1fr); } }
+@media(max-width:420px){ .c-eco-grid{ grid-template-columns:1fr; } }
+</style>
 </head>
 <body>
 
@@ -647,12 +677,68 @@ section{position:relative;}
   </div>
 </section>
 
+<!-- Standards accreditation strip -->
+<div class="c-std-strip">
+  <div class="c-wrap">
+    <div class="c-std-inner">
+      <span class="c-std-label">Accredited Standards</span>
+      <div class="c-std-badges">
+        <span class="c-std-badge gots">GOTS</span>
+        <span class="c-std-badge ocs">OCS</span>
+        <span class="c-std-badge grs">GRS / RCS</span>
+        <span class="c-std-badge rws">RWS</span>
+        <span class="c-std-badge fsc">FSC CoC</span>
+        <span class="c-std-badge dp">DOWNPASS</span>
+        <span class="c-std-badge jtas">JTAS</span>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- Section 2: About -->
 <section class="c-sec c-sec--soft" id="about" aria-label="IDFL JAPANについて">
   <div class="c-wrap">
     <p class="c-eyebrow">About IDFL JAPAN</p>
     <h2 class="c-h2">国際認証を、取得して終わりにしない。</h2>
     <p class="c-lead">IDFL JAPANは、国際認証の取得準備から審査、認証取得後の運用まで、日本語でサポートします。規格の説明だけではなく、実際の業務フロー、必要書類、トレーサビリティ管理、取引証明書（TC）への対応など、企業ごとの実務に合わせて支援します。</p>
+  </div>
+</section>
+
+<!-- Eco imagery grid -->
+<section class="c-eco" aria-label="認証が守るもの">
+  <div class="c-wrap">
+    <p class="c-eyebrow">Why Certification Matters</p>
+    <h2 class="c-h2">認証が守る、自然のこと</h2>
+    <div class="c-eco-grid">
+      <figure>
+        <img src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=760&q=78&auto=format&fit=crop" alt="森林" loading="lazy" />
+        <figcaption>
+          <span class="c-eco-cert">FSC</span>
+          <span class="c-eco-label">森林</span>
+        </figcaption>
+      </figure>
+      <figure>
+        <img src="https://images.unsplash.com/photo-1551649001-7a2482d98d05?w=760&q=78&auto=format&fit=crop" alt="オーガニックコットン" loading="lazy" />
+        <figcaption>
+          <span class="c-eco-cert">GOTS / OCS</span>
+          <span class="c-eco-label">オーガニック</span>
+        </figcaption>
+      </figure>
+      <figure>
+        <img src="https://images.unsplash.com/photo-1484557985045-edf25e08da73?w=760&q=78&auto=format&fit=crop" alt="羊・ウール" loading="lazy" />
+        <figcaption>
+          <span class="c-eco-cert">RWS</span>
+          <span class="c-eco-label">ウール</span>
+        </figcaption>
+      </figure>
+      <figure>
+        <img src="https://images.unsplash.com/photo-1483728642387-6c3bdd6c93e5?w=760&q=78&auto=format&fit=crop" alt="雪山" loading="lazy" />
+        <figcaption>
+          <span class="c-eco-cert">DOWNPASS / JTAS</span>
+          <span class="c-eco-label">ダウン・羽毛</span>
+        </figcaption>
+      </figure>
+    </div>
   </div>
 </section>
 
