@@ -20,7 +20,10 @@
     "pinned": false,
     "date": "2026-08-10",
     "author": "IDFL JAPAN",
-    "published": false
+    "published": true,
+    "createdAt": "2026-08-12T01:44:30.897Z",
+    "updatedAt": "2026-08-12T01:44:30.897Z",
+    "updatedBy": "admin"
   },
   {
     "id": "news-te-mms-cb-policies-20260806",
@@ -32,7 +35,10 @@
     "pinned": false,
     "date": "2026-08-06",
     "author": "IDFL JAPAN",
-    "published": false
+    "published": true,
+    "createdAt": "2026-08-12T01:44:37.314Z",
+    "updatedAt": "2026-08-12T01:44:37.314Z",
+    "updatedBy": "admin"
   },
   {
     "id": "news-fsc-esp-cultural-wg-20260804",
@@ -44,7 +50,10 @@
     "pinned": false,
     "date": "2026-08-04",
     "author": "IDFL JAPAN",
-    "published": false
+    "published": true,
+    "createdAt": "2026-08-12T01:44:41.853Z",
+    "updatedAt": "2026-08-12T01:44:41.853Z",
+    "updatedBy": "admin"
   },
   {
     "id": "news-te-calibration-log-v2026-7-20260803",
@@ -56,7 +65,10 @@
     "pinned": false,
     "date": "2026-08-03",
     "author": "IDFL JAPAN",
-    "published": false
+    "published": true,
+    "createdAt": "2026-08-12T01:44:45.042Z",
+    "updatedAt": "2026-08-12T01:44:45.042Z",
+    "updatedBy": "admin"
   },
   {
     "id": "news-ghgp-iso-consolidation-20260729",
