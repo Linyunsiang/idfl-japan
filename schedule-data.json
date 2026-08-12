@@ -173,6 +173,20 @@
     "related": "https://yarn-expo-autumn.hk.messefrankfurt.com/shanghai/en.html"
   },
   {
+    "id": "ext-te-intertextile-shanghai-mms-workshop-2026",
+    "office": "Other",
+    "name": "Textile Exchange ワークショップ：Materials Matter Standard（MMS）移行準備（Intertextile Shanghai 会場）",
+    "type": "External",
+    "location": "Shanghai, China（NECC / 国家会展中心）",
+    "from": "2026-08-26",
+    "to": "2026-08-26",
+    "mode": "対面",
+    "time": "13:00-14:30 / 15:00-16:30（2セッション）",
+    "signup": "https://na.eventscloud.com/ereg/index.php?eventid=887538&",
+    "related": "https://textileexchange.org/event/intertextile-shanghai-workshop-preparing-for-the-transition-to-the-materials-matter-standard-mms/",
+    "published": false
+  },
+  {
     "id": "ext-premiere-vision-paris-2026",
     "office": "Other",
     "name": "Première Vision Paris 2026",
