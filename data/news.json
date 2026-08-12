@@ -11,6 +11,54 @@
     "author": "IDFL JAPAN"
   },
   {
+    "id": "news-te-annual-report-2025-20260810",
+    "cat": "te",
+    "title": "Textile Exchange、2025年次報告書を公開 — 認証サイト数が世界で10万件を突破",
+    "body": "Textile Exchange は2026年8月10日、2025年次報告書（2025 Annual Report）を公開しました。同団体の各基準に認証されたサイト数は世界で10万件を超え、2020年の約2万9,000件から3倍以上に増加。速報値では Global Recycled Standard（GRS）、Recycled Claim Standard（RCS）、責任ある動物繊維基準を含む現行基準全体で前年比12%の伸びとなりました。Responsible Wool Standard（RWS）の認証面積は3,000万ヘクタールを超えています。また Materials Benchmark には子会社を含む423のブランド・小売企業が参加し過去最多を記録、参加企業のうち認証原材料の比率は58%から67%に上昇しました。報告書では新会員制度（Community／Action の2コホート）の開始と Materials Matter Standard の進展が主要成果として挙げられています。",
+    "link": "https://textileexchange.org/news/textile-exchange-reports-a-year-of-growth-and-industry-impact/",
+    "linkLabel": "Textile Exchange 公式ニュース",
+    "pinned": false,
+    "date": "2026-08-10",
+    "author": "IDFL JAPAN",
+    "published": false
+  },
+  {
+    "id": "news-te-mms-cb-policies-20260806",
+    "cat": "te",
+    "title": "Textile Exchange、Materials Matter Standard の認証機関向け方針2件を公開 — 審査の一貫性を強化",
+    "body": "Textile Exchange は2026年8月6日、Materials Matter Standard（MMS）に基づく認証の一貫性と信頼性を確保するため、認証機関（CB）向けの方針2件を公開しました。「Materials Matter Criteria for Certification Bodies」は、同基準で認証業務を行う認証機関が満たすべき要件を定めるものです。「Materials Matter Risk and Sampling Criteria and Tools Policy」は、リスク評価や審査計画の立案において認証機関が用いるべき手法を規定します。両文書は MMS のアシュアランス枠組みの中核をなし、組織のリスクプロファイルに応じた体系的な審査手順を示します。両方針は2026年12月31日に発効し、2027年12月31日から義務化されます。同日以前にすべての審査を Materials Matter Standard に基づいて実施する必要があります。",
+    "link": "https://textileexchange.org/news/introduces-new-measures-to-strengthen-materials-matter-assurance/",
+    "linkLabel": "Textile Exchange 公式ニュース",
+    "pinned": false,
+    "date": "2026-08-06",
+    "author": "IDFL JAPAN",
+    "published": false
+  },
+  {
+    "id": "news-fsc-esp-cultural-wg-20260804",
+    "cat": "fsc",
+    "title": "FSC、生態系サービス手順書（Ecosystem Services Procedure）改訂の作業部会メンバーを公募 — 応募期限は2026年8月21日",
+    "body": "FSC は2026年8月4日、Ecosystem Services Procedure（生態系サービス手順書）の改訂を担う作業部会（Working Group）について、技術専門家1名の公募を開始しました。応募期限は2026年8月21日です。本改訂は「動議53/2021」に基づき、先住民族と文化的サービス・慣行との結びつきを生態系サービスの枠組みに位置づけることを目的としています。FSC の作業部会は、環境・社会・経済の3分野からバランスよく選任される委員3名と、実務を担う技術専門家3名で構成されます。FSC は概念検討段階を終え、現在は改訂草案の作成段階に入っています。今回の募集は技術専門家枠です。",
+    "link": "https://fsc.org/en/newscentre/general-news/apply-to-join-the-working-group-on-cultural-ecosystem-services",
+    "linkLabel": "FSC ニュースセンター",
+    "pinned": false,
+    "date": "2026-08-04",
+    "author": "IDFL JAPAN",
+    "published": false
+  },
+  {
+    "id": "news-te-calibration-log-v2026-7-20260803",
+    "cat": "te",
+    "title": "Textile Exchange、Calibration Log を最新版（TE-TXL-LOG-221 V2026.7）に更新",
+    "body": "Textile Exchange は2026年8月3日、Calibration Log（文書番号 TE-TXL-LOG-221）を V2026.7 に更新しました。Calibration Log は、Textile Exchange の各基準および関連文書について解釈上の疑義や運用上の判断を集約し、認証機関・認証事業者が同一の解釈で運用できるよう調整するための公式文書です。認証取得企業および審査対応の実務では、最新版の内容を確認したうえで手順や記録の整備を行うことが推奨されます。前版は V2026.6（2026年6月）でした。変更点の詳細は Textile Exchange の Knowledge Center より原文をご確認ください。",
+    "link": "https://textileexchange.org/knowledge-center/documents/calibration-log/",
+    "linkLabel": "Textile Exchange Knowledge Center",
+    "pinned": false,
+    "date": "2026-08-03",
+    "author": "IDFL JAPAN",
+    "published": false
+  },
+  {
     "id": "news-ghgp-iso-consolidation-20260729",
     "cat": "others",
     "title": "GHG ProtocolとISO、企業向けGHG算定基準を単一の共同基準へ統合すると発表",
