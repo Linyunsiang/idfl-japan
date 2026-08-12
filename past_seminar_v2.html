@@ -369,6 +369,73 @@
         }
 
     </style>
+
+<style id="panel-2026-css">
+/* ===== 2026 Customer Hub ===== */
+.p26-chub{position:relative;background:linear-gradient(150deg,#0a2440 0%,#0f2f57 55%,#123a67 100%);color:#fff;border-top:3px solid #c7a253;}
+.p26-chub-in{max-width:1240px;margin:0 auto;padding:34px 24px 40px;}
+.p26-chub-eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:11.5px;font-weight:700;letter-spacing:.22em;text-transform:uppercase;color:#e5c884;}
+.p26-chub-eyebrow svg{width:15px;height:15px;stroke:#e5c884;}
+.p26-chub-title{margin:11px 0 6px;font-size:clamp(18px,2.1vw,22px);font-weight:700;color:#fff !important;line-height:1.4;}
+.p26-chub-note{margin:0;font-size:13px;line-height:1.75;color:rgba(255,255,255,.66);max-width:760px;}
+.p26-chub-grid{margin-top:24px;display:grid;grid-template-columns:1fr;gap:14px;}
+.p26-chub-row{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.p26-chub-card{position:relative;display:flex;align-items:center;gap:15px;padding:17px 20px;border-radius:14px;text-decoration:none;color:#fff;background:rgba(255,255,255,.055);border:1px solid rgba(255,255,255,.15);transition:transform .18s ease,border-color .18s ease,background .18s ease;}
+.p26-chub-card:hover{transform:translateY(-2px);background:rgba(255,255,255,.09);border-color:rgba(199,162,83,.6);}
+.p26-chub-card--primary{background:linear-gradient(120deg,rgba(199,162,83,.18),rgba(199,162,83,.06));border-color:rgba(199,162,83,.5);}
+.p26-chub-card--primary:hover{border-color:#c7a253;background:linear-gradient(120deg,rgba(199,162,83,.26),rgba(199,162,83,.1));}
+.p26-chub-ic{flex:none;width:42px;height:42px;border-radius:11px;display:grid;place-items:center;background:rgba(199,162,83,.16);border:1px solid rgba(199,162,83,.4);}
+.p26-chub-ic svg{width:20px;height:20px;stroke:#e5c884;}
+.p26-chub-body{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;}
+.p26-chub-tag{align-self:flex-start;font-size:10.5px;font-weight:700;letter-spacing:.08em;color:#0f2f57;background:#e5c884;padding:2px 9px;border-radius:6px;margin-bottom:3px;}
+.p26-chub-k{font-size:15px;font-weight:700;letter-spacing:.01em;}
+.p26-chub-d{font-size:12.5px;color:rgba(255,255,255,.62);line-height:1.55;}
+.p26-chub-arrow{flex:none;font-size:16px;color:#e5c884;opacity:.85;transition:transform .18s ease;}
+.p26-chub-card:hover .p26-chub-arrow{transform:translateX(3px);}
+@media(max-width:760px){.p26-chub-row{grid-template-columns:1fr;}.p26-chub-in{padding:26px 20px 30px;}}
+
+/* ===== 2026 Program ===== */
+.p26-program{padding:clamp(72px,11vw,120px) 0;background:#f6f6f4;}
+.p26-prog-list{border-top:1px solid rgba(23,23,27,.12);list-style:none;margin:0;padding:0;}
+.p26-prog-item{display:grid;grid-template-columns:160px 1fr 340px;gap:clamp(24px,3.5vw,44px);padding:clamp(48px,6vw,80px) 0;border-bottom:1px solid rgba(23,23,27,.12);}
+.p26-prog-meta{display:flex;flex-direction:column;gap:14px;align-items:flex-start;}
+.p26-prog-times{display:flex;flex-direction:column;gap:7px;align-items:flex-start;}
+.p26-prog-recep{font-size:11.5px;color:#a0a0a8;letter-spacing:.06em;white-space:nowrap;}
+.p26-prog-chip{margin-top:4px;font-size:10px;letter-spacing:.14em;color:#74747c;white-space:nowrap;border:1px solid rgba(23,23,27,.28);padding:3px 9px;border-radius:3px;}
+.p26-prog-badge{font-size:10.5px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;white-space:nowrap;color:#1255A0;padding:5px 11px;border:1px solid #1255A0;border-radius:3px;}
+.p26-prog-time{font-size:17px;font-weight:700;color:#17171b;letter-spacing:0;}
+.p26-prog-title{font-size:clamp(21px,2.6vw,30px);font-weight:700;margin:0 0 6px;line-height:1.3;color:#17171b;}
+.p26-prog-points{display:flex;flex-direction:column;gap:11px;max-width:60ch;list-style:none;margin:0;padding:0;}
+.p26-prog-points li{position:relative;padding-left:22px;font-size:15.5px;color:#3c3c43;line-height:1.7;}
+.p26-prog-points li::before{content:"";position:absolute;left:2px;top:.72em;width:7px;height:1px;background:#1255A0;}
+.p26-prog-format{margin:0 0 18px;display:inline-block;font-size:12.5px;color:#74747c;letter-spacing:.05em;}
+.p26-prog-break{padding-block:16px;opacity:.72;align-items:center;}
+.p26-prog-rest{font-size:14px;color:#74747c;letter-spacing:.05em;margin:0;}
+.p26-prog-sub+.p26-prog-sub{margin-top:clamp(30px,4vw,46px);padding-top:clamp(30px,4vw,46px);border-top:1px solid rgba(23,23,27,.12);}
+.p26-prog-sub .p26-prog-badge{display:inline-block;margin-bottom:14px;}
+.p26-speakers{display:flex;flex-direction:column;gap:clamp(16px,2vw,28px);align-self:stretch;justify-content:center;}
+.p26-speaker{display:flex;align-items:center;gap:24px;margin:0;background:#fff;border:1px solid rgba(23,23,27,.12);border-radius:24px;padding:24px 28px;width:100%;transition:box-shadow .35s,transform .35s,border-color .35s;}
+.p26-speaker:hover{transform:translateY(-2px);border-color:rgba(23,23,27,.28);box-shadow:0 14px 34px -18px rgba(20,20,30,.35);}
+.p26-speaker figcaption{order:2;display:flex;flex-direction:column;gap:6px;flex:1;min-width:0;}
+.p26-sp-name{font-size:18px;font-weight:700;color:#17171b;letter-spacing:.01em;white-space:nowrap;}
+.p26-sp-role{font-size:13.5px;color:#74747c;line-height:1.45;word-break:break-all;text-align:left;}
+.p26-speaker img{order:1;flex-shrink:0;width:96px;height:96px;border-radius:50%;object-fit:cover;border:4px solid #fff;background:rgba(23,23,27,.08);box-shadow:0 8px 20px -10px rgba(20,20,30,0.5),0 0 0 1px rgba(23,23,27,.12);transition:transform .5s cubic-bezier(.2,.7,.3,1);}
+.p26-speaker:hover img{transform:scale(1.05);}
+.p26-sp-dl{display:inline-flex;align-items:center;gap:5px;margin-top:8px;font-size:12.5px;font-weight:700;color:#1255A0;text-decoration:none;background:#eef4fb;border:1px solid #cfe0f2;border-radius:999px;padding:5px 13px;width:fit-content;transition:background .2s,color .2s;}
+.p26-sp-dl:hover{background:#1255A0;color:#fff;}
+@media(max-width:900px){
+    .p26-prog-item{grid-template-columns:150px 1fr;gap:30px;}
+    .p26-speakers{grid-column:1/-1;flex-direction:row;flex-wrap:wrap;}
+    .p26-speaker{width:calc(50% - 15px);min-width:260px;}
+}
+@media(max-width:620px){
+    .p26-prog-item{grid-template-columns:1fr;gap:18px;}
+    .p26-speakers{flex-direction:column;}
+    .p26-speaker{width:100%;}
+    .p26-prog-meta{flex-direction:row;align-items:center;gap:16px;}
+}
+</style>
+
 <style id="idfl-tone-sync">
 /* === IDFL tone sync — match index look & feel === */
 :root{
@@ -642,24 +709,24 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
 
     <!-- ===== 2026 パネル ===== -->
     <div id="panel-2026" class="year-panel active">
+
+        <!-- イベント概要 -->
         <section class="section-padding">
             <div class="max-w-5xl mx-auto px-6">
-
                 <div class="text-center mb-12">
                     <div class="year-badge mb-4" style="margin: 0 auto 16px; width: fit-content;">
                         <div class="year-badge-dot">26</div>
                         Group Discussion 2026
                     </div>
-                    <h2 style="font-family: 'Meiryo UI', Meiryo, sans-serif; font-size: 24px; margin: 0 0 8px;">大阪・グループディスカッションセミナー</h2>
+                    <h2 style="font-size: 24px; margin: 0 0 8px;">大阪・グループディスカッションセミナー</h2>
                     <p style="color: var(--brand-500); font-size: 14px;">大阪・御堂会館 3階 Bホールにて開催</p>
                 </div>
-
                 <div class="event-card">
                     <div class="event-hero">
                         <div class="event-hero-pattern"></div>
                         <div class="event-hero-text">
                             <p style="font-size: 11px; letter-spacing: 0.2em; color: var(--gold-light); font-weight: 700; margin: 0 0 12px;">2026 GROUP DISCUSSION</p>
-                            <h3 style="font-family: 'Meiryo UI', Meiryo, sans-serif; font-size: 28px; color: white; margin: 0 0 8px;">御堂会館</h3>
+                            <h3 style="font-size: 28px; color: white; margin: 0 0 8px;">御堂会館</h3>
                             <p style="color: var(--brand-200); font-size: 14px; margin: 0;">サステナビリティ認証 グループディスカッションセミナー</p>
                         </div>
                     </div>
@@ -681,37 +748,221 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
                                 <p style="font-size: 15px; color: var(--brand-800); font-weight: 700; margin: 0;">グループディスカッション</p>
                             </div>
                         </div>
-
                         <p style="color: var(--brand-700); font-size: 14px; line-height: 1.9; text-align: center; margin-bottom: 28px;">
                             2026年8月7日、大阪・御堂会館にてサステナビリティ認証セミナーを開催いたしました。<br>
                             専門担当者がグループに加わり、GOTS 8.0移行・MMS対応・FSC新規取得・ダウン認証について<br>
                             現場の実務課題を一緒に解決するグループディスカッション形式で実施しました。
                         </p>
-
-                        <div style="display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 28px;">
-                            <span style="background: var(--brand-050); border: 1px solid var(--border); color: var(--brand-700); font-size: 12px; padding: 6px 14px; border-radius: 100px; font-weight: 700;">GOTS 8.0 移行</span>
-                            <span style="background: var(--brand-050); border: 1px solid var(--border); color: var(--brand-700); font-size: 12px; padding: 6px 14px; border-radius: 100px; font-weight: 700;">MMS 対応</span>
-                            <span style="background: var(--brand-050); border: 1px solid var(--border); color: var(--brand-700); font-size: 12px; padding: 6px 14px; border-radius: 100px; font-weight: 700;">FSC 認証</span>
-                            <span style="background: var(--brand-050); border: 1px solid var(--border); color: var(--brand-700); font-size: 12px; padding: 6px 14px; border-radius: 100px; font-weight: 700;">ダウン・フェザー認証</span>
-                        </div>
-
                         <div style="display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;">
                             <a href="/seminar-2026-osaka.html"
                                style="display: inline-flex; align-items: center; gap: 8px; background: var(--brand-700); color: white; padding: 12px 24px; border-radius: 12px; font-weight: 700; font-size: 14px; text-decoration: none; transition: background 0.2s;"
                                onmouseover="this.style.background='var(--brand-900)'" onmouseout="this.style.background='var(--brand-700)'">
                                 セミナー詳細ページ <i data-lucide="arrow-right" style="width: 16px; height: 16px;"></i>
                             </a>
-                            <a href="/customer/downloads.html"
-                               style="display: inline-flex; align-items: center; gap: 8px; background: var(--brand-050); color: var(--brand-700); border: 1px solid var(--border); padding: 12px 24px; border-radius: 12px; font-weight: 700; font-size: 14px; text-decoration: none; transition: background 0.2s;"
-                               onmouseover="this.style.background='white'" onmouseout="this.style.background='var(--brand-050)'">
-                                📎 発表資料（お客様専用）
-                            </a>
                         </div>
                     </div>
                 </div>
-
             </div>
         </section>
+
+        <!-- お客様専用リソース -->
+        <section class="p26-chub" aria-label="お客様専用リソース">
+            <div class="p26-chub-in">
+                <span class="p26-chub-eyebrow">
+                    <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                    Customer Resources ・ お客様専用
+                </span>
+                <h2 class="p26-chub-title">セミナー講師の発表資料 ＆ オンライン練習教材</h2>
+                <p class="p26-chub-note">ご参加のお客様は、ログイン後に全講師の発表資料のダウンロードと、規格ごとの復習用オンライン教材（閲覧のみ）をご利用いただけます。</p>
+                <div class="p26-chub-grid">
+                    <a class="p26-chub-card p26-chub-card--primary" href="/customer/downloads.html">
+                        <span class="p26-chub-ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="m8 11 4 4 4-4"/><path d="M4 19h16"/></svg></span>
+                        <span class="p26-chub-body">
+                            <span class="p26-chub-k">発表資料ダウンロード</span>
+                            <span class="p26-chub-d">全講師のスライド一式（お客様専用）</span>
+                        </span>
+                        <span class="p26-chub-arrow">→</span>
+                    </a>
+                    <div class="p26-chub-row">
+                        <a class="p26-chub-card" href="/customer/gots-v8.html">
+                            <span class="p26-chub-body">
+                                <span class="p26-chub-tag">GOTS 8.0</span>
+                                <span class="p26-chub-k">GOTS Version 8</span>
+                                <span class="p26-chub-d">7.0→8.0 改訂ポイント</span>
+                            </span>
+                            <span class="p26-chub-arrow">→</span>
+                        </a>
+                        <a class="p26-chub-card" href="/customer/mms.html">
+                            <span class="p26-chub-body">
+                                <span class="p26-chub-tag">MMS</span>
+                                <span class="p26-chub-k">MMS への移行</span>
+                                <span class="p26-chub-d">新モジュール制度の理解</span>
+                            </span>
+                            <span class="p26-chub-arrow">→</span>
+                        </a>
+                        <a class="p26-chub-card" href="/customer/fsc.html">
+                            <span class="p26-chub-body">
+                                <span class="p26-chub-tag">FSC</span>
+                                <span class="p26-chub-k">新規 FSC 認証知識</span>
+                                <span class="p26-chub-d">認証取得の基礎</span>
+                            </span>
+                            <span class="p26-chub-arrow">→</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- プログラム -->
+        <section class="p26-program">
+            <div style="max-width:1240px;margin:0 auto;padding:0 24px;">
+                <div style="margin-bottom:clamp(40px,6vw,72px);">
+                    <p style="font-size:12px;letter-spacing:.26em;text-transform:uppercase;color:#74747c;margin:0 0 6px;">2026 Curriculum &amp; Schedule</p>
+                    <h2 style="font-size:clamp(27px,3.6vw,46px);font-weight:700;margin:0 0 10px;line-height:1.22;color:#17171b;">Program</h2>
+                    <p style="font-size:15px;color:#74747c;margin:0;">主なテーマ・登壇者・タイムテーブル</p>
+                </div>
+                <ol class="p26-prog-list">
+
+                    <li class="p26-prog-item">
+                        <div class="p26-prog-meta">
+                            <span class="p26-prog-badge">NEW</span>
+                            <div class="p26-prog-times">
+                                <span class="p26-prog-recep">受付 09:30〜</span>
+                                <span class="p26-prog-time">10:00〜12:00</span>
+                            </div>
+                        </div>
+                        <div class="p26-prog-main">
+                            <h3 class="p26-prog-title">GOTS 7.0 → 8.0 移行</h3>
+                            <p class="p26-prog-format">解説 + Q&amp;Aディスカッション</p>
+                            <ul class="p26-prog-points">
+                                <li>京セラドキュメントソリューションズの SCOPE 4 監査経験シェア</li>
+                                <li>Version 8 の主要改訂ポイント整理</li>
+                                <li>グループディスカッションで改定に対する提出資料</li>
+                            </ul>
+                        </div>
+                        <div class="p26-speakers">
+                            <figure class="p26-speaker">
+                                <figcaption>
+                                    <span class="p26-sp-name">松本 フィオナ 様</span>
+                                    <span class="p26-sp-role">GOTSにおける日本代表</span>
+                                    <a class="p26-sp-dl" href="/customer/downloads.html">📎 資料をダウンロード（お客様専用）</a>
+                                </figcaption>
+                                <img src="/Fiona.png" alt="松本フィオナ様" />
+                            </figure>
+                            <figure class="p26-speaker">
+                                <figcaption>
+                                    <span class="p26-sp-name">廣島 様</span>
+                                    <span class="p26-sp-role">京セラドキュメントソリューションズ株式会社</span>
+                                    <a class="p26-sp-dl" href="/customer/downloads.html">📎 資料をダウンロード（お客様専用）</a>
+                                </figcaption>
+                                <img src="/Hiroshima_refined.jpg" alt="廣島様" />
+                            </figure>
+                        </div>
+                    </li>
+
+                    <li class="p26-prog-item p26-prog-break">
+                        <div class="p26-prog-meta"><span class="p26-prog-time">12:00〜13:00</span></div>
+                        <div class="p26-prog-main"><p class="p26-prog-rest">昼休憩</p></div>
+                    </li>
+
+                    <li class="p26-prog-item">
+                        <div class="p26-prog-meta">
+                            <div class="p26-prog-times">
+                                <span class="p26-prog-recep">受付 12:30〜</span>
+                                <span class="p26-prog-time">13:00〜15:30</span>
+                                <span class="p26-prog-chip">並行開催 2セッション</span>
+                            </div>
+                        </div>
+                        <div class="p26-prog-main">
+                            <div class="p26-prog-sub">
+                                <span class="p26-prog-badge">重要</span>
+                                <h3 class="p26-prog-title">MMS 移行対応</h3>
+                                <p class="p26-prog-format">実務グループ討論形式</p>
+                                <ul class="p26-prog-points">
+                                    <li>MMSとは何か―旧来の計算方式との違い</li>
+                                    <li>移行期限と現在の対応状況</li>
+                                    <li>サプライヤーへのMMS登録依頼の進め方</li>
+                                    <li>システム入力・証明書発行の実務フロー</li>
+                                    <li>移行で詰まりやすいポイントの共有</li>
+                                </ul>
+                            </div>
+                            <div class="p26-prog-sub">
+                                <span class="p26-prog-badge">入門</span>
+                                <h3 class="p26-prog-title">ダウン・フェザー認証</h3>
+                                <p class="p26-prog-format">制度解説 + 監査実務</p>
+                                <ul class="p26-prog-points">
+                                    <li>ダウン・フェザー認証制度の概要（DOWNPASS / JTAS）</li>
+                                    <li>リサイクルダウンの取り扱い</li>
+                                    <li>羽毛サプライチェーンの課題と持続可能性への展望</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="p26-speakers">
+                            <figure class="p26-speaker">
+                                <figcaption>
+                                    <span class="p26-sp-name">稲垣 様</span>
+                                    <span class="p26-sp-role">信州大学特任教授</span>
+                                    <a class="p26-sp-dl" href="/customer/downloads.html">📎 資料をダウンロード（お客様専用）</a>
+                                </figcaption>
+                                <img src="/inagaki.png" alt="稲垣様" />
+                            </figure>
+                            <figure class="p26-speaker">
+                                <figcaption>
+                                    <span class="p26-sp-name">黒栁 様</span>
+                                    <span class="p26-sp-role">UMOUサイエンスラボ</span>
+                                    <a class="p26-sp-dl" href="/customer/downloads.html">📎 資料をダウンロード（お客様専用）</a>
+                                </figcaption>
+                                <img src="/kuroyanagi.jpg" alt="黒栁様" />
+                            </figure>
+                            <figure class="p26-speaker">
+                                <figcaption>
+                                    <span class="p26-sp-name">水田 様</span>
+                                    <span class="p26-sp-role">QTEC ダウン羽毛監査員</span>
+                                    <a class="p26-sp-dl" href="/customer/downloads.html">📎 資料をダウンロード（お客様専用）</a>
+                                </figcaption>
+                                <img src="/Mizuda.png" alt="水田様" />
+                            </figure>
+                        </div>
+                    </li>
+
+                    <li class="p26-prog-item p26-prog-break">
+                        <div class="p26-prog-meta"><span class="p26-prog-time">15:30〜15:45</span></div>
+                        <div class="p26-prog-main"><p class="p26-prog-rest">セッション休憩</p></div>
+                    </li>
+
+                    <li class="p26-prog-item">
+                        <div class="p26-prog-meta">
+                            <span class="p26-prog-badge">入門</span>
+                            <div class="p26-prog-times">
+                                <span class="p26-prog-recep">受付 15:45〜</span>
+                                <span class="p26-prog-time">15:45〜16:40</span>
+                            </div>
+                        </div>
+                        <div class="p26-prog-main">
+                            <h3 class="p26-prog-title">SDGs達成に向けた<br>FSC®認証の活用事例</h3>
+                            <p class="p26-prog-format">初回取得者向け詳細解説</p>
+                            <ul class="p26-prog-points">
+                                <li>FSC認証制度の基礎知識</li>
+                                <li>FSC認証取得のメリット</li>
+                                <li>認証取得のステップ</li>
+                            </ul>
+                        </div>
+                        <div class="p26-speakers">
+                            <figure class="p26-speaker">
+                                <figcaption>
+                                    <span class="p26-sp-name">笹本 様</span>
+                                    <span class="p26-sp-role">FSCジャパン</span>
+                                    <a class="p26-sp-dl" href="/customer/downloads.html">📎 資料をダウンロード（お客様専用）</a>
+                                </figcaption>
+                                <img src="/natsumi.jpg" alt="笹本様" />
+                            </figure>
+                        </div>
+                    </li>
+
+                </ol>
+            </div>
+        </section>
+
     </div>
 
     <!-- ===== 2025 パネル ===== -->
@@ -1006,37 +1257,6 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
             </div>
         </section>
     </div>
-
-    <!-- ===== CTA セクション ===== -->
-    <section class="section-padding bg-[var(--brand-050)]">
-        <div class="max-w-4xl mx-auto px-6">
-            <div class="rounded-[32px] overflow-hidden flex flex-col md:flex-row bg-[var(--brand-800)] text-white">
-                <div class="md:w-1/2 p-12">
-                    <h2 class="text-3xl mb-6 text-white" style="font-family: 'Meiryo UI', Meiryo, sans-serif;">次回セミナーのご案内</h2>
-                    <p class="text-[var(--brand-100)] leading-relaxed mb-8">
-                        2026年8月7日、御堂会館にて「サステナビリティ認証セミナー」を開催いたします。
-                        GOTS V8移行、MMS対応、FSC新規取得など、業界の最新動向を解説。
-                    </p>
-                    <a href="/index.html"
-                       class="inline-flex items-center gap-2 bg-white text-[var(--brand-800)] py-3 px-6 rounded-xl font-bold hover:bg-[var(--brand-050)] transition-colors">
-                        詳細を見る <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                    </a>
-                </div>
-                <div class="md:w-1/2 p-12 flex flex-col justify-center bg-white text-[var(--brand-800)]">
-                    <p class="text-sm font-semibold text-[var(--brand-600)] mb-2">国際認証を受けたい企業様のご応募もお待ちしています</p>
-                    <p class="text-[var(--brand-700)] text-sm leading-relaxed mb-2">サステナビリティの取り組みを業界に発信したい企業様は、お気軽にお問い合わせください。</p>
-                    <p class="text-[var(--brand-500)] text-xs leading-relaxed mb-6">
-                        〒541-0056 大阪市中央区久太郎町1丁目6番地21<br>
-                        シャンクレール本町 2階 ／ +81 06 6484 5656
-                    </p>
-                    <a href="mailto:japan@idfl.com"
-                       class="inline-flex items-center gap-2 bg-[var(--brand-500)] text-white py-3 px-6 rounded-xl font-bold hover:bg-[var(--brand-600)] transition-colors w-fit">
-                        お問い合わせ <i data-lucide="mail" class="w-4 h-4"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- フッター -->
     <footer style="background: var(--brand-900); padding: 48px 20px; text-align: center;">
