@@ -256,23 +256,6 @@
     "updatedBy": "admin"
   },
   {
-    "id": "ext-gots-roundtable-canada-2026",
-    "office": "Other",
-    "name": "GOTS Canadian Roundtable（GOTS カナダ・ラウンドテーブル）",
-    "type": "External",
-    "location": "Toronto, Canada（Seneca College）",
-    "from": "2026-10-05",
-    "to": "2026-10-05",
-    "mode": "対面",
-    "time": "",
-    "signup": "",
-    "related": "https://global-standard.org/news/gots-canada-roundtable",
-    "published": true,
-    "createdAt": "2026-08-14T00:52:56.839Z",
-    "updatedAt": "2026-08-14T00:52:56.839Z",
-    "updatedBy": "admin"
-  },
-  {
     "id": "ext-titas-2026",
     "office": "Taiwan",
     "name": "TITAS 2026（台北國際紡織展 / Taipei Innovative Textile Application Show）",
@@ -304,6 +287,23 @@
     "published": true,
     "createdAt": "2026-08-14T00:52:49.403Z",
     "updatedAt": "2026-08-14T00:52:49.403Z",
+    "updatedBy": "admin"
+  },
+  {
+    "id": "ext-gots-roundtable-canada-2026",
+    "office": "Other",
+    "name": "Global Standards Roundtable Vancouver 2026（GOTS ラウンドテーブル・バンクーバー）",
+    "type": "External",
+    "location": "Vancouver, Canada（Conscious Lab Vancouver）",
+    "from": "2026-10-12",
+    "to": "2026-10-12",
+    "mode": "対面",
+    "time": "9:00-12:30（終了後に軽食／希望者は午後にシーダー織り体験 約1時間）",
+    "signup": "https://global-standards.org/news/gots-roundtable-vancouver-canada",
+    "related": "https://global-standards.org/news/gots-roundtable-vancouver-canada",
+    "published": true,
+    "createdAt": "2026-08-14T00:52:56.839Z",
+    "updatedAt": "2026-08-18T01:30:37.309Z",
     "updatedBy": "admin"
   },
   {
