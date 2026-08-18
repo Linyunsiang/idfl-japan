@@ -373,5 +373,22 @@
     "createdAt": "2026-08-14T00:52:38.038Z",
     "updatedAt": "2026-08-14T00:52:38.038Z",
     "updatedBy": "admin"
+  },
+  {
+    "id": "ext-munich-fabric-start-2027-01",
+    "office": "Other",
+    "name": "MUNICH FABRIC START / BLUEZONE / KEYHOUSE / THESOURCE 2027年1月（国際素材見本市）",
+    "type": "External",
+    "location": "Munich, Germany（MOC Veranstaltungscenter München）",
+    "from": "2027-01-20",
+    "to": "2027-01-22",
+    "mode": "対面",
+    "time": "",
+    "signup": "",
+    "related": "https://www.munichfabricstart.com/en/",
+    "published": false,
+    "createdAt": "2026-08-18T01:33:50.311Z",
+    "updatedAt": "2026-08-18T01:33:50.311Z",
+    "updatedBy": "auto-crawl"
   }
 ]
