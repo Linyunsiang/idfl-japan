@@ -1,0 +1,53 @@
+{
+ "file": "GOTS-TE-Application-Form-JP.docx",
+ "sha256": "6593c44681a7141140a52bf8b0eebac33b506e0d53e1f6431d8cf1e127fc7796",
+ "headerLines": [
+  "APPLICATION / DOMANDA",
+  "IDFLAS-FF-GEN-4100-JP(JP)",
+  "Ref: IDFL-FF-MS01 EN V7.0",
+  "DCN 25-013",
+  "Textile Exchange | GOTS | IVN"
+ ],
+ "documentProtection": {
+  "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}edit": "forms",
+  "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}enforcement": "1",
+  "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}cryptProviderType": "rsaAES",
+  "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}cryptAlgorithmClass": "hash",
+  "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}cryptAlgorithmType": "typeAny",
+  "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}cryptAlgorithmSid": "14",
+  "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}cryptSpinCount": "100000",
+  "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}hash": "<redacted — present verbatim in the master; never needed by this codebase>",
+  "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}salt": "<redacted — present verbatim in the master; never needed by this codebase>"
+ },
+ "controlTotal": 342,
+ "controlsByKind": {
+  "TEXT": 233,
+  "CHK": 85,
+  "COMBO": 24
+ },
+ "controlsBySection": {
+  "1": 9,
+  "2": 28,
+  "3": 43,
+  "4": 57,
+  "5": 42,
+  "6": 30,
+  "7": 7,
+  "8": 14,
+  "9": 37,
+  "10": 27,
+  "11": 24,
+  "12": 24
+ },
+ "namedControls": 21,
+ "duplicateNames": {
+  "Certified Previous (Y/N)": 18,
+  "Parent Farm (Y/N)": 3
+ },
+ "uniqueIds": true,
+ "plainTextBallotBoxes": {
+  "☐ Initial Certification初期認証☐ Renewal Certification　更新認証": 14,
+  "☐ はい  ☐ いいえ": 2,
+  "☐ リサイクル材料なし☐ はい、使用後材料☐ はい、使用前材料☐ はい、使用済み材料、使用前材料の両方": 4
+ }
+}

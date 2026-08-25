@@ -1,0 +1,343 @@
+n	section	kind	id	table	row	col	rowLabel	cellText	colHeader	items	placeholder
+1	1	TEXT	1449190965	2	2	None	会社名				Click here to enter text.
+2	1	TEXT	-1156292282	2	3	None	会社名(英語表記)				Click here to enter text.
+3	1	TEXT	529379009	2	4	None	住所				Click here to enter text.
+4	1	TEXT	-418026165	2	5	None	市				Click here to enter text.
+5	1	TEXT	1042330633	2	6	None	国				Click here to enter text.
+6	1	TEXT	-2048822212	2	7	None	ご担当者名				Click here to enter text.
+7	1	TEXT	-472367275	2	8	None	役職				Click here to enter text.
+8	1	TEXT	937183514	2	9	None	電話番号				Click here to enter text.
+9	1	TEXT	-630401923	2	10	None	メールアドレス				Click here to enter text.
+10	2	CHK	412278547	3	2	2	支払いの通貨	USD			☐
+11	2	CHK	-590393924	3	2	3	支払いの通貨	RMB			☐
+12	2	CHK	-543597345	3	2	4	支払いの通貨	EURO			☐
+13	2	CHK	-1625222267	3	2	5	支払いの通貨	TWD			☐
+14	2	CHK	1513795960	3	2	6	支払いの通貨	TRY			☐
+15	2	CHK	-1949686403	3	2	7	支払いの通貨	CHF			☐
+16	2	CHK	-1972205935	3	2	8	支払いの通貨	INR			☐
+17	2	CHK	1462759587	3	2	9	支払いの通貨	BDT			☐
+18	2	CHK	-701012371	3	3	2		JPY			☐
+19	2	CHK	-712268944	3	3	3		PKR			☐
+20	2	CHK	1497387561	3	3	4		KRW			☐
+21	2	CHK	-1556236745	3	3	5		IDR			☐
+22	2	CHK	-33430468	3	3	6		VND			☐
+23	2	CHK	-1826345278	3	3	7		OTHER			☐
+24	2	TEXT	768269249	3	3	None					Click here to enter text.
+25	2	TEXT	-1677877587	3	4	None	Tax ID #				Click here to enter text.
+26	2	CHK	2035302782	3	6	None	ラッシュ 現場訪問 / 評価 (7 営業日以内)				☐
+27	2	CHK	1934784239	3	7	None	ラッシュ認証決定（3営業日以内）				☐
+28	2	CHK	-1425955768	3	8	2	支払企業の情報	(申請者と同様)　その他の場合は以下にてご記入ください			☐
+29	2	TEXT	-1006742292	3	9	None	会社名				Click here to enter text.
+30	2	TEXT	974560995	3	10	None	会社名(英語表記)				Click here to enter text.
+31	2	TEXT	-1142119863	3	11	None	住所Indirizzo:				Click here to enter text.
+32	2	TEXT	438799683	3	12	None	市				Click here to enter text.
+33	2	TEXT	-1590993068	3	13	None	国				Click here to enter text.
+34	2	TEXT	2118711017	3	14	None	ご担当者様				Click here to enter text.
+35	2	TEXT	-1012294144	3	15	None	役職				Click here to enter text.
+36	2	TEXT	-743029044	3	16	None	電話番号				Click here to enter text.
+37	2	TEXT	1299337369	3	17	None	メールアドレス				Click here to enter text.
+38	3	CHK	-531503724	3	21	1	Organic Content Standard (OCS)オーガニックコンテントスタンダード(OCS)OCS 製品には、少なくとも 5% 	Organic Content Standard (OCS)オーガニックコンテントスタンダード(OCS)OCS 製品には、少なくとも 5% 	セクション2.支払情報		☐
+39	3	CHK	-1324353010	3	21	3	Organic Content Standard (OCS)オーガニックコンテントスタンダード(OCS)OCS 製品には、少なくとも 5% 	以前/現在、別の認証機関 (CB) から OCS 認証を受けている*			☐
+40	3	CHK	2043393801	3	22	3		以前/現在、別の認証機関 (CB) から GOTS 認証を受けている*			☐
+41	3	TEXT	46811034	3	23	None					Click here to enter text.
+42	3	TEXT	1074012527	3	24	None					Click here to enter text.
+43	3	TEXT	1262022565	3	25	None					Click here to enter text.
+44	3	CHK	2134820641	3	26	1	Global Organic Textile Standard (GOTS)グローバルオーガニックテキスタイルスタンダード(GOTS)GOT	Global Organic Textile Standard (GOTS)グローバルオーガニックテキスタイルスタンダード(GOTS)GOT	セクション2.支払情報		☐
+45	3	CHK	-1591456014	3	26	3	Global Organic Textile Standard (GOTS)グローバルオーガニックテキスタイルスタンダード(GOTS)GOT	以前/現在、別の認証機関 (CB) から GOTS 認証を受けている*			☐
+46	3	CHK	-1695070635	3	27	3		以前/現在、別の認証機関 (CB) から OCS認証を受けている*			☐
+47	3	TEXT	-1380931630	3	28	None					Click here to enter text.
+48	3	TEXT	1976795402	3	29	None					Click here to enter text.
+49	3	TEXT	-1023396511	3	30	None					Click here to enter text.
+50	3	CHK	1648785246	3	31	1	Naturtextil IVN BESTナチュラルテキスタイル IVN ベストIVN BEST 製品には、付属品を除き、100% オーガニッ	Naturtextil IVN BESTナチュラルテキスタイル IVN ベストIVN BEST 製品には、付属品を除き、100% オーガニッ	セクション2.支払情報		☐
+51	3	CHK	1867705048	3	31	3	Naturtextil IVN BESTナチュラルテキスタイル IVN ベストIVN BEST 製品には、付属品を除き、100% オーガニッ	以前/現在、別の認証機関 (CB) から IVN認証を受けている*			☐
+52	3	CHK	-712807395	3	32	3		以前/現在、別の認証機関 (CB) からGOTS認証を受けている*			☐
+53	3	TEXT	653955735	3	33	None					Click here to enter text.
+54	3	TEXT	30384043	3	34	None					Click here to enter text.
+55	3	TEXT	-1226450045	3	35	None					Click here to enter text.
+56	3	CHK	1942951238	3	36	1	Global Recycled Standard (GRS)グローバルリサイクルドスタンダード(GRS)GRS 製品には、少なくとも 20%	Global Recycled Standard (GRS)グローバルリサイクルドスタンダード(GRS)GRS 製品には、少なくとも 20%	セクション2.支払情報		☐
+57	3	CHK	-1351418018	3	36	3	Global Recycled Standard (GRS)グローバルリサイクルドスタンダード(GRS)GRS 製品には、少なくとも 20%	以前/現在、別の認証機関 (CB) から GRS 認証を受けている*			☐
+58	3	CHK	-1464346178	3	37	3		以前/現在、別の認証機関 (CB) から RCS 認証を受けている*			☐
+59	3	TEXT	1345975495	3	38	None					Click here to enter text.
+60	3	TEXT	-613135995	3	39	None					Click here to enter text.
+61	3	TEXT	-1054542942	3	40	None					Click here to enter text.
+62	3	CHK	1485124826	3	41	1	Recycled Claim Standard (RCS)リサイクルドクレイムスタンダード(RCS)RCS 製品には、少なくとも 5% の認	Recycled Claim Standard (RCS)リサイクルドクレイムスタンダード(RCS)RCS 製品には、少なくとも 5% の認	セクション2.支払情報		☐
+63	3	CHK	174620194	3	41	3	Recycled Claim Standard (RCS)リサイクルドクレイムスタンダード(RCS)RCS 製品には、少なくとも 5% の認	以前/現在、別の認証機関 (CB) から RCS 認証を受けている*			☐
+64	3	CHK	1175080653	3	42	3		以前/現在、別の認証機関 (CB) から GRS 認証を受けている*			☐
+65	3	TEXT	-1738241336	3	43	None					Click here to enter text.
+66	3	TEXT	1873115256	3	44	None					Click here to enter text.
+67	3	TEXT	-346644575	3	45	None					Click here to enter text.
+68	3	CHK	-1649744621	3	46	1	Responsible Animal Fiber (RAF)レスポンシブルアニマルファイバー Responsible Wool Standa	Responsible Animal Fiber (RAF)レスポンシブルアニマルファイバー Responsible Wool Standa	セクション2.支払情報		☐
+69	3	CHK	828242657	3	46	1	Responsible Animal Fiber (RAF)レスポンシブルアニマルファイバー Responsible Wool Standa	Responsible Animal Fiber (RAF)レスポンシブルアニマルファイバー Responsible Wool Standa	セクション2.支払情報		☐
+70	3	CHK	58533641	3	46	1	Responsible Animal Fiber (RAF)レスポンシブルアニマルファイバー Responsible Wool Standa	Responsible Animal Fiber (RAF)レスポンシブルアニマルファイバー Responsible Wool Standa	セクション2.支払情報		☐
+71	3	CHK	-964415679	3	46	1	Responsible Animal Fiber (RAF)レスポンシブルアニマルファイバー Responsible Wool Standa	Responsible Animal Fiber (RAF)レスポンシブルアニマルファイバー Responsible Wool Standa	セクション2.支払情報		☐
+72	3	CHK	-312713445	3	46	3	Responsible Animal Fiber (RAF)レスポンシブルアニマルファイバー Responsible Wool Standa	以前/現在、別の認証機関 (CB) から RAF 認証を受けている*			☐
+73	3	TEXT	-1546208832	3	47	None					Click here to enter text.
+74	3	TEXT	1616795039	3	48	None					Click here to enter text.
+75	3	TEXT	36253275	3	49	None					Click here to enter text.
+76	3	CHK	-1782177920	3	50	1	Responsible Down Standard (RDS)レスポンシブルダウンスタンダード(RDS)RDS製品は、最低5%の認証された含	Responsible Down Standard (RDS)レスポンシブルダウンスタンダード(RDS)RDS製品は、最低5%の認証された含	セクション2.支払情報		☐
+77	3	CHK	-1473747426	3	50	3	Responsible Down Standard (RDS)レスポンシブルダウンスタンダード(RDS)RDS製品は、最低5%の認証された含	以前/現在、別の認証機関 (CB) から RDS 認証を受けている*			☐
+78	3	TEXT	736371919	3	51	None					Click here to enter text.
+79	3	TEXT	1499081315	3	52	None					Click here to enter text.
+80	3	TEXT	1427851299	3	53	None					Click here to enter text.
+81	4	CHK	1593663981	4	4	1	ホームテキスタイル / 寝具	ホームテキスタイル / 寝具	セクション4.製品		☐
+82	4	TEXT	1872879066	4	4	None	ホームテキスタイル / 寝具				Click here to enter text.
+83	4	CHK	-1725905022	4	5	1	アパレル	アパレル	セクション4.製品		☐
+84	4	TEXT	1994675874	4	5	None	アパレル				Click here to enter text.
+85	4	CHK	1042480344	4	6	1	アクセサリー	アクセサリー	セクション4.製品		☐
+86	4	TEXT	1207606823	4	6	None	アクセサリー				Click here to enter text.
+87	4	CHK	-1224756457	4	7	1	履物	履物	セクション4.製品		☐
+88	4	TEXT	-1755271625	4	7	None	履物				Click here to enter text.
+89	4	CHK	-110984428	4	8	1	生地	生地	セクション4.製品		☐
+90	4	TEXT	-1673714518	4	8	None	生地				Click here to enter text.
+91	4	CHK	-1905362245	4	9	1	糸	糸	セクション4.製品		☐
+92	4	TEXT	2089353585	4	9	None	糸				Click here to enter text.
+93	4	CHK	1549257464	4	10	1	繊維/フィラメント	繊維/フィラメント	セクション4.製品		☐
+94	4	TEXT	-527555918	4	10	None	繊維/フィラメント				Click here to enter text.
+95	4	CHK	-363830556	4	11	1	フィリング/詰め物	フィリング/詰め物	セクション4.製品		☐
+96	4	TEXT	296574522	4	11	None	フィリング/詰め物				Click here to enter text.
+97	4	CHK	953517857	4	12	1	パッケージ	パッケージ	セクション4.製品		☐
+98	4	TEXT	-2096705139	4	12	None	パッケージ				Click here to enter text.
+99	4	CHK	-1379477547	4	13	1	リサイクル材料	リサイクル材料	セクション4.製品		☐
+100	4	TEXT	-2103797793	4	13	None	リサイクル材料				Click here to enter text.
+101	4	CHK	666292960	4	14	1	未加工のダウン/フェザー	未加工のダウン/フェザー	セクション4.製品		☐
+102	4	TEXT	-127020986	4	14	None	未加工のダウン/フェザー				Click here to enter text.
+103	4	CHK	382760585	4	15	1	鳥類 / 水鳥	鳥類 / 水鳥	セクション4.製品		☐
+104	4	TEXT	-241339678	4	15	None	鳥類 / 水鳥				Click here to enter text.
+105	4	CHK	-176880086	4	16	1	その他	その他	セクション4.製品		☐
+106	4	TEXT	1824163412	4	16	1	その他	その他	セクション4.製品		Click here to enter text.
+107	4	TEXT	-1827042689	4	16	1	その他	その他	セクション4.製品		Click here to enter text.
+108	4	TEXT	-1985694823	4	16	None	その他				Click here to enter text.
+109	4	CHK	1980114309	4	17	1	その他	その他	セクション4.製品		☐
+110	4	TEXT	-1188367672	4	17	1	その他	その他	セクション4.製品		Click here to enter text.
+111	4	TEXT	1170987355	4	17	1	その他	その他	セクション4.製品		Click here to enter text.
+112	4	TEXT	-233232825	4	17	None	その他				Click here to enter text.
+113	4	CHK	1392002772	4	18	1	その他	その他	セクション4.製品		☐
+114	4	TEXT	-1896041191	4	18	1	その他	その他	セクション4.製品		Click here to enter text.
+115	4	TEXT	-599879935	4	18	1	その他	その他	セクション4.製品		Click here to enter text.
+116	4	TEXT	581648168	4	18	None	その他				Click here to enter text.
+117	4	CHK	920684098	4	19	1	その他	その他	セクション4.製品		☐
+118	4	TEXT	-429044773	4	19	1	その他	その他	セクション4.製品		Click here to enter text.
+119	4	TEXT	1804268699	4	19	1	その他	その他	セクション4.製品		Click here to enter text.
+120	4	TEXT	-297068962	4	19	None	その他				Click here to enter text.
+121	4	CHK	1189789990	4	20	1	その他	その他	セクション4.製品		☐
+122	4	TEXT	863939780	4	20	1	その他	その他	セクション4.製品		Click here to enter text.
+123	4	TEXT	1178845144	4	20	1	その他	その他	セクション4.製品		Click here to enter text.
+124	4	TEXT	100470104	4	20	None	その他				Click here to enter text.
+125	4	CHK	-1880155499	4	21	1	その他	その他	セクション4.製品		☐
+126	4	TEXT	11042356	4	21	1	その他	その他	セクション4.製品		Click here to enter text.
+127	4	TEXT	-502669929	4	21	1	その他	その他	セクション4.製品		Click here to enter text.
+128	4	TEXT	-2077819517	4	21	None	その他				Click here to enter text.
+129	4	CHK	1742908665	4	22	1	その他	その他	セクション4.製品		☐
+130	4	TEXT	791399729	4	22	1	その他	その他	セクション4.製品		Click here to enter text.
+131	4	TEXT	728037528	4	22	1	その他	その他	セクション4.製品		Click here to enter text.
+132	4	TEXT	-2077898296	4	22	None	その他				Click here to enter text.
+133	4	CHK	1751007461	4	23	1	その他	その他	セクション4.製品		☐
+134	4	TEXT	-397277990	4	23	1	その他	その他	セクション4.製品		Click here to enter text.
+135	4	TEXT	1876806096	4	23	1	その他	その他	セクション4.製品		Click here to enter text.
+136	4	TEXT	1381285250	4	23	None	その他				Click here to enter text.
+137	4	TEXT	185253129	4	23	None	その他				Click here to enter text.
+138	5	TEXT	-251436119	5	2	None	Click here to enter text.				Click here to enter text.
+139	5	TEXT	-1719744732	5	2	None	Click here to enter text.				Click here to enter text.
+140	5	TEXT	-58480460	5	2	None	Click here to enter text.				Click here to enter text.
+141	5	TEXT	-808715147	5	2	None	Click here to enter text.				Click here to enter text.
+142	5	TEXT	-32274397	5	2	None	Click here to enter text.				Click here to enter text.
+143	5	TEXT	2077703979	5	2	None	Click here to enter text.				Click here to enter text.
+144	5	COMBO	-1864198531	5	2	7	Click here to enter text.		以前に認証を受けたことがありますか？(Y/N)	Certified Previous (Y/N)/Yes/No	Click here to answer Y/N.
+145	5	TEXT	-1108731178	5	3	None	Click here to enter text.				Click here to enter text.
+146	5	TEXT	-571502644	5	3	None	Click here to enter text.				Click here to enter text.
+147	5	TEXT	-426039883	5	3	None	Click here to enter text.				Click here to enter text.
+148	5	TEXT	-1723676954	5	3	None	Click here to enter text.				Click here to enter text.
+149	5	TEXT	-395134972	5	3	None	Click here to enter text.				Click here to enter text.
+150	5	TEXT	182102565	5	3	None	Click here to enter text.				Click here to enter text.
+151	5	COMBO	-1558304225	5	3	7	Click here to enter text.		以前に認証を受けたことがありますか？(Y/N)	Certified Previous (Y/N)/Yes/No	Click here to answer Y/N.
+152	5	TEXT	116342260	5	4	None	Click here to enter text.				Click here to enter text.
+153	5	TEXT	691890545	5	4	None	Click here to enter text.				Click here to enter text.
+154	5	TEXT	110940449	5	4	None	Click here to enter text.				Click here to enter text.
+155	5	TEXT	1241843956	5	4	None	Click here to enter text.				Click here to enter text.
+156	5	TEXT	-834684968	5	4	None	Click here to enter text.				Click here to enter text.
+157	5	TEXT	-262843597	5	4	None	Click here to enter text.				Click here to enter text.
+158	5	COMBO	-594249938	5	4	7	Click here to enter text.		以前に認証を受けたことがありますか？(Y/N)	Certified Previous (Y/N)/Yes/No	Click here to answer Y/N.
+159	5	TEXT	-583377866	5	5	None	Click here to enter text.				Click here to enter text.
+160	5	TEXT	1078631823	5	5	None	Click here to enter text.				Click here to enter text.
+161	5	TEXT	372428380	5	5	None	Click here to enter text.				Click here to enter text.
+162	5	TEXT	1582561744	5	5	None	Click here to enter text.				Click here to enter text.
+163	5	TEXT	445668649	5	5	None	Click here to enter text.				Click here to enter text.
+164	5	TEXT	-1069340796	5	5	None	Click here to enter text.				Click here to enter text.
+165	5	COMBO	-2013294204	5	5	7	Click here to enter text.		以前に認証を受けたことがありますか？(Y/N)	Certified Previous (Y/N)/Yes/No	Click here to answer Y/N.
+166	5	TEXT	-1032029380	5	6	None	Click here to enter text.				Click here to enter text.
+167	5	TEXT	-1684046616	5	6	None	Click here to enter text.				Click here to enter text.
+168	5	TEXT	1121106927	5	6	None	Click here to enter text.				Click here to enter text.
+169	5	TEXT	-1092150411	5	6	None	Click here to enter text.				Click here to enter text.
+170	5	TEXT	771356414	5	6	5	Click here to enter text.		活動/工程のリスト		Click here to enter text.
+171	5	TEXT	-1190908986	5	6	None	Click here to enter text.				Click here to enter text.
+172	5	COMBO	-1262138779	5	6	7	Click here to enter text.		以前に認証を受けたことがありますか？(Y/N)	Certified Previous (Y/N)/Yes/No	Click here to answer Y/N.
+173	5	TEXT	355012240	5	7	None	Click here to enter text.				Click here to enter text.
+174	5	TEXT	-417398631	5	7	None	Click here to enter text.				Click here to enter text.
+175	5	TEXT	966628038	5	7	None	Click here to enter text.				Click here to enter text.
+176	5	TEXT	862556158	5	7	None	Click here to enter text.				Click here to enter text.
+177	5	TEXT	321236433	5	7	5	Click here to enter text.		活動/工程のリスト		Click here to enter text.
+178	5	TEXT	722027316	5	7	None	Click here to enter text.				Click here to enter text.
+179	5	COMBO	-1960945175	5	7	7	Click here to enter text.		以前に認証を受けたことがありますか？(Y/N)	Certified Previous (Y/N)/Yes/No	Click here to answer Y/N.
+180	6	CHK	1641767703	6	3	2	OEKO-TEX STEP Environmental Performance Requirements　 OEKO - TEX STE 環	はい   いいえ			☐
+181	6	CHK	-895125116	6	3	2	OEKO-TEX STEP Environmental Performance Requirements　 OEKO - TEX STE 環	はい   いいえ			☐
+182	6	CHK	1825852797	6	4	2	SCS Recycled Content Verification　 SCSリサイクルコンテンツ検証	はい   いいえ			☐
+183	6	CHK	-110907516	6	4	2	SCS Recycled Content Verification　 SCSリサイクルコンテンツ検証	はい   いいえ			☐
+184	6	CHK	-2126837791	6	5	2	BSCI Social Audit 　 BSCI社会監査	はい   いいえ			☐
+185	6	CHK	-2116279375	6	5	2	BSCI Social Audit 　 BSCI社会監査	はい   いいえ			☐
+186	6	CHK	1375038413	6	6	2	SA 8000 Audit 　 SA 8000 A監査	はい   いいえ			☐
+187	6	CHK	553103	6	6	2	SA 8000 Audit 　 SA 8000 A監査	はい   いいえ			☐
+188	6	CHK	-816265144	6	7	2	Higg Facilities Environmental Module (FEM)　 Higg 施設環境モジュール (FEM)	はい   いいえ			☐
+189	6	CHK	-509984458	6	7	2	Higg Facilities Environmental Module (FEM)　 Higg 施設環境モジュール (FEM)	はい   いいえ			☐
+190	6	CHK	2120024957	6	8	2	Higg Facilities Social Labor Module (FSLM)　 Higg 施設社会労働モジュール (FSLM)	はい   いいえ			☐
+191	6	CHK	625049674	6	8	2	Higg Facilities Social Labor Module (FSLM)　 Higg 施設社会労働モジュール (FSLM)	はい   いいえ			☐
+192	6	CHK	1407346156	6	9	2	Higg Brand Retail Module (BRM)　 Higg ブランド リテール モジュール (BRM)	はい   いいえ			☐
+193	6	CHK	1623886538	6	9	2	Higg Brand Retail Module (BRM)　 Higg ブランド リテール モジュール (BRM)	はい   いいえ			☐
+194	6	CHK	-1241333726	6	10	2	Worldwide Responsible Accreditation Program (WRAP)　 世界的な責任ある認定プログラム(WR	はい   いいえ			☐
+195	6	CHK	926696098	6	10	2	Worldwide Responsible Accreditation Program (WRAP)　 世界的な責任ある認定プログラム(WR	はい   いいえ			☐
+196	6	CHK	-1480446963	6	11	2	Any standard approved against the GSCP social reference code audit?　 G	はい   いいえ			☐
+197	6	CHK	839353918	6	11	2	Any standard approved against the GSCP social reference code audit?　 G	はい   いいえ			☐
+198	6	CHK	-893124843	6	12	2	Any standard approved against the GSCP environmental reference require	はい   いいえ			☐
+199	6	CHK	916126573	6	12	2	Any standard approved against the GSCP environmental reference require	はい   いいえ			☐
+200	6	CHK	-811873197	6	14	2	Do any facilities use chemical inputs in the production of GOTS produc	はい   いいえ			☐
+201	6	CHK	-201628754	6	14	2	Do any facilities use chemical inputs in the production of GOTS produc	はい   いいえ			☐
+202	6	TEXT	1804346478	6	15	None	If yes, how many chemicals are used in the production of GOTS products				Click to enter text.
+203	6	CHK	1723709215	6	16	2	Do any facilities use chemical inputs in the production of GRS product	はい   いいえ			☐
+204	6	CHK	2101448642	6	16	2	Do any facilities use chemical inputs in the production of GRS product	はい   いいえ			☐
+205	6	TEXT	-1541659396	6	17	None	If yes, how many chemicals are used in the production of GRS products?				Click to enter text.
+206	6	CHK	-1573958091	6	19	2	組織またはその施設は、別の認証機関によって認証を拒否されたことがありますか? 拒否された場合は、以下に詳細情報を記入してください。	はい   いいえ			☐
+207	6	CHK	-1975971194	6	19	2	組織またはその施設は、別の認証機関によって認証を拒否されたことがありますか? 拒否された場合は、以下に詳細情報を記入してください。	はい   いいえ			☐
+208	6	TEXT	192510376	6	20	1			セクション6. 認証情報		Click to enter text.
+209	6	TEXT	1541407997	6	22	1			セクション6. 認証情報		Click to enter text.
+210	7	TEXT	677007342	7	4	None					Click here to enter text.
+211	7	TEXT	-88545976	7	4	None					Click here to enter text.
+212	7	TEXT	2065370048	7	7	None	Name and Title of the Signatory /署名者の氏名と役職				Click here to enter text.
+213	7	TEXT	-973363386	7	8	None	Date /日付:				Click here to enter text.
+214	7	TEXT	1478653647	7	10	None	申請代表者　会社名				Click here to enter text.
+215	7	TEXT	-2091153610	7	11	None	申請代表者　ご担当者				Click here to enter text.
+216	7	TEXT	1017112604	7	12	None	申請代表者　連絡先メールアドレス				Click here to enter text.
+217	8	TEXT	523525396	8	4	None	CCS 105で定義されている代替体積整合（VR2）を使用するすべてのASR 213 Raw Material（RM）Process Cat				Click to enter text.
+218	8	TEXT	837269170	8	4	None	CCS 105で定義されている代替体積整合（VR2）を使用するすべてのASR 213 Raw Material（RM）Process Cat				Click to enter text.
+219	8	TEXT	-2062468777	8	5	None	リサイクルされる投入廃棄物（再生材料など）について説明してください。そしてそれぞれが使用済み材料か使用前材料かを識別してください。				Click to enter text.
+220	8	TEXT	-1151663823	8	5	None	リサイクルされる投入廃棄物（再生材料など）について説明してください。そしてそれぞれが使用済み材料か使用前材料かを識別してください。				Click to enter text.
+221	8	TEXT	-93702680	8	5	None	リサイクルされる投入廃棄物（再生材料など）について説明してください。そしてそれぞれが使用済み材料か使用前材料かを識別してください。				Click to enter text.
+222	8	TEXT	1496000239	8	5	None	リサイクルされる投入廃棄物（再生材料など）について説明してください。そしてそれぞれが使用済み材料か使用前材料かを識別してください。				Click to enter text.
+223	8	TEXT	1008255188	8	6	None	廃棄物の収集・集中化を行う業者（再生資材の供給者）の推定数はどのくらいですか？				Click to enter text.
+224	8	TEXT	-597869188	8	6	None	廃棄物の収集・集中化を行う業者（再生資材の供給者）の推定数はどのくらいですか？				Click to enter text.
+225	8	TEXT	737136537	8	6	None	廃棄物の収集・集中化を行う業者（再生資材の供給者）の推定数はどのくらいですか？				Click to enter text.
+226	8	TEXT	2078393497	8	7	None	廃棄物の収集・集中化業者（再生資材の供給者）の一般的な所在地（地域/国）はどこですか？				Click to enter text.
+227	8	TEXT	-2088067306	8	7	None	廃棄物の収集・集中化業者（再生資材の供給者）の一般的な所在地（地域/国）はどこですか？				Click to enter text.
+228	8	TEXT	1072314296	8	8	None	収集・集中化業者（再生資材の供給者）の一般的な活動・プロセスの一覧（例：収集、開封、選別、フレーク化など）：				Click to enter text.
+229	8	TEXT	1442269080	8	8	None	収集・集中化業者（再生資材の供給者）の一般的な活動・プロセスの一覧（例：収集、開封、選別、フレーク化など）：				Click to enter text.
+230	8	TEXT	-1310702995	8	8	None	収集・集中化業者（再生資材の供給者）の一般的な活動・プロセスの一覧（例：収集、開封、選別、フレーク化など）：				Click to enter text.
+231	9	TEXT	-104735104	9	4	None	Click to enter text.				Click to enter text.
+232	9	TEXT	960922730	9	4	None	Click to enter text.				Click to enter text.
+233	9	TEXT	-327684024	9	4	None	Click to enter text.				Click to enter text.
+234	9	TEXT	1602302964	9	4	None	Click to enter text.				Click to enter text.
+235	9	TEXT	2092197189	9	4	None	Click to enter text.				Click to enter text.
+236	9	TEXT	1480109266	9	4	None	Click to enter text.				Click to enter text.
+237	9	TEXT	-120766712	9	4	None	Click to enter text.				Click to enter text.
+238	9	TEXT	624973134	9	4	None	Click to enter text.				Click to enter text.
+239	9	TEXT	-88317425	9	4	None	Click to enter text.				Click to enter text.
+240	9	TEXT	-1927409015	9	4	None	Click to enter text.				Click to enter text.
+241	9	COMBO	72712224	9	4	3	Click to enter text.			Certified Previous (Y/N)/Yes/No	Click here to answer Y/N.
+242	9	TEXT	182175891	9	5	None					Click to enter text.
+243	9	TEXT	-941293026	9	5	None					Click to enter text.
+244	9	TEXT	-348638576	9	5	None					Click to enter text.
+245	9	TEXT	1999297604	9	5	None					Click to enter text.
+246	9	TEXT	1962297921	9	5	None					Click to enter text.
+247	9	TEXT	839205928	9	5	None					Click to enter text.
+248	9	TEXT	-1360357439	9	5	None					Click to enter text.
+249	9	TEXT	964244829	9	5	None					Click to enter text.
+250	9	TEXT	850762978	9	5	None					Click to enter text.
+251	9	TEXT	319781864	9	5	None					Click to enter text.
+252	9	TEXT	1043335111	9	5	None					Click to enter text.
+253	9	TEXT	859865046	9	5	None					Click to enter text.
+254	9	COMBO	-1171556614	9	5	1			セクション9　(RDS) 屠畜場 (肉加工業者)	Certified Previous (Y/N)/Yes/No	Click here to answer Y/N.
+255	9	TEXT	-1579363182	9	6	None					Click to enter text.
+256	9	TEXT	-1530877697	9	6	None					Click to enter text.
+257	9	TEXT	1546950675	9	6	None					Click to enter text.
+258	9	TEXT	1689321134	9	6	None					Click to enter text.
+259	9	TEXT	-2091371827	9	6	None					Click to enter text.
+260	9	TEXT	2041314461	9	6	None					Click to enter text.
+261	9	TEXT	-123698072	9	6	None					Click to enter text.
+262	9	TEXT	-1622299397	9	6	None					Click to enter text.
+263	9	TEXT	-1212794653	9	6	None					Click to enter text.
+264	9	TEXT	2118335189	9	6	None					Click to enter text.
+265	9	TEXT	1610628264	9	6	None					Click to enter text.
+266	9	TEXT	1587571121	9	6	None					Click to enter text.
+267	9	COMBO	303819207	9	6	1			セクション9　(RDS) 屠畜場 (肉加工業者)	Certified Previous (Y/N)/Yes/No	Click here to answer Y/N.
+268	10	TEXT	-1494795052	10	4	None	Click here to enter text.				Click here to enter text.
+269	10	TEXT	-214203415	10	4	None	Click here to enter text.				Click here to enter text.
+270	10	TEXT	-453407437	10	4	None	Click here to enter text.				Click here to enter text.
+271	10	TEXT	1213304103	10	4	None	Click here to enter text.				Click here to enter text.
+272	10	COMBO	2146704906	10	4	None	Click here to enter text.			Choose an item./YES/NO	Choose an item.
+273	10	TEXT	-1389557375	10	4	None	Click here to enter text.				Click here to enter text.
+274	10	TEXT	-191536379	10	4	None	Click here to enter text.				Click here to enter text.
+275	10	TEXT	240146292	10	4	None	Click here to enter text.				Click here to enter text.
+276	10	COMBO	2015726630	10	4	9	Click here to enter text.			Certified Previous (Y/N)/Yes/No	Click here to answer Y/N.
+277	10	TEXT	1534692467	10	5	None	Click here to enter text.				Click here to enter text.
+278	10	TEXT	1961529644	10	5	None	Click here to enter text.				Click here to enter text.
+279	10	TEXT	-1816783895	10	5	None	Click here to enter text.				Click here to enter text.
+280	10	TEXT	683790080	10	5	None	Click here to enter text.				Click here to enter text.
+281	10	COMBO	-1945839143	10	5	None	Click here to enter text.			Choose an item./YES/NO	Choose an item.
+282	10	TEXT	-788206198	10	5	None	Click here to enter text.				Click here to enter text.
+283	10	TEXT	735138582	10	5	None	Click here to enter text.				Click here to enter text.
+284	10	TEXT	-814183686	10	5	None	Click here to enter text.				Click here to enter text.
+285	10	COMBO	-1399121408	10	5	9	Click here to enter text.			Certified Previous (Y/N)/Yes/No	Click here to answer Y/N.
+286	10	TEXT	-453099542	10	6	None	Click here to enter text.				Click here to enter text.
+287	10	TEXT	972481343	10	6	None	Click here to enter text.				Click here to enter text.
+288	10	TEXT	1102851138	10	6	None	Click here to enter text.				Click here to enter text.
+289	10	TEXT	1094358424	10	6	None	Click here to enter text.				Click here to enter text.
+290	10	COMBO	1054197524	10	6	None	Click here to enter text.			Choose an item./YES/NO	Choose an item.
+291	10	TEXT	-1114894452	10	6	None	Click here to enter text.				Click here to enter text.
+292	10	TEXT	-883790111	10	6	None	Click here to enter text.				Click here to enter text.
+293	10	TEXT	292024857	10	6	None	Click here to enter text.				Click here to enter text.
+294	10	COMBO	1896385973	10	6	9	Click here to enter text.			Certified Previous (Y/N)/Yes/No	Click here to answer Y/N.
+295	11	TEXT	-1792658109	11	4	None	Click to enter text.				Click to enter text.
+296	11	TEXT	634685233	11	4	None	Click to enter text.				Click to enter text.
+297	11	TEXT	-1388174422	11	4	None	Click to enter text.				Click to enter text.
+298	11	TEXT	359553418	11	4	None	Click to enter text.				Click to enter text.
+299	11	TEXT	-840241852	11	4	None	Click to enter text.				Click to enter text.
+300	11	TEXT	1415970088	11	4	None	Click to enter text.				Click to enter text.
+301	11	COMBO	-1396739875	11	4	7	Click to enter text.			Certified Previous (Y/N)/Yes/No	Click here to answer Y/N.
+302	11	COMBO	42186393	11	4	8	Click to enter text.			Certified Previous (Y/N)/Yes/No	Click here to answer Y/N.
+303	11	TEXT	-583532844	11	5	None	Click to enter text.				Click to enter text.
+304	11	TEXT	1438874392	11	5	None	Click to enter text.				Click to enter text.
+305	11	TEXT	-1812698890	11	5	None	Click to enter text.				Click to enter text.
+306	11	TEXT	1004242597	11	5	None	Click to enter text.				Click to enter text.
+307	11	TEXT	1269586643	11	5	None	Click to enter text.				Click to enter text.
+308	11	TEXT	1162585537	11	5	None	Click to enter text.				Click to enter text.
+309	11	COMBO	-1658141827	11	5	7	Click to enter text.			Certified Previous (Y/N)/Yes/No	Click here to answer Y/N.
+310	11	COMBO	-1565023326	11	5	8	Click to enter text.			Certified Previous (Y/N)/Yes/No	Click here to answer Y/N.
+311	11	TEXT	445895947	11	6	None	Click to enter text.				Click to enter text.
+312	11	TEXT	1740357705	11	6	None	Click to enter text.				Click to enter text.
+313	11	TEXT	-1012527877	11	6	None	Click to enter text.				Click to enter text.
+314	11	TEXT	131527964	11	6	None	Click to enter text.				Click to enter text.
+315	11	TEXT	-93781395	11	6	None	Click to enter text.				Click to enter text.
+316	11	TEXT	2109539691	11	6	None	Click to enter text.				Click to enter text.
+317	11	COMBO	-1945369700	11	6	7	Click to enter text.			Certified Previous (Y/N)/Yes/No	Click here to answer Y/N.
+318	11	COMBO	-1260440767	11	6	8	Click to enter text.			Certified Previous (Y/N)/Yes/No	Click here to answer Y/N.
+319	12	TEXT	-341545127	12	4	None	Click here to enter text.				Click here to enter text.
+320	12	TEXT	156420379	12	4	None	Click here to enter text.				Click here to enter text.
+321	12	TEXT	1954365130	12	4	None	Click here to enter text.				Click here to enter text.
+322	12	TEXT	639691752	12	4	None	Click here to enter text.				Click here to enter text.
+323	12	TEXT	-1203471375	12	4	None	Click here to enter text.				Click here to enter text.
+324	12	TEXT	1388224106	12	4	None	Click here to enter text.				Click here to enter text.
+325	12	TEXT	-1719744927	12	4	None	Click here to enter text.				Click here to enter text.
+326	12	COMBO	966625039	12	4	8	Click here to enter text.			Certified Previous (Y/N)/Yes/No	Click here to answer Y/N.
+327	12	TEXT	-1047131008	12	5	None	Click here to enter text.				Click here to enter text.
+328	12	TEXT	-960189845	12	5	None	Click here to enter text.				Click here to enter text.
+329	12	TEXT	1042952408	12	5	None	Click here to enter text.				Click here to enter text.
+330	12	TEXT	651113490	12	5	None	Click here to enter text.				Click here to enter text.
+331	12	TEXT	-1475203747	12	5	None	Click here to enter text.				Click here to enter text.
+332	12	TEXT	1561291402	12	5	None	Click here to enter text.				Click here to enter text.
+333	12	TEXT	-1776778725	12	5	None	Click here to enter text.				Click here to enter text.
+334	12	COMBO	26233124	12	5	8	Click here to enter text.			Certified Previous (Y/N)/Yes/No	Click here to answer Y/N.
+335	12	TEXT	-733773600	12	6	None	Click here to enter text.				Click here to enter text.
+336	12	TEXT	1899467590	12	6	None	Click here to enter text.				Click here to enter text.
+337	12	TEXT	1344357804	12	6	None	Click here to enter text.				Click here to enter text.
+338	12	TEXT	860544340	12	6	None	Click here to enter text.				Click here to enter text.
+339	12	TEXT	-625920858	12	6	None	Click here to enter text.				Click here to enter text.
+340	12	TEXT	-735398212	12	6	None	Click here to enter text.				Click here to enter text.
+341	12	TEXT	-1425567563	12	6	None	Click here to enter text.				Click here to enter text.
+342	12	COMBO	-1785260431	12	6	8	Click here to enter text.			Certified Previous (Y/N)/Yes/No	Click here to answer Y/N.
