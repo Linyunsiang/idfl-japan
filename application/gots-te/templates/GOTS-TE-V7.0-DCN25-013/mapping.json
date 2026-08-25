@@ -1,0 +1,2044 @@
+{
+  "templateVersion": "GOTS-TE/V7.0-DCN25-013",
+  "documentNumber": "IDFLAS-FF-GEN-4100-JP(JP)",
+  "reference": "IDFL-FF-MS01 EN V7.0",
+  "dcn": "25-013",
+  "generatedBy": "tools/build-mapping.mjs",
+  "master": {
+    "path": "/files/GOTS-TE-Application-Form-JP.docx",
+    "sha256": "6593c44681a7141140a52bf8b0eebac33b506e0d53e1f6431d8cf1e127fc7796",
+    "part": "word/document.xml",
+    "controlCount": 342,
+    "ballotCount": 20
+  },
+  "capacity": {
+    "facilities": 6,
+    "productOthers": 8,
+    "rds": {
+      "slaughterhouses": 3,
+      "farmGroups": 3,
+      "individualFarms": 3,
+      "farmAreas": 3
+    }
+  },
+  "unitTypeLabels": {
+    "main": "メイン",
+    "facility": "施設",
+    "associatedSubcontractor": "関連下請け業者",
+    "certifiedSubcontractor": "認証下請け業者"
+  },
+  "standardNames": {
+    "ocs": "Organic Content Standard (OCS)",
+    "gots": "Global Organic Textile Standard (GOTS)",
+    "ivnBest": "Naturtextil IVN BEST",
+    "grs": "Global Recycled Standard (GRS)",
+    "rcs": "Recycled Claim Standard (RCS)",
+    "raf": "Responsible Animal Fiber (RAF)",
+    "rds": "Responsible Down Standard (RDS)"
+  },
+  "text": [
+    {
+      "path": "applicant.companyName",
+      "control": 1,
+      "id": "1449190965"
+    },
+    {
+      "path": "applicant.companyNameEnglish",
+      "control": 2,
+      "id": "-1156292282"
+    },
+    {
+      "path": "applicant.address",
+      "control": 3,
+      "id": "529379009"
+    },
+    {
+      "path": "applicant.city",
+      "control": 4,
+      "id": "-418026165"
+    },
+    {
+      "path": "applicant.country",
+      "control": 5,
+      "id": "1042330633"
+    },
+    {
+      "path": "applicant.contactName",
+      "control": 6,
+      "id": "-2048822212"
+    },
+    {
+      "path": "applicant.contactTitle",
+      "control": 7,
+      "id": "-472367275"
+    },
+    {
+      "path": "applicant.phone",
+      "control": 8,
+      "id": "937183514"
+    },
+    {
+      "path": "applicant.email",
+      "control": 9,
+      "id": "-630401923"
+    },
+    {
+      "path": "payment.currencyOther",
+      "control": 24,
+      "id": "768269249"
+    },
+    {
+      "path": "payment.taxId",
+      "control": 25,
+      "id": "-1677877587"
+    },
+    {
+      "path": "payment.company.companyName",
+      "control": 29,
+      "id": "-1006742292"
+    },
+    {
+      "path": "payment.company.companyNameEnglish",
+      "control": 30,
+      "id": "974560995"
+    },
+    {
+      "path": "payment.company.address",
+      "control": 31,
+      "id": "-1142119863"
+    },
+    {
+      "path": "payment.company.city",
+      "control": 32,
+      "id": "438799683"
+    },
+    {
+      "path": "payment.company.country",
+      "control": 33,
+      "id": "-1590993068"
+    },
+    {
+      "path": "payment.company.contactName",
+      "control": 34,
+      "id": "2118711017"
+    },
+    {
+      "path": "payment.company.contactTitle",
+      "control": 35,
+      "id": "-1012294144"
+    },
+    {
+      "path": "payment.company.phone",
+      "control": 36,
+      "id": "-743029044"
+    },
+    {
+      "path": "payment.company.email",
+      "control": 37,
+      "id": "1299337369"
+    },
+    {
+      "path": "standards.ocs.previousLicenceNo",
+      "control": 41,
+      "id": "46811034"
+    },
+    {
+      "path": "standards.ocs.previousCertifier",
+      "control": 42,
+      "id": "1074012527"
+    },
+    {
+      "path": "standards.ocs.certificationRenewalDate",
+      "control": 43,
+      "id": "1262022565"
+    },
+    {
+      "path": "standards.gots.previousLicenceNo",
+      "control": 47,
+      "id": "-1380931630"
+    },
+    {
+      "path": "standards.gots.previousCertifier",
+      "control": 48,
+      "id": "1976795402"
+    },
+    {
+      "path": "standards.gots.certificationRenewalDate",
+      "control": 49,
+      "id": "-1023396511"
+    },
+    {
+      "path": "standards.ivnBest.previousLicenceNo",
+      "control": 53,
+      "id": "653955735"
+    },
+    {
+      "path": "standards.ivnBest.previousCertifier",
+      "control": 54,
+      "id": "30384043"
+    },
+    {
+      "path": "standards.ivnBest.certificationRenewalDate",
+      "control": 55,
+      "id": "-1226450045"
+    },
+    {
+      "path": "standards.grs.previousLicenceNo",
+      "control": 59,
+      "id": "1345975495"
+    },
+    {
+      "path": "standards.grs.previousCertifier",
+      "control": 60,
+      "id": "-613135995"
+    },
+    {
+      "path": "standards.grs.certificationRenewalDate",
+      "control": 61,
+      "id": "-1054542942"
+    },
+    {
+      "path": "standards.rcs.previousLicenceNo",
+      "control": 65,
+      "id": "-1738241336"
+    },
+    {
+      "path": "standards.rcs.previousCertifier",
+      "control": 66,
+      "id": "1873115256"
+    },
+    {
+      "path": "standards.rcs.certificationRenewalDate",
+      "control": 67,
+      "id": "-346644575"
+    },
+    {
+      "path": "standards.raf.previousLicenceNo",
+      "control": 73,
+      "id": "-1546208832"
+    },
+    {
+      "path": "standards.raf.previousCertifier",
+      "control": 74,
+      "id": "1616795039"
+    },
+    {
+      "path": "standards.raf.certificationRenewalDate",
+      "control": 75,
+      "id": "36253275"
+    },
+    {
+      "path": "standards.rds.previousLicenceNo",
+      "control": 78,
+      "id": "736371919"
+    },
+    {
+      "path": "standards.rds.previousCertifier",
+      "control": 79,
+      "id": "1499081315"
+    },
+    {
+      "path": "standards.rds.certificationRenewalDate",
+      "control": 80,
+      "id": "1427851299"
+    },
+    {
+      "path": "products.categories.homeTextiles.detail",
+      "control": 82,
+      "id": "1872879066"
+    },
+    {
+      "path": "products.categories.apparel.detail",
+      "control": 84,
+      "id": "1994675874"
+    },
+    {
+      "path": "products.categories.accessories.detail",
+      "control": 86,
+      "id": "1207606823"
+    },
+    {
+      "path": "products.categories.footwear.detail",
+      "control": 88,
+      "id": "-1755271625"
+    },
+    {
+      "path": "products.categories.fabric.detail",
+      "control": 90,
+      "id": "-1673714518"
+    },
+    {
+      "path": "products.categories.yarn.detail",
+      "control": 92,
+      "id": "2089353585"
+    },
+    {
+      "path": "products.categories.fibreFilament.detail",
+      "control": 94,
+      "id": "-527555918"
+    },
+    {
+      "path": "products.categories.filling.detail",
+      "control": 96,
+      "id": "296574522"
+    },
+    {
+      "path": "products.categories.packaging.detail",
+      "control": 98,
+      "id": "-2096705139"
+    },
+    {
+      "path": "products.categories.recycledMaterial.detail",
+      "control": 100,
+      "id": "-2103797793"
+    },
+    {
+      "path": "products.categories.rawDownFeather.detail",
+      "control": 102,
+      "id": "-127020986"
+    },
+    {
+      "path": "products.categories.birdsWaterfowl.detail",
+      "control": 104,
+      "id": "-241339678"
+    },
+    {
+      "path": "chemicalCompliance.chemicalCountGots",
+      "control": 202,
+      "id": "1804346478"
+    },
+    {
+      "path": "chemicalCompliance.chemicalCountGrs",
+      "control": 205,
+      "id": "-1541659396"
+    },
+    {
+      "path": "certifications.refusedDetail",
+      "control": 208,
+      "id": "192510376"
+    },
+    {
+      "path": "certifications.prohibitedDetail",
+      "control": 209,
+      "id": "1541407997"
+    },
+    {
+      "path": "declaration.companyName",
+      "control": 210,
+      "id": "677007342"
+    },
+    {
+      "path": "declaration.signatoryNameTitle",
+      "control": 212,
+      "id": "2065370048"
+    },
+    {
+      "path": "declaration.date",
+      "control": 213,
+      "id": "-973363386"
+    },
+    {
+      "path": "declaration.representative.companyName",
+      "control": 214,
+      "id": "1478653647"
+    },
+    {
+      "path": "declaration.representative.contactName",
+      "control": 215,
+      "id": "-2091153610"
+    },
+    {
+      "path": "declaration.representative.email",
+      "control": 216,
+      "id": "1017112604"
+    },
+    {
+      "path": "recycling.vr2Sites",
+      "control": 217,
+      "id": "523525396"
+    },
+    {
+      "path": "recycling.inputWasteDescription",
+      "control": 219,
+      "id": "-2062468777"
+    },
+    {
+      "path": "recycling.collectorCount",
+      "control": 223,
+      "id": "1008255188"
+    },
+    {
+      "path": "recycling.collectorLocations",
+      "control": 226,
+      "id": "2078393497"
+    },
+    {
+      "path": "recycling.collectorActivities",
+      "control": 228,
+      "id": "1072314296"
+    }
+  ],
+  "checkbox": [
+    {
+      "path": "payment.currency",
+      "control": 10,
+      "id": "412278547",
+      "whenEquals": "USD"
+    },
+    {
+      "path": "payment.currency",
+      "control": 11,
+      "id": "-590393924",
+      "whenEquals": "RMB"
+    },
+    {
+      "path": "payment.currency",
+      "control": 12,
+      "id": "-543597345",
+      "whenEquals": "EURO"
+    },
+    {
+      "path": "payment.currency",
+      "control": 13,
+      "id": "-1625222267",
+      "whenEquals": "TWD"
+    },
+    {
+      "path": "payment.currency",
+      "control": 14,
+      "id": "1513795960",
+      "whenEquals": "TRY"
+    },
+    {
+      "path": "payment.currency",
+      "control": 15,
+      "id": "-1949686403",
+      "whenEquals": "CHF"
+    },
+    {
+      "path": "payment.currency",
+      "control": 16,
+      "id": "-1972205935",
+      "whenEquals": "INR"
+    },
+    {
+      "path": "payment.currency",
+      "control": 17,
+      "id": "1462759587",
+      "whenEquals": "BDT"
+    },
+    {
+      "path": "payment.currency",
+      "control": 18,
+      "id": "-701012371",
+      "whenEquals": "JPY"
+    },
+    {
+      "path": "payment.currency",
+      "control": 19,
+      "id": "-712268944",
+      "whenEquals": "PKR"
+    },
+    {
+      "path": "payment.currency",
+      "control": 20,
+      "id": "1497387561",
+      "whenEquals": "KRW"
+    },
+    {
+      "path": "payment.currency",
+      "control": 21,
+      "id": "-1556236745",
+      "whenEquals": "IDR"
+    },
+    {
+      "path": "payment.currency",
+      "control": 22,
+      "id": "-33430468",
+      "whenEquals": "VND"
+    },
+    {
+      "path": "payment.currency",
+      "control": 23,
+      "id": "-1826345278",
+      "whenEquals": "OTHER"
+    },
+    {
+      "path": "payment.rush.siteVisit",
+      "control": 26,
+      "id": "2035302782"
+    },
+    {
+      "path": "payment.rush.certificationDecision",
+      "control": 27,
+      "id": "1934784239"
+    },
+    {
+      "path": "payment.sameAsApplicant",
+      "control": 28,
+      "id": "-1425955768"
+    },
+    {
+      "path": "standards.ocs.selected",
+      "control": 38,
+      "id": "-531503724"
+    },
+    {
+      "path": "standards.ocs.priorCertifications.ocs",
+      "control": 39,
+      "id": "-1324353010"
+    },
+    {
+      "path": "standards.ocs.priorCertifications.gots",
+      "control": 40,
+      "id": "2043393801"
+    },
+    {
+      "path": "standards.gots.selected",
+      "control": 44,
+      "id": "2134820641"
+    },
+    {
+      "path": "standards.gots.priorCertifications.gots",
+      "control": 45,
+      "id": "-1591456014"
+    },
+    {
+      "path": "standards.gots.priorCertifications.ocs",
+      "control": 46,
+      "id": "-1695070635"
+    },
+    {
+      "path": "standards.ivnBest.selected",
+      "control": 50,
+      "id": "1648785246"
+    },
+    {
+      "path": "standards.ivnBest.priorCertifications.ivn",
+      "control": 51,
+      "id": "1867705048"
+    },
+    {
+      "path": "standards.ivnBest.priorCertifications.gots",
+      "control": 52,
+      "id": "-712807395"
+    },
+    {
+      "path": "standards.grs.selected",
+      "control": 56,
+      "id": "1942951238"
+    },
+    {
+      "path": "standards.grs.priorCertifications.grs",
+      "control": 57,
+      "id": "-1351418018"
+    },
+    {
+      "path": "standards.grs.priorCertifications.rcs",
+      "control": 58,
+      "id": "-1464346178"
+    },
+    {
+      "path": "standards.rcs.selected",
+      "control": 62,
+      "id": "1485124826"
+    },
+    {
+      "path": "standards.rcs.priorCertifications.rcs",
+      "control": 63,
+      "id": "174620194"
+    },
+    {
+      "path": "standards.rcs.priorCertifications.grs",
+      "control": 64,
+      "id": "1175080653"
+    },
+    {
+      "path": "standards.raf.selected",
+      "control": 68,
+      "id": "-1649744621"
+    },
+    {
+      "path": "standards.raf.priorCertifications.raf",
+      "control": 72,
+      "id": "-312713445"
+    },
+    {
+      "path": "standards.raf.subStandards",
+      "control": 69,
+      "id": "828242657",
+      "whenIncludes": "rws"
+    },
+    {
+      "path": "standards.raf.subStandards",
+      "control": 70,
+      "id": "58533641",
+      "whenIncludes": "rms"
+    },
+    {
+      "path": "standards.raf.subStandards",
+      "control": 71,
+      "id": "-964415679",
+      "whenIncludes": "ras"
+    },
+    {
+      "path": "standards.rds.selected",
+      "control": 76,
+      "id": "-1782177920"
+    },
+    {
+      "path": "standards.rds.priorCertifications.rds",
+      "control": 77,
+      "id": "-1473747426"
+    },
+    {
+      "path": "products.categories.homeTextiles.selected",
+      "control": 81,
+      "id": "1593663981"
+    },
+    {
+      "path": "products.categories.apparel.selected",
+      "control": 83,
+      "id": "-1725905022"
+    },
+    {
+      "path": "products.categories.accessories.selected",
+      "control": 85,
+      "id": "1042480344"
+    },
+    {
+      "path": "products.categories.footwear.selected",
+      "control": 87,
+      "id": "-1224756457"
+    },
+    {
+      "path": "products.categories.fabric.selected",
+      "control": 89,
+      "id": "-110984428"
+    },
+    {
+      "path": "products.categories.yarn.selected",
+      "control": 91,
+      "id": "-1905362245"
+    },
+    {
+      "path": "products.categories.fibreFilament.selected",
+      "control": 93,
+      "id": "1549257464"
+    },
+    {
+      "path": "products.categories.filling.selected",
+      "control": 95,
+      "id": "-363830556"
+    },
+    {
+      "path": "products.categories.packaging.selected",
+      "control": 97,
+      "id": "953517857"
+    },
+    {
+      "path": "products.categories.recycledMaterial.selected",
+      "control": 99,
+      "id": "-1379477547"
+    },
+    {
+      "path": "products.categories.rawDownFeather.selected",
+      "control": 101,
+      "id": "666292960"
+    },
+    {
+      "path": "products.categories.birdsWaterfowl.selected",
+      "control": 103,
+      "id": "382760585"
+    },
+    {
+      "path": "otherCertifications.oekoTexStep",
+      "control": 180,
+      "id": "1641767703",
+      "whenEquals": "yes"
+    },
+    {
+      "path": "otherCertifications.oekoTexStep",
+      "control": 181,
+      "id": "-895125116",
+      "whenEquals": "no"
+    },
+    {
+      "path": "otherCertifications.scsRcv",
+      "control": 182,
+      "id": "1825852797",
+      "whenEquals": "yes"
+    },
+    {
+      "path": "otherCertifications.scsRcv",
+      "control": 183,
+      "id": "-110907516",
+      "whenEquals": "no"
+    },
+    {
+      "path": "otherCertifications.bsci",
+      "control": 184,
+      "id": "-2126837791",
+      "whenEquals": "yes"
+    },
+    {
+      "path": "otherCertifications.bsci",
+      "control": 185,
+      "id": "-2116279375",
+      "whenEquals": "no"
+    },
+    {
+      "path": "otherCertifications.sa8000",
+      "control": 186,
+      "id": "1375038413",
+      "whenEquals": "yes"
+    },
+    {
+      "path": "otherCertifications.sa8000",
+      "control": 187,
+      "id": "553103",
+      "whenEquals": "no"
+    },
+    {
+      "path": "otherCertifications.higgFem",
+      "control": 188,
+      "id": "-816265144",
+      "whenEquals": "yes"
+    },
+    {
+      "path": "otherCertifications.higgFem",
+      "control": 189,
+      "id": "-509984458",
+      "whenEquals": "no"
+    },
+    {
+      "path": "otherCertifications.higgFslm",
+      "control": 190,
+      "id": "2120024957",
+      "whenEquals": "yes"
+    },
+    {
+      "path": "otherCertifications.higgFslm",
+      "control": 191,
+      "id": "625049674",
+      "whenEquals": "no"
+    },
+    {
+      "path": "otherCertifications.higgBrm",
+      "control": 192,
+      "id": "1407346156",
+      "whenEquals": "yes"
+    },
+    {
+      "path": "otherCertifications.higgBrm",
+      "control": 193,
+      "id": "1623886538",
+      "whenEquals": "no"
+    },
+    {
+      "path": "otherCertifications.wrap",
+      "control": 194,
+      "id": "-1241333726",
+      "whenEquals": "yes"
+    },
+    {
+      "path": "otherCertifications.wrap",
+      "control": 195,
+      "id": "926696098",
+      "whenEquals": "no"
+    },
+    {
+      "path": "otherCertifications.gscpSocial",
+      "control": 196,
+      "id": "-1480446963",
+      "whenEquals": "yes"
+    },
+    {
+      "path": "otherCertifications.gscpSocial",
+      "control": 197,
+      "id": "839353918",
+      "whenEquals": "no"
+    },
+    {
+      "path": "otherCertifications.gscpEnvironmental",
+      "control": 198,
+      "id": "-893124843",
+      "whenEquals": "yes"
+    },
+    {
+      "path": "otherCertifications.gscpEnvironmental",
+      "control": 199,
+      "id": "916126573",
+      "whenEquals": "no"
+    },
+    {
+      "path": "chemicalCompliance.usesChemicalsGots",
+      "control": 200,
+      "id": "-811873197",
+      "whenEquals": "yes"
+    },
+    {
+      "path": "chemicalCompliance.usesChemicalsGots",
+      "control": 201,
+      "id": "-201628754",
+      "whenEquals": "no"
+    },
+    {
+      "path": "chemicalCompliance.usesChemicalsGrs",
+      "control": 203,
+      "id": "1723709215",
+      "whenEquals": "yes"
+    },
+    {
+      "path": "chemicalCompliance.usesChemicalsGrs",
+      "control": 204,
+      "id": "2101448642",
+      "whenEquals": "no"
+    },
+    {
+      "path": "certifications.refusedBefore",
+      "control": 206,
+      "id": "-1573958091",
+      "whenEquals": "yes"
+    },
+    {
+      "path": "certifications.refusedBefore",
+      "control": 207,
+      "id": "-1975971194",
+      "whenEquals": "no"
+    }
+  ],
+  "combo": [],
+  "ballot": [
+    {
+      "path": "standards.ocs.certificationStatus",
+      "ordinal": 1,
+      "whenEquals": "initial"
+    },
+    {
+      "path": "standards.ocs.certificationStatus",
+      "ordinal": 2,
+      "whenEquals": "renewal"
+    },
+    {
+      "path": "standards.gots.certificationStatus",
+      "ordinal": 3,
+      "whenEquals": "initial"
+    },
+    {
+      "path": "standards.gots.certificationStatus",
+      "ordinal": 4,
+      "whenEquals": "renewal"
+    },
+    {
+      "path": "standards.ivnBest.certificationStatus",
+      "ordinal": 5,
+      "whenEquals": "initial"
+    },
+    {
+      "path": "standards.ivnBest.certificationStatus",
+      "ordinal": 6,
+      "whenEquals": "renewal"
+    },
+    {
+      "path": "standards.grs.certificationStatus",
+      "ordinal": 7,
+      "whenEquals": "initial"
+    },
+    {
+      "path": "standards.grs.certificationStatus",
+      "ordinal": 8,
+      "whenEquals": "renewal"
+    },
+    {
+      "path": "standards.rcs.certificationStatus",
+      "ordinal": 9,
+      "whenEquals": "initial"
+    },
+    {
+      "path": "standards.rcs.certificationStatus",
+      "ordinal": 10,
+      "whenEquals": "renewal"
+    },
+    {
+      "path": "standards.raf.certificationStatus",
+      "ordinal": 11,
+      "whenEquals": "initial"
+    },
+    {
+      "path": "standards.raf.certificationStatus",
+      "ordinal": 12,
+      "whenEquals": "renewal"
+    },
+    {
+      "path": "standards.rds.certificationStatus",
+      "ordinal": 13,
+      "whenEquals": "initial"
+    },
+    {
+      "path": "standards.rds.certificationStatus",
+      "ordinal": 14,
+      "whenEquals": "renewal"
+    },
+    {
+      "path": "facilitiesMeta.hasSubcontractors",
+      "ordinal": 15,
+      "whenEquals": "yes"
+    },
+    {
+      "path": "facilitiesMeta.hasSubcontractors",
+      "ordinal": 16,
+      "whenEquals": "no"
+    },
+    {
+      "path": "recycling.materialType",
+      "ordinal": 17,
+      "whenEquals": "none"
+    },
+    {
+      "path": "recycling.materialType",
+      "ordinal": 18,
+      "whenEquals": "postConsumer"
+    },
+    {
+      "path": "recycling.materialType",
+      "ordinal": 19,
+      "whenEquals": "preConsumer"
+    },
+    {
+      "path": "recycling.materialType",
+      "ordinal": 20,
+      "whenEquals": "both"
+    }
+  ],
+  "repeat": {
+    "facilities": [
+      {
+        "row": 0,
+        "fields": [
+          {
+            "key": "name",
+            "kind": "TEXT",
+            "control": 138,
+            "id": "-251436119"
+          },
+          {
+            "key": "address",
+            "kind": "TEXT",
+            "control": 139,
+            "id": "-1719744732"
+          },
+          {
+            "key": "employeeCount",
+            "kind": "TEXT",
+            "control": 140,
+            "id": "-58480460"
+          },
+          {
+            "key": "standards",
+            "kind": "TEXT",
+            "join": true,
+            "control": 141,
+            "id": "-808715147"
+          },
+          {
+            "key": "activities",
+            "kind": "TEXT",
+            "join": true,
+            "control": 142,
+            "id": "-32274397"
+          },
+          {
+            "key": "unitType",
+            "kind": "TEXT",
+            "control": 143,
+            "id": "2077703979"
+          },
+          {
+            "key": "previouslyCertified",
+            "kind": "COMBO",
+            "control": 144,
+            "id": "-1864198531"
+          }
+        ]
+      },
+      {
+        "row": 1,
+        "fields": [
+          {
+            "key": "name",
+            "kind": "TEXT",
+            "control": 145,
+            "id": "-1108731178"
+          },
+          {
+            "key": "address",
+            "kind": "TEXT",
+            "control": 146,
+            "id": "-571502644"
+          },
+          {
+            "key": "employeeCount",
+            "kind": "TEXT",
+            "control": 147,
+            "id": "-426039883"
+          },
+          {
+            "key": "standards",
+            "kind": "TEXT",
+            "join": true,
+            "control": 148,
+            "id": "-1723676954"
+          },
+          {
+            "key": "activities",
+            "kind": "TEXT",
+            "join": true,
+            "control": 149,
+            "id": "-395134972"
+          },
+          {
+            "key": "unitType",
+            "kind": "TEXT",
+            "control": 150,
+            "id": "182102565"
+          },
+          {
+            "key": "previouslyCertified",
+            "kind": "COMBO",
+            "control": 151,
+            "id": "-1558304225"
+          }
+        ]
+      },
+      {
+        "row": 2,
+        "fields": [
+          {
+            "key": "name",
+            "kind": "TEXT",
+            "control": 152,
+            "id": "116342260"
+          },
+          {
+            "key": "address",
+            "kind": "TEXT",
+            "control": 153,
+            "id": "691890545"
+          },
+          {
+            "key": "employeeCount",
+            "kind": "TEXT",
+            "control": 154,
+            "id": "110940449"
+          },
+          {
+            "key": "standards",
+            "kind": "TEXT",
+            "join": true,
+            "control": 155,
+            "id": "1241843956"
+          },
+          {
+            "key": "activities",
+            "kind": "TEXT",
+            "join": true,
+            "control": 156,
+            "id": "-834684968"
+          },
+          {
+            "key": "unitType",
+            "kind": "TEXT",
+            "control": 157,
+            "id": "-262843597"
+          },
+          {
+            "key": "previouslyCertified",
+            "kind": "COMBO",
+            "control": 158,
+            "id": "-594249938"
+          }
+        ]
+      },
+      {
+        "row": 3,
+        "fields": [
+          {
+            "key": "name",
+            "kind": "TEXT",
+            "control": 159,
+            "id": "-583377866"
+          },
+          {
+            "key": "address",
+            "kind": "TEXT",
+            "control": 160,
+            "id": "1078631823"
+          },
+          {
+            "key": "employeeCount",
+            "kind": "TEXT",
+            "control": 161,
+            "id": "372428380"
+          },
+          {
+            "key": "standards",
+            "kind": "TEXT",
+            "join": true,
+            "control": 162,
+            "id": "1582561744"
+          },
+          {
+            "key": "activities",
+            "kind": "TEXT",
+            "join": true,
+            "control": 163,
+            "id": "445668649"
+          },
+          {
+            "key": "unitType",
+            "kind": "TEXT",
+            "control": 164,
+            "id": "-1069340796"
+          },
+          {
+            "key": "previouslyCertified",
+            "kind": "COMBO",
+            "control": 165,
+            "id": "-2013294204"
+          }
+        ]
+      },
+      {
+        "row": 4,
+        "fields": [
+          {
+            "key": "name",
+            "kind": "TEXT",
+            "control": 166,
+            "id": "-1032029380"
+          },
+          {
+            "key": "address",
+            "kind": "TEXT",
+            "control": 167,
+            "id": "-1684046616"
+          },
+          {
+            "key": "employeeCount",
+            "kind": "TEXT",
+            "control": 168,
+            "id": "1121106927"
+          },
+          {
+            "key": "standards",
+            "kind": "TEXT",
+            "join": true,
+            "control": 169,
+            "id": "-1092150411"
+          },
+          {
+            "key": "activities",
+            "kind": "TEXT",
+            "join": true,
+            "control": 170,
+            "id": "771356414"
+          },
+          {
+            "key": "unitType",
+            "kind": "TEXT",
+            "control": 171,
+            "id": "-1190908986"
+          },
+          {
+            "key": "previouslyCertified",
+            "kind": "COMBO",
+            "control": 172,
+            "id": "-1262138779"
+          }
+        ]
+      },
+      {
+        "row": 5,
+        "fields": [
+          {
+            "key": "name",
+            "kind": "TEXT",
+            "control": 173,
+            "id": "355012240"
+          },
+          {
+            "key": "address",
+            "kind": "TEXT",
+            "control": 174,
+            "id": "-417398631"
+          },
+          {
+            "key": "employeeCount",
+            "kind": "TEXT",
+            "control": 175,
+            "id": "966628038"
+          },
+          {
+            "key": "standards",
+            "kind": "TEXT",
+            "join": true,
+            "control": 176,
+            "id": "862556158"
+          },
+          {
+            "key": "activities",
+            "kind": "TEXT",
+            "join": true,
+            "control": 177,
+            "id": "321236433"
+          },
+          {
+            "key": "unitType",
+            "kind": "TEXT",
+            "control": 178,
+            "id": "722027316"
+          },
+          {
+            "key": "previouslyCertified",
+            "kind": "COMBO",
+            "control": 179,
+            "id": "-1960945175"
+          }
+        ]
+      }
+    ],
+    "productOthers": [
+      {
+        "row": 0,
+        "selected": {
+          "control": 105,
+          "id": "-176880086"
+        },
+        "fields": [
+          {
+            "key": "name",
+            "control": 106,
+            "id": "1824163412",
+            "kind": "TEXT"
+          },
+          {
+            "key": "detail",
+            "control": 108,
+            "id": "-1985694823",
+            "kind": "TEXT"
+          }
+        ]
+      },
+      {
+        "row": 1,
+        "selected": {
+          "control": 109,
+          "id": "1980114309"
+        },
+        "fields": [
+          {
+            "key": "name",
+            "control": 110,
+            "id": "-1188367672",
+            "kind": "TEXT"
+          },
+          {
+            "key": "detail",
+            "control": 112,
+            "id": "-233232825",
+            "kind": "TEXT"
+          }
+        ]
+      },
+      {
+        "row": 2,
+        "selected": {
+          "control": 113,
+          "id": "1392002772"
+        },
+        "fields": [
+          {
+            "key": "name",
+            "control": 114,
+            "id": "-1896041191",
+            "kind": "TEXT"
+          },
+          {
+            "key": "detail",
+            "control": 116,
+            "id": "581648168",
+            "kind": "TEXT"
+          }
+        ]
+      },
+      {
+        "row": 3,
+        "selected": {
+          "control": 117,
+          "id": "920684098"
+        },
+        "fields": [
+          {
+            "key": "name",
+            "control": 118,
+            "id": "-429044773",
+            "kind": "TEXT"
+          },
+          {
+            "key": "detail",
+            "control": 120,
+            "id": "-297068962",
+            "kind": "TEXT"
+          }
+        ]
+      },
+      {
+        "row": 4,
+        "selected": {
+          "control": 121,
+          "id": "1189789990"
+        },
+        "fields": [
+          {
+            "key": "name",
+            "control": 122,
+            "id": "863939780",
+            "kind": "TEXT"
+          },
+          {
+            "key": "detail",
+            "control": 124,
+            "id": "100470104",
+            "kind": "TEXT"
+          }
+        ]
+      },
+      {
+        "row": 5,
+        "selected": {
+          "control": 125,
+          "id": "-1880155499"
+        },
+        "fields": [
+          {
+            "key": "name",
+            "control": 126,
+            "id": "11042356",
+            "kind": "TEXT"
+          },
+          {
+            "key": "detail",
+            "control": 128,
+            "id": "-2077819517",
+            "kind": "TEXT"
+          }
+        ]
+      },
+      {
+        "row": 6,
+        "selected": {
+          "control": 129,
+          "id": "1742908665"
+        },
+        "fields": [
+          {
+            "key": "name",
+            "control": 130,
+            "id": "791399729",
+            "kind": "TEXT"
+          },
+          {
+            "key": "detail",
+            "control": 132,
+            "id": "-2077898296",
+            "kind": "TEXT"
+          }
+        ]
+      },
+      {
+        "row": 7,
+        "selected": {
+          "control": 133,
+          "id": "1751007461"
+        },
+        "fields": [
+          {
+            "key": "name",
+            "control": 134,
+            "id": "-397277990",
+            "kind": "TEXT"
+          },
+          {
+            "key": "detail",
+            "control": 136,
+            "id": "1381285250",
+            "kind": "TEXT"
+          }
+        ]
+      }
+    ],
+    "rds": {
+      "slaughterhouses": {
+        "section": 9,
+        "itemLabel": "屠畜場",
+        "rows": [
+          {
+            "row": 0,
+            "fields": [
+              {
+                "key": "name",
+                "control": 231,
+                "id": "-104735104",
+                "kind": "TEXT"
+              },
+              {
+                "key": "address",
+                "control": 232,
+                "id": "960922730",
+                "kind": "TEXT"
+              },
+              {
+                "key": "contact",
+                "control": 234,
+                "id": "1602302964",
+                "kind": "TEXT"
+              },
+              {
+                "key": "waterfowlSpecies",
+                "control": 236,
+                "id": "1480109266",
+                "kind": "TEXT"
+              },
+              {
+                "key": "annualSlaughterCount",
+                "control": 238,
+                "id": "624973134",
+                "kind": "TEXT"
+              },
+              {
+                "key": "activities",
+                "control": 240,
+                "id": "-1927409015",
+                "kind": "TEXT"
+              },
+              {
+                "key": "previouslyCertified",
+                "control": 241,
+                "id": "72712224",
+                "kind": "COMBO"
+              }
+            ]
+          },
+          {
+            "row": 1,
+            "fields": [
+              {
+                "key": "name",
+                "control": 242,
+                "id": "182175891",
+                "kind": "TEXT"
+              },
+              {
+                "key": "address",
+                "control": 244,
+                "id": "-348638576",
+                "kind": "TEXT"
+              },
+              {
+                "key": "contact",
+                "control": 246,
+                "id": "1962297921",
+                "kind": "TEXT"
+              },
+              {
+                "key": "waterfowlSpecies",
+                "control": 248,
+                "id": "-1360357439",
+                "kind": "TEXT"
+              },
+              {
+                "key": "annualSlaughterCount",
+                "control": 250,
+                "id": "850762978",
+                "kind": "TEXT"
+              },
+              {
+                "key": "activities",
+                "control": 252,
+                "id": "1043335111",
+                "kind": "TEXT"
+              },
+              {
+                "key": "previouslyCertified",
+                "control": 254,
+                "id": "-1171556614",
+                "kind": "COMBO"
+              }
+            ]
+          },
+          {
+            "row": 2,
+            "fields": [
+              {
+                "key": "name",
+                "control": 255,
+                "id": "-1579363182",
+                "kind": "TEXT"
+              },
+              {
+                "key": "address",
+                "control": 257,
+                "id": "1546950675",
+                "kind": "TEXT"
+              },
+              {
+                "key": "contact",
+                "control": 259,
+                "id": "-2091371827",
+                "kind": "TEXT"
+              },
+              {
+                "key": "waterfowlSpecies",
+                "control": 261,
+                "id": "-123698072",
+                "kind": "TEXT"
+              },
+              {
+                "key": "annualSlaughterCount",
+                "control": 263,
+                "id": "-1212794653",
+                "kind": "TEXT"
+              },
+              {
+                "key": "activities",
+                "control": 265,
+                "id": "1610628264",
+                "kind": "TEXT"
+              },
+              {
+                "key": "previouslyCertified",
+                "control": 267,
+                "id": "303819207",
+                "kind": "COMBO"
+              }
+            ]
+          }
+        ]
+      },
+      "farmGroups": {
+        "section": 10,
+        "itemLabel": "農場グループ",
+        "rows": [
+          {
+            "row": 0,
+            "fields": [
+              {
+                "key": "groupName",
+                "control": 268,
+                "id": "-1494795052",
+                "kind": "TEXT"
+              },
+              {
+                "key": "contact",
+                "control": 269,
+                "id": "-214203415",
+                "kind": "TEXT"
+              },
+              {
+                "key": "memberCount",
+                "control": 270,
+                "id": "-453407437",
+                "kind": "TEXT"
+              },
+              {
+                "key": "parentFarmCount",
+                "control": 271,
+                "id": "1213304103",
+                "kind": "TEXT"
+              },
+              {
+                "key": "waterfowlSpecies",
+                "control": 272,
+                "id": "2146704906",
+                "kind": "COMBO"
+              },
+              {
+                "key": "annualRearedCount",
+                "control": 273,
+                "id": "-1389557375",
+                "kind": "TEXT"
+              },
+              {
+                "key": "annualSlaughterCount",
+                "control": 274,
+                "id": "-191536379",
+                "kind": "TEXT"
+              },
+              {
+                "key": "activities",
+                "control": 275,
+                "id": "240146292",
+                "kind": "TEXT"
+              },
+              {
+                "key": "previouslyCertified",
+                "control": 276,
+                "id": "2015726630",
+                "kind": "COMBO"
+              }
+            ]
+          },
+          {
+            "row": 1,
+            "fields": [
+              {
+                "key": "groupName",
+                "control": 277,
+                "id": "1534692467",
+                "kind": "TEXT"
+              },
+              {
+                "key": "contact",
+                "control": 278,
+                "id": "1961529644",
+                "kind": "TEXT"
+              },
+              {
+                "key": "memberCount",
+                "control": 279,
+                "id": "-1816783895",
+                "kind": "TEXT"
+              },
+              {
+                "key": "parentFarmCount",
+                "control": 280,
+                "id": "683790080",
+                "kind": "TEXT"
+              },
+              {
+                "key": "waterfowlSpecies",
+                "control": 281,
+                "id": "-1945839143",
+                "kind": "COMBO"
+              },
+              {
+                "key": "annualRearedCount",
+                "control": 282,
+                "id": "-788206198",
+                "kind": "TEXT"
+              },
+              {
+                "key": "annualSlaughterCount",
+                "control": 283,
+                "id": "735138582",
+                "kind": "TEXT"
+              },
+              {
+                "key": "activities",
+                "control": 284,
+                "id": "-814183686",
+                "kind": "TEXT"
+              },
+              {
+                "key": "previouslyCertified",
+                "control": 285,
+                "id": "-1399121408",
+                "kind": "COMBO"
+              }
+            ]
+          },
+          {
+            "row": 2,
+            "fields": [
+              {
+                "key": "groupName",
+                "control": 286,
+                "id": "-453099542",
+                "kind": "TEXT"
+              },
+              {
+                "key": "contact",
+                "control": 287,
+                "id": "972481343",
+                "kind": "TEXT"
+              },
+              {
+                "key": "memberCount",
+                "control": 288,
+                "id": "1102851138",
+                "kind": "TEXT"
+              },
+              {
+                "key": "parentFarmCount",
+                "control": 289,
+                "id": "1094358424",
+                "kind": "TEXT"
+              },
+              {
+                "key": "waterfowlSpecies",
+                "control": 290,
+                "id": "1054197524",
+                "kind": "COMBO"
+              },
+              {
+                "key": "annualRearedCount",
+                "control": 291,
+                "id": "-1114894452",
+                "kind": "TEXT"
+              },
+              {
+                "key": "annualSlaughterCount",
+                "control": 292,
+                "id": "-883790111",
+                "kind": "TEXT"
+              },
+              {
+                "key": "activities",
+                "control": 293,
+                "id": "292024857",
+                "kind": "TEXT"
+              },
+              {
+                "key": "previouslyCertified",
+                "control": 294,
+                "id": "1896385973",
+                "kind": "COMBO"
+              }
+            ]
+          }
+        ]
+      },
+      "individualFarms": {
+        "section": 11,
+        "itemLabel": "個別農場",
+        "rows": [
+          {
+            "row": 0,
+            "fields": [
+              {
+                "key": "name",
+                "control": 295,
+                "id": "-1792658109",
+                "kind": "TEXT"
+              },
+              {
+                "key": "address",
+                "control": 296,
+                "id": "634685233",
+                "kind": "TEXT"
+              },
+              {
+                "key": "contact",
+                "control": 297,
+                "id": "-1388174422",
+                "kind": "TEXT"
+              },
+              {
+                "key": "waterfowlSpecies",
+                "control": 298,
+                "id": "359553418",
+                "kind": "TEXT"
+              },
+              {
+                "key": "annualRearedCount",
+                "control": 299,
+                "id": "-840241852",
+                "kind": "TEXT"
+              },
+              {
+                "key": "activities",
+                "control": 300,
+                "id": "1415970088",
+                "kind": "TEXT"
+              },
+              {
+                "key": "isParentFarm",
+                "control": 301,
+                "id": "-1396739875",
+                "kind": "COMBO"
+              },
+              {
+                "key": "previouslyCertified",
+                "control": 302,
+                "id": "42186393",
+                "kind": "COMBO"
+              }
+            ]
+          },
+          {
+            "row": 1,
+            "fields": [
+              {
+                "key": "name",
+                "control": 303,
+                "id": "-583532844",
+                "kind": "TEXT"
+              },
+              {
+                "key": "address",
+                "control": 304,
+                "id": "1438874392",
+                "kind": "TEXT"
+              },
+              {
+                "key": "contact",
+                "control": 305,
+                "id": "-1812698890",
+                "kind": "TEXT"
+              },
+              {
+                "key": "waterfowlSpecies",
+                "control": 306,
+                "id": "1004242597",
+                "kind": "TEXT"
+              },
+              {
+                "key": "annualRearedCount",
+                "control": 307,
+                "id": "1269586643",
+                "kind": "TEXT"
+              },
+              {
+                "key": "activities",
+                "control": 308,
+                "id": "1162585537",
+                "kind": "TEXT"
+              },
+              {
+                "key": "isParentFarm",
+                "control": 309,
+                "id": "-1658141827",
+                "kind": "COMBO"
+              },
+              {
+                "key": "previouslyCertified",
+                "control": 310,
+                "id": "-1565023326",
+                "kind": "COMBO"
+              }
+            ]
+          },
+          {
+            "row": 2,
+            "fields": [
+              {
+                "key": "name",
+                "control": 311,
+                "id": "445895947",
+                "kind": "TEXT"
+              },
+              {
+                "key": "address",
+                "control": 312,
+                "id": "1740357705",
+                "kind": "TEXT"
+              },
+              {
+                "key": "contact",
+                "control": 313,
+                "id": "-1012527877",
+                "kind": "TEXT"
+              },
+              {
+                "key": "waterfowlSpecies",
+                "control": 314,
+                "id": "131527964",
+                "kind": "TEXT"
+              },
+              {
+                "key": "annualRearedCount",
+                "control": 315,
+                "id": "-93781395",
+                "kind": "TEXT"
+              },
+              {
+                "key": "activities",
+                "control": 316,
+                "id": "2109539691",
+                "kind": "TEXT"
+              },
+              {
+                "key": "isParentFarm",
+                "control": 317,
+                "id": "-1945369700",
+                "kind": "COMBO"
+              },
+              {
+                "key": "previouslyCertified",
+                "control": 318,
+                "id": "-1260440767",
+                "kind": "COMBO"
+              }
+            ]
+          }
+        ]
+      },
+      "farmAreas": {
+        "section": 12,
+        "itemLabel": "農場エリア",
+        "rows": [
+          {
+            "row": 0,
+            "fields": [
+              {
+                "key": "areaName",
+                "control": 319,
+                "id": "-341545127",
+                "kind": "TEXT"
+              },
+              {
+                "key": "contact",
+                "control": 320,
+                "id": "156420379",
+                "kind": "TEXT"
+              },
+              {
+                "key": "collectorCount",
+                "control": 321,
+                "id": "1954365130",
+                "kind": "TEXT"
+              },
+              {
+                "key": "regionName",
+                "control": 322,
+                "id": "639691752",
+                "kind": "TEXT"
+              },
+              {
+                "key": "waterfowlSpecies",
+                "control": 323,
+                "id": "-1203471375",
+                "kind": "TEXT"
+              },
+              {
+                "key": "activities",
+                "control": 324,
+                "id": "1388224106",
+                "kind": "TEXT"
+              },
+              {
+                "key": "estimatedAnnualVolume",
+                "control": 325,
+                "id": "-1719744927",
+                "kind": "TEXT"
+              },
+              {
+                "key": "previouslyCertified",
+                "control": 326,
+                "id": "966625039",
+                "kind": "COMBO"
+              }
+            ]
+          },
+          {
+            "row": 1,
+            "fields": [
+              {
+                "key": "areaName",
+                "control": 327,
+                "id": "-1047131008",
+                "kind": "TEXT"
+              },
+              {
+                "key": "contact",
+                "control": 328,
+                "id": "-960189845",
+                "kind": "TEXT"
+              },
+              {
+                "key": "collectorCount",
+                "control": 329,
+                "id": "1042952408",
+                "kind": "TEXT"
+              },
+              {
+                "key": "regionName",
+                "control": 330,
+                "id": "651113490",
+                "kind": "TEXT"
+              },
+              {
+                "key": "waterfowlSpecies",
+                "control": 331,
+                "id": "-1475203747",
+                "kind": "TEXT"
+              },
+              {
+                "key": "activities",
+                "control": 332,
+                "id": "1561291402",
+                "kind": "TEXT"
+              },
+              {
+                "key": "estimatedAnnualVolume",
+                "control": 333,
+                "id": "-1776778725",
+                "kind": "TEXT"
+              },
+              {
+                "key": "previouslyCertified",
+                "control": 334,
+                "id": "26233124",
+                "kind": "COMBO"
+              }
+            ]
+          },
+          {
+            "row": 2,
+            "fields": [
+              {
+                "key": "areaName",
+                "control": 335,
+                "id": "-733773600",
+                "kind": "TEXT"
+              },
+              {
+                "key": "contact",
+                "control": 336,
+                "id": "1899467590",
+                "kind": "TEXT"
+              },
+              {
+                "key": "collectorCount",
+                "control": 337,
+                "id": "1344357804",
+                "kind": "TEXT"
+              },
+              {
+                "key": "regionName",
+                "control": 338,
+                "id": "860544340",
+                "kind": "TEXT"
+              },
+              {
+                "key": "waterfowlSpecies",
+                "control": 339,
+                "id": "-625920858",
+                "kind": "TEXT"
+              },
+              {
+                "key": "activities",
+                "control": 340,
+                "id": "-735398212",
+                "kind": "TEXT"
+              },
+              {
+                "key": "estimatedAnnualVolume",
+                "control": 341,
+                "id": "-1425567563",
+                "kind": "TEXT"
+              },
+              {
+                "key": "previouslyCertified",
+                "control": 342,
+                "id": "-1785260431",
+                "kind": "COMBO"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  }
+}
