@@ -6,7 +6,7 @@ FULL exercises no RDS data, so §§9-12 are only verified as "untouched" there.
 This checks the scenarios that actually populate the conditional sections, and that the
 sections which should stay empty really do.
 
-    python tools/gots-te-qa/audit-conditional.py
+    python tests/gots-te/audit-conditional.py
 """
 import glob, sys, zipfile
 import xml.etree.ElementTree as ET

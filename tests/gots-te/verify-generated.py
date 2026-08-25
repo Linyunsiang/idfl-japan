@@ -5,7 +5,7 @@ Independent verification of generated DOCX files.
 Deliberately uses a DIFFERENT zip reader (python zipfile) and a DIFFERENT XML parser
 (xml.etree) from the generator, so the generator cannot mark its own homework.
 
-    python tools/gots-te-qa/verify-generated.py
+    python tests/gots-te/verify-generated.py
 
 Checks, per generated file:
   * opens as a valid ZIP, all entries readable, CRCs verified by zipfile

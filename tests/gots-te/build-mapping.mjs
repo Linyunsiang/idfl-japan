@@ -14,7 +14,7 @@
  * Re-run this after `tools/extract-controls.py` whenever IDFL ships a new template.
  * Business logic must never contain a w:id; it only ever names ApplicationData paths.
  *
- *   node tools/gots-te-qa/build-mapping.mjs
+ *   node tests/gots-te/build-mapping.mjs
  */
 import { readFileSync, writeFileSync, mkdirSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -197,7 +197,7 @@ const mapping = {
   documentNumber: 'IDFLAS-FF-GEN-4100-JP(JP)',
   reference: 'IDFL-FF-MS01 EN V7.0',
   dcn: '25-013',
-  generatedBy: 'tools/gots-te-qa/build-mapping.mjs',
+  generatedBy: 'tests/gots-te/build-mapping.mjs',
   master: {
     path: '/files/GOTS-TE-Application-Form-JP.docx',
     sha256: identity.sha256,

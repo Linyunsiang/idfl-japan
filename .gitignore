@@ -13,6 +13,6 @@ __pycache__/
 *.py[cod]
 
 # GOTS/TE application: locally regenerated test DOCX. Never committed — these are
-# test artefacts containing fixture data, and tools/gots-te-qa/ regenerates them:
-#   node tools/gots-te-qa/generate-test-docs.mjs
+# test artefacts containing fixture data, and tests/gots-te/ regenerates them:
+#   node tests/gots-te/generate-test-docs.mjs
 generated/

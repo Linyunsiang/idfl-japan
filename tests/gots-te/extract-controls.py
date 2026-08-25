@@ -5,7 +5,7 @@ Extract every Word Content Control from an IDFL master template.
 READ-ONLY. This script never writes to the .docx it is given.
 
 Usage:
-    python tools/gots-te-qa/extract-controls.py "<path to master.docx>" [-o docs/gots-te-application/_generated]
+    python tests/gots-te/extract-controls.py "<path to master.docx>" [-o docs/gots-te-application/_generated]
 
 Outputs (into -o):
     control-inventory.tsv    one row per control, human-diffable

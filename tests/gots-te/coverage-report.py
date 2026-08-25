@@ -10,7 +10,7 @@ Answers three questions that a passing assertion suite cannot:
 Independent of the generator: reads the master and each generated file with python zipfile +
 xml.etree, and calls a control "exercised" when its text differs from the master's.
 
-    python tools/gots-te-qa/coverage-report.py
+    python tests/gots-te/coverage-report.py
 """
 import glob, json, os, sys, zipfile
 import xml.etree.ElementTree as ET
@@ -83,7 +83,7 @@ TOTAL_BALLOTS = len(ballot_states(master_root))
 
 files = sorted(glob.glob(os.path.join(ROOT, "generated", "*.docx")))
 if not files:
-    print("no generated files — run node tools/gots-te-qa/generate-test-docs.mjs")
+    print("no generated files — run node tests/gots-te/generate-test-docs.mjs")
     sys.exit(2)
 
 per_file_controls, per_file_ballots = {}, {}
@@ -108,7 +108,7 @@ if "--no-variants" not in sys.argv:
     import shutil, subprocess, tempfile
     tmp = tempfile.mkdtemp(prefix="idfl-coverage-variants-")
     try:
-        proc = subprocess.run([shutil.which("node") or "node", "tools/gots-te-qa/emit-variants.mjs", tmp],
+        proc = subprocess.run([shutil.which("node") or "node", "tests/gots-te/emit-variants.mjs", tmp],
                               cwd=ROOT, capture_output=True, text=True)
         if proc.returncode != 0:
             print("WARNING: variant generation failed; coverage below excludes the sweep")

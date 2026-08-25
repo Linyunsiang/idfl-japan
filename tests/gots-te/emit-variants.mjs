@@ -1,7 +1,7 @@
 /**
  * Emit one in-memory-generated DOCX per mutually-exclusive option variant.
  *
- *   node tools/gots-te-qa/emit-variants.mjs <outDir>
+ *   node tests/gots-te/emit-variants.mjs <outDir>
  *
  * Some official questions are single-select: a currency, a recycled-material type, a yes/no
  * pair. One application can only ever tick one of them, so no single fixture — not even MAX —
@@ -19,11 +19,11 @@ const APP = resolve(ROOT, 'application/gots-te');
 const MASTER = resolve(ROOT, 'files/GOTS-TE-Application-Form-JP.docx');
 
 const outDir = process.argv[2];
-if (!outDir) { console.error('usage: node tools/gots-te-qa/emit-variants.mjs <outDir>'); process.exit(2); }
+if (!outDir) { console.error('usage: node tests/gots-te/emit-variants.mjs <outDir>'); process.exit(2); }
 mkdirSync(outDir, { recursive: true });
 
 const { generateDocx } = await import(`file://${resolve(APP, 'js/docgen/generate.js')}`);
-const { scenarioMax } = await import(`file://${resolve(ROOT, 'tools/gots-te-qa/fixtures.mjs')}`);
+const { scenarioMax } = await import(`file://${resolve(ROOT, 'tests/gots-te/fixtures.mjs')}`);
 
 const mapping = JSON.parse(readFileSync(resolve(APP, 'templates/GOTS-TE-V7.0-DCN25-013/mapping.json'), 'utf8'));
 const masterBytes = new Uint8Array(readFileSync(MASTER));

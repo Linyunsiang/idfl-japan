@@ -6,7 +6,7 @@ Reads a GENERATED docx positionally — by table / row / cell and the official l
 next to each value — and dumps what a human would see in Word. It deliberately does NOT use
 the mapping file or control ids, so a value written into the wrong official cell shows up.
 
-    python tools/gots-te-qa/audit-mapping.py generated/FULL_*.docx
+    python tests/gots-te/audit-mapping.py generated/FULL_*.docx
 """
 import sys, glob, zipfile
 import xml.etree.ElementTree as ET

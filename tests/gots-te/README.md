@@ -27,13 +27,13 @@ rather than writing a document against an unknown field layout.
 ## Running the suite
 
 ```bash
-node   tools/gots-te-qa/generate-test-docs.mjs   # writes generated/  (gitignored)
-python tools/gots-te-qa/verify-generated.py      # independent package + control checks
-python tools/gots-te-qa/audit-full.py            # positional assertions, FULL fixture
-python tools/gots-te-qa/audit-conditional.py     # conditional sections, scenarios C/D/E
-python tools/gots-te-qa/audit-max.py             # positional assertions, MAX + MAXINIT
-python tools/gots-te-qa/audit-variants.py        # every option of every single-select question
-python tools/gots-te-qa/coverage-report.py       # mapping reachability sweep
+node   tests/gots-te/generate-test-docs.mjs   # writes generated/  (gitignored)
+python tests/gots-te/verify-generated.py      # independent package + control checks
+python tests/gots-te/audit-full.py            # positional assertions, FULL fixture
+python tests/gots-te/audit-conditional.py     # conditional sections, scenarios C/D/E
+python tests/gots-te/audit-max.py             # positional assertions, MAX + MAXINIT
+python tests/gots-te/audit-variants.py        # every option of every single-select question
+python tests/gots-te/coverage-report.py       # mapping reachability sweep
 ```
 
 All seven exit `0` when the system is healthy. `generated/` is gitignored and fully
@@ -82,8 +82,8 @@ and it renders correctly.
 ## Regenerating the mapping (new IDFL template release)
 
 ```bash
-python tools/gots-te-qa/extract-controls.py "files/GOTS-TE-Application-Form-JP.docx"
-node   tools/gots-te-qa/build-mapping.mjs
+python tests/gots-te/extract-controls.py "files/GOTS-TE-Application-Form-JP.docx"
+node   tests/gots-te/build-mapping.mjs
 ```
 
 Diff `docs/gots-te-application/_generated/control-inventory.tsv` before touching anything else,

@@ -6,7 +6,7 @@ Positional assertions: every expectation names the OFFICIAL table / row / cell a
 that must appear there. Nothing here reads mapping.json or control ids, so a value written
 into the wrong official cell fails even though the generator thinks it succeeded.
 
-    python tools/gots-te-qa/audit-full.py
+    python tests/gots-te/audit-full.py
 """
 import glob, sys, zipfile
 import xml.etree.ElementTree as ET

@@ -11,7 +11,7 @@ tools/emit-variants.mjs) and asserts positionally that:
   * the chosen option's official cell shows ☒
   * every sibling option in the same official row shows ☐
 
-    python tools/gots-te-qa/audit-variants.py [--keep]
+    python tests/gots-te/audit-variants.py [--keep]
 
 The generated variants go to a temp directory and are deleted afterwards unless --keep is given.
 """
@@ -152,7 +152,7 @@ def check_same_as_applicant(rows, chosen):
 keep = "--keep" in sys.argv
 outdir = tempfile.mkdtemp(prefix="idfl-variants-")
 try:
-    proc = subprocess.run([shutil.which("node") or "node", "tools/gots-te-qa/emit-variants.mjs", outdir],
+    proc = subprocess.run([shutil.which("node") or "node", "tests/gots-te/emit-variants.mjs", outdir],
                           cwd=ROOT, capture_output=True, text=True)
     if proc.returncode != 0:
         print("variant generation FAILED")

@@ -7,7 +7,7 @@ value that must appear there. Nothing here reads mapping.json, control ids or th
 own report, so a value written into the wrong official cell fails even though the generator
 believes it succeeded.
 
-    python tools/gots-te-qa/audit-max.py
+    python tests/gots-te/audit-max.py
 
 MAX     — all 7 standards selected, ALL renewal, every prior-CB box ticked, distinct
           licence/certifier/date per standard, all 3 RAF sub-standards, all 4 RDS sections
@@ -27,7 +27,7 @@ PASS, FAIL = [], []
 def load(prefix):
     hits = sorted(glob.glob(f"generated/{prefix}_*.docx"))
     if not hits:
-        print(f"MISSING: no generated/{prefix}_*.docx — run node tools/gots-te-qa/generate-test-docs.mjs")
+        print(f"MISSING: no generated/{prefix}_*.docx — run node tests/gots-te/generate-test-docs.mjs")
         sys.exit(2)
     return hits[0], ET.fromstring(zipfile.ZipFile(hits[0]).read("word/document.xml").decode("utf-8"))
 

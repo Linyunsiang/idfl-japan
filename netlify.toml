@@ -9,3 +9,11 @@
   from = "/admin"
   to = "/admin.html"
   status = 200
+
+# QA tooling for /application/gots-te/ ships in git but is not part of the site.
+# Serve nothing from /tests/ — force=true so it wins over the static files.
+[[redirects]]
+  from = "/tests/*"
+  to = "/404.html"
+  status = 404
+  force = true

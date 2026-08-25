@@ -1,7 +1,7 @@
 /**
  * Generate the test DOCX set and verify each one against the master.
  *
- *   node tools/gots-te-qa/generate-test-docs.mjs
+ *   node tests/gots-te/generate-test-docs.mjs
  *
  * Reads the master read-only, writes only into ./generated/.
  * Prints a per-file report separating EXPECTED changes (mapped fields) from
@@ -21,7 +21,7 @@ const { generateDocx, OverflowError, TemplateMismatchError } = await import(`fil
 const { readZip, entryText } = await import(`file://${resolve(APP, 'js/ooxml/zip.js')}`);
 const { indexDocument, sharedTextGroups } = await import(`file://${resolve(APP, 'js/ooxml/docxpatch.js')}`);
 const { scan, descendants, textOf } = await import(`file://${resolve(APP, 'js/ooxml/xmlscan.js')}`);
-const { SCENARIOS } = await import(`file://${resolve(ROOT, 'tools/gots-te-qa/fixtures.mjs')}`);
+const { SCENARIOS } = await import(`file://${resolve(ROOT, 'tests/gots-te/fixtures.mjs')}`);
 
 const mapping = JSON.parse(readFileSync(resolve(APP, 'templates/GOTS-TE-V7.0-DCN25-013/mapping.json'), 'utf8'));
 
