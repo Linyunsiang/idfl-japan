@@ -11,6 +11,36 @@
     "author": "IDFL JAPAN"
   },
   {
+    "id": "news-fsc-pfa-panelist-call-20260821",
+    "cat": "fsc",
+    "title": "FSC、Policy for Association（PfA）苦情処理の決定パネリスト・調査員を公募",
+    "body": "FSCは2026年8月21日、Policy for Association（PfA、FSCとの関係方針）に関する苦情処理プロセスを担う決定パネリストおよび調査員を6〜9名募集すると発表しました。PfAは、認証事業者やそのコーポレートグループ、FSC会員が森林およびサプライチェーンにおいて回避すべき「容認できない活動」を定めた方針で、違反が認定された場合には改善条件の設定やFSCシステムからの除名といった措置が取られます。募集する専門分野は、先住民族の権利、人権、労働者の権利（ILOを含む）、森林転換と土地利用変化、高い保護価値（HCV）、サプライチェーンの完全性、違法伐採・違法取引（EUTR等）、林業におけるGMO、企業法務、GIS分析、レピュテーション管理、紛争解決など多岐にわたります。関心のある方は dispute.resolution@fsc.org へ連絡するよう案内されています。",
+    "link": "https://fsc.org/en/newscentre/integrity-and-disputes/contribute-your-expertise-to-fsc-policy-for-association-0",
+    "linkLabel": "FSC公式ニュース",
+    "pinned": false,
+    "date": "2026-08-21",
+    "author": "IDFL JAPAN",
+    "published": true,
+    "createdAt": "2026-08-25T00:48:51.722Z",
+    "updatedAt": "2026-08-25T00:48:51.722Z",
+    "updatedBy": "admin"
+  },
+  {
+    "id": "news-fsc-ifl-brazil-20260818",
+    "cat": "fsc",
+    "title": "FSC、ブラジルの原生林景観（IFL）保護要求事項の改訂版を承認 — 2026年8月18日発効",
+    "body": "FSCは、ブラジルにおける原生林景観（Intact Forest Landscapes：IFL）保護に関する改訂要求事項を承認し、2026年8月18日に発効しました。これはMotion 23/2020の実施における重要な節目で、個々の森林管理単位（FMU）だけを対象とするのではなく、より広い「ランドスケープ（景観）単位」でIFLを捉える手法を導入するものです。ブラジルはカナダ、ペルー、コンゴ共和国と並ぶ試行国の一つに選ばれ、IFLの現状把握とマッピング、リスク分析、将来シナリオの検討、公開協議を経て、FSCインターナショナルおよび方針・基準委員会（PSC）の審査を受けました。ブラジルのIFLの約99％がアマゾン生物群系に位置することを踏まえ、周辺景観の安定度に応じて保護水準を差別化する仕組みが採用されています。また新たに「影響圏（Sphere of Influence：SoI）」の考え方が導入され、認証組織は自らの管理区域を越えた森林保護への貢献が期待されます。",
+    "link": "https://fsc.org/en/newscentre/general-news/revised-ifl-requirements-for-brazilian-forests",
+    "linkLabel": "FSC公式ニュース",
+    "pinned": false,
+    "date": "2026-08-18",
+    "author": "IDFL JAPAN",
+    "published": true,
+    "createdAt": "2026-08-25T00:48:54.916Z",
+    "updatedAt": "2026-08-25T00:48:54.916Z",
+    "updatedBy": "admin"
+  },
+  {
     "id": "news-fsc-regulatory-module-v1-1-20260814",
     "cat": "fsc",
     "title": "FSC、EUDR対応の「Regulatory Module」改訂版を公開 — CoC等7つのアデンダが2026年8月17日発効",
@@ -20,10 +50,10 @@
     "pinned": false,
     "date": "2026-08-14",
     "author": "IDFL JAPAN",
-    "published": false,
+    "published": true,
     "createdAt": "2026-08-18T01:33:42.454Z",
-    "updatedAt": "2026-08-18T01:33:42.454Z",
-    "updatedBy": "auto-crawl"
+    "updatedAt": "2026-08-25T00:48:37.976Z",
+    "updatedBy": "admin"
   },
   {
     "id": "news-fsc-ukraine-risk-assessment-v3-20260814",
@@ -35,10 +65,10 @@
     "pinned": false,
     "date": "2026-08-14",
     "author": "IDFL JAPAN",
-    "published": false,
+    "published": true,
     "createdAt": "2026-08-18T01:33:42.454Z",
-    "updatedAt": "2026-08-18T01:33:42.454Z",
-    "updatedBy": "auto-crawl"
+    "updatedAt": "2026-08-25T00:48:43.590Z",
+    "updatedBy": "admin"
   },
   {
     "id": "news-ghgp-forest-carbon-rfi-20260812",
@@ -50,10 +80,10 @@
     "pinned": false,
     "date": "2026-08-12",
     "author": "IDFL JAPAN",
-    "published": false,
+    "published": true,
     "createdAt": "2026-08-18T01:33:42.454Z",
-    "updatedAt": "2026-08-18T01:33:42.454Z",
-    "updatedBy": "auto-crawl"
+    "updatedAt": "2026-08-25T00:48:47.134Z",
+    "updatedBy": "admin"
   },
   {
     "id": "news-te-annual-report-2025-20260810",
@@ -266,6 +296,21 @@
     "published": true,
     "createdAt": "2026-08-03T07:19:02.271Z",
     "updatedAt": "2026-08-03T07:19:02.271Z",
+    "updatedBy": "admin"
+  },
+  {
+    "id": "news-ghgp-lsr-guidance-20260630",
+    "cat": "others",
+    "title": "GHG Protocol、Land Sector and Removals（LSR）ガイダンスを公開 — LSR基準の実務適用を支援",
+    "body": "GHG Protocol は2026年6月30日、Land Sector and Removals（LSR：土地セクターおよび除去）ガイダンスを公開しました。これは既に公開されているLSR基準（Land Sector and Removals Standard）を補完する実務向け資料で、農業的土地利用に伴う温室効果ガス排出量と、新たなCO2除去技術によるCO2除去量を企業がどのように算定・報告すべきかを具体的に解説しています。繊維・アパレル業界では、綿花やウール、レーヨン原料など土地由来の原材料に関するScope 3算定と、カーボン除去のクレーム取り扱いに関わるため、サプライチェーンのGHG算定を行う企業にとって参照すべき文書となります。なお、GHG Protocol は2026年8月12日から森林炭素算定に関する情報提供依頼（RFI）も実施しており、今後さらに関連指針が整備される見込みです。",
+    "link": "https://ghgprotocol.org/blog/announcement-ghg-protocol-launches-land-sector-and-removals-lsr-guidance-support-lsr-standard",
+    "linkLabel": "GHG Protocol公式",
+    "pinned": false,
+    "date": "2026-06-30",
+    "author": "IDFL JAPAN",
+    "published": true,
+    "createdAt": "2026-08-25T00:48:57.676Z",
+    "updatedAt": "2026-08-25T00:48:57.676Z",
     "updatedBy": "admin"
   },
   {
@@ -502,41 +547,5 @@
     "pinned": false,
     "date": "2025-07-22",
     "author": "IDFL JAPAN"
-  },
-  {
-    "id": "news-fsc-pfa-panelist-call-20260821",
-    "cat": "fsc",
-    "title": "FSC、Policy for Association（PfA）苦情処理の決定パネリスト・調査員を公募",
-    "body": "FSCは2026年8月21日、Policy for Association（PfA、FSCとの関係方針）に関する苦情処理プロセスを担う決定パネリストおよび調査員を6〜9名募集すると発表しました。PfAは、認証事業者やそのコーポレートグループ、FSC会員が森林およびサプライチェーンにおいて回避すべき「容認できない活動」を定めた方針で、違反が認定された場合には改善条件の設定やFSCシステムからの除名といった措置が取られます。募集する専門分野は、先住民族の権利、人権、労働者の権利（ILOを含む）、森林転換と土地利用変化、高い保護価値（HCV）、サプライチェーンの完全性、違法伐採・違法取引（EUTR等）、林業におけるGMO、企業法務、GIS分析、レピュテーション管理、紛争解決など多岐にわたります。関心のある方は dispute.resolution@fsc.org へ連絡するよう案内されています。",
-    "link": "https://fsc.org/en/newscentre/integrity-and-disputes/contribute-your-expertise-to-fsc-policy-for-association-0",
-    "linkLabel": "FSC公式ニュース",
-    "pinned": false,
-    "date": "2026-08-21",
-    "author": "IDFL JAPAN",
-    "published": false
-  },
-  {
-    "id": "news-fsc-ifl-brazil-20260818",
-    "cat": "fsc",
-    "title": "FSC、ブラジルの原生林景観（IFL）保護要求事項の改訂版を承認 — 2026年8月18日発効",
-    "body": "FSCは、ブラジルにおける原生林景観（Intact Forest Landscapes：IFL）保護に関する改訂要求事項を承認し、2026年8月18日に発効しました。これはMotion 23/2020の実施における重要な節目で、個々の森林管理単位（FMU）だけを対象とするのではなく、より広い「ランドスケープ（景観）単位」でIFLを捉える手法を導入するものです。ブラジルはカナダ、ペルー、コンゴ共和国と並ぶ試行国の一つに選ばれ、IFLの現状把握とマッピング、リスク分析、将来シナリオの検討、公開協議を経て、FSCインターナショナルおよび方針・基準委員会（PSC）の審査を受けました。ブラジルのIFLの約99％がアマゾン生物群系に位置することを踏まえ、周辺景観の安定度に応じて保護水準を差別化する仕組みが採用されています。また新たに「影響圏（Sphere of Influence：SoI）」の考え方が導入され、認証組織は自らの管理区域を越えた森林保護への貢献が期待されます。",
-    "link": "https://fsc.org/en/newscentre/general-news/revised-ifl-requirements-for-brazilian-forests",
-    "linkLabel": "FSC公式ニュース",
-    "pinned": false,
-    "date": "2026-08-18",
-    "author": "IDFL JAPAN",
-    "published": false
-  },
-  {
-    "id": "news-ghgp-lsr-guidance-20260630",
-    "cat": "others",
-    "title": "GHG Protocol、Land Sector and Removals（LSR）ガイダンスを公開 — LSR基準の実務適用を支援",
-    "body": "GHG Protocol は2026年6月30日、Land Sector and Removals（LSR：土地セクターおよび除去）ガイダンスを公開しました。これは既に公開されているLSR基準（Land Sector and Removals Standard）を補完する実務向け資料で、農業的土地利用に伴う温室効果ガス排出量と、新たなCO2除去技術によるCO2除去量を企業がどのように算定・報告すべきかを具体的に解説しています。繊維・アパレル業界では、綿花やウール、レーヨン原料など土地由来の原材料に関するScope 3算定と、カーボン除去のクレーム取り扱いに関わるため、サプライチェーンのGHG算定を行う企業にとって参照すべき文書となります。なお、GHG Protocol は2026年8月12日から森林炭素算定に関する情報提供依頼（RFI）も実施しており、今後さらに関連指針が整備される見込みです。",
-    "link": "https://ghgprotocol.org/blog/announcement-ghg-protocol-launches-land-sector-and-removals-lsr-guidance-support-lsr-standard",
-    "linkLabel": "GHG Protocol公式",
-    "pinned": false,
-    "date": "2026-06-30",
-    "author": "IDFL JAPAN",
-    "published": false
   }
 ]
