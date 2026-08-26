@@ -1,16 +1,5 @@
 [
   {
-    "id": "sample-1",
-    "cat": "idfl",
-    "title": "【IDFL JAPAN】2026年8月7日セミナー開催のお知らせ",
-    "body": "大阪・御堂会館にて「IDFL JAPAN サステナビリティ認証セミナー」を開催いたします。GOTS 8.0 移行・MMS 対応・FSC 新規取得を中心に、グループディスカッション形式で実務課題を解決する場です。参加費無料・事前申込制です。",
-    "link": "/",
-    "linkLabel": "セミナー詳細はこちら",
-    "pinned": true,
-    "date": "2026-05-01",
-    "author": "IDFL JAPAN"
-  },
-  {
     "id": "news-1787724150820",
     "cat": "idfl",
     "title": "🌍 2026年インターテキスタイル上海アパレルファブリックスでIDFLに会いましょう！ 🇨🇳✨",
@@ -499,6 +488,26 @@
     "pinned": false,
     "date": "2026-05-06",
     "author": "IDFL JAPAN"
+  },
+  {
+    "id": "sample-1",
+    "cat": "idfl",
+    "title": "【IDFL JAPAN】2026年8月7日セミナー開催のお知らせ",
+    "body": "大阪・御堂会館にて「IDFL JAPAN サステナビリティ認証セミナー」を開催いたします。GOTS 8.0 移行・MMS 対応・FSC 新規取得を中心に、グループディスカッション形式で実務課題を解決する場です。参加費無料・事前申込制です。",
+    "link": "/",
+    "linkLabel": "セミナー詳細はこちら",
+    "pinned": false,
+    "date": "2026-05-01",
+    "author": "IDFL JAPAN",
+    "effectiveDate": "",
+    "tickerText": "",
+    "image": "",
+    "imageAlt": "",
+    "published": true,
+    "showInTicker": true,
+    "createdAt": "2026-08-26T06:03:50.357Z",
+    "updatedAt": "2026-08-26T06:03:58.183Z",
+    "updatedBy": "admin"
   },
   {
     "id": "sample-2",
