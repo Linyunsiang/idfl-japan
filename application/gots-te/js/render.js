@@ -549,13 +549,18 @@ export function stepStandardSpecific(data, ctx) {
 }
 
 /* ------------------------------------------------------------------ *
- * Step 9 — §7 declaration
+ * Step 8 — §7 declaration
+ *
+ * Runs before the final Review & Download step. This is the applicant's
+ * confirmation of the contents; the actual signature and company seal are
+ * applied on paper after the Word document is downloaded.
  * ------------------------------------------------------------------ */
 export function stepDeclaration(data, ctx) {
   const refreshers = [];
   const node = el('div', {},
     el('div', { class: 'declaration-text' },
-      el('p', { text: '署名者は、申請書に記載されたすべての情報が完全に真実であることを確認します。この申請書に故意に虚偽の記載をした場合、認定が取り消される場合があります。' })),
+      el('p', { text: '署名者は、申請書に記載されたすべての情報が完全に真実であることを確認します。この申請書に故意に虚偽の記載をした場合、認定が取り消される場合があります。' }),
+      el('p', { class: 'inline-note', text: 'このステップでご入力いただくのは、公式様式に記載する署名者情報です。実際の署名・押印は、次のステップで申請書（Word）をダウンロードし、印刷したうえで書面にて行っていただきます。' })),
     card('署名情報',
       field({ label: 'Name of Company / 会社名', type: 'text', required: true }, 'declaration.companyName', data.declaration.companyName, ctx),
       field({ label: 'Name and Title of the Signatory / 署名者の氏名と役職', type: 'text', required: true }, 'declaration.signatoryNameTitle', data.declaration.signatoryNameTitle, ctx),
@@ -568,7 +573,8 @@ export function stepDeclaration(data, ctx) {
         field({ label: '申請代表者　連絡先メールアドレス', type: 'email' }, 'declaration.representative.email', data.declaration.representative.email, ctx))),
     el('div', { class: 'notice' },
       el('h4', { text: '署名と社印について' }),
-      el('p', { text: '生成される申請書は「未署名」の状態です。公式様式の Authorized Signature（承認の署名）欄と Company’s Registered Seal/Stamp（社印）欄は、印刷後に手書きの署名と社印を押していただく必要があります。本システムがこの2箇所を自動で埋めることはありません。' })));
+      el('p', { text: '生成される申請書は「未署名」の状態です。公式様式の Authorized Signature（承認の署名）欄と Company’s Registered Seal/Stamp（社印）欄は、印刷後に手書きの署名と社印を押していただく必要があります。本システムがこの2箇所を自動で埋めることはありません。' }),
+      el('p', { text: '次のステップ「入力内容確認・ダウンロード」で、申請書（Word）をダウンロードいただけます。' })));
 
   return { node, refresh: (d) => refreshers.forEach((r) => r(d)) };
 }

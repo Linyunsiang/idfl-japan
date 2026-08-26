@@ -1,5 +1,9 @@
 /**
- * Step 8 — Review.
+ * Step 9 (final) — Review & Download.
+ *
+ * Runs after the declaration step: the applicant has already confirmed and
+ * signed off, so this page is the last thing they see and the only place the
+ * official Word document is produced.
  *
  * Reads the same ApplicationData the form writes; nothing is duplicated here.
  * Every missing item is a button that jumps straight to the offending field.
@@ -53,15 +57,23 @@ function group(title, stepId, status, body, ctx) {
 function buildGate(data, errorCount) {
   const status = el('p', { class: 'inline-note', text: '公式様式を確認しています…' });
   const reasons = el('ul', { class: 'gate-reasons' });
-  const wordBtn = el('button', { type: 'button', class: 'btn-primary', disabled: true }, 'Word (.docx) をダウンロード');
-  const pdfBtn = el('button', { type: 'button', class: 'btn-line', disabled: true, title: 'フェーズ3Bで実装予定' }, 'PDF をダウンロード');
+  const wordBtn = el('button', { type: 'button', class: 'btn-primary', disabled: true }, '申請書（Word）をダウンロード');
 
   const gate = el('div', { class: 'rv-gate' },
     el('h3', { text: '申請書類の生成' }),
     el('p', { text: '入力内容を IDFL 公式様式（IDFLAS-FF-GEN-4100-JP）にそのまま差し込んだ Word 文書を作成します。様式のレイアウト・書式・ヘッダー・社印欄は一切変更されません。' }),
-    el('div', { class: 'rv-gate-btns' }, wordBtn, pdfBtn),
+    el('div', { class: 'rv-gate-btns' }, wordBtn),
     status, reasons,
-    el('p', { class: 'inline-note', text: '※ 生成される書類は未署名です。印刷後、承認の署名と社印をご記入ください。' }));
+    el('div', { class: 'handoff' },
+      el('h4', { text: 'ダウンロード後のお手続き' }),
+      el('p', { text: '申請書（Word）をダウンロード後、内容をご確認のうえ、印刷・署名・押印してください。署名・押印済みの申請書をPDF化し、元のWordファイルと署名済みPDFの両方をIDFLまでご返送ください。' }),
+      el('ol', { class: 'handoff-steps' },
+        el('li', { text: 'Wordファイルの内容を確認' }),
+        el('li', { text: '印刷' }),
+        el('li', { text: '署名・押印' }),
+        el('li', { text: '署名済み書類をPDF化' }),
+        el('li', { text: 'Wordファイル＋署名済みPDFをIDFLへ返送' })),
+      el('p', { class: 'inline-note', text: '※ 生成される書類は未署名です。承認の署名と社印は、印刷後に書面でご記入ください。' })));
 
   wordBtn.addEventListener('click', async () => {
     wordBtn.disabled = true;
@@ -122,7 +134,7 @@ export function stepReview(data, ctx) {
         el('strong', { text: total ? `未入力の必須項目が ${total} 件あります` : 'すべての必須項目が入力されています' }),
         el('p', { text: total
           ? '下の「未入力の項目へ移動」から該当箇所に直接移動できます。すべて入力されるまで申請書類の生成はできません。'
-          : '内容をご確認のうえ、次のステップ（確認・署名）へお進みください。' })),
+          : '内容をご確認のうえ、ページ下部より申請書（Word）をダウンロードしてください。' })),
       v.warnings.length ? el('span', { class: 'rv-badge warn', text: `要確認 ${v.warnings.length} 件` }) : null));
 
     /* ---- missing list ---- */
@@ -242,7 +254,7 @@ export function stepReview(data, ctx) {
     ]));
     node.append(group('認証・コンプライアンス情報', 'compliance', statusOf('compliance'), compBody, ctx));
 
-    /* ---- §7 (step 7 = standard specific) ---- */
+    /* ---- §8–12 standard-specific ---- */
     if (showsRecycling(d) || showsRds(d)) {
       const ssBody = el('div', {});
       if (showsRecycling(d)) {
@@ -272,7 +284,7 @@ export function stepReview(data, ctx) {
       node.append(group('規格別追加情報', 'standardSpecific', statusOf('standardSpecific'), ssBody, ctx));
     }
 
-    /* ---- §9 declaration ---- */
+    /* ---- §7 declaration ---- */
     node.append(group('確認・署名', 'declaration', statusOf('declaration'), kv([
       ['会社名', d.declaration.companyName],
       ['署名者の氏名と役職', d.declaration.signatoryNameTitle],

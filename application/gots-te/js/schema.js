@@ -304,8 +304,12 @@ export const STEPS = [
   { id: 'facilities', no: 5, title: '施設・工程', titleEn: 'Facilities & Processes', section: '§5' },
   { id: 'compliance', no: 6, title: '認証・コンプライアンス情報', titleEn: 'Certification & Compliance', section: '§6' },
   { id: 'standardSpecific', no: 7, title: '規格別追加情報', titleEn: 'Standard-specific Information', section: '§8–12' },
-  { id: 'review', no: 8, title: '入力内容確認', titleEn: 'Review', section: '—' },
-  { id: 'declaration', no: 9, title: '確認・署名', titleEn: 'Declaration', section: '§7' },
+  // Declaration comes before Review on purpose: the applicant confirms and signs
+  // off first, then lands on Review & Download as the final step, where the
+  // official Word document is generated. Changing this array changes the rail
+  // order; engine.visibleSteps() carries the same order for Back/Next.
+  { id: 'declaration', no: 8, title: '確認・署名', titleEn: 'Declaration', section: '§7' },
+  { id: 'review', no: 9, title: '入力内容確認・ダウンロード', titleEn: 'Review & Download', section: '—' },
 ];
 
 /** §1 / §2c share this field list. */

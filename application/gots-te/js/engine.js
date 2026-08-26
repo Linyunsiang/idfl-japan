@@ -376,9 +376,9 @@ export function completion(result) {
   return Math.round((result.requiredFilled / result.requiredTotal) * 100);
 }
 
-/** Which steps are visible. Review + declaration always are. */
+/** Which steps are visible. Declaration + review always are, in that order. */
 export function visibleSteps(d) {
   return ['applicant', 'payment', 'standards', 'products', 'facilities', 'compliance']
     .concat(showsRecycling(d) || showsRds(d) ? ['standardSpecific'] : [])
-    .concat(['review', 'declaration']);
+    .concat(['declaration', 'review']);
 }
