@@ -162,6 +162,37 @@ check("D", "recycling", "materialType none ticked", c, 8, 2, 2, "☒ リサイ�
 for r in (4, 5, 6, 7, 8):
     placeholder("D", "§8 detail skipped when none", f"r{r}", c, 8, r, 2)
 
+# =====================================================================
+# Scenario NODETAIL — the shape the wizard now produces: product CATEGORIES
+#              selected, product DETAIL never entered. Generation must succeed,
+#              the category boxes must be ticked, and the official detail cells
+#              must be left untouched rather than filled with anything invented.
+# =====================================================================
+p, root = load("NODETAIL")
+c = make(root)
+print(f"--- Scenario NODETAIL : {p.split(chr(92))[-1].split('/')[-1]}")
+
+# table 4 rows 4-15 are the 12 fixed categories: c1 = ☒ + label, c2 = detail
+for i in range(12):
+    r = 4 + i
+    check("NODETAIL", "products ticked", f"category {i+1}", c, 4, r, 1, "☒", "in")
+    placeholder("NODETAIL", "products detail blank", f"category {i+1}", c, 4, r, 2)
+
+# rows 16-23 are the 「その他」 rows: name written, detail left alone
+check("NODETAIL", "その他", "row 1 ticked + name", c, 4, 16, 1, "☒ その他その他カテゴリー A")
+check("NODETAIL", "その他", "row 2 ticked + name", c, 4, 17, 1, "☒ その他その他カテゴリー B")
+placeholder("NODETAIL", "その他 detail blank", "row 1", c, 4, 16, 2)
+placeholder("NODETAIL", "その他 detail blank", "row 2", c, 4, 17, 2)
+# unused 「その他」 rows stay completely untouched
+for i in range(2, 8):
+    check("NODETAIL", "その他 unused rows", f"row {i+1} unticked", c, 4, 16 + i, 1, "☐ その他", "in")
+
+# the rest of the application is unaffected by the products change
+check("NODETAIL", "unaffected", "applicant company", c, 2, 2, 2,
+      "TEST COMPANY - DO NOT USE 株式会社テスト繊維（NODETAIL）")
+check("NODETAIL", "unaffected", "GOTS selected", c, 3, 26, 1, "☒", "in")
+check("NODETAIL", "unaffected", "GOTS initial ballot", c, 3, 26, 2, "☒ Initial", "in")
+
 # ---- report ----
 print()
 combos = []

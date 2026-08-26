@@ -313,16 +313,13 @@ export function stepProducts(data, ctx) {
     cb.checked = data.products.categories[c.key].selected;
     cb.addEventListener('change', () => ctx.onChange(`products.categories.${c.key}.selected`, cb.checked));
     item.append(el('label', { class: 'prod-pick', for: cid }, cb, el('span', { text: c.label })));
-
-    const detail = field({ label: '製品詳細（該当するものを全てリストアップしてください）', type: 'textarea', required: true, rows: 2 },
-      `products.categories.${c.key}.detail`, data.products.categories[c.key].detail, ctx);
-    item.append(detail);
     grid.append(item);
 
+    // Product detail is deliberately not collected here — it is submitted later
+    // via the separate Product List. The official template's detail cells are
+    // left blank rather than filled with anything invented.
     refreshers.push((d) => {
-      const on = d.products.categories[c.key].selected;
-      detail.hidden = !on;
-      item.classList.toggle('is-on', on);
+      item.classList.toggle('is-on', d.products.categories[c.key].selected);
     });
   }
 
@@ -334,9 +331,7 @@ export function stepProducts(data, ctx) {
         el('div', { class: 'repeat-head' },
           el('span', { class: 'repeat-title', text: `その他 ${i + 1}` }),
           el('button', { type: 'button', class: 'btn-ghost', onClick: () => ctx.removeItem('products.others', i) }, '削除')),
-        el('div', { class: 'grid-2' },
-          field({ label: '製品カテゴリー名', type: 'text', required: true }, `products.others.${i}.name`, o.name, ctx),
-          field({ label: '製品詳細', type: 'text' }, `products.others.${i}.detail`, o.detail, ctx)));
+        field({ label: '製品カテゴリー名', type: 'text', required: true }, `products.others.${i}.name`, o.name, ctx));
       othersList.append(row);
     });
   };
@@ -353,7 +348,8 @@ export function stepProducts(data, ctx) {
   });
 
   const node = el('div', {},
-    el('p', { class: 'step-intro', text: '認証を希望する製品カテゴリーを選択してください。選択したカテゴリーにのみ詳細欄が表示されます。' }),
+    el('p', { class: 'step-intro', text: '認証を希望する製品カテゴリーを選択してください。該当するものをすべて選択できます。' }),
+    el('p', { class: 'note-inline', text: '製品詳細は本申請フォームでは不要です。詳細は後日、Product List にてご提出ください。' }),
     card('製品カテゴリー', grid),
     card('その他の製品カテゴリー', othersList, addOther, overflow));
 

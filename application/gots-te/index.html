@@ -41,6 +41,32 @@
   </div>
 </header>
 
+<!-- What happens after the applicant downloads, signs and returns the form.
+     Collapsible so it does not push the wizard down on every step; open by
+     default because the question it answers is the first one people ask. -->
+<details class="flow" id="afterFlow" open>
+  <summary class="flow-summary">
+    <span class="flow-title">オンライン申請後の流れ</span>
+    <span class="flow-hint">開閉</span>
+  </summary>
+  <div class="flow-body">
+    <p class="flow-lead">オンライン申請書を作成・ダウンロード後、署名・ご返送いただいた後の流れは以下の通りです。</p>
+    <ol class="flow-steps">
+      <li>IDFL より監査同意書兼見積書を発行</li>
+      <li>同意書兼見積書サインバック</li>
+      <li>IDFL より請求書を発行</li>
+      <li><span class="flow-actor">御社</span>ご入金</li>
+      <li>IDFL よりポータルサイトのサインアップコード付与</li>
+      <li><span class="flow-actor">御社</span>ポータルサイトに監査書類をアップロード</li>
+      <li>監査日確定</li>
+      <li>監査（リモート監査）</li>
+      <li>NCR 修正</li>
+      <li>正式ライセンスを発行</li>
+    </ol>
+    <p class="flow-note">本フォームで作成できるのは<strong>署名前の申請書</strong>です。署名と社印は書面でご対応ください。</p>
+  </div>
+</details>
+
 <div class="banner info" id="restoreBanner" hidden>
   <span>前回の下書きを復元しました（保存日時：<span id="restoreTime"></span>）。</span>
   <button type="button" class="btn-ghost" id="restoreDismiss">閉じる</button>
@@ -85,6 +111,22 @@
   <p><code>python -m http.server 8080</code></p>
   <p>そのうえで <code>http://localhost:8080/application/gots-te/</code> を開いてください。（本番環境では通常の HTTP 配信となるため、この問題は発生しません。）</p>
 </div>
+
+<script>
+  /* Remember whether the applicant collapsed the "after you apply" panel, so it
+     does not re-expand and push the wizard down on every reload. Its own key —
+     nothing to do with the draft. Wrapped because storage can throw in private
+     windows, and the panel must still work when it does. */
+  (function () {
+    var KEY = 'idfl.gotsTe.afterFlowOpen';
+    var el = document.getElementById('afterFlow');
+    if (!el) return;
+    try { if (localStorage.getItem(KEY) === '0') el.open = false; } catch (e) {}
+    el.addEventListener('toggle', function () {
+      try { localStorage.setItem(KEY, el.open ? '1' : '0'); } catch (e) {}
+    });
+  })();
+</script>
 
 <script type="module" src="./js/app.js"></script>
 <script>

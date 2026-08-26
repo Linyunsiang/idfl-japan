@@ -191,13 +191,18 @@ export function stepReview(data, ctx) {
     node.append(group('認証規格', 'standards', statusOf('standards'), stdBody, ctx));
 
     /* ---- §4 ---- */
-    const prodRows = PRODUCT_CATEGORIES
+    // Categories only — product detail is submitted later via the Product List.
+    const prodNames = PRODUCT_CATEGORIES
       .filter((c) => d.products.categories[c.key].selected)
-      .map((c) => [c.label, d.products.categories[c.key].detail]);
-    d.products.others.filter((o) => o.selected).forEach((o, i) =>
-      prodRows.push([`その他 ${i + 1}：${dash(o.name)}`, o.detail]));
-    node.append(group('製品', 'products', statusOf('products'),
-      prodRows.length ? kv(prodRows) : el('p', { class: 'rv-empty', text: '製品カテゴリーが選択されていません。' }), ctx));
+      .map((c) => c.label);
+    d.products.others.filter((o) => o.selected)
+      .forEach((o, i) => prodNames.push(`その他 ${i + 1}：${dash(o.name)}`));
+    const prodBody = prodNames.length
+      ? el('div', {},
+          kv([['選択した製品カテゴリー', prodNames.join('、')]]),
+          el('p', { class: 'rv-note', text: '製品詳細は本申請フォームでは提出不要です。詳細は後日、Product List にてご提出ください。' }))
+      : el('p', { class: 'rv-empty', text: '製品カテゴリーが選択されていません。' });
+    node.append(group('製品', 'products', statusOf('products'), prodBody, ctx));
 
     /* ---- §5 ---- */
     const facBody = el('div', {},

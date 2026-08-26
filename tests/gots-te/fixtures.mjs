@@ -417,6 +417,33 @@ export function scenarioMaxInitial() {
   return d;
 }
 
+/* -------- NODETAIL — categories only, no product detail anywhere -----------
+ *
+ * The online application collects product CATEGORIES only; detail is submitted
+ * later via the separate Product List. This fixture is the shape the wizard now
+ * actually produces: every category ticked, every detail string empty, and the
+ * 「その他」 rows carrying a name but no detail.
+ *
+ * What it must prove:
+ *   1. generation is NOT blocked by missing product detail
+ *   2. the category checkboxes are still ticked in the official template
+ *   3. the official detail cells are left as their untouched placeholder —
+ *      nothing is invented to fill them
+ */
+export function scenarioNoProductDetail() {
+  const d = baseApplication('NODETAIL');
+  pickStandard(d, 'gots', 'initial');
+  for (const k of Object.keys(d.products.categories)) {
+    d.products.categories[k] = { selected: true, detail: '' };
+  }
+  d.products.others = [
+    { selected: true, name: 'その他カテゴリー A', detail: '' },
+    { selected: true, name: 'その他カテゴリー B', detail: '' },
+  ];
+  d.chemicalCompliance.usesChemicalsGots = 'no';
+  return d;
+}
+
 export const SCENARIOS = {
   A: { label: 'GOTS Initial', build: scenarioA },
   B: { label: 'GOTS + OCS', build: scenarioB },
@@ -427,5 +454,6 @@ export const SCENARIOS = {
   FULL: { label: 'Maximum population', build: scenarioFull },
   MAX: { label: 'True maximum — 7 standards (renewal) + all 4 RDS sections at capacity', build: scenarioMax },
   MAXINIT: { label: 'True maximum — 7 standards (initial), no prior CB', build: scenarioMaxInitial },
+  NODETAIL: { label: 'Product categories only — no product detail (Product List submitted separately)', build: scenarioNoProductDetail },
   OVERFLOW: { label: 'Overflow (7 facilities) — must be refused', build: scenarioOverflow },
 };
