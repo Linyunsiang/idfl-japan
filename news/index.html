@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!-- /news/ is an alias for the existing archive at /idfl_news.html, which is the
+     page already linked from the site header, footer and homepage. Rather than
+     duplicate that list (and split the category filter and search across two
+     pages), this forwards to it.
+
+     A static file rather than a host redirect on purpose: this repo is served by
+     BOTH Netlify (netlify.toml) and Cloudflare Workers (wrangler.jsonc), and a
+     rule in netlify.toml would not apply on Cloudflare. noindex + canonical keep
+     it out of search results so it never competes with the real archive. -->
+<meta name="robots" content="noindex,follow" />
+<link rel="canonical" href="https://idfl-japan.com/idfl_news.html" />
+<meta http-equiv="refresh" content="0; url=/idfl_news.html" />
+<title>最新情報｜IDFL JAPAN</title>
+</head>
+<body>
+<p>最新情報一覧へ移動しています… <a href="/idfl_news.html">移動しない場合はこちら</a></p>
+<script>location.replace('/idfl_news.html');</script>
+</body>
+</html>

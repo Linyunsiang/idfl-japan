@@ -1,5 +1,25 @@
 [
   {
+    "id": "seminar-2026-osaka-thanks",
+    "cat": "idfl",
+    "title": "2026年8月7日 IDFL JAPAN サステナビリティ認証セミナー 開催御礼",
+    "tickerText": "8月7日セミナーは終了しました。開催レポートを公開しています",
+    "body": "2026年8月7日、大阪・御堂会館にて「IDFL JAPAN サステナビリティ認証セミナー」を開催いたしました。多くの皆様にご参加いただき、誠にありがとうございました。\n\nGOTS 8.0 への移行、MMS 対応、FSC 新規取得を中心に、グループディスカッション形式で実務課題を共有いたしました。当日の様子と各セッションの内容は、開催レポートページにて公開しています。",
+    "date": "2026-08-08",
+    "effectiveDate": "",
+    "image": "",
+    "imageAlt": "",
+    "link": "/seminar-2026-osaka.html",
+    "linkLabel": "開催レポートを見る",
+    "published": true,
+    "showInTicker": true,
+    "pinned": false,
+    "author": "IDFL JAPAN",
+    "createdAt": "2026-08-26T03:02:32.599Z",
+    "updatedAt": "2026-08-26T03:02:32.599Z",
+    "updatedBy": "admin"
+  },
+  {
     "id": "sample-1",
     "cat": "idfl",
     "title": "【IDFL JAPAN】2026年8月7日セミナー開催のお知らせ",

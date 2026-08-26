@@ -1197,8 +1197,21 @@ function isNew(dateStr) {
     return (now - d) < 30 * 24 * 60 * 60 * 1000; // within 30 days
 }
 
+// Announcement text is admin-entered and must never reach innerHTML raw.
+function esc(v) {
+    return String(v == null ? '' : v)
+        .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+        .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+}
+function detailUrl(p) { return '/news/detail.html?id=' + encodeURIComponent(p.id); }
+// 変更適用日 — only rendered when the record actually carries one.
+function effLabel(p) {
+    const m = /^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(String(p.effectiveDate || ''));
+    return m ? ('適用：' + m[1] + '.' + m[2].padStart(2,'0') + '.' + m[3].padStart(2,'0')) : '';
+}
+
 function autoLink(text) {
-    const escaped = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const escaped = String(text == null ? '' : text).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     return escaped.replace(/(https?:\/\/[^\s<]+)/g,
         '<a href="$1" target="_blank" rel="noopener" style="color:var(--brand-400);text-decoration:underline;">$1</a>');
 }
@@ -1213,8 +1226,8 @@ function renderCards() {
         const matchPub = isAdmin || p.published !== false;
         const matchCat = currentCat === 'all' || p.cat === currentCat;
         const matchSearch = !search ||
-            p.title.toLowerCase().includes(search) ||
-            p.body.toLowerCase().includes(search);
+            String(p.title || '').toLowerCase().includes(search) ||
+            String(p.body || '').toLowerCase().includes(search);
         return matchPub && matchCat && matchSearch;
     });
 
@@ -1262,13 +1275,14 @@ function renderCards() {
                             : ''}
                         <span style="font-size:12px;color:rgba(196,218,245,0.7);">${formatDate(p.date)}</span>
                     </div>
-                    <h2 style="font-size:clamp(18px,2.8vw,24px);color:white;margin:0 0 12px;line-height:1.45;font-weight:700;">${p.title}</h2>
-                    <p style="font-size:15px;color:rgba(196,218,245,0.88);line-height:1.9;margin:0 0 20px;">${autoLink(p.body)}</p>
-                    ${p.link ? `<a href="${p.link}" target="_blank" rel="noopener"
+                    <h2 style="font-size:clamp(18px,2.8vw,24px);color:white;margin:0 0 12px;line-height:1.45;font-weight:700;">${esc(p.title)}</h2>
+                    ${effLabel(p) ? `<p style="font-size:12.5px;font-weight:700;color:#fff;background:rgba(255,255,255,0.16);border-radius:999px;padding:3px 12px;display:inline-block;margin:0 0 12px;">${esc(effLabel(p))}</p>` : ''}
+                    <p style="font-size:15px;color:rgba(196,218,245,0.88);line-height:1.9;margin:0 0 20px;">${autoLink(p.tickerText || p.body)}</p>
+                    <a href="${esc(detailUrl(p))}"
                         style="display:inline-flex;align-items:center;gap:6px;background:var(--brand-500);color:white;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:700;text-decoration:none;transition:background .2s;"
                         onmouseover="this.style.background='var(--brand-400)'" onmouseout="this.style.background='var(--brand-500)'">
-                        ${p.linkLabel || '詳細はこちら'} <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
-                    </a>` : ''}
+                        詳細を見る <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
+                    </a>
                     ${adminBtns}
                 </div>
             </div>`;
@@ -1284,13 +1298,14 @@ function renderCards() {
                     : '<span class="badge-old">過去</span>'}
                 <span style="font-size:12px;color:#94A3B8;margin-left:auto;">${formatDate(p.date)}</span>
             </div>
-            <h3 style="font-size:16px;color:var(--brand-900);margin:0 0 9px;line-height:1.5;font-weight:700;">${p.title}</h3>
-            <p style="font-size:13.5px;color:#475569;line-height:1.85;margin:0 0 14px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">${p.body}</p>
-            ${p.link ? `<a href="${p.link}" target="_blank" rel="noopener"
+            <h3 style="font-size:16px;color:var(--brand-900);margin:0 0 9px;line-height:1.5;font-weight:700;">${esc(p.title)}</h3>
+            ${effLabel(p) ? `<p style="font-size:12px;font-weight:700;color:var(--brand-700);background:var(--brand-050);border-radius:999px;padding:2px 10px;display:inline-block;margin:0 0 9px;">${esc(effLabel(p))}</p>` : ''}
+            <p style="font-size:13.5px;color:#475569;line-height:1.85;margin:0 0 14px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">${esc(p.tickerText || p.body)}</p>
+            <a href="${esc(detailUrl(p))}"
                 style="display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:700;color:var(--brand-500);text-decoration:none;"
                 onmouseover="this.style.color='var(--brand-700)'" onmouseout="this.style.color='var(--brand-500)'">
-                ${p.linkLabel || '詳細はこちら'} <i data-lucide="arrow-right" style="width:13px;height:13px;"></i>
-            </a>` : ''}
+                詳細を見る <i data-lucide="arrow-right" style="width:13px;height:13px;"></i>
+            </a>
             ${adminBtns}
         </div>`;
     }).join('');
@@ -1433,17 +1448,19 @@ document.addEventListener('DOMContentLoaded', () => {
 // ハンバーガーメニュー開閉
         const hamburger = document.getElementById('hamburger');
         const mobileMenu = document.getElementById('mobileMenu');
-        hamburger.addEventListener('click', () => {
-            hamburger.classList.toggle('open');
-            mobileMenu.classList.toggle('open');
-        });
-        // メニュー項目クリックで閉じる
-        mobileMenu.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', () => {
-                hamburger.classList.remove('open');
-                mobileMenu.classList.remove('open');
+        if (hamburger && mobileMenu) {
+            hamburger.addEventListener('click', () => {
+                hamburger.classList.toggle('open');
+                mobileMenu.classList.toggle('open');
             });
-        });
+            // メニュー項目クリックで閉じる
+            mobileMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    hamburger.classList.remove('open');
+                    mobileMenu.classList.remove('open');
+                });
+            });
+        }
     </script>
 
 <!-- ============ FOOTER (synced with index) ============ -->

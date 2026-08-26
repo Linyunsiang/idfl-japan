@@ -215,6 +215,14 @@
 
 <div class="ov" id="pov"><div class="modal"><h3 id="povTitle"></h3><div id="povBody"></div><div class="acts" id="povActs"></div></div></div>
 
+<!-- お知らせプレビュー。DATA['news'] の下書きをそのまま描画するため、公開前の
+     内容も確認できます。このモーダルを開いても公開はされません。 -->
+<div class="ov" id="nov"><div class="modal" style="max-width:720px">
+  <h3>プレビュー（未公開の下書きを含む）</h3>
+  <div id="novBody"></div>
+  <div class="acts"><button class="btn btn-g" onclick="document.getElementById('nov').classList.remove('open')">閉じる</button></div>
+</div></div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -223,18 +231,34 @@ const PUBLISH_URL='/.netlify/functions/publish';
 const SCHEMAS={
   news:{label:'お知らせ',file:'/data/news.json',
     fields:[
-      {k:'id',t:'text',label:'ID',req:true,hint:'例: news-xxxx-YYYYMMDD（一意）'},
-      {k:'cat',t:'select',label:'カテゴリ',opts:['idfl','gots','te','fsc','others']},
-      {k:'title',t:'text',label:'タイトル'},
-      {k:'body',t:'textarea',label:'本文'},
-      {k:'link',t:'text',label:'リンクURL'},
-      {k:'linkLabel',t:'text',label:'リンク表示名'},
-      {k:'pinned',t:'checkbox',label:'先頭に固定'},
-      {k:'date',t:'date',label:'日付'},
+      {k:'id',t:'text',label:'ID',req:true,hint:'例: news-xxxx-YYYYMMDD（一意）。詳細ページのURLに使われます'},
+      {k:'cat',t:'select',label:'カテゴリー',opts:['idfl','gots','te','fsc','others']},
+      {k:'title',t:'text',label:'タイトル',req:true},
+      {k:'date',t:'date',label:'公開日',req:true},
+      {k:'body',t:'textarea',label:'詳細説明',req:true,hint:'空行で段落が分かれます。HTMLタグは使えません（そのまま文字として表示されます）'},
+      {k:'effectiveDate',t:'date',label:'変更適用日（任意）',hint:'要求事項が適用される日。未入力なら表示されません'},
+      {k:'tickerText',t:'text',label:'トップ表示用短文（任意）',hint:'トップページの「最新情報」に出る短い文。未入力ならタイトルを使用します'},
+      {k:'image',t:'logo',label:'メイン画像（任意）'},
+      {k:'imageAlt',t:'text',label:'画像ALTテキスト（任意）',hint:'画像の内容を説明する文。未入力ならタイトルを使用します'},
+      {k:'link',t:'text',label:'公式情報URL（任意）',hint:'https://… または /files/…'},
+      {k:'linkLabel',t:'text',label:'リンク表示名（任意）',hint:'未入力なら「公式情報を見る」'},
       {k:'author',t:'text',label:'投稿者',def:'IDFL JAPAN'},
       {k:'published',t:'checkbox',label:'公開する',def:true},
+      {k:'showInTicker',t:'checkbox',label:'トップページの「最新情報」に表示する',def:true},
+      {k:'pinned',t:'checkbox',label:'一覧の先頭に固定'},
     ],
-    title:e=>e.title||'(無題)',sub:e=>[(e.published===false?'⛔未公開':''),e.date,e.cat].filter(Boolean).join(' · '),
+    title:e=>e.title||'(無題)',
+    sub:e=>{
+      const tags=[(e.published===false?'［下書き］':'［公開］')];
+      // TOP reflects what the homepage rotator will actually do: it needs the
+      // record to be public AND not opted out of the ticker.
+      if(e.published!==false&&e.showInTicker!==false)tags.push('［TOP］');
+      if(e.pinned)tags.push('［固定］');
+      const eff=/^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(String(e.effectiveDate||''));
+      return [tags.join(' '),(e.cat||''),(e.date||''),
+              (eff?'適用：'+eff[1]+'.'+eff[2].padStart(2,'0')+'.'+eff[3].padStart(2,'0'):''),
+              (e.image?'🖼画像':'')].filter(Boolean).join(' · ');
+    },
     idp:'news',sort:(a,b)=>(b.pinned?1:0)-(a.pinned?1:0)||String(b.date||'').localeCompare(String(a.date||''))},
 
   schedule:{label:'展示会・セミナー',file:'/schedule-data.json',
@@ -368,6 +392,7 @@ function render(){
       <button class="mini" onclick="move(${i},1)" ${i===arr.length-1?'disabled':''}>▼</button>
     </div>
     <div class="main"><div class="t">${esc(s.title(e))}</div><div class="s">${esc(s.sub(e))}</div></div>
+    ${CUR==='news'?`<button class="btn btn-g" onclick="previewNews(${i})">プレビュー</button>`:''}
     <button class="btn btn-g" onclick="openEdit(${i})">編集</button>
     <button class="btn btn-g" onclick="dupItem(${i})">複製</button>
     <button class="btn btn-d" onclick="delItem(${i})">削除</button>
@@ -383,6 +408,76 @@ function updateDirty(){
 function move(i,dir){const a=DATA[CUR];const j=i+dir;if(j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];markDirty();render();}
 const PREVIEW={news:'/idfl_news.html',schedule:'/seminar_schedule.html',downloads:'/download.html',factories:'/certified-factories.html',qa:'/qa.html'};
 function previewCur(){window.open(PREVIEW[CUR]||'/','_blank','noopener');}
+
+/** Render one draft announcement exactly as the site would show it.
+    Reads DATA['news'] (the unpublished working copy) - opening this never
+    publishes anything. Everything is written with textContent, so a draft
+    body cannot inject markup into the admin page. */
+function previewNews(i){
+  const e=(DATA.news||[])[i]; if(!e)return;
+  const box=document.getElementById('novBody');
+  box.replaceChildren();
+  const mk=(tag,css,txt)=>{const n=document.createElement(tag);if(css)n.style.cssText=css;if(txt!=null)n.textContent=txt;return n;};
+  const jp=v=>{const m=/^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(String(v||''));return m?(m[1]+'年'+Number(m[2])+'月'+Number(m[3])+'日'):'';};
+  const dot=v=>{const m=/^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(String(v||''));return m?(m[1]+'.'+m[2].padStart(2,'0')+'.'+m[3].padStart(2,'0')):'';};
+
+  const pub=e.published!==false, top=pub&&e.showInTicker!==false;
+  box.appendChild(mk('p','font-size:12px;color:#6b7280;margin-bottom:10px',
+    (pub?'公開':'下書き（サイトには表示されません）')+' ／ トップ「最新情報」：'+(top?'表示':'非表示')));
+
+  box.appendChild(mk('p','font-size:11px;font-weight:700;color:#6b7280;margin:14px 0 5px','トップページ「最新情報」の表示'));
+  if(top){
+    const bar=mk('div','background:linear-gradient(90deg,#042258,#0d4383);color:#fff;border-radius:8px;padding:11px 14px;display:flex;gap:12px;align-items:baseline;flex-wrap:wrap');
+    bar.appendChild(mk('span','font-size:11px;font-weight:700;background:rgba(255,255,255,.14);border-radius:999px;padding:3px 9px','最新情報'));
+    bar.appendChild(mk('span','font-size:12px;color:#cfe0f5;font-family:monospace',dot(e.date)));
+    bar.appendChild(mk('span','font-size:13.5px;font-weight:700;flex:1;min-width:0',e.tickerText||e.title||''));
+    bar.appendChild(mk('span','font-size:12px;color:#cfe0f5;font-weight:700','詳細を見る →'));
+    box.appendChild(bar);
+    if(!e.tickerText)box.appendChild(mk('p','font-size:11px;color:#9ca3af;margin-top:5px','※ 短文が未入力のため、タイトルを表示しています'));
+  }else{
+    box.appendChild(mk('div','border:1px dashed #d1d5db;border-radius:8px;padding:11px 14px;font-size:12px;color:#9ca3af',
+      pub?'「最新情報」に表示しない設定です':'下書きのため表示されません'));
+  }
+
+  box.appendChild(mk('p','font-size:11px;font-weight:700;color:#6b7280;margin:18px 0 5px','詳細ページの表示'));
+  const card=mk('div','border:1px solid var(--line);border-radius:10px;padding:16px');
+  card.appendChild(mk('span','display:inline-block;font-size:11px;font-weight:700;background:#eef3fb;color:#1255A0;border-radius:999px;padding:3px 10px;margin-bottom:9px',
+    ({idfl:'IDFL 公告',gots:'GOTS',te:'Textile Exchange',fsc:'FSC',others:'お知らせ'})[e.cat]||'お知らせ'));
+  card.appendChild(mk('div','font-size:17px;font-weight:700;line-height:1.5;margin-bottom:12px',e.title||'(タイトル未入力)'));
+
+  const dates=mk('div','display:flex;gap:22px;flex-wrap:wrap;margin-bottom:12px');
+  if(jp(e.date)){const b=mk('div');b.appendChild(mk('div','font-size:10.5px;color:#6b7280;font-weight:700','公開日'));b.appendChild(mk('div','font-size:13.5px',jp(e.date)));dates.appendChild(b);}
+  if(jp(e.effectiveDate)){const b=mk('div','background:#eef3fb;border:1px solid #c7d9f0;border-radius:8px;padding:6px 13px');b.appendChild(mk('div','font-size:10.5px;color:#1255A0;font-weight:700','変更適用日'));b.appendChild(mk('div','font-size:13.5px;color:#1255A0;font-weight:700',jp(e.effectiveDate)));dates.appendChild(b);}
+  if(dates.childNodes.length)card.appendChild(dates);
+
+  if(e.image){
+    const im=document.createElement('img');
+    im.src=e.image; im.alt=e.imageAlt||e.title||'';
+    im.style.cssText='max-width:100%;border-radius:8px;border:1px solid var(--line);margin-bottom:12px';
+    card.appendChild(im);
+    card.appendChild(mk('p','font-size:11px;color:#9ca3af;margin-bottom:10px','ALT：'+(e.imageAlt||'(未入力 — タイトルを使用します)')));
+  }
+
+  if(String(e.body||'').trim()){
+    card.appendChild(mk('div','font-size:11px;font-weight:700;color:#6b7280;margin-bottom:5px','詳細'));
+    String(e.body).trim().split(/\n\s*\n/).forEach(t=>{ if(t.trim())card.appendChild(mk('p','font-size:13.5px;line-height:1.9;color:#374151;margin-bottom:9px',t.trim())); });
+  }else{
+    card.appendChild(mk('p','font-size:12px;color:#dc2626','※ 詳細説明が未入力です'));
+  }
+
+  if(e.link){
+    card.appendChild(mk('div','font-size:11px;font-weight:700;color:#6b7280;margin:12px 0 5px','公式情報'));
+    const ok=/^https?:\/\//i.test(e.link)||(e.link.charAt(0)==='/'&&e.link.charAt(1)!=='/');
+    card.appendChild(mk('div','font-size:13px;color:'+(ok?'#1255A0':'#dc2626')+';font-weight:700;word-break:break-all',
+      (e.linkLabel||'公式情報を見る')+' → '+e.link+(ok?'':'（URLの形式が不正です）')));
+  }
+  card.appendChild(mk('p','font-size:11.5px;color:#9ca3af;margin-top:12px','発信：'+(e.author||'IDFL JAPAN')));
+  box.appendChild(card);
+
+  box.appendChild(mk('p','font-size:11px;color:#9ca3af;margin-top:12px',
+    '公開URL：/news/detail.html?id='+(e.id||'')));
+  document.getElementById('nov').classList.add('open');
+}
 function dupItem(i){const a=DATA[CUR];const c=JSON.parse(JSON.stringify(a[i]));c.id=(SCHEMAS[CUR].idp||'item')+'-'+Date.now();const now=new Date().toISOString();c.createdAt=now;c.updatedAt=now;a.splice(i+1,0,c);markDirty();render();toast('複製しました');}
 function delItem(i){const a=DATA[CUR];if(!confirm('「'+SCHEMAS[CUR].title(a[i])+'」を削除しますか？（公開するまで確定しません）'))return;a.splice(i,1);markDirty();render();}
 
@@ -407,21 +502,35 @@ async function uploadLogo(file, base){
     var b64=await new Promise(function(res,rej){var r=new FileReader();r.onload=function(){res(String(r.result).split(',')[1]);};r.onerror=function(){rej(new Error('読込失敗'));};r.readAsDataURL(file);});
     var r=await fetch('/.netlify/functions/upload-file',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({password:PW,filename:file.name,contentBase64:b64})});
     var j=await r.json().catch(function(){return {};});
-    if(r.ok&&j.ok){ document.getElementById(base).value=j.path; var p=document.getElementById(base+'_prev'); if(p){p.src=j.path;p.style.display='';} if(txt)txt.textContent='✅ アップロード完了（クリックで変更）'; markDirty(); }
+    if(r.ok&&j.ok){ document.getElementById(base).value=j.path; var p=document.getElementById(base+'_prev'); if(p){p.src=j.path;p.style.display='';} var pa=document.getElementById(base+'_path'); if(pa)pa.textContent=j.path; if(txt)txt.textContent='✅ アップロード完了（クリックで変更）'; markDirty(); }
     else{ if(txt)txt.textContent='失敗しました'; toast('ロゴのアップロード失敗: '+(j.error||('HTTP '+r.status))); }
   }catch(e){ toast('ロゴのアップロード失敗: '+e.message); }
+}
+/** Clear an image reference. The file in /files/ is left alone on purpose:
+    it is shared storage and another record may still use it. */
+function clearImageField(id){
+  var h=document.getElementById(id); if(!h)return;
+  h.value='';
+  var pv=document.getElementById(id+'_prev'); if(pv){pv.removeAttribute('src');pv.style.display='none';}
+  var tx=document.getElementById(id+'_txt'); if(tx)tx.textContent='クリックして選択（PNG/JPG/WebP/SVG・最大4MB）';
+  var pa=document.getElementById(id+'_path'); if(pa)pa.textContent='';
+  markDirty();
 }
 function newItem(s){const o={};s.fields.forEach(f=>{o[f.k]=f.def!=null?f.def:(f.t==='checkbox'?false:(f.t==='multi'?[]:''));});o.id=s.idp+'-'+Date.now();return o;}
 function fieldHtml(f,v){
   const id='fld_'+f.k;const hint=f.hint?`<div class="hint">${esc(f.hint)}</div>`:'';
   if(f.t==='logo'){
-    return `<label class="f">${f.label}
-      <div id="${id}_box" style="border:1.5px dashed var(--line);border-radius:8px;padding:12px;text-align:center;cursor:pointer;margin-top:5px;display:flex;align-items:center;gap:10px;justify-content:center">
-        <img id="${id}_prev" alt="ロゴプレビュー" style="max-height:40px;max-width:110px;object-fit:contain;${v?'':'display:none'}" ${v?`src="${esc(v)}"`:''}>
-        <span id="${id}_txt" style="font-size:12px;color:#6b7280">${v?'クリックで変更':'クリックしてロゴを選択（PNG/JPG/WebP/SVG・最大4MB）'}</span>
+    return `<div class="f"><span style="display:block;margin-bottom:5px">${f.label}</span>
+      <div id="${id}_box" style="border:1.5px dashed var(--line);border-radius:8px;padding:12px;text-align:center;cursor:pointer;display:flex;align-items:center;gap:10px;justify-content:center">
+        <img id="${id}_prev" alt="プレビュー" style="max-height:64px;max-width:140px;object-fit:contain;${v?'':'display:none'}" ${v?`src="${esc(v)}"`:''}>
+        <span id="${id}_txt" style="font-size:12px;color:#6b7280">${v?'クリックで変更':'クリックして選択（PNG/JPG/WebP/SVG・最大4MB）'}</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:6px">
+        <button type="button" class="btn btn-g" style="font-size:12px;padding:4px 10px" onclick="clearImageField('${id}')">画像を外す</button>
+        <span id="${id}_path" style="font-size:11px;color:#9ca3af;word-break:break-all">${esc(v||'')}</span>
       </div>
       <input type="file" id="${id}_file" accept="image/png,image/jpeg,image/webp,image/svg+xml" style="display:none">
-      <input type="hidden" id="${id}" value="${esc(v||'')}">${hint}</label>`;
+      <input type="hidden" id="${id}" value="${esc(v||'')}">${hint}</div>`;
   }
   if(f.t==='checkbox')return `<label class="f cb"><input type="checkbox" id="${id}" ${v?'checked':''}> ${f.label}</label>`;
   if(f.t==='textarea')return `<label class="f">${f.label}${f.req?' <span class=req>*</span>':''}<textarea id="${id}">${esc(v)}</textarea>${hint}</label>`;

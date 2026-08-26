@@ -482,11 +482,55 @@ section{position:relative;}
   .c-btn--ghost:hover{ background:#eef3fb; }
   .c-link{ color:var(--c-accent); font-weight:700; text-decoration:none; font-size:14px; }
   .c-link:hover{ text-decoration:underline; }
-  /* thanks banner */
-  .c-banner{ background:linear-gradient(90deg,#042258,#0d4383); color:#fff; }
-  .c-banner__in{ max-width:1200px; margin:0 auto; padding:14px 24px; display:flex; gap:14px; align-items:center; flex-wrap:wrap; font-size:14px; }
-  .c-banner__x{ margin-left:auto; background:rgba(255,255,255,.15); border:none; color:#fff; border-radius:8px; padding:6px 12px; cursor:pointer; font:inherit; font-size:12px; }
-  .c-banner a{ color:#cfe0f5; font-weight:700; }
+  /* ---------- 最新情報 rotator ---------------------------------------------
+     Replaces the hard-coded seminar banner that used to sit here. Same blue
+     bar, same position; the content now comes from data/news.json.
+     Items are stacked in one grid cell so the bar's height is the tallest
+     item's height and never changes as it rotates — no layout jump.        */
+  .c-lu{ background:linear-gradient(90deg,#042258,#0d4383); color:#fff; }
+  .c-lu__in{ max-width:1200px; margin:0 auto; padding:12px 24px; display:flex; gap:16px; align-items:center; }
+  .c-lu__label{
+    flex:none; align-self:center;
+    font-size:12px; font-weight:700; letter-spacing:.06em;
+    padding:4px 10px; border-radius:999px;
+    background:rgba(255,255,255,.14); border:1px solid rgba(255,255,255,.22);
+  }
+  .c-lu__view{ flex:1; min-width:0; display:grid; }
+  /* every item shares one grid cell */
+  .c-lu__item{
+    grid-area:1/1; display:flex; align-items:baseline; gap:14px; min-width:0;
+    color:#fff; text-decoration:none; font-size:14px;
+    opacity:0; visibility:hidden; transition:opacity .45s var(--ease-io,ease);
+  }
+  .c-lu__item.is-on{ opacity:1; visibility:visible; }
+  .c-lu__date{ flex:none; font-family:var(--f-mono); font-size:12.5px; color:#cfe0f5; }
+  .c-lu__title{
+    flex:1; min-width:0; font-weight:700; line-height:1.55;
+    overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
+  }
+  .c-lu__more{ flex:none; font-size:12.5px; color:#cfe0f5; font-weight:700; white-space:nowrap; }
+  .c-lu__item:hover .c-lu__title{ text-decoration:underline; }
+  .c-lu__item:focus-visible{ outline:2px solid #fff; outline-offset:3px; border-radius:4px; }
+  .c-lu__dots{ flex:none; display:flex; gap:6px; align-items:center; }
+  .c-lu__dot{
+    width:7px; height:7px; padding:0; border-radius:50%; cursor:pointer;
+    background:rgba(255,255,255,.32); border:none; transition:background .2s;
+  }
+  .c-lu__dot.is-on{ background:#fff; }
+  .c-lu__dot:focus-visible{ outline:2px solid #fff; outline-offset:2px; }
+  @media (max-width:760px){
+    .c-lu__in{ padding:10px 16px; gap:10px; align-items:flex-start; }
+    .c-lu__label{ align-self:flex-start; font-size:11px; padding:3px 8px; }
+    .c-lu__item{ display:grid; grid-template-columns:1fr; gap:3px; align-items:start; }
+    .c-lu__title{
+      white-space:normal; font-size:13.5px; line-height:1.5;
+      display:-webkit-box; -webkit-line-clamp:2; -webkit-box-orient:vertical; overflow:hidden;
+    }
+    .c-lu__dots{ align-self:flex-start; margin-top:5px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .c-lu__item{ transition:none; }
+  }
   /* hero */
   .c-hero{ padding:clamp(56px,7vw,104px) 0 0; }
   .c-hero__inner{ max-width:1000px; }
@@ -1225,14 +1269,18 @@ html:not(.js) .jstep__rule::before{ transform:scaleX(1)!important; }
 
 <main>
 
-<!-- Seminar 終了 感謝バナー（不要になれば #thanksBanner ブロックを削除するだけ） -->
-<div class="c-banner" id="thanksBanner">
-  <div class="c-banner__in">
-    <span>🎗</span>
-    <span>2026年8月7日のIDFL JAPANセミナーは終了しました。多くの皆様にご参加いただき、誠にありがとうございました。 <a href="/seminar-2026-osaka.html">開催レポートを見る →</a></span>
-    <button class="c-banner__x" onclick="document.getElementById('thanksBanner').remove()" aria-label="閉じる">閉じる</button>
+<!-- 最新情報 / Latest Updates.
+     Content comes from data/news.json (admin -> お知らせ tab), not from markup.
+     The seminar thank-you message that used to be hard-coded here is now the
+     news record `seminar-2026-osaka-thanks`, so there is one source of truth
+     and one bar. Hidden until at least one eligible item is found. -->
+<section class="c-lu" id="latestUpdates" aria-label="最新情報" hidden>
+  <div class="c-lu__in">
+    <span class="c-lu__label">最新情報</span>
+    <div class="c-lu__view" id="luView"></div>
+    <div class="c-lu__dots" id="luDots" hidden></div>
   </div>
-</div>
+</section>
 
 <!-- Section 1: Hero -->
 <section class="c-hero" aria-label="ヒーロー">
@@ -1615,6 +1663,121 @@ html:not(.js) .jstep__rule::before{ transform:scaleX(1)!important; }
     </div>
   </div>
 </section>
+
+<!-- 最新情報 rotator.
+     Built entirely with DOM APIs (textContent / createElement); no innerHTML is
+     used anywhere in this block, so admin-entered titles can never inject
+     markup into the homepage. -->
+<script>
+(function(){
+  var SECTION=document.getElementById('latestUpdates');
+  var VIEW=document.getElementById('luView');
+  var DOTS=document.getElementById('luDots');
+  if(!SECTION||!VIEW||!DOTS)return;
+
+  var MAX=5, PERIOD=5000;
+  var reduced=window.matchMedia('(prefers-reduced-motion: reduce)');
+
+  function fmt(d){
+    var p=String(d||'').split('-');
+    return p.length>=3?(p[0]+'.'+p[1]+'.'+p[2]):String(d||'');
+  }
+  // An item is public when it is not explicitly unpublished. This mirrors the
+  // rule the rest of the site already uses (`published !== false`), so legacy
+  // records that predate the `published` flag keep behaving exactly as they do
+  // today instead of silently vanishing from the homepage.
+  function isPublic(p){ return p && p.published!==false; }
+  function eligible(p){ return isPublic(p) && p.showInTicker!==false && p.id; }
+
+  fetch('/data/news.json',{cache:'no-cache'})
+    .then(function(r){ return r.ok?r.json():[]; })
+    .then(function(d){
+      var list=(Array.isArray(d)?d:(d&&d.posts)||[]).filter(eligible);
+      list.sort(function(x,y){ return String(y.date||'').localeCompare(String(x.date||'')); });
+      list=list.slice(0,MAX);
+      if(!list.length)return;               // nothing eligible -> bar stays hidden
+      build(list);
+      SECTION.hidden=false;
+    })
+    .catch(function(){ /* offline: leave the bar hidden rather than empty */ });
+
+  function build(list){
+    var items=list.map(function(p,i){
+      var a=document.createElement('a');
+      a.className='c-lu__item'+(i===0?' is-on':'');
+      a.href='/news/detail.html?id='+encodeURIComponent(p.id);
+      if(i!==0)a.setAttribute('aria-hidden','true');
+
+      var dt=document.createElement('span');
+      dt.className='c-lu__date';
+      dt.textContent=fmt(p.date);
+
+      var ti=document.createElement('span');
+      ti.className='c-lu__title';
+      // tickerText is the short homepage line; fall back to the full title.
+      ti.textContent=p.tickerText||p.title||'';
+
+      var mo=document.createElement('span');
+      mo.className='c-lu__more';
+      mo.textContent='詳細を見る →';
+
+      a.appendChild(dt); a.appendChild(ti); a.appendChild(mo);
+      VIEW.appendChild(a);
+      return a;
+    });
+
+    if(items.length<2)return;               // single item: no rotation, no dots
+
+    var dots=list.map(function(p,i){
+      var b=document.createElement('button');
+      b.type='button';
+      b.className='c-lu__dot'+(i===0?' is-on':'');
+      b.setAttribute('aria-label',(i+1)+'件目のお知らせを表示');
+      b.addEventListener('click',function(){ show(i); restart(); });
+      DOTS.appendChild(b);
+      return b;
+    });
+    DOTS.hidden=false;
+
+    var cur=0, timer=null, held=false;
+
+    function show(n){
+      items[cur].classList.remove('is-on');
+      items[cur].setAttribute('aria-hidden','true');
+      dots[cur].classList.remove('is-on');
+      cur=(n+items.length)%items.length;
+      items[cur].classList.add('is-on');
+      items[cur].removeAttribute('aria-hidden');
+      dots[cur].classList.add('is-on');
+    }
+    function tick(){ show(cur+1); }
+    function start(){
+      // Auto-advance is motion. Under prefers-reduced-motion the bar holds on
+      // one item and the dots become the way to read the rest.
+      if(reduced.matches||held)return;
+      stop(); timer=setInterval(tick,PERIOD);
+    }
+    function stop(){ if(timer){ clearInterval(timer); timer=null; } }
+    function restart(){ stop(); start(); }
+    function hold(){ held=true; stop(); }
+    function release(){ held=false; start(); }
+
+    SECTION.addEventListener('mouseenter',hold);
+    SECTION.addEventListener('mouseleave',release);
+    SECTION.addEventListener('focusin',hold);
+    SECTION.addEventListener('focusout',function(e){
+      if(!SECTION.contains(e.relatedTarget))release();
+    });
+    // Don't animate a bar nobody is looking at.
+    document.addEventListener('visibilitychange',function(){
+      document.hidden?stop():start();
+    });
+    if(reduced.addEventListener)reduced.addEventListener('change',function(){ restart(); });
+
+    start();
+  }
+})();
+</script>
 
 <script>
 (function(){
