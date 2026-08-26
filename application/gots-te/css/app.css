@@ -308,6 +308,34 @@ button:disabled{opacity:.45;cursor:not-allowed;}
 .gate-reasons li{font-size:12.5px;color:var(--danger);line-height:1.7;}
 .gate-reasons:empty{display:none;}
 
+/* ---------- post-download handoff -------------------------------------------
+   What the applicant does with the Word file once it is on their machine.
+   Sits inside .rv-gate, so it reuses the card's tokens and adds no new colour
+   language; the numbers come from a CSS counter to keep the markup a plain
+   semantic <ol>.                                                             */
+.handoff{
+  margin-top:18px;padding-top:16px;
+  border-top:1px solid var(--hairline);
+}
+.handoff h4{font-size:13.5px;margin-bottom:8px;color:var(--ink);}
+.handoff>p{font-size:13px;color:var(--ink-soft);line-height:1.85;max-width:76ch;}
+.handoff-steps{
+  list-style:none;counter-reset:handoff;
+  margin:14px 0 12px;display:grid;gap:6px;
+}
+.handoff-steps li{
+  counter-increment:handoff;
+  display:flex;align-items:flex-start;gap:10px;
+  font-size:13px;line-height:1.6;color:var(--ink-soft);
+}
+.handoff-steps li::before{
+  content:counter(handoff);
+  flex:none;width:21px;height:21px;
+  display:inline-flex;align-items:center;justify-content:center;
+  border-radius:50%;background:var(--accent);color:#fff;
+  font-family:var(--f-mono);font-size:11px;font-weight:700;
+}
+
 /* ---------- 申請後の流れ ----------------------------------------------------
    A collapsible timeline that sits between the app header and the wizard.
    Uses the existing card, hairline and accent tokens — no new design language.
