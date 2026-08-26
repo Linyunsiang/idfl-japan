@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Title and description are placeholders: the record is only known after
+     data/news.json loads, so boot() rewrites both from the record it finds.
+     Crawlers that run JS pick up the real values; those that do not still get
+     a meaningful, non-empty default rather than an empty tag. -->
+<title>最新情報｜IDFL JAPAN</title>
+<meta name="description" content="IDFL JAPAN の最新情報・お知らせページです。認証規格の改訂、要求事項の変更、セミナー情報などをご案内しています。" />
+<meta property="og:type" content="article" />
+<meta property="og:site_name" content="IDFL JAPAN" />
+<meta property="og:locale" content="ja_JP" />
+<meta property="og:title" content="最新情報｜IDFL JAPAN" />
+<meta property="og:description" content="IDFL JAPAN の最新情報・お知らせページです。" />
+<meta property="og:image" content="https://idfl-japan.com/ogp.png" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<style>
+:root{
+  --bg:#ffffff;
+  --bg-soft:#f6f6f4;
+  --ink:#17171b;
+  --ink-soft:#3c3c43;
+  --muted:#74747c;
+  --faint:#a0a0a8;
+  --hairline:rgba(23,23,27,.12);
+  --hairline-2:rgba(23,23,27,.08);
+  --hairline-strong:rgba(23,23,27,.28);
+  --accent:#1255A0;
+  --accent-ink:#ffffff;
+  --accent-soft:color-mix(in srgb, var(--accent) 7%, #fff);
+  --maxw:1240px;
+  --gut:clamp(20px,5.2vw,72px);
+  --f-sans:"Meiryo UI", Meiryo, "Yu Gothic UI", "Yu Gothic", "Segoe UI",
+           "Hiragino Kaku Gothic ProN", "Hiragino Sans",
+           "Microsoft JhengHei", "PingFang TC", system-ui, -apple-system, sans-serif;
+  --f-display:"Zen Kaku Gothic New", var(--f-sans);
+  --f-mono:"Space Mono", ui-monospace, "SFMono-Regular", monospace;
+}
+*{box-sizing:border-box;}
+html{-webkit-text-size-adjust:100%;}
+body{
+  margin:0;font-family:var(--f-sans);background:var(--bg);color:var(--ink);
+  font-weight:400;line-height:1.78;letter-spacing:.01em;
+  font-feature-settings:"palt" 1;-webkit-font-smoothing:antialiased;
+}
+img{display:block;max-width:100%;}
+a{color:inherit;text-decoration:none;}
+ul,ol,dl,dd{margin:0;padding:0;list-style:none;}
+h1,h2,h3,p{margin:0;}
+.wrap{max-width:var(--maxw);margin:0 auto;padding-inline:var(--gut);width:100%;}
+
+/* ---------- header / footer: same structure and tokens as the homepage ---- */
+.site-header{
+  position:sticky;top:0;z-index:50;
+  background:color-mix(in srgb,var(--bg) 86%,transparent);
+  backdrop-filter:saturate(160%) blur(14px);
+  border-bottom:1px solid var(--hairline-2);
+}
+.bar{
+  max-width:1340px;margin:0 auto;padding:16px var(--gut);
+  display:flex;align-items:center;justify-content:space-between;gap:20px;
+}
+.brand{display:flex;align-items:center;gap:12px;}
+.brand-logo{height:34px;width:auto;object-fit:contain;}
+.brand-name{font-size:14px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink);}
+.bar-right{display:flex;align-items:center;gap:12px;}
+.nav-btn-secondary{
+  display:inline-flex;align-items:center;padding:9px 16px;border-radius:8px;
+  border:1px solid var(--accent);color:var(--accent);
+  font-size:13px;font-weight:700;transition:background .25s,color .25s;
+}
+.nav-btn-secondary:hover{background:var(--accent);color:#fff;}
+.site-footer{border-top:1px solid var(--hairline);padding-block:clamp(48px,6vw,72px);margin-top:clamp(56px,8vw,96px);}
+.footer-grid{display:grid;grid-template-columns:auto 1fr auto;gap:clamp(28px,4vw,64px);align-items:start;}
+.footer-links{display:flex;flex-wrap:wrap;gap:10px 28px;align-content:start;}
+.footer-links a{font-size:13.5px;color:var(--muted);transition:color .25s;}
+.footer-links a:hover{color:var(--accent);}
+.footer-copy{font-size:12px;color:var(--faint);line-height:1.7;text-align:right;letter-spacing:.02em;}
+.site-footer .brand-logo{height:30px;}
+@media (max-width:860px){
+  .footer-grid{grid-template-columns:1fr;gap:30px;}
+  .footer-copy{text-align:left;}
+  .brand-name{display:none;}
+}
+
+/* ---------- article ------------------------------------------------------- */
+.na{ padding-top:clamp(32px,5vw,56px); }
+.na-crumb{ font-size:13px;color:var(--muted);margin-bottom:22px; }
+.na-crumb a{ color:var(--accent);font-weight:700; }
+.na-crumb a:hover{ text-decoration:underline; }
+
+.na-art{ max-width:820px; }
+.na-cat{
+  display:inline-block;font-size:12px;font-weight:700;letter-spacing:.06em;
+  padding:4px 12px;border-radius:999px;
+  background:var(--accent-soft);color:var(--accent);border:1px solid color-mix(in srgb,var(--accent) 22%,#fff);
+  margin-bottom:16px;
+}
+.na-title{
+  font-family:var(--f-display);
+  font-size:clamp(23px,3.4vw,34px);line-height:1.42;font-weight:700;
+  letter-spacing:-.01em;margin-bottom:24px;
+}
+
+/* Dates. 公開日 is plain metadata; 変更適用日 is boxed so it reads as
+   something the applicant must diary — but in the house blue, not a red
+   alert, because an upcoming requirement is information, not an error. */
+.na-dates{ display:flex;flex-wrap:wrap;gap:14px 32px;align-items:flex-start;margin-bottom:30px; }
+.na-date dt{ font-size:11.5px;letter-spacing:.1em;color:var(--muted);font-weight:700;margin-bottom:3px; }
+.na-date dd{ font-size:15px;font-family:var(--f-mono);color:var(--ink); }
+.na-date--eff{
+  padding:10px 18px;border-radius:10px;
+  background:var(--accent-soft);border:1px solid color-mix(in srgb,var(--accent) 24%,#fff);
+}
+.na-date--eff dt{ color:var(--accent); }
+.na-date--eff dd{ color:var(--accent);font-weight:700; }
+
+.na-fig{ margin:0 0 30px; }
+.na-fig img{ width:100%;height:auto;border-radius:12px;border:1px solid var(--hairline-2); }
+
+.na-h2{
+  font-size:15px;font-weight:700;letter-spacing:.04em;color:var(--ink);
+  padding-bottom:8px;margin:34px 0 16px;border-bottom:1px solid var(--hairline);
+}
+.na-body p{ font-size:15.5px;line-height:2;color:var(--ink-soft);margin-bottom:1.1em; }
+.na-body p:last-child{ margin-bottom:0; }
+
+.na-src a{
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:14.5px;font-weight:700;color:var(--accent);
+  border:1px solid var(--accent);border-radius:8px;padding:11px 20px;
+  transition:background .25s,color .25s;
+}
+.na-src a:hover{ background:var(--accent);color:#fff; }
+
+.na-attr{
+  margin-top:34px;padding-top:18px;border-top:1px solid var(--hairline-2);
+  font-size:13px;color:var(--muted);
+}
+.na-back{ margin-top:34px; }
+.na-back a{
+  display:inline-flex;align-items:center;gap:8px;font-size:14px;font-weight:700;color:var(--accent);
+}
+.na-back a:hover{ text-decoration:underline; }
+
+/* ---------- states -------------------------------------------------------- */
+.na-state{ max-width:640px;padding:44px 0 12px; }
+.na-state h1{ font-family:var(--f-display);font-size:clamp(20px,3vw,27px);margin-bottom:14px;line-height:1.5; }
+.na-state p{ font-size:15px;color:var(--muted);line-height:1.95;margin-bottom:26px; }
+
+@media (max-width:640px){
+  .na-dates{ gap:12px 20px; }
+  .na-title{ font-size:22px; }
+  .na-body p{ font-size:15px; }
+}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="bar">
+    <a class="brand" href="/">
+      <img src="/IDFL-Logo.png" alt="IDFL JAPAN" class="brand-logo" />
+      <span class="brand-name">IDFL JAPAN</span>
+    </a>
+    <nav class="bar-right" aria-label="主要メニュー">
+      <a class="nav-btn-secondary" href="/idfl_news.html">最新情報一覧</a>
+      <a class="nav-btn-secondary" href="/application/gots-te/">オンライン申請</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap na">
+  <p class="na-crumb"><a href="/">ホーム</a> ／ <a href="/idfl_news.html">最新情報</a></p>
+  <div id="host" aria-live="polite">
+    <div class="na-state"><p>読み込んでいます…</p></div>
+  </div>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap footer-grid">
+    <a class="brand" href="/">
+      <img src="/IDFL-Logo.png" alt="IDFL JAPAN" class="brand-logo" />
+      <span class="brand-name">IDFL JAPAN</span>
+    </a>
+    <nav class="footer-links">
+      <a href="/seminar_schedule.html">開催予定のセミナー</a>
+      <a href="/past_seminar_v2.html">過去のセミナー</a>
+      <a href="/download.html">資料ダウンロード</a>
+      <a href="https://idfl.com/ja/idfl-japan/">会社概要</a>
+      <a href="/idfl_news.html">お知らせ</a>
+      <a href="/converter.html">変換ツール</a>
+    </nav>
+    <p class="footer-copy">© 2026 IDFL JAPAN<br />International Down and Feather Laboratory</p>
+  </div>
+</footer>
+
+<!-- Rendering is done entirely with createElement / textContent. Nothing from
+     data/news.json is ever assigned to innerHTML, so an announcement body
+     cannot inject markup or script into this page. -->
+<script>
+(function(){
+  var CAT={idfl:'IDFL 公告',gots:'GOTS',te:'Textile Exchange',fsc:'FSC',others:'お知らせ'};
+  var host=document.getElementById('host');
+
+  function el(tag,cls,text){
+    var n=document.createElement(tag);
+    if(cls)n.className=cls;
+    if(text!=null)n.textContent=text;
+    return n;
+  }
+  /** YYYY-MM-DD -> 2026年8月26日. Returns '' for anything unparseable. */
+  function jpDate(v){
+    var m=/^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(String(v||''));
+    return m?(m[1]+'年'+Number(m[2])+'月'+Number(m[3])+'日'):'';
+  }
+  /** Only same-origin paths and http(s) links are allowed to become hrefs. */
+  function safeUrl(u){
+    u=String(u||'').trim();
+    if(/^https?:\/\//i.test(u))return u;
+    if(u.charAt(0)==='/'&&u.charAt(1)!=='/')return u;
+    return '';
+  }
+  function setMeta(sel,val){
+    var n=document.querySelector(sel);
+    if(n&&val)n.setAttribute('content',val);
+  }
+  function isPublic(p){ return p && p.published!==false; }
+
+  function notFound(msg){
+    host.replaceChildren();
+    var s=el('div','na-state');
+    s.appendChild(el('h1',null,'お知らせが見つかりませんでした'));
+    s.appendChild(el('p',null,msg||'指定されたお知らせは、公開が終了したか、URLが正しくない可能性があります。最新情報一覧から他のお知らせをご覧いただけます。'));
+    var back=el('div','na-back');
+    var a=el('a',null,'最新情報一覧へ戻る →');
+    a.href='/idfl_news.html';
+    back.appendChild(a);
+    s.appendChild(back);
+    host.appendChild(s);
+    document.title='お知らせが見つかりません｜IDFL JAPAN';
+  }
+
+  function render(p){
+    host.replaceChildren();
+    var art=el('article','na-art');
+
+    art.appendChild(el('span','na-cat',CAT[p.cat]||'お知らせ'));
+    art.appendChild(el('h1','na-title',p.title||''));
+
+    /* ---- dates: 公開日 always, 変更適用日 only when present ---- */
+    var dates=el('div','na-dates');
+    var pub=jpDate(p.date);
+    if(pub){
+      var d1=el('dl','na-date');
+      d1.appendChild(el('dt',null,'公開日'));
+      d1.appendChild(el('dd',null,pub));
+      dates.appendChild(d1);
+    }
+    var eff=jpDate(p.effectiveDate);
+    if(eff){
+      var d2=el('dl','na-date na-date--eff');
+      d2.appendChild(el('dt',null,'変更適用日'));
+      d2.appendChild(el('dd',null,eff));
+      dates.appendChild(d2);
+    }
+    if(dates.childNodes.length)art.appendChild(dates);
+
+    /* ---- image: no empty space reserved when absent ---- */
+    var src=safeUrl(p.image);
+    if(src){
+      var fig=el('figure','na-fig');
+      var img=el('img');
+      img.src=src;
+      img.loading='lazy';
+      img.decoding='async';
+      // imageAlt is the accessible description; fall back to the title so the
+      // image is never announced as an unlabelled graphic.
+      img.alt=p.imageAlt||p.title||'';
+      fig.appendChild(img);
+      art.appendChild(fig);
+    }
+
+    /* ---- body: plain text, blank line = new paragraph ---- */
+    var body=String(p.body||'').trim();
+    if(body){
+      art.appendChild(el('h2','na-h2','詳細'));
+      var wrap=el('div','na-body');
+      body.split(/\n\s*\n/).forEach(function(para){
+        var t=para.replace(/\s+$/,'');
+        if(t)wrap.appendChild(el('p',null,t));
+      });
+      art.appendChild(wrap);
+    }
+
+    /* ---- official source ---- */
+    var link=safeUrl(p.link);
+    if(link){
+      art.appendChild(el('h2','na-h2','公式情報'));
+      var sw=el('div','na-src');
+      var a=el('a',null,(p.linkLabel||'公式情報を見る')+' →');
+      a.href=link;
+      if(/^https?:/i.test(link)){ a.target='_blank'; a.rel='noopener noreferrer'; }
+      sw.appendChild(a);
+      art.appendChild(sw);
+    }
+
+    art.appendChild(el('p','na-attr','発信：'+(p.author||'IDFL JAPAN')));
+
+    var back=el('div','na-back');
+    var ba=el('a',null,'最新情報一覧へ戻る →');
+    ba.href='/idfl_news.html';
+    back.appendChild(ba);
+    art.appendChild(back);
+
+    host.appendChild(art);
+
+    /* ---- SEO: rewrite title/description from the record ---- */
+    var t=(p.title||'最新情報')+'｜IDFL JAPAN';
+    document.title=t;
+    var desc=(p.tickerText||body||'').replace(/\s+/g,' ').slice(0,120);
+    setMeta('meta[name="description"]',desc);
+    setMeta('meta[property="og:title"]',t);
+    setMeta('meta[property="og:description"]',desc);
+    if(src)setMeta('meta[property="og:image"]',/^https?:/i.test(src)?src:('https://idfl-japan.com'+src));
+    var can=document.createElement('link');
+    can.rel='canonical';
+    can.href='https://idfl-japan.com/news/detail.html?id='+encodeURIComponent(p.id);
+    document.head.appendChild(can);
+  }
+
+  var id=new URLSearchParams(location.search).get('id');
+  if(!id){ notFound('お知らせが指定されていません。最新情報一覧からお選びください。'); return; }
+
+  fetch('/data/news.json',{cache:'no-cache'})
+    .then(function(r){ if(!r.ok)throw new Error('HTTP '+r.status); return r.json(); })
+    .then(function(d){
+      var list=Array.isArray(d)?d:(d&&d.posts)||[];
+      var p=list.filter(isPublic).find(function(x){ return String(x.id)===String(id); });
+      if(!p){ notFound(); return; }
+      render(p);
+    })
+    .catch(function(){
+      notFound('お知らせを読み込めませんでした。時間をおいて再度お試しください。');
+    });
+})();
+</script>
+
+</body>
+</html>
