@@ -87,6 +87,13 @@ def placeholder(scn, area, label, cell, tbl, row, col):
     (PASS if ok else FAIL).append((scn, area, label, f"t{tbl}r{row}c{col}", v[:34], "untouched"))
 
 
+def blankcell(scn, area, label, cell, tbl, row, col):
+    """Deliberately emptied: no placeholder, no N/A, no invented text — nothing at all."""
+    v = cell(tbl, row, col)
+    ok = v == ""
+    (PASS if ok else FAIL).append((scn, area, label, f"t{tbl}r{row}c{col}", repr(v)[:34], "'' (blank)"))
+
+
 # =====================================================================
 # Scenario E — RDS selected: §§9 and 11 populated, §§10 and 12 empty,
 #              §8 recycling must stay untouched (GRS/RCS not selected)
@@ -161,6 +168,47 @@ check("D", "previous CB", "renewal date", c, 3, 45, 4, "2026-03-31")
 check("D", "recycling", "materialType none ticked", c, 8, 2, 2, "☒ リサイクル材料なし", "in")
 for r in (4, 5, 6, 7, 8):
     placeholder("D", "§8 detail skipped when none", f"r{r}", c, 8, r, 2)
+
+# =====================================================================
+# Scenario NODETAIL — the shape the wizard now produces: product CATEGORIES
+#              selected, product DETAIL never entered. Generation must succeed,
+#              the category boxes must be ticked, and the official detail cells
+#              must be left untouched rather than filled with anything invented.
+# =====================================================================
+p, root = load("NODETAIL")
+c = make(root)
+print(f"--- Scenario NODETAIL : {p.split(chr(92))[-1].split('/')[-1]}")
+
+# table 4 rows 4-15 are the 12 fixed categories: c1 = ☒ + label, c2 = detail
+for i in range(12):
+    r = 4 + i
+    check("NODETAIL", "products ticked", f"category {i+1}", c, 4, r, 1, "☒", "in")
+    blankcell("NODETAIL", "products detail blank", f"category {i+1}", c, 4, r, 2)
+
+# rows 16-23 are the 「その他」 rows: name written, detail left alone
+check("NODETAIL", "その他", "row 1 ticked + name", c, 4, 16, 1, "☒ その他その他カテゴリー A")
+check("NODETAIL", "その他", "row 2 ticked + name", c, 4, 17, 1, "☒ その他その他カテゴリー B")
+blankcell("NODETAIL", "その他 detail blank", "row 1", c, 4, 16, 2)
+blankcell("NODETAIL", "その他 detail blank", "row 2", c, 4, 17, 2)
+# unused 「その他」 rows stay completely untouched
+for i in range(2, 8):
+    check("NODETAIL", "その他 unused rows", f"row {i+1} unticked", c, 4, 16 + i, 1, "☐ その他", "in")
+
+# scope proof 1: an UNSELECTED その他 row keeps its placeholder — the rule only
+# fires for rows that are actually selected
+for i in range(2, 8):
+    placeholder("NODETAIL", "unselected rows untouched", f"その他 row {i+1} detail", c, 4, 16 + i, 2)
+# scope proof 2: blanking is scoped to PRODUCT detail only. This applicant answered
+# "no" to the GOTS chemical question, so the chemical-count cell is blank input —
+# it must still show the master's placeholder, not an emptied cell.
+placeholder("NODETAIL", "scope: non-product blanks untouched", "GOTS chemical count", c, 6, 15, 2)
+placeholder("NODETAIL", "scope: non-product blanks untouched", "GRS chemical count", c, 6, 17, 2)
+
+# the rest of the application is unaffected by the products change
+check("NODETAIL", "unaffected", "applicant company", c, 2, 2, 2,
+      "TEST COMPANY - DO NOT USE 株式会社テスト繊維（NODETAIL）")
+check("NODETAIL", "unaffected", "GOTS selected", c, 3, 26, 1, "☒", "in")
+check("NODETAIL", "unaffected", "GOTS initial ballot", c, 3, 26, 2, "☒ Initial", "in")
 
 # ---- report ----
 print()

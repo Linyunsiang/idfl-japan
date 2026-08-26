@@ -755,6 +755,27 @@ html:not(.js) .trace-verified{opacity:1!important;transform:none!important;}
   .nav-btn-key{ font-size:12.5px; padding:8px 13px; }
 }
 
+/* ---- header: online application CTA ------------------------------------
+   Same pill geometry as the existing nav buttons, filled so it reads as the
+   primary action, and exempt from the 1200px hide rule so it reaches phones. */
+.nav-btn-apply{ background:var(--accent); color:var(--accent-ink); border-color:var(--accent); font-weight:700; }
+.nav-btn-apply:hover{ background:#0d4383; border-color:#0d4383; color:#fff; }
+@media (max-width:1200px){
+  .nav-btn-apply{ display:inline-flex; }
+}
+/* Below 700px the logotype, two filled pills and the menu button stop fitting
+   side by side. Drop the wordmark first — the logo still identifies the site —
+   so both actions survive rather than one being pushed out. */
+@media (max-width:700px){
+  .brand-name{ display:none; }
+}
+@media (max-width:420px){
+  .nav-btn-apply{ font-size:12.5px; padding:8px 13px; }
+  .bar{ gap:10px; }
+}
+/* menu overlay: make the application entry the one that reads first */
+.menu-link-apply{ font-weight:700; color:var(--accent); }
+
 /* menu: demoted reference links */
 .menu-secondary{ margin-top:clamp(32px,5vw,52px); padding-top:24px; border-top:1px solid var(--hairline); }
 .menu-secondary__links{ display:flex; flex-wrap:wrap; gap:10px 28px; }
@@ -1131,6 +1152,10 @@ html:not(.js) .jstep__rule::before{ transform:scaleX(1)!important; }
       <a class="nav-btn-secondary" href="#tools" data-scroll>ツール</a>
       <a class="nav-btn-secondary" href="https://portal.idfl.com/sign-in" target="_blank" rel="noopener">お客様ポータル</a>
       <a class="nav-btn-secondary" href="https://idfl.com/ja/idfl-japan/">お問い合わせ</a>
+      <!-- Primary action: the online application. Solid fill and always visible
+           (it survives the 1200px rule that hides the other nav pills) because
+           applying is the highest-intent task a visitor arrives here to do. -->
+      <a class="nav-btn-secondary nav-btn-apply" href="/application/gots-te/">オンライン申請</a>
       <button class="menu-btn" id="menuBtn" aria-label="メニュー" aria-expanded="false">
         <span class="menu-btn-lines"><i></i><i></i></span>
         <span class="menu-btn-label">メニュー</span>
@@ -1148,6 +1173,7 @@ html:not(.js) .jstep__rule::before{ transform:scaleX(1)!important; }
     <nav class="menu-grid">
       <div class="menu-col">
         <p class="menu-col-title">認証</p>
+        <a class="menu-link-apply" href="/application/gots-te/">オンライン申請（GOTS / Textile Exchange）</a>
         <a href="https://idfl.com/ja/services/audits-certifications/global-organic-textile-standard-gots/">GOTS 認証</a>
         <a href="https://idfl.com/ja/services/audits-certifications/global-recycled-standard-grs/">GRS 認証</a>
         <a href="https://idfl.com/ja/services/audits-certifications/organic-content-standard-ocs/">OCS 認証</a>

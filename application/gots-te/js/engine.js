@@ -254,8 +254,9 @@ export function validate(d) {
     errors.push({ step: 'products', path: 'products', label: '製品カテゴリー', message: '製品カテゴリーを1つ以上選択してください' });
   else requiredFilled++;
 
-  for (const c of chosenCats)
-    req('products', `products.categories.${c.key}.detail`, `${c.label} の製品詳細`, d.products.categories[c.key].detail);
+  // Product detail is NOT required: the online application collects categories
+  // only, and the detail is submitted later via the separate Product List. The
+  // official template's detail cells are simply left blank.
   d.products.others.forEach((o, i) => {
     if (!o.selected) return;
     req('products', `products.others.${i}.name`, `その他 ${i + 1} の製品カテゴリー名`, o.name);
