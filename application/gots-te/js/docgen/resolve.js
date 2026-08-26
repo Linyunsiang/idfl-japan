@@ -7,7 +7,10 @@
  */
 
 import { getPath } from '../engine.js';
-import { editText, editCombo, editCheckbox, editBallot } from '../ooxml/docxpatch.js';
+import { editText, editCombo, editCheckbox, editBallot, clearText } from '../ooxml/docxpatch.js';
+
+/** §4 fixed-category detail paths, e.g. products.categories.fabric.detail */
+const PRODUCT_CATEGORY_DETAIL = /^products\.categories\.([A-Za-z0-9_]+)\.detail$/;
 
 const blank = (v) => v == null || (typeof v === 'string' && v.trim() === '') ||
   (Array.isArray(v) && v.length === 0);
@@ -46,6 +49,21 @@ export function resolveEdits(doc, mapping, data) {
     } else {
       value = getPath(data, entry.path);
     }
+
+    // §4 product detail: the online form collects categories only — detail is supplied
+    // later via the separate Product List. When a category IS selected but carries no
+    // detail, the official cell must render BLANK rather than keep its "Click here to
+    // enter text." placeholder. Drafts that do carry detail still write it normally.
+    // Scoped deliberately to product detail; every other blank field is left untouched.
+    const catDetail = PRODUCT_CATEGORY_DETAIL.exec(entry.path);
+    if (catDetail && blank(value)) {
+      if (data.products?.categories?.[catDetail[1]]?.selected) {
+        push(clearText(doc, entry.id),
+          { path: entry.path, control: entry.control, kind: 'TEXT', value: '', blanked: true });
+      }
+      continue;
+    }
+
     if (blank(value)) continue;
     const info = doc.byId.get(entry.id);
     if (!info) throw new Error(`mapping references missing control ${entry.id} (${entry.path})`);
@@ -99,7 +117,14 @@ export function resolveEdits(doc, mapping, data) {
       { path: `products.others[${i}].selected`, control: row.selected.control, kind: 'CHK', value: true });
     for (const f of row.fields) {
       const v = item[f.key];
-      if (blank(v)) continue;
+      if (blank(v)) {
+        // same product-detail rule as the fixed categories above
+        if (f.key === 'detail') {
+          push(clearText(doc, f.id),
+            { path: `products.others[${i}].detail`, control: f.control, kind: 'TEXT', value: '', blanked: true });
+        }
+        continue;
+      }
       push(editText(doc, f.id, v),
         { path: `products.others[${i}].${f.key}`, control: f.control, kind: 'TEXT', value: String(v) });
     }

@@ -180,6 +180,31 @@ export function editText(doc, id, value) {
 }
 
 /**
+ * Blank a text control on purpose.
+ *
+ * Different from `editText(doc, id, '')`, which is a no-op and leaves the control showing
+ * its placeholder ("Click here to enter text."). This clears the placeholder flag and the
+ * placeholder run style and writes an EMPTY string, so the cell renders blank in Word.
+ *
+ * Used only where a deliberately empty answer is meaningful — see the product-detail rule
+ * in docgen/resolve.js. Nothing is invented and no "N/A" is written.
+ */
+export function clearText(doc, id) {
+  const info = doc.byId.get(String(id));
+  if (!info) throw new Error(`unknown control id ${id}`);
+  if (info.kind === 'CHK') throw new Error(`control ${id} is a checkbox, not text`);
+
+  const edits = [];
+  dropShowingPlaceholder(info, edits);
+  dropPlaceholderStyle(doc.xml, info, edits);
+  edits.push({
+    start: info.tNode.start, end: info.tNode.end,
+    text: '<w:t xml:space="preserve"></w:t>', why: `blank text control ${id}`,
+  });
+  return edits;
+}
+
+/**
  * Populate a comboBox control, validating the value against the control's own list.
  * The master contains two different Yes/No spellings, so the value must match this control.
  */
