@@ -1,15 +1,30 @@
 [
   {
+    "id": "qa-1787796684239",
+    "section": "audit",
+    "q": "OCS、RDSおよびMaterials Matter Standardは、同一のScope Certificateに記載できますか？",
+    "a": "TE-TXL-POL-203-V4.0\nPolicy for Scope and Transaction Certificates\n\n2.2.2項\n一つの組織は、原則として同一時点において、一つの認証機関（CB）から、一つのScope Certificateにより認証を受けなければなりません。\n2.3.1項\n同一の組織またはサイトが複数のTextile Exchange規格の認証を取得する場合、**Multi-standard Scope Certificate（複数規格のScope Certificate）**を発行しなければなりません。\n2.3.2項\n複数規格を同一のScope Certificateに含めるためには、以下の条件を満たす必要があります。\nすべての規格の監査が同一の認証機関によって実施されること\nMain Siteが、Scope Certificateに記載されるすべての規格について認証されていること\n2.3.5項の例示\nMaterials Matter StandardとOCSを同時に取得している組織の例が明記されているため、両規格を同一のScope Certificateに含めることが可能であると確認できます。\n\nRDSについても、TE-TXL-POL-204-V1.0の1.6.1項において「Primary Scope Standard」として定められているため、同様にMulti-standard Scope Certificateの対象となります。\n\n規格の組み合わせ\nMaterials Matter Standard＋OCS\t可能\t制限なし\nMaterials Matter Standard＋RDS\t可能\t制限なし\nMaterials Matter Standard＋OCS＋RDS\t可能\t制限なし\n\nMaterials Matter Standard＋GRS／RCS／RAS／RMS／RWS（Tier 0–3）\t\n移行期間中は可能\t2029年3月31日まで\n\nMaterials Matter Standard＋GRS／RAF規格（Tier 4）\t\n同時保有不可\tTE-MM-POL-102 1.2.4項\n注意点\n\n複数規格を同一のScope Certificateに記載できることは、同一の商品についてMaterials Matter、OCS、RDSの認証表示を自由に併用できるという意味ではありません。\n\nScope Certificateは複数規格を含むことができますが、各製品、原料、工程、Claims CategoryおよびTransaction Certificateについては、それぞれの規格要求事項を個別に満たす必要があります。\n\nなお、OCSおよびRDSはMaterials Matter Standardへの移行対象ではなく、今後もMaterials Matter Standardとは別の規格として並行して運用されます。",
+    "createdAt": "2026-08-27T02:13:21.704Z",
+    "updatedAt": "2026-08-27T02:14:07.614Z",
+    "updatedBy": "admin"
+  },
+  {
     "id": "qa-audit-01",
     "section": "audit",
     "q": "IDFL Japanではどのような認証（規格）の監査を受けられますか？",
-    "a": "主に以下の国際的なサステナビリティ基準に対応しています。①GOTS（オーガニックテキスタイルの世界基準）、②Textile Exchangeの全基準（GRS・RCS・OCS・RDS・RWS・RMS・RAS）、③FSC認証（適切に管理された森林由来の木材・繊維製品）。その他の認証も幅広く対応・審査可能な場合がございますので、まずはお気軽にお問い合わせください。"
+    "a": "主に以下の国際的なサステナビリティ基準に対応しています。①GOTS（オーガニックテキスタイルの世界基準）、②Textile Exchangeの全基準（GRS・RCS・OCS・RDS・RWS・RMS・RAS）、③FSC認証（適切に管理された森林由来の木材・繊維製品）。その他の認証も幅広く対応・審査可能な場合がございますので、まずはお気軽にお問い合わせください。",
+    "createdAt": "2026-08-06T03:47:05.161Z",
+    "updatedAt": "2026-08-14T00:54:29.607Z",
+    "updatedBy": "admin"
   },
   {
     "id": "qa-audit-02",
     "section": "audit",
     "q": "認証を取得（SC発行）するまでに、一般的にどれくらいの期間がかかりますか？",
-    "a": "申請から監査の実施、不適合の修正（必要な場合）、SC（事業者認証）の発行まで、一般的におよそ2〜3ヶ月程度かかります。工場の稼働状況や書類の準備状態によって前後するため、余裕を持ったスケジュールでの申請をおすすめします。"
+    "a": "申請から監査の実施、不適合の修正（必要な場合）、SC（事業者認証）の発行まで、一般的におよそ2〜3ヶ月程度かかります。工場の稼働状況や書類の準備状態によって前後するため、余裕を持ったスケジュールでの申請をおすすめします。",
+    "createdAt": "2026-08-14T00:54:15.743Z",
+    "updatedAt": "2026-08-14T00:54:15.743Z",
+    "updatedBy": "admin"
   },
   {
     "id": "qa-audit-03",
