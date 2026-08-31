@@ -432,5 +432,33 @@
     "signup": "",
     "related": "https://kingpinsshow.com/shows/amsterdam/",
     "published": false
+  },
+  {
+    "id": "ext-dornbirn-gfc-2026",
+    "office": "Other",
+    "name": "第65回 Dornbirn Global Fiber Congress 2026（ドルンビルン国際繊維会議）",
+    "type": "External",
+    "location": "Dornbirn, Austria",
+    "from": "2026-09-16",
+    "to": "2026-09-18",
+    "mode": "対面",
+    "time": "",
+    "signup": "",
+    "related": "https://www.dornbirn-gfc.com/",
+    "published": false
+  },
+  {
+    "id": "ext-itma-asia-citme-2026",
+    "office": "Other",
+    "name": "ITMA ASIA + CITME 2026（アジア最大級の繊維機械見本市）",
+    "type": "External",
+    "location": "Shanghai, China（NECC / 国家会展中心）",
+    "from": "2026-11-20",
+    "to": "2026-11-24",
+    "mode": "対面",
+    "time": "",
+    "signup": "",
+    "related": "https://www.itmaasia.com/shanghai2026/",
+    "published": false
   }
 ]
