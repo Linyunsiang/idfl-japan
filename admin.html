@@ -97,6 +97,39 @@
   .pgrp{font-size:12.5px;font-weight:900;color:#0f2c4d;margin:16px 0 8px;padding-bottom:5px;border-bottom:2px solid #dbe7f3}
   .pttl{font-weight:700;font-size:14px}
   .pmeta{font-size:11.5px;color:var(--muted);margin-top:3px;line-height:1.7;word-break:break-all}
+  /* ===== メディアライブラリ / フィードバック ===== */
+  .gate{display:none;max-width:380px;margin:20px auto;text-align:center}
+  .gate .ic{font-size:34px}
+  .gate p.t{font-size:14px;color:#374151;font-weight:900;margin:8px 0 4px}
+  .gate input{width:100%;padding:11px;border:1.5px solid var(--line);border-radius:9px;font-family:inherit;font-size:14px}
+  .gate .er{color:#b91c1c;font-size:12.5px;height:16px;margin:6px 0}
+  .chip.html{background:#ede9fe;color:#5b21b6}
+  .chip.pdf{background:#ffedd5;color:#9a3412}
+  .chip.image{background:#ccfbf1;color:#0f766e}
+  .chip.external{background:#cffafe;color:#155e75}
+  .chip.document{background:#e5edf7;color:#1255A0}
+  .chip.q{background:#dbeafe;color:#1d4ed8}
+  .chip.c{background:#dcfce7;color:#166534}
+  .chip.fix{background:#fef3c7;color:#b45309}
+  .chip.new{background:#dbeafe;color:#1d4ed8}
+  .chip.prog{background:#fef3c7;color:#92400e}
+  .chip.done{background:#dcfce7;color:#166534}
+  .chip.drop{background:#e5e7eb;color:#4b5563}
+  .fbrow{border:1px solid var(--line);border-radius:12px;padding:12px 13px;margin-bottom:10px;background:#fff}
+  .fbrow.new{border-left:4px solid #1d4ed8}
+  .fbrow .hdr{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .fbrow .who{font-size:11.5px;color:var(--muted);margin-top:7px;line-height:1.8;word-break:break-all}
+  .fbrow .body{font-size:13px;line-height:1.85;margin-top:8px;white-space:pre-wrap;word-break:break-word}
+  .fbrow .anch{font-size:11.5px;color:var(--muted);margin-top:6px;line-height:1.7;word-break:break-word}
+  .fbrow .rep{margin-top:9px;background:#f0f6fc;border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:8px 10px;font-size:12.5px;line-height:1.8;white-space:pre-wrap;word-break:break-word}
+  .fbrow .note{margin-top:7px;background:#fff7ed;border-left:3px solid #b45309;border-radius:0 8px 8px 0;padding:8px 10px;font-size:12.5px;line-height:1.8;white-space:pre-wrap;word-break:break-word}
+  .fbrow .rep b,.fbrow .note b{display:block;font-size:10.5px;margin-bottom:3px}
+  .fbrow .rep b{color:var(--accent)} .fbrow .note b{color:#b45309}
+  .fbrow .acts2{display:flex;gap:6px;flex-wrap:wrap;margin-top:11px}
+  .mrow{display:flex;align-items:center;gap:10px;border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:9px;background:#fff;flex-wrap:wrap}
+  .mrow .th{width:52px;height:40px;border-radius:7px;background:#eef4fb;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto;font-size:18px}
+  .mrow .th img{width:100%;height:100%;object-fit:cover}
+  .mdesc{font-size:11.5px;color:#4b5563;margin-top:3px;line-height:1.7}
 </style>
 </head>
 <body>
@@ -202,6 +235,93 @@
         <div id="pReorderNote" class="hint" style="display:none;color:#92400e">※ 並べ替えは「検索なし・すべて表示」のときのみ可能です。</div>
         <div id="pList"></div>
         <div class="hint">※ ここでの追加・編集・削除・並べ替え・公開/非公開は<strong>即時にお客様ページへ反映</strong>されます（Netlify Blobs 保存・GitHubの「変更を公開」は不要）。ファイルは公開リポジトリには保存されません。<strong>下書き（Draft）はお客様に表示されません。</strong>大容量（約4MB超）は「🔗 リンク追加」をご利用ください。</div>
+      </div>
+    </div>
+
+    <!-- ===================== メディアライブラリ ===================== -->
+    <div class="panel" id="mediaPanel" style="display:none">
+      <div class="gate" id="mGate">
+        <div class="ic">🔒</div>
+        <p class="t">スタッフ認証が必要です</p>
+        <p class="hint" style="margin:0 0 12px">メディアライブラリの管理には、スタッフ用パスワードでのログインが必要です。</p>
+        <input id="mPw" type="password" placeholder="スタッフ用パスワード" onkeydown="if(event.key==='Enter')mLogin()">
+        <div class="er" id="mGateErr"></div>
+        <button class="btn btn-p" style="width:100%" onclick="mLogin()">スタッフとしてログイン</button>
+      </div>
+
+      <div id="mMain" style="display:none">
+        <div class="bar">
+          <span class="count" id="mCount"></span>
+          <span class="chip on">即時反映</span>
+          <div class="grow"></div>
+          <button class="btn btn-g" onclick="mLoad()">🔄 再読込</button>
+          <button class="btn btn-g" onclick="window.open('/customer/media.html','_blank','noopener')">🔎 お客様ページ</button>
+        </div>
+
+        <div id="mDrop" class="dropzone" tabindex="0" role="button" aria-label="HTML資料をアップロード">
+          <div class="dz-big" id="mDzBig">HTMLプレゼンテーションをドラッグ＆ドロップ</div>
+          <div class="dz-sub">またはクリックしてファイルを選択</div>
+          <div class="dz-hint">単体の .html、または index.html を含む .zip パッケージ（CSS・JS・画像などの相対パスをそのまま保持します）　最大 4.0 MB</div>
+        </div>
+        <input type="file" id="mInput" accept=".html,.htm,.zip" style="display:none">
+
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin:2px 0 4px">
+          <label class="f" style="flex:2;min-width:190px;margin:0">タイトル<input type="text" id="mUpTitle" placeholder="未入力ならファイル名を使用"></label>
+          <label class="f" style="flex:2;min-width:190px;margin:0">カテゴリー / グループ<input type="text" id="mUpGroup" list="pGroups" placeholder="例：2026 大阪セミナー"></label>
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;margin:0 0 10px">
+          <label class="f" style="flex:3;min-width:200px;margin:0">説明<input type="text" id="mUpDesc" placeholder="お客様ページに表示される短い説明"></label>
+          <label class="f" style="flex:1;min-width:130px;margin:0">対象権限<select id="mUpRole"><option value="customer">お客様専用</option><option value="staff">スタッフ専用</option></select></label>
+          <label class="f" style="flex:1;min-width:130px;margin:0">公開状態<select id="mUpStatus"><option value="draft">下書き</option><option value="published">公開</option></select></label>
+        </div>
+        <div class="progress" id="mProg"><div class="bar2" id="mBar"></div></div>
+        <div class="statusline" id="mStatus"></div>
+
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0 10px">
+          <input type="text" id="mSearch" placeholder="🔍 タイトル・説明・グループで検索" style="flex:1;min-width:200px;padding:9px 11px;border:1.5px solid var(--line);border-radius:8px;font-family:inherit;font-size:13.5px" oninput="mRender()">
+          <div id="mFilters">
+            <button class="fpill on" data-f="all" onclick="mSetFilter('all')">すべて</button>
+            <button class="fpill" data-f="html" onclick="mSetFilter('html')">HTML</button>
+            <button class="fpill" data-f="pdf" onclick="mSetFilter('pdf')">PDF</button>
+            <button class="fpill" data-f="image" onclick="mSetFilter('image')">画像</button>
+            <button class="fpill" data-f="external" onclick="mSetFilter('external')">リンク</button>
+            <button class="fpill" data-f="draft" onclick="mSetFilter('draft')">下書き</button>
+          </div>
+        </div>
+        <div id="mList"></div>
+        <div class="hint">※ HTMLプレゼンテーションは公開リポジトリではなく保護ストレージに保存され、閲覧のたびにサーバ側で権限を確認します。<strong>下書きはSTAFFのみ</strong>が閲覧・プレビューできます。置き換えるとバージョンが上がりますが、既存のフィードバックは保持されます。</div>
+      </div>
+    </div>
+
+    <!-- ===================== メディアフィードバック ===================== -->
+    <div class="panel" id="fbPanel" style="display:none">
+      <div class="gate" id="qGate">
+        <div class="ic">🔒</div>
+        <p class="t">スタッフ認証が必要です</p>
+        <p class="hint" style="margin:0 0 12px">お客様のフィードバックには個人情報が含まれるため、スタッフ用パスワードでのログインが必要です。</p>
+        <input id="qPw" type="password" placeholder="スタッフ用パスワード" onkeydown="if(event.key==='Enter')qLogin()">
+        <div class="er" id="qGateErr"></div>
+        <button class="btn btn-p" style="width:100%" onclick="qLogin()">スタッフとしてログイン</button>
+      </div>
+
+      <div id="qMain" style="display:none">
+        <div class="bar">
+          <span class="count" id="qCount"></span>
+          <div class="grow"></div>
+          <button class="btn btn-g" onclick="qLoad()">🔄 再読込</button>
+        </div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:0 0 12px">
+          <input type="text" id="qSearch" placeholder="🔍 資料名・内容・お名前・メールで検索" style="flex:1;min-width:210px;padding:9px 11px;border:1.5px solid var(--line);border-radius:8px;font-family:inherit;font-size:13.5px" oninput="qRender()">
+          <div id="qFilters">
+            <button class="fpill on" data-f="all" onclick="qSetFilter('all')">すべて</button>
+            <button class="fpill" data-f="new" onclick="qSetFilter('new')">新規</button>
+            <button class="fpill" data-f="in_progress" onclick="qSetFilter('in_progress')">対応中</button>
+            <button class="fpill" data-f="resolved" onclick="qSetFilter('resolved')">解決済み</button>
+            <button class="fpill" data-f="dismissed" onclick="qSetFilter('dismissed')">却下</button>
+          </div>
+        </div>
+        <div id="qList"></div>
+        <div class="hint">※ お名前・メールアドレス・電話番号・内部メモは<strong>スタッフのみ</strong>に表示されます。お客様の画面には、ご本人の投稿と「お客様に公開」にした投稿だけが、投稿者を伏せた形で表示されます。個人情報は公開リポジトリには保存されません。</div>
       </div>
     </div>
   </div>
@@ -352,18 +472,26 @@ function initApp(){
   tabs.innerHTML=Object.keys(SCHEMAS).map(k=>`<button class="tab" data-k="${k}" onclick="switchTab('${k}')">${SCHEMAS[k].label} <span class="dot" id="dot-${k}" style="display:none">●</span></button>`).join('');
   tabs.innerHTML+=`<button class="tab" data-k="files" onclick="switchTab('files')">\uD83D\uDCC1 ファイル管理 <span class="dot" id="dot-files" style="display:none">●</span></button>`;
   tabs.innerHTML+=`<button class="tab" data-k="protected" onclick="switchTab('protected')">\uD83D\uDCC1 ダウンロード資料管理（お客様専用）</button>`;
+  tabs.innerHTML+=`<button class="tab" data-k="media" onclick="switchTab('media')">\uD83D\uDDA5\uFE0F メディアライブラリ</button>`;
+  tabs.innerHTML+=`<button class="tab" data-k="feedback" onclick="switchTab('feedback')">\uD83D\uDCAC メディアフィードバック <span class="dot" id="dot-feedback" style="display:none">●</span></button>`;
   switchTab('news');
+  qPoll();
 }
+
+// Panels that are not JSON-schema driven. Each owns its own show/hide.
+const CUSTOM_PANELS={files:'filePanel',protected:'protectedPanel',media:'mediaPanel',feedback:'fbPanel'};
 
 async function switchTab(k){
   CUR=k;
   document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.k===k));
-  const filesMode=(k==='files'), protMode=(k==='protected');
-  document.getElementById('genericPanel').style.display=(filesMode||protMode)?'none':'';
-  document.getElementById('filePanel').style.display=filesMode?'':'none';
-  document.getElementById('protectedPanel').style.display=protMode?'':'none';
-  if(protMode){ pInit(); return; }
-  if(filesMode){ if(!FLOADED){await fInit();} else {fRender();} return; }
+  document.getElementById('genericPanel').style.display=CUSTOM_PANELS[k]?'none':'';
+  Object.keys(CUSTOM_PANELS).forEach(function(key){
+    document.getElementById(CUSTOM_PANELS[key]).style.display=(key===k)?'':'none';
+  });
+  if(k==='protected'){ pInit(); return; }
+  if(k==='media'){ mInit(); return; }
+  if(k==='feedback'){ qInit(); return; }
+  if(k==='files'){ if(!FLOADED){await fInit();} else {fRender();} return; }
   if(!DATA[k]){await loadData(k);} else {render();}
 }
 
@@ -1068,6 +1196,409 @@ function pCommitOrder(){
   var ids=pFlatIds();
   fetch('/.netlify/functions/protected-update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({orderIds:ids})})
    .then(function(r){return r.json();}).then(function(j){ if(!(j&&j.ok)) toast('並び順の保存に失敗しました'); }).catch(function(){ toast('通信エラー'); });
+}
+
+
+/* ===================== メディアライブラリ（Netlify Blobs / STAFF session） =====================
+   Deliberately the SAME source of truth as the ダウンロード資料管理 tab: both read
+   protected-list and write through the protected-* functions. This tab adds the
+   richer media fields (説明・サムネイル・バージョン) and HTML presentation upload.
+   ============================================================================== */
+var MITEMS=[], MFILTER='all', MREADY=false;
+var MTYPE_JA={html:'HTML',pdf:'PDF',image:'画像',external:'リンク',document:'ドキュメント'};
+var MTYPE_ICON={html:'🖥️',pdf:'📕',image:'🖼️',external:'🔗',document:'📄'};
+
+// The gate panels carry display:none in the stylesheet, so clearing the inline
+// style would fall back to that rule and hide them. Set an explicit value.
+function mShow(id,on){var el=document.getElementById(id);if(el)el.style.display=on?'block':'none';}
+
+function mInit(){
+  mShow('mGate',false); mShow('mMain',false);
+  fetch('/.netlify/functions/auth-status',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
+    if(j&&j.role==='STAFF'){ mShow('mMain',true); if(!MREADY) mSetup(); mLoad(); }
+    else { mShow('mGate',true); var e=document.getElementById('mPw'); if(e) e.focus(); }
+  }).catch(function(){ mShow('mGate',true); });
+}
+function mLogin(){ staffLogin('mPw','mGateErr',mInit); }
+
+/* One staff login path, shared by the media and feedback tabs. */
+function staffLogin(pwId,errId,after){
+  var pw=document.getElementById(pwId).value, err=document.getElementById(errId); err.textContent='';
+  if(!pw){err.textContent='パスワードを入力してください';return;}
+  fetch('/.netlify/functions/auth-login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({role:'staff',password:pw})})
+   .then(function(r){return r.json().then(function(j){return {s:r.status,j:j};});})
+   .then(function(o){ if(o.s===200&&o.j.ok){ document.getElementById(pwId).value=''; after(); } else { err.textContent=(o.j&&o.j.error)||('エラー HTTP '+o.s); } })
+   .catch(function(){ err.textContent='通信エラー'; });
+}
+
+function mSetup(){
+  MREADY=true;
+  var drop=document.getElementById('mDrop'), input=document.getElementById('mInput');
+  drop.addEventListener('click',function(){input.click();});
+  drop.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();input.click();}});
+  drop.addEventListener('dragover',function(e){e.preventDefault();drop.classList.add('drag');});
+  drop.addEventListener('dragleave',function(){drop.classList.remove('drag');});
+  drop.addEventListener('drop',function(e){e.preventDefault();drop.classList.remove('drag');if(e.dataTransfer.files&&e.dataTransfer.files.length)mUpload(e.dataTransfer.files[0]);});
+  input.addEventListener('change',function(){if(input.files&&input.files.length)mUpload(input.files[0]);input.value='';});
+}
+
+// The blob listing is eventually consistent, so a freshly uploaded record can
+// be missing from it for a few seconds. Poll until it shows rather than let
+// staff conclude the upload failed and do it twice.
+function mWaitFor(id, st){
+  var tries=0;
+  (function poll(){
+    fetch("/.netlify/functions/protected-list",{cache:"no-store"}).then(function(r){return r.json();}).then(function(j){
+      var files=(j&&j.files)||[];
+      if(files.some(function(f){return f.id===id;})||tries>=12){
+        MITEMS=files; pFillDatalist(); mRender();
+        if(st&&tries>=12) st.textContent+="（一覧への反映が遅れています。少し後に再読込してください）";
+      } else { tries++; setTimeout(poll,2500); }
+    }).catch(function(){ mLoad(); });
+  })();
+}
+
+function mLoad(){
+  var list=document.getElementById('mList'); list.innerHTML='<div style="padding:16px;color:#6b7280">読込中…</div>';
+  fetch('/.netlify/functions/protected-list',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
+    MITEMS=(j&&j.files)||[]; pFillDatalist(); mRender();
+  }).catch(function(){ list.innerHTML='<div style="padding:16px;color:#b91c1c">読込に失敗しました。</div>'; });
+}
+function mSetFilter(f){ MFILTER=f; var el=document.getElementById('mFilters'); if(el) el.querySelectorAll('.fpill').forEach(function(b){b.classList.toggle('on',b.dataset.f===f);}); mRender(); }
+function mFind(id){ for(var i=0;i<MITEMS.length;i++) if(MITEMS[i].id===id) return MITEMS[i]; return null; }
+function mThumb(v){
+  var s=String(v||'').trim(); if(!s) return '';
+  if(/^[A-Za-z0-9_-]{1,64}$/.test(s)) return '/.netlify/functions/protected-file?id='+encodeURIComponent(s)+'&inline=1';
+  if(/^https:\/\//i.test(s)||s.charAt(0)==='/') return s;
+  return '';
+}
+
+function mRender(){
+  var list=document.getElementById('mList');
+  var q=(document.getElementById('mSearch').value||'').trim().toLowerCase();
+  var items=MITEMS.filter(function(f){
+    var t=f.mediaType||'document';
+    if(MFILTER==='draft'){ if(f.status!=='draft') return false; }
+    else if(MFILTER!=='all' && t!==MFILTER) return false;
+    if(q&&![f.title,f.name,f.group,f.description].some(function(v){return String(v||'').toLowerCase().indexOf(q)>=0;})) return false;
+    return true;
+  });
+  document.getElementById('mCount').textContent=MITEMS.length+' 件';
+  if(!items.length){ list.innerHTML='<div style="padding:16px;color:#6b7280">'+((q||MFILTER!=='all')?'条件に一致する資料はありません。':'まだ資料がありません。')+'</div>'; return; }
+  var map={}, order=[];
+  items.forEach(function(f){ var g=f.group||'その他'; if(!map[g]){map[g]=[];order.push(g);} map[g].push(f); });
+  list.innerHTML=order.map(function(g){
+    return '<div class="pgrp">'+esc(g)+'　<span style="font-weight:400;color:#6b7280;font-size:11px">'+map[g].length+'件</span></div>'
+      + map[g].map(function(f,i){ return mRow(f,i,map[g].length); }).join('');
+  }).join('');
+}
+
+function mRow(f,i,n){
+  var t=f.mediaType||'document';
+  var isHtml=(t==='html');
+  var tu=mThumb(f.thumb);
+  var chips='<span class="chip '+t+'">'+esc(MTYPE_JA[t]||t)+'</span>'
+    + (f.role==='staff'?'<span class="chip off">STAFF</span>':'<span class="chip on">お客様</span>')
+    + (f.status==='draft'?'<span class="chip pend">下書き</span>':'<span class="chip on">公開中</span>')
+    + (f.version?'<span class="chip" style="background:#e5edf7;color:#1255A0">v'+esc(f.version)+'</span>':'');
+  var meta=[];
+  if(isHtml&&f.assetCount) meta.push(f.assetCount+' ファイル');
+  if(!isHtml&&f.name) meta.push(esc(f.name));
+  if(f.sizeLabel) meta.push(esc(f.sizeLabel));
+  meta.push('更新 '+esc((f.updatedAt||f.uploadedAt||'').slice(0,10)));
+  var open = isHtml
+    ? '<button class="btn btn-g" onclick="mPreview(\''+esc(f.id)+'\')">プレビュー</button>'
+    : (t==='external'
+        ? '<a class="btn btn-g" href="/.netlify/functions/protected-file?id='+encodeURIComponent(f.id)+'" target="_blank" rel="noopener">開く↗</a>'
+        : '<a class="btn btn-g" href="/.netlify/functions/protected-file?id='+encodeURIComponent(f.id)+'" download>DL</a>');
+  return '<div class="mrow">'
+    + '<div class="th">'+(tu?'<img src="'+esc(tu)+'" alt="">':(MTYPE_ICON[t]||'📄'))+'</div>'
+    + '<div style="display:flex;flex-direction:column;gap:2px">'
+    +   '<button class="mini" title="上へ" onclick="mMove(\''+esc(f.id)+'\',-1)" '+(i===0?'disabled':'')+'>▲</button>'
+    +   '<button class="mini" title="下へ" onclick="mMove(\''+esc(f.id)+'\',1)" '+(i===n-1?'disabled':'')+'>▼</button>'
+    + '</div>'
+    + '<div style="flex:1;min-width:0"><div class="pttl">'+esc(f.title||f.name)+' '+chips+'</div>'
+    +   (f.description?'<div class="mdesc">'+esc(f.description)+'</div>':'')
+    +   '<div class="pmeta">'+meta.join(' ・ ')+'</div></div>'
+    + open
+    + '<button class="btn btn-o" onclick="mEdit(\''+esc(f.id)+'\')">編集</button>'
+    + (isHtml?'<button class="btn btn-o" onclick="mReplace(\''+esc(f.id)+'\')">置換</button>':'')
+    + '<button class="btn btn-g" onclick="mToggle(\''+esc(f.id)+'\')">'+(f.status==='draft'?'公開':'非公開')+'</button>'
+    + '<button class="btn btn-d" onclick="mDelete(\''+esc(f.id)+'\')">削除</button>'
+    + '</div>';
+}
+
+/* Staff preview uses the same protected viewer the customer sees, so a draft is
+   verified exactly as it will render once published. */
+function mPreview(id){ window.open('/customer/media-viewer.html?id='+encodeURIComponent(id),'_blank','noopener'); }
+
+function mUpload(file,replaceId){
+  var ext=(String(file.name).split('.').pop()||'').toLowerCase();
+  var st=document.getElementById('mStatus'), prog=document.getElementById('mProg'), bar=document.getElementById('mBar');
+  if(['html','htm','zip'].indexOf(ext)<0){ st.style.color='#b91c1c'; st.textContent='対応形式は .html または .zip です: '+file.name; return; }
+  if(file.size>4*1024*1024){ st.style.color='#b91c1c'; st.textContent='4MBを超えています。画像を軽くするか、ファイルを分けてください。'; return; }
+  var reader=new FileReader();
+  reader.onload=function(){
+    var payload={
+      filename:file.name, contentBase64:String(reader.result).split(',')[1],
+      role:document.getElementById('mUpRole').value,
+      status:document.getElementById('mUpStatus').value,
+      title:(document.getElementById('mUpTitle').value||'').trim()||file.name.replace(/\.[^.]+$/,''),
+      description:(document.getElementById('mUpDesc').value||'').trim(),
+      group:(document.getElementById('mUpGroup').value||'').trim()
+    };
+    if(replaceId){ payload.replaceId=replaceId; }
+    var xhr=new XMLHttpRequest(); xhr.open('POST','/.netlify/functions/protected-media-upload'); xhr.setRequestHeader('Content-Type','application/json');
+    prog.classList.add('show'); st.style.color='#6b7280'; st.textContent=(replaceId?'置換中… ':'アップロード中… ')+file.name;
+    xhr.upload.onprogress=function(e){ if(e.lengthComputable) bar.style.width=Math.round(e.loaded/e.total*100)+'%'; };
+    xhr.onload=function(){
+      prog.classList.remove('show'); bar.style.width='0';
+      var j={}; try{j=JSON.parse(xhr.responseText);}catch(e){}
+      if(xhr.status===200&&j.ok){
+        st.style.color='#166534';
+        st.textContent='完了：'+j.files+' ファイル（entry: '+j.entry+'、Version '+j.version+'）'+(j.skipped?('／'+j.skipped+' 件は名前が不正のため除外'):'');
+        document.getElementById('mUpTitle').value=''; document.getElementById('mUpDesc').value='';
+        mWaitFor(j.id, st);
+      } else { st.style.color='#b91c1c'; st.textContent='失敗: '+(j.error||('HTTP '+xhr.status)); }
+    };
+    xhr.onerror=function(){ prog.classList.remove('show'); st.style.color='#b91c1c'; st.textContent='通信エラー'; };
+    xhr.send(JSON.stringify(payload));
+  };
+  reader.onerror=function(){ st.style.color='#b91c1c'; st.textContent='ファイルの読込に失敗しました'; };
+  reader.readAsDataURL(file);
+}
+
+function mReplace(id){
+  var f=mFind(id); if(!f) return;
+  var inp=document.createElement('input'); inp.type='file'; inp.accept='.html,.htm,.zip';
+  inp.onchange=function(){
+    if(!inp.files||!inp.files.length) return;
+    if(!confirm('「'+(f.title||f.name)+'」を置き換えます。\nバージョンが v'+((f.version||1)+1)+' に上がります。既存のフィードバックは残ります。\n\n続行しますか？')) return;
+    document.getElementById('mUpTitle').value=f.title||'';
+    document.getElementById('mUpDesc').value=f.description||'';
+    document.getElementById('mUpGroup').value=f.group||'';
+    document.getElementById('mUpRole').value=f.role||'customer';
+    document.getElementById('mUpStatus').value=f.status||'draft';
+    mUpload(inp.files[0],id);
+  };
+  inp.click();
+}
+
+function mEdit(id){
+  var f=mFind(id); if(!f) return;
+  document.getElementById('povTitle').textContent='メディアを編集';
+  document.getElementById('povBody').innerHTML=
+     '<label class="f">ID<input type="text" value="'+esc(f.id)+'" readonly style="background:#f3f4f6;color:#6b7280"></label>'
+    +'<label class="f">タイトル<input type="text" id="me_title" value="'+esc(f.title||f.name||'')+'"></label>'
+    +'<label class="f">説明<textarea id="me_desc" style="min-height:70px">'+esc(f.description||'')+'</textarea></label>'
+    +'<label class="f">カテゴリー / グループ<input type="text" id="me_group" list="pGroups" value="'+esc(f.group||'')+'"></label>'
+    +'<label class="f">サムネイル<input type="text" id="me_thumb" value="'+esc(f.thumb||'')+'" placeholder="画像資料のID、または https:// / /files/... のURL">'
+    +'<span class="hint">「ダウンロード資料管理」に画像をアップロードし、そのIDを貼り付けると保護されたサムネイルとして表示されます。</span></label>'
+    +'<div style="display:flex;gap:10px"><label class="f" style="flex:1">対象権限<select id="me_role"><option value="customer">お客様専用</option><option value="staff">スタッフ専用</option></select></label>'
+    +'<label class="f" style="flex:1">公開状態<select id="me_status"><option value="published">公開</option><option value="draft">下書き</option></select></label></div>'
+    +'<p class="hint">メディア種類: '+esc(MTYPE_JA[f.mediaType]||f.mediaType)+(f.version?('　バージョン: v'+esc(f.version)):'')+(f.entry?('　entry: '+esc(f.entry)):'')+'</p>';
+  document.getElementById('me_role').value=f.role||'customer';
+  document.getElementById('me_status').value=f.status==='draft'?'draft':'published';
+  document.getElementById('povActs').innerHTML='<button class="btn btn-g" onclick="pCloseModal()">キャンセル</button><button class="btn btn-p" onclick="mSaveEdit(\''+esc(id)+'\')">保存</button>';
+  document.getElementById('pov').classList.add('open');
+}
+
+function mSaveEdit(id){
+  var body={ id:id,
+    title:document.getElementById('me_title').value,
+    description:document.getElementById('me_desc').value,
+    group:document.getElementById('me_group').value,
+    thumb:document.getElementById('me_thumb').value,
+    role:document.getElementById('me_role').value,
+    status:document.getElementById('me_status').value };
+  fetch('/.netlify/functions/protected-update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
+   .then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){ pCloseModal(); toast('保存しました'); mLoad(); } else toast((j&&j.error)||'保存に失敗しました'); })
+   .catch(function(){ toast('通信エラー'); });
+}
+
+function mToggle(id){
+  var f=mFind(id); if(!f) return;
+  var next=f.status==='draft'?'published':'draft';
+  fetch('/.netlify/functions/protected-update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:id,status:next})})
+   .then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){ toast(next==='draft'?'下書きにしました':'公開しました'); mLoad(); } else toast((j&&j.error)||'変更に失敗しました'); })
+   .catch(function(){ toast('通信エラー'); });
+}
+
+function mDelete(id){
+  var f=mFind(id); if(!f) return;
+  if(!confirm('「'+(f.title||f.name)+'」を削除しますか？\n'+(f.mediaType==='html'?'パッケージのファイルもすべて削除されます。\n':'')+'この操作は元に戻せません。')) return;
+  fetch('/.netlify/functions/protected-delete',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:id})})
+   .then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){ toast('削除しました'); mLoad(); } else toast((j&&j.error)||'削除に失敗しました'); })
+   .catch(function(){ toast('通信エラー'); });
+}
+
+/* Reorder writes the same __order__ index the download page already honours. */
+function mMove(id,dir){
+  var f=mFind(id); if(!f) return;
+  var g=f.group||'その他';
+  var sameGroup=MITEMS.filter(function(x){return (x.group||'その他')===g;});
+  var i=sameGroup.indexOf(f), j=i+dir;
+  if(j<0||j>=sameGroup.length) return;
+  var a=MITEMS.indexOf(sameGroup[i]), b=MITEMS.indexOf(sameGroup[j]);
+  var tmp=MITEMS[a]; MITEMS[a]=MITEMS[b]; MITEMS[b]=tmp;
+  mRender();
+  fetch('/.netlify/functions/protected-update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({orderIds:MITEMS.map(function(x){return x.id;})})})
+   .then(function(r){return r.json();}).then(function(j){ if(!(j&&j.ok)) toast('並び順の保存に失敗しました'); }).catch(function(){ toast('通信エラー'); });
+}
+
+/* ===================== メディアフィードバック（STAFF session） ===================== */
+var QITEMS=[], QFILTER='all', QREADY=false;
+var QTYPE_CLS={question:'q',comment:'c',correction:'fix'};
+var QSTATUS_CLS={'new':'new',in_progress:'prog',resolved:'done',dismissed:'drop'};
+var QSTATUS_JA={'new':'新規',in_progress:'対応中',resolved:'解決済み',dismissed:'却下'};
+
+function qInit(){
+  mShow('qGate',false); mShow('qMain',false);
+  fetch('/.netlify/functions/auth-status',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
+    if(j&&j.role==='STAFF'){ mShow('qMain',true); QREADY=true; qLoad(); }
+    else { mShow('qGate',true); var e=document.getElementById('qPw'); if(e) e.focus(); }
+  }).catch(function(){ mShow('qGate',true); });
+}
+function qLogin(){ staffLogin('qPw','qGateErr',qInit); }
+
+function qLoad(){
+  var list=document.getElementById('qList'); list.innerHTML='<div style="padding:16px;color:#6b7280">読込中…</div>';
+  fetch('/.netlify/functions/feedback-list?scope=all',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
+    var fresh=(j&&j.items)||[];
+    // A stale listing must not undo an edit already confirmed by the server.
+    var byKey={}; QITEMS.forEach(function(x){ byKey[x.key]=x; });
+    QITEMS=fresh.map(function(x){
+      var local=byKey[x.key];
+      return (local && String(local.updatedAt||"") > String(x.updatedAt||"")) ? local : x;
+    });
+    qRender(); qBadge();
+  }).catch(function(){ list.innerHTML='<div style="padding:16px;color:#b91c1c">読込に失敗しました。</div>'; });
+}
+function qSetFilter(f){ QFILTER=f; var el=document.getElementById('qFilters'); if(el) el.querySelectorAll('.fpill').forEach(function(b){b.classList.toggle('on',b.dataset.f===f);}); qRender(); }
+function qFind(key){ for(var i=0;i<QITEMS.length;i++) if(QITEMS[i].key===key) return QITEMS[i]; return null; }
+
+/* A quiet badge on the tab so new customer feedback is not missed. */
+function qBadge(){
+  var n=QITEMS.filter(function(x){return x.status==='new';}).length;
+  var d=document.getElementById('dot-feedback');
+  if(d) d.style.display=n?'inline':'none';
+}
+function qPoll(){
+  fetch('/.netlify/functions/feedback-list?scope=all',{cache:'no-store'}).then(function(r){return r.ok?r.json():null;}).then(function(j){
+    if(j&&j.items){ QITEMS=j.items; qBadge(); }
+  }).catch(function(){});
+}
+
+function qRender(){
+  var list=document.getElementById('qList');
+  var q=(document.getElementById('qSearch').value||'').trim().toLowerCase();
+  var items=QITEMS.filter(function(x){
+    if(QFILTER!=='all'&&x.status!==QFILTER) return false;
+    if(!q) return true;
+    var c=x.customer||{};
+    return [x.mediaTitle,x.message,x.staffReply,c.name,c.email,c.phone].some(function(v){return String(v||'').toLowerCase().indexOf(q)>=0;});
+  });
+  var counts={};
+  QITEMS.forEach(function(x){ counts[x.status]=(counts[x.status]||0)+1; });
+  document.getElementById('qCount').textContent=QITEMS.length+' 件（新規 '+(counts['new']||0)+' ・ 対応中 '+(counts.in_progress||0)+' ・ 解決済み '+(counts.resolved||0)+' ・ 却下 '+(counts.dismissed||0)+'）';
+  if(!items.length){ list.innerHTML='<div style="padding:16px;color:#6b7280">'+((q||QFILTER!=='all')?'条件に一致するフィードバックはありません。':'まだフィードバックはありません。')+'</div>'; return; }
+  list.innerHTML=items.map(qRow).join('');
+}
+
+function qRow(x){
+  var c=x.customer||{};
+  var a=x.anchor||{};
+  var where=[a.section,String(a.textQuote||'').slice(0,90)].filter(Boolean).join(' / ');
+  return '<div class="fbrow'+(x.status==='new'?' new':'')+'">'
+    + '<div class="hdr">'
+    +   '<span class="chip '+(QTYPE_CLS[x.type]||'c')+'">'+esc(x.typeLabel||x.type)+'</span>'
+    +   '<span class="chip '+(QSTATUS_CLS[x.status]||'new')+'">'+esc(QSTATUS_JA[x.status]||x.status)+'</span>'
+    +   '<span class="chip" style="background:#e5edf7;color:#1255A0">#'+esc(x.seq)+'</span>'
+    +   (x.publicVisible?'<span class="chip on">お客様に公開中</span>':'')
+    +   '<strong style="font-size:13px">'+esc(x.mediaTitle||x.mediaId)+'</strong>'
+    +   '<span class="hint" style="margin:0">Version '+esc(x.mediaVersion)+'　'+esc(String(x.createdAt||'').slice(0,16).replace('T',' '))+'</span>'
+    + '</div>'
+    + (where?'<div class="anch">対象箇所: '+esc(where)+'</div>':'<div class="anch">対象箇所: （資料全体）</div>')
+    + '<div class="body">'+esc(x.message)+'</div>'
+    + '<div class="who">'+esc(c.name||'')+'　/　'+esc(c.email||'')+'　/　'+esc(c.phone||'')+'</div>'
+    + (x.staffReply?'<div class="rep"><b>お客様への回答</b>'+esc(x.staffReply)+'</div>':'')
+    + (x.internalNote?'<div class="note"><b>内部メモ（お客様には表示されません）</b>'+esc(x.internalNote)+'</div>':'')
+    + '<div class="acts2">'
+    +   '<button class="btn btn-g" onclick="qOpenMedia(\''+esc(x.mediaId)+'\',\''+esc(x.id)+'\')">該当箇所を開く</button>'
+    +   '<button class="btn btn-o" onclick="qReply(\''+esc(x.key)+'\')">返信</button>'
+    +   '<button class="btn btn-g" onclick="qNote(\''+esc(x.key)+'\')">内部メモ</button>'
+    +   '<button class="btn btn-g" onclick="qStatus(\''+esc(x.key)+'\',\'in_progress\')">対応中</button>'
+    +   '<button class="btn btn-g" onclick="qStatus(\''+esc(x.key)+'\',\'resolved\')">解決済み</button>'
+    +   '<button class="btn btn-g" onclick="qStatus(\''+esc(x.key)+'\',\'dismissed\')">却下</button>'
+    +   '<button class="btn btn-g" onclick="qPublic(\''+esc(x.key)+'\','+(x.publicVisible?'false':'true')+')">'+(x.publicVisible?'公開をやめる':'お客様に公開')+'</button>'
+    +   '<button class="btn btn-d" onclick="qDelete(\''+esc(x.key)+'\')">削除</button>'
+    + '</div></div>';
+}
+
+function qOpenMedia(mediaId,fbId){
+  window.open('/customer/media-viewer.html?id='+encodeURIComponent(mediaId)+'&fb='+encodeURIComponent(fbId),'_blank','noopener');
+}
+
+// Netlify Blobs lists eventually AND can serve a stale read straight after a
+// write, so feedback-manage's read-modify-write could silently drop a field
+// that had just been saved: reply, then "解決済み" two seconds later, and the
+// reply was gone. Every mutation therefore sends the COMPLETE staff-field set
+// from the console's own copy, so a stale server read cannot lose anything,
+// and the copy is refreshed from the response before the next action.
+function qStaffFields(key){
+  var x=qFind(key)||{};
+  return { status:x.status||"new", staffReply:x.staffReply||"", internalNote:x.internalNote||"", publicVisible:!!x.publicVisible };
+}
+function qApplyLocal(item){
+  if(!item||!item.key) return;
+  for(var i=0;i<QITEMS.length;i++) if(QITEMS[i].key===item.key){ QITEMS[i]=item; break; }
+}
+function qPatch(key,patch,msg){
+  var body=Object.assign({action:"update",id:key}, qStaffFields(key), patch);
+  fetch("/.netlify/functions/feedback-manage",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})
+   .then(function(r){return r.json();}).then(function(j){
+     if(j&&j.ok){ qApplyLocal(j.item); qRender(); qBadge(); toast(msg||"更新しました"); setTimeout(qLoad,6000); }
+     else toast((j&&j.error)||"更新に失敗しました");
+   })
+   .catch(function(){ toast("通信エラー"); });
+}
+function qStatus(key,st){ qPatch(key,{status:st},'ステータスを変更しました'); }
+function qPublic(key,on){
+  if(on&&!confirm('この投稿を、同じパスワードをお持ちの他のお客様にも表示します。\n投稿者のお名前・メール・電話番号は表示されません。\n\n公開しますか？')) return;
+  qPatch(key,{publicVisible:on},on?'お客様に公開しました':'公開を取り消しました');
+}
+function qReply(key){
+  var x=qFind(key); if(!x) return;
+  document.getElementById('povTitle').textContent='お客様への回答';
+  document.getElementById('povBody').innerHTML=
+     '<p class="hint" style="margin:0 0 10px">'+esc(x.mediaTitle||'')+'　#'+esc(x.seq)+'　'+esc(x.typeLabel||'')+'</p>'
+    +'<div style="background:#f5f7fa;border-radius:9px;padding:10px 12px;font-size:12.5px;line-height:1.8;white-space:pre-wrap;margin-bottom:12px">'+esc(x.message)+'</div>'
+    +'<label class="f">回答内容（お客様の画面に表示されます）<textarea id="q_reply" style="min-height:120px">'+esc(x.staffReply||'')+'</textarea></label>'
+    +'<label class="f cb"><input type="checkbox" id="q_resolve" '+(x.status==='resolved'?'checked':'')+'> 同時に「解決済み」にする</label>';
+  document.getElementById('povActs').innerHTML='<button class="btn btn-g" onclick="pCloseModal()">キャンセル</button><button class="btn btn-p" onclick="qSaveReply(\''+esc(key)+'\')">保存</button>';
+  document.getElementById('pov').classList.add('open');
+}
+function qSaveReply(key){
+  var patch={staffReply:document.getElementById('q_reply').value};
+  if(document.getElementById('q_resolve').checked) patch.status='resolved';
+  pCloseModal(); qPatch(key,patch,'回答を保存しました');
+}
+function qNote(key){
+  var x=qFind(key); if(!x) return;
+  document.getElementById('povTitle').textContent='内部メモ';
+  document.getElementById('povBody').innerHTML=
+     '<p class="hint" style="margin:0 0 10px">このメモはスタッフのみに表示され、お客様の画面には出ません。</p>'
+    +'<label class="f">メモ<textarea id="q_note" style="min-height:120px">'+esc(x.internalNote||'')+'</textarea></label>';
+  document.getElementById('povActs').innerHTML='<button class="btn btn-g" onclick="pCloseModal()">キャンセル</button><button class="btn btn-p" onclick="qSaveNote(\''+esc(key)+'\')">保存</button>';
+  document.getElementById('pov').classList.add('open');
+}
+function qSaveNote(key){ var v=document.getElementById('q_note').value; pCloseModal(); qPatch(key,{internalNote:v},'内部メモを保存しました'); }
+function qDelete(key){
+  var x=qFind(key); if(!x) return;
+  if(!confirm('このフィードバックを完全に削除しますか？\nお客様の個人情報も含めて削除され、元に戻せません。')) return;
+  fetch('/.netlify/functions/feedback-manage',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'delete',id:key})})
+   .then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){ toast('削除しました'); qLoad(); } else toast((j&&j.error)||'削除に失敗しました'); })
+   .catch(function(){ toast('通信エラー'); });
 }
 
 </script>
