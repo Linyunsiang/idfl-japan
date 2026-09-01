@@ -10,7 +10,7 @@
 // ============================================================
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
-import { createServer, setEnv, invoke, ROOT } from './harness.mjs';
+import { createServer, setEnv, invoke, ROOT, setListLag } from './harness.mjs';
 import { seedAll } from './seed.mjs';
 
 const require_ = createRequire(import.meta.url);
@@ -317,6 +317,42 @@ await t('the remembered contact details prefill the next form', async () => {
   assert.equal(d.getElementById('fEmail').value, 'qa-fixture-a@example.invalid');
   assert.equal(d.getElementById('fPhone').value, '+81-00-0000-0000');
   w.closeModal();
+});
+
+// --------------------------------------------------------------------------
+// Eventual consistency. Netlify Blobs reads a key strongly but lists a prefix
+// eventually, so the record a customer just submitted is missing from the
+// listing for a while. Caught live on the Deploy Preview, where the drawer
+// came back empty right after a successful submission.
+// --------------------------------------------------------------------------
+await t('a just-submitted item stays visible while the listing lags', async () => {
+  setListLag(60000, 'idfl-feedback');   // nothing new appears in list() at all
+  try{
+    const dom = await A.open('/customer/media-viewer.html?id=' + seeded.mediaId);
+    await settle(20);
+    const w = dom.window, d = w.document;
+    const before = d.querySelectorAll('.fbitem').length;
+    pickInFrame(dom, ANCHOR);
+    await settle(3);
+    F._resetRateLimit();
+    d.getElementById('fMsg').value = '一覧の反映が遅れても表示されることの確認です。';
+    d.getElementById('fName').value = 'QA FIXTURE - NOT A REAL PERSON';
+    d.getElementById('fEmail').value = 'qa-fixture-a@example.invalid';
+    d.getElementById('fPhone').value = '+81-00-0000-0000';
+    w.submitFeedback();
+    await settle(40);
+    const items = [...d.querySelectorAll('.fbitem')];
+    assert.equal(items.length, before + 1, 'the submitted item vanished while the listing lagged');
+    assert.ok(items.some(i => i.textContent.indexOf('一覧の反映が遅れても') >= 0), 'the new item is not the one shown');
+  } finally { setListLag(0); }
+});
+
+await t('it is not duplicated once the listing catches up', async () => {
+  const dom = await A.open('/customer/media-viewer.html?id=' + seeded.mediaId);
+  await settle(25);
+  const texts = [...dom.window.document.querySelectorAll('.fbitem .msg')].map(e => e.textContent);
+  const dupes = texts.filter(t => t.indexOf('一覧の反映が遅れても') >= 0);
+  assert.equal(dupes.length, 1, 'the item appears ' + dupes.length + ' times after the listing caught up');
 });
 
 // ========================================================= a second customer

@@ -29,10 +29,18 @@ function toBuffer(v){
   return Buffer.from(String(v), 'utf8');
 }
 
+// Netlify Blobs reads a key strongly but lists a prefix eventually: a blob that
+// was just written stays out of list() results for a while. Production hit that
+// (a customer's own feedback vanished from the drawer right after submitting),
+// so the stand-in can reproduce it on demand.
+let LIST_LAG_MS = 0, LIST_LAG_STORE = '';
+/** Lag list() for stores whose name contains `match` (default: all). */
+export function setListLag(ms, match){ LIST_LAG_MS = ms || 0; LIST_LAG_STORE = match || ''; }
+
 class MemStore {
   constructor(name){ this.name = name; this.data = new Map(); }
-  async set(key, value, opts){ this.data.set(String(key), { buf: toBuffer(value), metadata: (opts && opts.metadata) || {} }); }
-  async setJSON(key, value, opts){ this.data.set(String(key), { buf: Buffer.from(JSON.stringify(value), 'utf8'), metadata: (opts && opts.metadata) || {}, json: true }); }
+  async set(key, value, opts){ this.data.set(String(key), { buf: toBuffer(value), metadata: (opts && opts.metadata) || {}, at: Date.now() }); }
+  async setJSON(key, value, opts){ this.data.set(String(key), { buf: Buffer.from(JSON.stringify(value), 'utf8'), metadata: (opts && opts.metadata) || {}, json: true, at: Date.now() }); }
   async get(key, opts){
     const e = this.data.get(String(key));
     if(!e) return null;
@@ -50,8 +58,14 @@ class MemStore {
   async delete(key){ this.data.delete(String(key)); }
   async list(opts){
     const prefix = (opts && opts.prefix) || '';
+    const now = Date.now();
+    const lagging = LIST_LAG_MS > 0 && (!LIST_LAG_STORE || this.name.indexOf(LIST_LAG_STORE) >= 0);
     const blobs = [];
-    for(const k of this.data.keys()) if(k.indexOf(prefix) === 0) blobs.push({ key: k });
+    for(const [k, v] of this.data.entries()){
+      if(k.indexOf(prefix) !== 0) continue;
+      if(lagging && v.at && now - v.at < LIST_LAG_MS) continue;       // not yet listed
+      blobs.push({ key: k });
+    }
     return { blobs };
   }
 }

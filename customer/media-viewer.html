@@ -267,16 +267,35 @@
   }
 
   // ------------------------------------------------------------- feedback
+  // Netlify Blobs listing is eventually consistent: a record that was just
+  // written is readable by key but can take ~20s to show up in a prefix list.
+  // Without this, a customer submits feedback and the drawer comes back empty,
+  // which reads as "it failed". So keep what we just submitted locally until
+  // the server list catches up.
+  var JUST_SENT=[];
+
+  function mergeFeedback(serverItems){
+    var seen={}; var out=[];
+    (serverItems||[]).forEach(function(it){ if(it&&it.id&&!seen[it.id]){ seen[it.id]=1; out.push(it); } });
+    JUST_SENT=JUST_SENT.filter(function(it){ return !seen[it.id]; });   // the list caught up
+    JUST_SENT.forEach(function(it){ out.push(it); });
+    out.sort(function(a,b){ return String(a.createdAt||'').localeCompare(String(b.createdAt||'')); });
+    return out;
+  }
+
   function loadFeedback(){
     var u='/.netlify/functions/feedback-list?mediaId='+encodeURIComponent(MEDIA_ID)+'&token='+encodeURIComponent(myToken());
     fetch(u,{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
-      ITEMS=(j&&j.items)||[];
+      ITEMS=mergeFeedback(j&&j.items);
       renderFeedback(); pushPins();
+      if(JUST_SENT.length) setTimeout(loadFeedback, 6000);            // reconcile shortly
       if(FOCUS_ID){
         for(var i=0;i<ITEMS.length;i++) if(ITEMS[i].id===FOCUS_ID){ if(!DRAWER) toggleDrawer(); setTimeout(function(n){return function(){ send({cmd:'focusPin',n:n}); };}(i+1), 900); break; }
         FOCUS_ID='';
       }
-    }).catch(function(){ el('fbList').innerHTML='<div class="empty">フィードバックを読み込めませんでした。</div>'; });
+    }).catch(function(){
+      if(!ITEMS.length) el('fbList').innerHTML='<div class="empty">フィードバックを読み込めませんでした。</div>';
+    });
   }
 
   function renderFeedback(keepScroll){
@@ -386,6 +405,13 @@
           closeModal();
           toast(o.j.notificationSent ? 'フィードバックを送信しました。' : 'フィードバックを受け付けました。');
           if(!DRAWER) toggleDrawer();
+          // Show it straight away from the server's own reply; the listing may
+          // not include it yet (see mergeFeedback).
+          if(o.j.feedback && o.j.feedback.id){
+            JUST_SENT.push(o.j.feedback);
+            ITEMS=mergeFeedback(ITEMS);
+            renderFeedback(); pushPins();
+          }
           loadFeedback();
           return;
         }
