@@ -246,9 +246,11 @@ await t('the mount is read from the path, the way netlify.toml rewrites it', asy
   // Regression: placeholders are NOT substituted inside a redirect's query
   // string, so a ?id=:id target hands the function the literal ':id'.
   const g = J(await invoke('media-grant', { headers: as(CUST), queryStringParameters: { id: MEDIA_ID } }));
-  const mount = (id, tok, mode, path) => ({
+  // Both shapes must work: Netlify reports the ORIGINAL request path for a
+  // rewrite, but a direct call to the function carries the target path.
+  const mount = (id, tok, mode, path, form) => ({
     headers: SAME_ORIGIN,
-    path: '/.netlify/functions/protected-media-asset/' + id + '/' + tok + '/' + mode + '/' + path,
+    path: (form === 'fn' ? '/.netlify/functions/protected-media-asset/' : '/media/') + id + '/' + tok + '/' + mode + '/' + path,
     queryStringParameters: {},
   });
   const entry = await invoke('protected-media-asset', mount(MEDIA_ID, g.token, 'v', 'index.html'));
@@ -266,6 +268,10 @@ await t('the mount is read from the path, the way netlify.toml rewrites it', asy
   // and traversal is still refused through this form
   const bad = await invoke('protected-media-asset', mount(MEDIA_ID, g.token, 'v', '../../admin.html'));
   assert.ok(bad.statusCode === 400 || bad.statusCode === 404);
+  // ...and the rewrite-target shape resolves identically
+  const viaFn = await invoke('protected-media-asset', mount(MEDIA_ID, g.token, 'v', 'index.html', 'fn'));
+  assert.equal(viaFn.statusCode, 200, 'function-target path form did not serve');
+  assert.ok(Buffer.from(viaFn.body, 'base64').toString('utf8').includes('scripts/deck.js'));
 });
 
 await t('assets are unreachable with no session and no token', async () => {

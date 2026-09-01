@@ -29,22 +29,33 @@ function deny(code, msg){
   return { statusCode: code, headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' }, body: msg };
 }
 
-const FN = '/.netlify/functions/protected-media-asset/';
+// Where the four segments can turn up, most trustworthy first.
+//
+// Netlify substitutes redirect placeholders in the target PATH, never inside a
+// query string - and for a rewrite it reports the ORIGINAL request path to the
+// function, not the target. So accept both shapes rather than betting on one:
+//   /media/<id>/<token>/<mode>/<rest>                     (what the reader asked for)
+//   /.netlify/functions/protected-media-asset/<id>/...    (the rewrite target)
+// Query parameters remain supported for calling the function directly.
+const MOUNTS = ['/media/', '/.netlify/functions/protected-media-asset/'];
 
-/**
- * The mount arrives as .../protected-media-asset/<id>/<token>/<mode>/<path...>.
- * Query parameters are accepted too, for a direct call to the function.
- */
-function readParams(event){
-  const q = event.queryStringParameters || {};
-  const p = String(event.path || '');
-  const i = p.indexOf(FN);
-  if(i >= 0){
-    const rest = p.slice(i + FN.length).split('/');
-    if(rest.length >= 4){
+function fromPath(p){
+  const s = String(p || '').split('?')[0];
+  for(const mount of MOUNTS){
+    const i = s.indexOf(mount);
+    if(i < 0) continue;
+    const rest = s.slice(i + mount.length).split('/');
+    if(rest.length >= 4 && rest[0] && rest[1] && rest[2]){
       return { id: rest[0], token: rest[1], mode: rest[2], path: rest.slice(3).join('/') };
     }
   }
+  return null;
+}
+
+function readParams(event){
+  const hit = fromPath(event.path) || fromPath(event.rawUrl);
+  if(hit) return hit;
+  const q = event.queryStringParameters || {};
   return { id: String(q.id || ''), token: String(q.t || ''), mode: String(q.m || ''), path: String(q.path || '') };
 }
 
