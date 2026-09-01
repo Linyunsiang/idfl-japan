@@ -29,12 +29,31 @@ function deny(code, msg){
   return { statusCode: code, headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' }, body: msg };
 }
 
+const FN = '/.netlify/functions/protected-media-asset/';
+
+/**
+ * The mount arrives as .../protected-media-asset/<id>/<token>/<mode>/<path...>.
+ * Query parameters are accepted too, for a direct call to the function.
+ */
+function readParams(event){
+  const q = event.queryStringParameters || {};
+  const p = String(event.path || '');
+  const i = p.indexOf(FN);
+  if(i >= 0){
+    const rest = p.slice(i + FN.length).split('/');
+    if(rest.length >= 4){
+      return { id: rest[0], token: rest[1], mode: rest[2], path: rest.slice(3).join('/') };
+    }
+  }
+  return { id: String(q.id || ''), token: String(q.t || ''), mode: String(q.m || ''), path: String(q.path || '') };
+}
+
 exports.handler = async (event) => {
   try{ connectLambda(event); }catch(e){}
-  const q = event.queryStringParameters || {};
-  const id = String(q.id || '');
-  const token = String(q.t || '');
-  let path = String(q.path || '');
+  const q = readParams(event);
+  const id = q.id;
+  const token = q.token;
+  let path = q.path;
 
   if(!M.ID_RE.test(id) || id.indexOf('__') === 0) return deny(400, 'invalid id');
 
@@ -72,7 +91,7 @@ exports.handler = async (event) => {
   let buf = Buffer.from(res.data);
   const isEntry = safe === String(meta.entry || 'index.html');
   // Mode segment: "v" = plain view, "f-<nonce>" = feedback mode.
-  const wantFb = /^f-[A-Za-z0-9_-]{8,64}$/.test(String(q.m || ''));
+  const wantFb = /^f-[A-Za-z0-9_-]{8,64}$/.test(q.mode || '');
   let contentType = (res.metadata && res.metadata.contentType) || M.mimeFor(safe);
 
   // The annotation agent is injected only into the entry document, and only

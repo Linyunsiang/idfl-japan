@@ -124,11 +124,15 @@ export function createServer(){
     };
 
     try{
-      // netlify.toml: /media/:id/:token/:mode/*
+      // netlify.toml: /media/:id/:token/:mode/*  ->
+      //   /.netlify/functions/protected-media-asset/:id/:token/:mode/:splat
+      // Rewritten as a PATH, exactly as Netlify does it, because placeholders
+      // are not substituted inside a redirect's query string.
       const m = /^\/media\/([^/]+)\/([^/]+)\/([^/]+)\/(.*)$/.exec(p);
       if(m){
         const out = await invoke('protected-media-asset', Object.assign({}, baseEvent, {
-          queryStringParameters: Object.assign({}, query, { id: m[1], t: m[2], m: m[3], path: m[4] }),
+          path: '/.netlify/functions/protected-media-asset/' + m[1] + '/' + m[2] + '/' + m[3] + '/' + m[4],
+          queryStringParameters: query,
         }));
         return send(res, out);
       }

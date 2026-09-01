@@ -242,6 +242,32 @@ await t('feedback mode injects the annotation agent into the entry only', async 
   assert.ok(!Buffer.from(css.body, 'base64').toString('utf8').includes('__idflfb'));
 });
 
+await t('the mount is read from the path, the way netlify.toml rewrites it', async () => {
+  // Regression: placeholders are NOT substituted inside a redirect's query
+  // string, so a ?id=:id target hands the function the literal ':id'.
+  const g = J(await invoke('media-grant', { headers: as(CUST), queryStringParameters: { id: MEDIA_ID } }));
+  const mount = (id, tok, mode, path) => ({
+    headers: SAME_ORIGIN,
+    path: '/.netlify/functions/protected-media-asset/' + id + '/' + tok + '/' + mode + '/' + path,
+    queryStringParameters: {},
+  });
+  const entry = await invoke('protected-media-asset', mount(MEDIA_ID, g.token, 'v', 'index.html'));
+  assert.equal(entry.statusCode, 200, 'path-form mount did not serve the entry');
+  assert.ok(Buffer.from(entry.body, 'base64').toString('utf8').includes('scripts/deck.js'));
+  // a nested asset, several segments deep
+  const deep = await invoke('protected-media-asset', mount(MEDIA_ID, g.token, 'v', 'assets/idfl/idfl-logo.png'));
+  assert.equal(deep.statusCode, 200, 'nested asset not served through the path form');
+  assert.ok(deep.headers['Content-Type'].startsWith('image/png'), 'got ' + deep.headers['Content-Type']);
+  // feedback mode comes from the path segment too
+  const fb = await invoke('protected-media-asset', mount(MEDIA_ID, g.token, 'f-abcdefgh1234', 'index.html'));
+  assert.ok(Buffer.from(fb.body, 'base64').toString('utf8').includes('__idflfb'), 'agent not injected via the path form');
+  const plain = await invoke('protected-media-asset', mount(MEDIA_ID, g.token, 'v', 'index.html'));
+  assert.ok(!Buffer.from(plain.body, 'base64').toString('utf8').includes('__idflfb'));
+  // and traversal is still refused through this form
+  const bad = await invoke('protected-media-asset', mount(MEDIA_ID, g.token, 'v', '../../admin.html'));
+  assert.ok(bad.statusCode === 400 || bad.statusCode === 404);
+});
+
 await t('assets are unreachable with no session and no token', async () => {
   const r = await invoke('protected-media-asset', { headers: SAME_ORIGIN, queryStringParameters: { id: MEDIA_ID, t: '', m: 'v', path: 'index.html' } });
   assert.equal(r.statusCode, 302);

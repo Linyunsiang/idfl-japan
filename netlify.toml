@@ -18,9 +18,12 @@
 # :mode is "v" (plain view) or "f-<nonce>" (feedback mode). It lives in the
 # path rather than the query string so nothing depends on query pass-through,
 # and so the deck's own ?lang=... links cannot disturb it.
+# Placeholders are substituted in the target PATH, not in a query string, so the
+# segments are passed as path segments and the function reads them from its own
+# path. (Writing them as ?id=:id sends the function the literal ":id".)
 [[redirects]]
   from = "/media/:id/:token/:mode/*"
-  to = "/.netlify/functions/protected-media-asset?id=:id&t=:token&m=:mode&path=:splat"
+  to = "/.netlify/functions/protected-media-asset/:id/:token/:mode/:splat"
   status = 200
   force = true
 
