@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>資料ビューア | IDFL JAPAN</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{--accent:#1255A0;--accent2:#0d4383;--ink:#17171b;--muted:#6b7280;--line:#e5e7eb;--bg:#f4f7fc;
+        --staff:#b91c1c;--staff-bg:#fee2e2;--cust:#166534;--cust-bg:#dcfce7;
+        --q:#1d4ed8;--q-bg:#dbeafe;--c:#166534;--c-bg:#dcfce7;--fix:#b45309;--fix-bg:#fef3c7;}
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;font-family:"Zen Kaku Gothic New",system-ui,-apple-system,sans-serif;color:var(--ink);background:var(--bg);
+       display:flex;flex-direction:column;overflow:hidden}
+  .hd{background:#fff;border-bottom:1px solid var(--line);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex:0 0 auto}
+  .hd img{height:26px}
+  .hd .ttl{font-weight:900;font-size:14px;line-height:1.4;max-width:44vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .hd .grow{flex:1}
+  .badge{font-size:10.5px;font-weight:900;padding:3px 10px;border-radius:999px}
+  .badge.staff{background:var(--staff-bg);color:var(--staff)}.badge.cust{background:var(--cust-bg);color:var(--cust)}
+  .badge.ver{background:#e5edf7;color:var(--accent)}
+  .badge.draft{background:#fef3c7;color:#92400e}
+  .btn{border:none;border-radius:9px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;min-height:38px;
+       text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+  .btn-p{background:var(--accent);color:#fff}.btn-p:hover{background:var(--accent2)}
+  .btn-o{background:#fff;color:var(--accent);border:1.5px solid var(--accent)}.btn-o:hover{background:#f0f6fc}
+  .btn-g{background:#eef1f5;color:#374151}.btn-g:hover{background:#e2e7ee}
+  .btn-d{background:#fee2e2;color:#b91c1c}
+  .btn:disabled{opacity:.55;cursor:not-allowed}
+  .btn.on{background:var(--accent);color:#fff}
+
+  .main{flex:1;display:flex;min-height:0}
+  .stage{flex:1;min-width:0;position:relative;background:#fff}
+  .stage iframe{width:100%;height:100%;border:0;display:block;background:#fff}
+  .stage .msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;color:var(--muted);font-size:14px;line-height:1.9}
+  .filecard{max-width:520px;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:26px;text-align:center}
+  .filecard h2{font-size:17px;margin:0 0 8px;color:#0f2c4d}
+  .filecard p{font-size:13px;color:var(--muted);line-height:1.9;margin:0 0 16px;white-space:pre-wrap}
+
+  .drawer{width:372px;max-width:100%;flex:0 0 auto;background:#fff;border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+  .drawer.hide{display:none}
+  .dhd{padding:13px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;flex:0 0 auto}
+  .dhd h2{font-size:14px;margin:0;font-weight:900;color:#0f2c4d}
+  .dbody{flex:1;overflow:auto;padding:14px 16px 22px}
+  .dfoot{border-top:1px solid var(--line);padding:12px 16px;flex:0 0 auto;background:#fafbfd}
+  .hint{font-size:11.5px;color:var(--muted);line-height:1.8}
+  .fbitem{border:1px solid var(--line);border-radius:11px;padding:11px 12px;margin-bottom:10px;background:#fff;cursor:pointer}
+  .fbitem:hover{border-color:var(--accent);background:#f8fbff}
+  .fbitem .top{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+  .fbitem .n{background:var(--accent);color:#fff;min-width:22px;height:22px;border-radius:999px;font-size:11.5px;font-weight:900;
+             display:inline-flex;align-items:center;justify-content:center;padding:0 6px;flex:0 0 auto}
+  .fbitem .n.off{background:#9aa3af}
+  .fbitem .msg{font-size:12.5px;line-height:1.8;margin-top:7px;white-space:pre-wrap;word-break:break-word}
+  .fbitem .sec{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.7;word-break:break-word}
+  .fbitem .reply{margin-top:9px;background:#f0f6fc;border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:8px 10px;font-size:12px;line-height:1.8;white-space:pre-wrap;word-break:break-word}
+  .fbitem .reply b{display:block;font-size:10.5px;color:var(--accent);margin-bottom:3px}
+  .tag{font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px}
+  .tag.question{background:var(--q-bg);color:var(--q)}
+  .tag.comment{background:var(--c-bg);color:var(--c)}
+  .tag.correction{background:var(--fix-bg);color:var(--fix)}
+  .tag.st{background:#eef1f5;color:#374151}
+  .tag.old{background:#fef3c7;color:#92400e}
+  .empty{color:var(--muted);font-size:12.5px;line-height:1.9;padding:14px 2px}
+
+  .ov{position:fixed;inset:0;background:rgba(9,31,62,.55);display:none;align-items:flex-start;justify-content:center;z-index:40;padding:24px 14px;overflow:auto}
+  .ov.open{display:flex}
+  .modal{background:#fff;border-radius:14px;max-width:520px;width:100%;padding:22px}
+  .modal h3{margin:0 0 4px;font-size:16px;color:#0f2c4d}
+  .modal .lead{font-size:12px;color:var(--muted);line-height:1.8;margin:0 0 15px;word-break:break-word}
+  label.f{display:block;margin-bottom:13px;font-size:12.5px;font-weight:700;color:#374151}
+  label.f .req{color:#b91c1c;margin-left:2px}
+  .f input[type=text],.f input[type=email],.f input[type=tel],.f textarea,.f select{width:100%;margin-top:5px;padding:10px 11px;
+      border:1.5px solid var(--line);border-radius:8px;font-size:13.5px;font-family:inherit;font-weight:400}
+  .f input:focus,.f textarea:focus,.f select:focus{outline:3px solid rgba(18,85,160,.22);border-color:var(--accent)}
+  .f textarea{min-height:104px;resize:vertical}
+  .privacy{background:#f4f7fc;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:11.5px;color:#374151;line-height:1.85;margin-bottom:13px}
+  .acts{display:flex;gap:8px;justify-content:flex-end;margin-top:6px;flex-wrap:wrap}
+  .err{color:#b91c1c;font-size:12.5px;font-weight:700;min-height:18px;margin-top:8px}
+  .ok{color:#166534;font-size:12.5px;font-weight:700}
+  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#063372;color:#fff;padding:11px 20px;border-radius:11px;
+         font-size:13px;font-weight:700;box-shadow:0 8px 24px rgba(4,34,88,.25);opacity:0;transition:opacity .25s;pointer-events:none;z-index:60}
+
+  @media(max-width:860px){
+    .main{flex-direction:column}
+    .drawer{width:100%;border-left:none;border-top:1px solid var(--line);max-height:52vh}
+    .hd .ttl{max-width:100%;white-space:normal}
+  }
+</style>
+</head>
+<body>
+  <div class="hd">
+    <a href="/customer/media.html" title="メディアライブラリへ"><img src="/IDFL-Logo.png" alt="IDFL JAPAN"></a>
+    <span class="ttl" id="mTitle">読み込み中…</span>
+    <span class="badge ver" id="mVer" style="display:none"></span>
+    <span class="badge draft" id="mDraft" style="display:none">下書き</span>
+    <div class="grow"></div>
+    <button class="btn btn-o" id="fbToggle" style="display:none" onclick="toggleDrawer()">フィードバック</button>
+    <a class="btn btn-g" href="/customer/media.html">← ライブラリに戻る</a>
+  </div>
+
+  <div class="main">
+    <div class="stage" id="stage"><div class="msg" id="stageMsg">認証を確認しています…</div></div>
+    <aside class="drawer hide" id="drawer">
+      <div class="dhd"><h2>フィードバック</h2><div class="grow" style="flex:1"></div>
+        <button class="btn btn-g" onclick="toggleDrawer()" aria-label="閉じる">✕</button></div>
+      <div class="dbody" id="fbList"><div class="empty">読み込み中…</div></div>
+      <div class="dfoot">
+        <button class="btn btn-p" id="addBtn" style="width:100%" onclick="startPick()">コメントを追加</button>
+        <p class="hint" id="pickHint" style="margin:9px 0 0">資料の中でコメントしたい箇所をクリックすると、その位置にコメントを残せます。</p>
+      </div>
+    </aside>
+  </div>
+
+  <div class="ov" id="ov"><div class="modal">
+    <h3 id="ovTitle">フィードバックを送る</h3>
+    <p class="lead" id="ovLead"></p>
+    <div id="ovBody"></div>
+    <div class="err" id="ovErr" role="alert"></div>
+    <div class="acts">
+      <button class="btn btn-g" onclick="closeModal()">キャンセル</button>
+      <button class="btn btn-p" id="ovSend" onclick="submitFeedback()">送信する</button>
+    </div>
+  </div></div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+(function(){
+  var ROLE='PUBLIC', MEDIA=null, ITEMS=[], NONCE='', FRAME=null, PICKING=false, PENDING=null, DRAWER=false;
+  var TOKEN_KEY='idflFbToken', CONTACT_KEY='idflFbContact';
+  var TAG='__idflfb';
+  var TYPE_LABEL={question:'質問',comment:'コメント・補足',correction:'修正依頼'};
+
+  var qs=new URLSearchParams(location.search);
+  var MEDIA_ID=String(qs.get('id')||'');
+  // Optional deep link from the admin console: open straight at one comment.
+  var FOCUS_ID=String(qs.get('fb')||'');
+  var SELF='/customer/media-viewer.html?id='+encodeURIComponent(MEDIA_ID)+(FOCUS_ID?('&fb='+encodeURIComponent(FOCUS_ID)):'');
+
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(m){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m];});}
+  function el(id){return document.getElementById(id);}
+  function toast(m){var t=el('toast');t.textContent=m;t.style.opacity='1';clearTimeout(t._t);t._t=setTimeout(function(){t.style.opacity='0';},2800);}
+  function go(){ location.replace('/login.html?role=customer&next='+encodeURIComponent(SELF)); }
+  function stageMsg(html){ el('stage').innerHTML='<div class="msg">'+html+'</div>'; }
+
+  // Stable per-browser handle so a customer can see their own feedback again
+  // later. Random, not derived from the e-mail address, and never in a URL.
+  function myToken(){
+    var t='';
+    try{ t=localStorage.getItem(TOKEN_KEY)||''; }catch(e){}
+    if(!/^[A-Za-z0-9_-]{16,64}$/.test(t)){
+      var a=new Uint8Array(24);
+      (window.crypto||window.msCrypto).getRandomValues(a);
+      t=btoa(String.fromCharCode.apply(null,a)).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+      try{ localStorage.setItem(TOKEN_KEY,t); }catch(e){}
+    }
+    return t;
+  }
+  // Contact details are kept for this browser session only, as a convenience.
+  function savedContact(){ try{ return JSON.parse(sessionStorage.getItem(CONTACT_KEY)||'{}')||{}; }catch(e){ return {}; } }
+  function saveContact(c){ try{ sessionStorage.setItem(CONTACT_KEY, JSON.stringify(c)); }catch(e){} }
+
+  function randNonce(){
+    var a=new Uint8Array(12);
+    (window.crypto||window.msCrypto).getRandomValues(a);
+    return btoa(String.fromCharCode.apply(null,a)).replace(/[^A-Za-z0-9]/g,'').slice(0,16);
+  }
+
+  // ------------------------------------------------------------- bootstrap
+  if(!/^[A-Za-z0-9_-]{1,64}$/.test(MEDIA_ID)){ stageMsg('資料IDが指定されていません。<br><a href="/customer/media.html">メディアライブラリへ戻る</a>'); return; }
+
+  fetch('/.netlify/functions/auth-status',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
+    ROLE=(j&&j.role)||'PUBLIC';
+    if(ROLE!=='CUSTOMER'&&ROLE!=='STAFF'){ go(); return; }
+    return fetch('/.netlify/functions/protected-list',{cache:'no-store'}).then(function(r){return r.json();});
+  }).then(function(j){
+    if(!j) return;
+    var found=null, files=(j&&j.files)||[];
+    for(var i=0;i<files.length;i++) if(files[i].id===MEDIA_ID){ found=files[i]; break; }
+    if(!found){ stageMsg('この資料は見つからないか、閲覧権限がありません。<br><a href="/customer/media.html">メディアライブラリへ戻る</a>'); return; }
+    MEDIA=found;
+    el('mTitle').textContent=MEDIA.title||MEDIA.name||'資料';
+    document.title=(MEDIA.title||MEDIA.name||'資料')+' | IDFL JAPAN';
+    if(MEDIA.version){ el('mVer').textContent='Version '+MEDIA.version; el('mVer').style.display='inline-block'; }
+    if(MEDIA.status==='draft') el('mDraft').style.display='inline-block';
+    el('fbToggle').style.display='inline-flex';
+    if(MEDIA.mediaType==='html') mountHtml(); else mountFile();
+    loadFeedback();
+  }).catch(function(){ stageMsg('読み込みに失敗しました。ページを再読み込みしてください。'); });
+
+  // ------------------------------------------------------------ presentation
+  function mountHtml(){
+    NONCE=randNonce();
+    fetch('/.netlify/functions/media-grant?id='+encodeURIComponent(MEDIA_ID),{cache:'no-store'})
+      .then(function(r){ return r.json().then(function(j){ return {s:r.status,j:j}; }); })
+      .then(function(o){
+        if(o.s!==200||!o.j.ok){
+          if(o.s===401){ go(); return; }
+          stageMsg(esc((o.j&&o.j.error)||'資料を開けませんでした。'));
+          return;
+        }
+        var base='/media/'+encodeURIComponent(MEDIA_ID)+'/'+encodeURIComponent(o.j.token)+'/f-'+NONCE+'/';
+        var f=document.createElement('iframe');
+        f.id='frame';
+        f.title=MEDIA.title||'資料';
+        f.src=base+o.j.entry;
+        // No allow-same-origin: the presentation gets an opaque origin and can
+        // reach neither this page's DOM nor the session cookie. The response
+        // itself also carries a CSP sandbox directive.
+        f.setAttribute('sandbox','allow-scripts allow-popups allow-popups-to-escape-sandbox allow-modals allow-forms allow-downloads');
+        f.setAttribute('allow','fullscreen');
+        f.setAttribute('referrerpolicy','no-referrer');
+        el('stage').innerHTML=''; el('stage').appendChild(f);
+        FRAME=f;
+      })
+      .catch(function(){ stageMsg('資料を開けませんでした。'); });
+  }
+
+  function mountFile(){
+    var url='/.netlify/functions/protected-file?id='+encodeURIComponent(MEDIA_ID);
+    var isLink=MEDIA.mediaType==='external';
+    el('stage').innerHTML='<div class="msg"><div class="filecard">'
+      + '<h2>'+esc(MEDIA.title||MEDIA.name)+'</h2>'
+      + (MEDIA.description?'<p>'+esc(MEDIA.description)+'</p>':'<p>この資料はブラウザ内表示に対応していません。下のボタンからご利用ください。</p>')
+      + (isLink
+          ? '<a class="btn btn-o" href="'+url+'" target="_blank" rel="noopener">開く ↗</a>'
+          : '<a class="btn btn-p" href="'+url+'" download>ダウンロード</a>')
+      + '</div></div>';
+  }
+
+  // ---------------------------------------------------------- iframe bridge
+  function send(msg){
+    if(!FRAME||!FRAME.contentWindow) return;
+    msg[TAG]=1; msg.nonce=NONCE;
+    // The frame has an opaque origin, so '*' is the only usable target.
+    // Nothing confidential is ever put in these messages.
+    FRAME.contentWindow.postMessage(msg,'*');
+  }
+
+  window.addEventListener('message',function(ev){
+    if(!FRAME||ev.source!==FRAME.contentWindow) return;      // only our frame
+    var m=ev.data;
+    if(!m||m[TAG]!==1||m.nonce!==NONCE) return;              // and only with our nonce
+    if(m.evt==='ready'){ pushPins(); }
+    else if(m.evt==='picked'){ PICKING=false; setPickUi(false); openForm(m.anchor); }
+    else if(m.evt==='cancel'){ PICKING=false; setPickUi(false); }
+    else if(m.evt==='pinClick'){ focusItem(m.n); }
+    else if(m.evt==='pinState'){ markUnresolved(m.unresolved||[]); }
+  },false);
+
+  function pushPins(){
+    var pins=[];
+    ITEMS.forEach(function(it,i){ if(it.anchor) pins.push({n:i+1, anchor:it.anchor}); });
+    send({cmd:'setPins', pins:pins});
+  }
+
+  function markUnresolved(list){
+    var set={}; list.forEach(function(n){set[n]=1;});
+    ITEMS.forEach(function(it,i){ it._unresolved = it.anchor ? !!set[i+1] : true; });
+    renderFeedback(true);
+  }
+
+  // ------------------------------------------------------------- feedback
+  function loadFeedback(){
+    var u='/.netlify/functions/feedback-list?mediaId='+encodeURIComponent(MEDIA_ID)+'&token='+encodeURIComponent(myToken());
+    fetch(u,{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
+      ITEMS=(j&&j.items)||[];
+      renderFeedback(); pushPins();
+      if(FOCUS_ID){
+        for(var i=0;i<ITEMS.length;i++) if(ITEMS[i].id===FOCUS_ID){ if(!DRAWER) toggleDrawer(); setTimeout(function(n){return function(){ send({cmd:'focusPin',n:n}); };}(i+1), 900); break; }
+        FOCUS_ID='';
+      }
+    }).catch(function(){ el('fbList').innerHTML='<div class="empty">フィードバックを読み込めませんでした。</div>'; });
+  }
+
+  function renderFeedback(keepScroll){
+    var box=el('fbList');
+    var top=keepScroll?box.scrollTop:0;
+    if(!ITEMS.length){
+      box.innerHTML='<div class="empty">まだフィードバックはありません。<br>「コメントを追加」から、資料の気になる箇所についてご質問・ご意見をお送りいただけます。<br><br>ここには、お客様ご自身が送信された内容と、IDFLが共有として公開した内容のみが表示されます。</div>';
+      return;
+    }
+    box.innerHTML=ITEMS.map(function(it,i){
+      var n=i+1;
+      var old = MEDIA && MEDIA.version && it.mediaVersion && it.mediaVersion!==MEDIA.version;
+      return '<div class="fbitem" onclick="focusItem('+n+')">'
+        + '<div class="top"><span class="n'+(it._unresolved?' off':'')+'">'+n+'</span>'
+        + '<span class="tag '+esc(it.type)+'">'+esc(it.typeLabel||TYPE_LABEL[it.type]||it.type)+'</span>'
+        + '<span class="tag st">'+esc(it.statusLabel||'受付済み')+'</span>'
+        + (old?'<span class="tag old">Version '+esc(it.mediaVersion)+' へのコメント</span>':'')
+        + '</div>'
+        + '<div class="msg">'+esc(it.message)+'</div>'
+        + (it.anchor&&(it.anchor.section||it.anchor.textQuote)
+            ? '<div class="sec">対象箇所: '+esc((it.anchor.section?it.anchor.section+' / ':'')+String(it.anchor.textQuote||'').slice(0,70))+'</div>' : '')
+        + (it._unresolved&&it.anchor?'<div class="sec">※ 資料が更新されたため、この位置は表示できません。</div>':'')
+        + (it.staffReply?'<div class="reply"><b>IDFLからの回答</b>'+esc(it.staffReply)+'</div>':'')
+        + '</div>';
+    }).join('');
+    box.scrollTop=top;
+  }
+
+  window.focusItem=function(n){
+    if(!DRAWER) toggleDrawer();
+    send({cmd:'focusPin', n:n});
+  };
+
+  window.toggleDrawer=function(){
+    DRAWER=!DRAWER;
+    el('drawer').classList.toggle('hide',!DRAWER);
+    el('fbToggle').classList.toggle('on',DRAWER);
+  };
+
+  function setPickUi(on){
+    el('addBtn').textContent = on ? 'クリック待ち…（中止するにはもう一度押す）' : 'コメントを追加';
+    el('addBtn').classList.toggle('on',on);
+    el('pickHint').textContent = on
+      ? '資料内のコメントしたい箇所をクリックしてください。Esc または上のボタンで中止できます。'
+      : '資料の中でコメントしたい箇所をクリックすると、その位置にコメントを残せます。';
+  }
+
+  window.startPick=function(){
+    if(!MEDIA) return;
+    if(MEDIA.mediaType!=='html'||!FRAME){ openForm(null); return; }   // no anchor: general feedback
+    PICKING=!PICKING;
+    setPickUi(PICKING);
+    send({cmd:'pickMode', on:PICKING});
+  };
+
+  // ----------------------------------------------------------------- form
+  function openForm(anchor){
+    PENDING={anchor:anchor||null};
+    var c=savedContact();
+    var where = anchor ? [anchor.section, String(anchor.textQuote||'').slice(0,80)].filter(Boolean).join(' / ') : '';
+    el('ovLead').textContent = where ? ('対象箇所: '+where) : '資料全体へのフィードバックとして送信します。';
+    el('ovBody').innerHTML=
+       '<label class="f">フィードバックの種類<span class="req">*</span>'
+      +'<select id="fType"><option value="question">質問</option><option value="comment">コメント・補足</option><option value="correction">修正依頼</option></select></label>'
+      +'<label class="f">フィードバック内容<span class="req">*</span>'
+      +'<textarea id="fMsg" maxlength="4000" placeholder="ご質問・ご意見・修正のご依頼をご記入ください。"></textarea></label>'
+      +'<div class="privacy">ご入力いただいた情報は、本資料に関するご質問・ご連絡への対応のために使用します。<br>お名前・メールアドレス・電話番号が他のお客様に表示されることはありません。</div>'
+      +'<label class="f">お名前<span class="req">*</span><input type="text" id="fName" maxlength="100" autocomplete="name" value="'+esc(c.name||'')+'"></label>'
+      +'<label class="f">メールアドレス<span class="req">*</span><input type="email" id="fEmail" maxlength="200" autocomplete="email" value="'+esc(c.email||'')+'"></label>'
+      +'<label class="f">電話番号<span class="req">*</span><input type="tel" id="fPhone" maxlength="40" autocomplete="tel" placeholder="06-1234-5678" value="'+esc(c.phone||'')+'"></label>';
+    el('ovErr').textContent='';
+    el('ovSend').disabled=false; el('ovSend').textContent='送信する';
+    el('ov').classList.add('open');
+    setTimeout(function(){ el('fMsg').focus(); },40);
+  }
+
+  window.closeModal=function(){ el('ov').classList.remove('open'); PENDING=null; };
+
+  function emailOk(v){ return /^[^\s@]{1,64}@[A-Za-z0-9][A-Za-z0-9.-]*\.[A-Za-z]{2,}$/.test(v); }
+  function phoneOk(v){ return /^[0-9+\-() .]+$/.test(v) && v.replace(/[^0-9]/g,'').length>=9; }
+
+  window.submitFeedback=function(){
+    if(!PENDING) return;
+    var err=el('ovErr'); err.textContent='';
+    var type=el('fType').value;
+    var msg=(el('fMsg').value||'').trim();
+    var name=(el('fName').value||'').trim();
+    var email=(el('fEmail').value||'').trim();
+    var phone=(el('fPhone').value||'').trim();
+    if(msg.length<2){ err.textContent='フィードバック内容をご記入ください。'; return; }
+    if(!name){ err.textContent='お名前をご記入ください。'; return; }
+    if(!emailOk(email)){ err.textContent='メールアドレスの形式をご確認ください。'; return; }
+    if(!phoneOk(phone)){ err.textContent='電話番号の形式をご確認ください（数字9桁以上）。'; return; }
+
+    var btn=el('ovSend'); btn.disabled=true; btn.textContent='送信中…';
+    saveContact({name:name,email:email,phone:phone});
+
+    fetch('/.netlify/functions/feedback-submit',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        mediaId:MEDIA_ID, mediaVersion:MEDIA.version||1, type:type, message:msg,
+        anchor:PENDING.anchor, token:myToken(), customer:{name:name,email:email,phone:phone}
+      })
+    }).then(function(r){ return r.json().then(function(j){ return {s:r.status,j:j}; }); })
+      .then(function(o){
+        if(o.s===200&&o.j.ok){
+          closeModal();
+          toast(o.j.notificationSent ? 'フィードバックを送信しました。' : 'フィードバックを受け付けました。');
+          if(!DRAWER) toggleDrawer();
+          loadFeedback();
+          return;
+        }
+        if(o.s===401){ err.textContent='セッションが切れています。再度ログインしてください。'; setTimeout(go,1400); }
+        else err.textContent=(o.j&&o.j.error)||('送信に失敗しました（'+o.s+'）');
+        btn.disabled=false; btn.textContent='送信する';
+      })
+      .catch(function(){ err.textContent='通信エラーが発生しました。'; btn.disabled=false; btn.textContent='送信する'; });
+  };
+
+  document.addEventListener('keydown',function(e){
+    if(e.key==='Escape'){
+      if(el('ov').classList.contains('open')) closeModal();
+      else if(PICKING){ PICKING=false; setPickUi(false); send({cmd:'pickMode',on:false}); }
+    }
+  });
+})();
+</script>
+</body>
+</html>

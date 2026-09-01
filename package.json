@@ -3,7 +3,13 @@
   "version": "1.0.0",
   "private": true,
   "description": "IDFL JAPAN static site + Netlify functions",
+  "scripts": {
+    "test": "node tests/media-feedback/run-all.mjs"
+  },
   "dependencies": {
     "@netlify/blobs": "^8.1.0"
+  },
+  "devDependencies": {
+    "jsdom": "^30.0.1"
   }
 }

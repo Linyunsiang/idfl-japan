@@ -33,6 +33,9 @@ exports.handler = async (event) => {
   if(!meta.role) return resp(400,{error:'invalid item'});
   if(typeof body.title==='string') meta.title=body.title.slice(0,200);
   if(typeof body.group==='string') meta.group=body.group.slice(0,120);
+  // Media Library fields. Optional everywhere, so existing callers are unaffected.
+  if(typeof body.description==='string') meta.description=body.description.slice(0,600);
+  if(typeof body.thumb==='string') meta.thumb=body.thumb.slice(0,300);
   if(body.role==='staff'||body.role==='customer') meta.role=body.role;
   if(body.status==='draft'||body.status==='published') meta.status=body.status;
   let newData=res.data; // preserve file bytes (or link string) unless url changes

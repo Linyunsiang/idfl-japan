@@ -34,7 +34,7 @@ exports.handler = async (event) => {
   const contentType = (CFG.TYPES[ext]||{}).mime || 'application/octet-stream';
   const ab = buf.buffer.slice(buf.byteOffset, buf.byteOffset+buf.byteLength);
   const ts = nowJst();
-  const metadata = { kind:'file', role:targetRole, status, name, title:String(body.title||name).slice(0,200), group:String(body.group||'').slice(0,120), contentType, size:buf.length, sizeLabel:human(buf.length), uploadedAt:ts, updatedAt:ts, uploadedBy:'staff' };
+  const metadata = { kind:'file', role:targetRole, status, name, title:String(body.title||name).slice(0,200), description:String(body.description||'').slice(0,600), group:String(body.group||'').slice(0,120), thumb:String(body.thumb||'').slice(0,300), contentType, size:buf.length, sizeLabel:human(buf.length), uploadedAt:ts, updatedAt:ts, uploadedBy:'staff' };
   try{ await store.set(id, ab, { metadata }); }catch(e){ return resp(502,{error:'保存に失敗しました: '+(e&&e.message||'')}); }
   return resp(200,{ ok:true, id, sizeLabel:human(buf.length) });
 };

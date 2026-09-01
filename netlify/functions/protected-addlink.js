@@ -23,7 +23,7 @@ exports.handler = async (event) => {
   let store; try{ store=getStore(STORE); }catch(e){ return resp(500,{error:'ストレージに接続できません'}); }
   const id = Date.now().toString(36)+'-'+crypto.randomBytes(4).toString('hex');
   const ts = nowJst();
-  const metadata = { kind:'link', role:targetRole, status, name:title, title, group, url, uploadedAt:ts, updatedAt:ts, uploadedBy:'staff' };
+  const metadata = { kind:'link', role:targetRole, status, name:title, title, description:String(body.description||'').slice(0,600), group, thumb:String(body.thumb||'').slice(0,300), url, uploadedAt:ts, updatedAt:ts, uploadedBy:'staff' };
   try{ await store.set(id, url, { metadata }); }catch(e){ return resp(502,{error:'保存に失敗しました'}); }
   return resp(200,{ ok:true, id });
 };

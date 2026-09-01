@@ -3,7 +3,9 @@
 // Ordering: explicit display order from the __order__ index; unordered items fall back to newest-first.
 const { getStore, connectLambda } = require('@netlify/blobs');
 const A = require('./_auth');
-const STORE='idfl-protected';
+const M = require('./_media');
+const S = require('./_stores');
+const STORE=S.PROTECTED_STORE;
 const ORDER_KEY='__order__';
 function resp(code,obj){return {statusCode:code,headers:{'Content-Type':'application/json','Cache-Control':'no-store'},body:JSON.stringify(obj)};}
 exports.handler = async (event) => {
@@ -23,7 +25,15 @@ exports.handler = async (event) => {
     if(!A.meets(role,need)) continue;
     const status = meta.status==='draft' ? 'draft' : 'published';
     if(status==='draft' && role!=='STAFF') continue; // drafts are hidden from customers
-    files.push({ id:key, kind:meta.kind||'file', url:(meta.kind==='link'?meta.url:undefined), name:meta.name, title:meta.title||meta.name, group:meta.group||'', role:meta.role, status, sizeLabel:meta.sizeLabel, contentType:meta.contentType, uploadedAt:meta.uploadedAt, updatedAt:meta.updatedAt||meta.uploadedAt });
+    files.push({ id:key, kind:meta.kind||'file', url:(meta.kind==='link'?meta.url:undefined), name:meta.name, title:meta.title||meta.name, group:meta.group||'', role:meta.role, status, sizeLabel:meta.sizeLabel, contentType:meta.contentType, uploadedAt:meta.uploadedAt, updatedAt:meta.updatedAt||meta.uploadedAt,
+      // Media Library fields. Derived where possible so existing records need
+      // no migration; /customer/downloads.html simply ignores the extras.
+      mediaType: M.mediaTypeOf(meta),
+      description: meta.description||'',
+      thumb: meta.thumb||'',
+      version: meta.version?(parseInt(meta.version,10)||1):undefined,
+      entry: meta.kind==='html'?(meta.entry||'index.html'):undefined,
+      assetCount: meta.kind==='html'?(parseInt(meta.files,10)||0):undefined });
   }
   files.sort((a,b)=>{
     const pa=(a.id in pos)?pos[a.id]:Infinity, pb=(b.id in pos)?pos[b.id]:Infinity;

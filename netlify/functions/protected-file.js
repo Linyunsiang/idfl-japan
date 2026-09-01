@@ -24,11 +24,16 @@ exports.handler = async (event) => {
     return { statusCode:302, headers:{ 'Location':meta.url, 'Cache-Control':'no-store' }, body:'' };
   }
   const buf=Buffer.from(res.data);
+  // The Media Library renders protected images as thumbnails, which needs an
+  // inline disposition. Images only - everything else stays a download.
+  const ct = meta.contentType || 'application/octet-stream';
+  const wantInline = ((event.queryStringParameters||{}).inline==='1') && /^image\//.test(ct);
   return {
     statusCode:200,
     headers:{
-      'Content-Type': meta.contentType || 'application/octet-stream',
-      'Content-Disposition': "attachment; filename*=UTF-8''"+encodeURIComponent(meta.name||('file-'+id)),
+      'Content-Type': ct,
+      'Content-Disposition': (wantInline?'inline':'attachment')+"; filename*=UTF-8''"+encodeURIComponent(meta.name||('file-'+id)),
+      'X-Content-Type-Options':'nosniff',
       'Cache-Control':'private, no-store'
     },
     body: buf.toString('base64'),
