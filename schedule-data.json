@@ -445,7 +445,7 @@
     "time": "",
     "signup": "",
     "related": "https://www.dornbirn-gfc.com/",
-    "published": false
+    "published": true
   },
   {
     "id": "ext-itma-asia-citme-2026",
@@ -459,6 +459,6 @@
     "time": "",
     "signup": "",
     "related": "https://www.itmaasia.com/shanghai2026/",
-    "published": false
+    "published": true
   }
 ]
