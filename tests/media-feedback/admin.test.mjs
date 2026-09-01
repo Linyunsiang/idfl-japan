@@ -10,7 +10,7 @@
 // ============================================================
 import assert from 'node:assert/strict';
 import { createRequire } from 'node:module';
-import { createServer, setEnv, invoke, ROOT } from './harness.mjs';
+import { createServer, setEnv, invoke, ROOT, setReadStale } from './harness.mjs';
 import { seedAll } from './seed.mjs';
 
 const require_ = createRequire(import.meta.url);
@@ -389,6 +389,41 @@ await t('an XSS payload in feedback renders as text in the console', async () =>
   assert.equal(row.querySelectorAll('img').length, 0, 'payload was parsed as markup');
   assert.equal(w.__pwned, undefined, 'payload executed');
   assert.ok(row.textContent.indexOf(payload) >= 0, 'payload should be visible as literal text');
+});
+
+// --------------------------------------------------------------------------
+// Stale reads. Netlify Blobs can serve a record without a field that was just
+// written, so feedback-manage's read-modify-write used to lose it: on the live
+// preview, saving a reply and then pressing 解決済み two seconds later wiped the
+// reply permanently. Every mutation now carries the whole staff-field set.
+// --------------------------------------------------------------------------
+await t('a status change straight after a reply does not wipe the reply', async () => {
+  const all = JSON.parse((await invoke('feedback-list', { headers: { cookie: cookieHeader(), host: 'localhost' }, queryStringParameters: { scope: 'all' } })).body).items;
+  const target = all.find(x => x.message.indexOf('数値の修正') >= 0) || all[0];
+  w.qLoad();
+  await settle(30);
+  // 1) save a reply and an internal note
+  w.qReply(target.key);
+  await settle(4);
+  d.getElementById('q_reply').value = '確認のうえご連絡します。';
+  d.getElementById('q_resolve').checked = false;
+  w.qSaveReply(target.key);
+  await settle(30);
+  w.qNote(target.key);
+  await settle(4);
+  d.getElementById('q_note').value = '担当: 大阪オフィス';
+  w.qSaveNote(target.key);
+  await settle(30);
+  // 2) now every subsequent read is stale for a while, as production was
+  setReadStale(60000, 'idfl-feedback');
+  try{
+    w.qStatus(target.key, 'resolved');
+    await settle(30);
+  } finally { setReadStale(0); }
+  const after = JSON.parse((await invoke('feedback-list', { headers: { cookie: cookieHeader(), host: 'localhost' }, queryStringParameters: { scope: 'all' } })).body).items.find(x => x.key === target.key);
+  assert.equal(after.status, 'resolved', 'the status change did not apply');
+  assert.equal(after.staffReply, '確認のうえご連絡します。', 'the staff reply was lost by the status change');
+  assert.equal(after.internalNote, '担当: 大阪オフィス', 'the internal note was lost by the status change');
 });
 
 await t('deleting removes the record and its personal data', async () => {

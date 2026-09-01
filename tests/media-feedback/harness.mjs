@@ -34,15 +34,31 @@ function toBuffer(v){
 // (a customer's own feedback vanished from the drawer right after submitting),
 // so the stand-in can reproduce it on demand.
 let LIST_LAG_MS = 0, LIST_LAG_STORE = '';
+// Netlify Blobs can also serve a STALE read right after a write. That is what
+// silently dropped a staff reply in production: feedback-manage read the record
+// back without the field it had just saved, then wrote that copy.
+let READ_STALE_MS = 0, READ_STALE_STORE = '';
+export function setReadStale(ms, match){ READ_STALE_MS = ms || 0; READ_STALE_STORE = match || ''; }
 /** Lag list() for stores whose name contains `match` (default: all). */
 export function setListLag(ms, match){ LIST_LAG_MS = ms || 0; LIST_LAG_STORE = match || ''; }
 
 class MemStore {
   constructor(name){ this.name = name; this.data = new Map(); }
-  async set(key, value, opts){ this.data.set(String(key), { buf: toBuffer(value), metadata: (opts && opts.metadata) || {}, at: Date.now() }); }
-  async setJSON(key, value, opts){ this.data.set(String(key), { buf: Buffer.from(JSON.stringify(value), 'utf8'), metadata: (opts && opts.metadata) || {}, json: true, at: Date.now() }); }
+  _remember(k){ const prev = this.data.get(String(k)); if(prev) this.prev = (this.prev||new Map()).set(String(k), prev); }
+  async set(key, value, opts){ this._remember(key); this.data.set(String(key), { buf: toBuffer(value), metadata: (opts && opts.metadata) || {}, at: Date.now() }); }
+  async setJSON(key, value, opts){ this._remember(key); this.data.set(String(key), { buf: Buffer.from(JSON.stringify(value), 'utf8'), metadata: (opts && opts.metadata) || {}, json: true, at: Date.now() }); }
+  _read(key){
+    const cur = this.data.get(String(key));
+    if(!cur) return cur;
+    const staleing = READ_STALE_MS > 0 && (!READ_STALE_STORE || this.name.indexOf(READ_STALE_STORE) >= 0);
+    if(staleing && cur.at && Date.now() - cur.at < READ_STALE_MS){
+      const old = this.prev && this.prev.get(String(key));
+      if(old) return old;                       // the write has not landed for readers yet
+    }
+    return cur;
+  }
   async get(key, opts){
-    const e = this.data.get(String(key));
+    const e = this._read(key);
     if(!e) return null;
     const type = (opts && opts.type) || 'text';
     if(type === 'json'){ try{ return JSON.parse(e.buf.toString('utf8')); }catch(err){ return null; } }

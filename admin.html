@@ -1242,6 +1242,22 @@ function mSetup(){
   input.addEventListener('change',function(){if(input.files&&input.files.length)mUpload(input.files[0]);input.value='';});
 }
 
+// The blob listing is eventually consistent, so a freshly uploaded record can
+// be missing from it for a few seconds. Poll until it shows rather than let
+// staff conclude the upload failed and do it twice.
+function mWaitFor(id, st){
+  var tries=0;
+  (function poll(){
+    fetch("/.netlify/functions/protected-list",{cache:"no-store"}).then(function(r){return r.json();}).then(function(j){
+      var files=(j&&j.files)||[];
+      if(files.some(function(f){return f.id===id;})||tries>=12){
+        MITEMS=files; pFillDatalist(); mRender();
+        if(st&&tries>=12) st.textContent+="（一覧への反映が遅れています。少し後に再読込してください）";
+      } else { tries++; setTimeout(poll,2500); }
+    }).catch(function(){ mLoad(); });
+  })();
+}
+
 function mLoad(){
   var list=document.getElementById('mList'); list.innerHTML='<div style="padding:16px;color:#6b7280">読込中…</div>';
   fetch('/.netlify/functions/protected-list',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
@@ -1342,7 +1358,7 @@ function mUpload(file,replaceId){
         st.style.color='#166534';
         st.textContent='完了：'+j.files+' ファイル（entry: '+j.entry+'、Version '+j.version+'）'+(j.skipped?('／'+j.skipped+' 件は名前が不正のため除外'):'');
         document.getElementById('mUpTitle').value=''; document.getElementById('mUpDesc').value='';
-        mLoad();
+        mWaitFor(j.id, st);
       } else { st.style.color='#b91c1c'; st.textContent='失敗: '+(j.error||('HTTP '+xhr.status)); }
     };
     xhr.onerror=function(){ prog.classList.remove('show'); st.style.color='#b91c1c'; st.textContent='通信エラー'; };
@@ -1448,7 +1464,14 @@ function qLogin(){ staffLogin('qPw','qGateErr',qInit); }
 function qLoad(){
   var list=document.getElementById('qList'); list.innerHTML='<div style="padding:16px;color:#6b7280">読込中…</div>';
   fetch('/.netlify/functions/feedback-list?scope=all',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
-    QITEMS=(j&&j.items)||[]; qRender(); qBadge();
+    var fresh=(j&&j.items)||[];
+    // A stale listing must not undo an edit already confirmed by the server.
+    var byKey={}; QITEMS.forEach(function(x){ byKey[x.key]=x; });
+    QITEMS=fresh.map(function(x){
+      var local=byKey[x.key];
+      return (local && String(local.updatedAt||"") > String(x.updatedAt||"")) ? local : x;
+    });
+    qRender(); qBadge();
   }).catch(function(){ list.innerHTML='<div style="padding:16px;color:#b91c1c">読込に失敗しました。</div>'; });
 }
 function qSetFilter(f){ QFILTER=f; var el=document.getElementById('qFilters'); if(el) el.querySelectorAll('.fpill').forEach(function(b){b.classList.toggle('on',b.dataset.f===f);}); qRender(); }
@@ -1516,11 +1539,28 @@ function qOpenMedia(mediaId,fbId){
   window.open('/customer/media-viewer.html?id='+encodeURIComponent(mediaId)+'&fb='+encodeURIComponent(fbId),'_blank','noopener');
 }
 
+// Netlify Blobs lists eventually AND can serve a stale read straight after a
+// write, so feedback-manage's read-modify-write could silently drop a field
+// that had just been saved: reply, then "解決済み" two seconds later, and the
+// reply was gone. Every mutation therefore sends the COMPLETE staff-field set
+// from the console's own copy, so a stale server read cannot lose anything,
+// and the copy is refreshed from the response before the next action.
+function qStaffFields(key){
+  var x=qFind(key)||{};
+  return { status:x.status||"new", staffReply:x.staffReply||"", internalNote:x.internalNote||"", publicVisible:!!x.publicVisible };
+}
+function qApplyLocal(item){
+  if(!item||!item.key) return;
+  for(var i=0;i<QITEMS.length;i++) if(QITEMS[i].key===item.key){ QITEMS[i]=item; break; }
+}
 function qPatch(key,patch,msg){
-  fetch('/.netlify/functions/feedback-manage',{method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify(Object.assign({action:'update',id:key},patch))})
-   .then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){ toast(msg||'更新しました'); qLoad(); } else toast((j&&j.error)||'更新に失敗しました'); })
-   .catch(function(){ toast('通信エラー'); });
+  var body=Object.assign({action:"update",id:key}, qStaffFields(key), patch);
+  fetch("/.netlify/functions/feedback-manage",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify(body)})
+   .then(function(r){return r.json();}).then(function(j){
+     if(j&&j.ok){ qApplyLocal(j.item); qRender(); qBadge(); toast(msg||"更新しました"); setTimeout(qLoad,6000); }
+     else toast((j&&j.error)||"更新に失敗しました");
+   })
+   .catch(function(){ toast("通信エラー"); });
 }
 function qStatus(key,st){ qPatch(key,{status:st},'ステータスを変更しました'); }
 function qPublic(key,on){
