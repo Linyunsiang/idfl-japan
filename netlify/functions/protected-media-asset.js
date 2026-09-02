@@ -136,12 +136,6 @@ exports.handler = async (event) => {
     'X-Robots-Tag': 'noindex, nofollow',
     // private: this is behind a session; a shared cache must never keep it.
     'Cache-Control': 'private, max-age=0, must-revalidate',
-    /* Chrome's media pipeline will not finish loading a clip from a response
-       of unknown length: it sits at networkState 2 forever and never fires
-       an error. Netlify sends these base64 bodies chunked unless a length is
-       declared, so declare it. The value is the decoded size, because that is
-       what reaches the browser. Harmless for every other asset type. */
-    'Content-Length': String(buf.length),
   };
   if(M.isHtmlPath(safe) || contentType.indexOf('text/html') === 0){
     headers['Content-Security-Policy'] = CSP_SANDBOX;
