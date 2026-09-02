@@ -1,5 +1,28 @@
 [
   {
+    "id": "qa-1788335046279",
+    "section": "tc",
+    "q": "MMS移行時間のTC申請について",
+    "a": "RCS在庫 → MMS：不可\nMMS在庫 → RCS：不可\nTier 4でMMSとRCSを同時保有できるのは、既存RCS在庫をRCSとして売り切るためだけ\nMMS在庫とRCS在庫は、在庫台帳・数量・TCを分けて管理する\nGRS／RAS／RMS／RWS → MMS：Transition Claimを使用して移行可能\nMMS → RAS／RMS／RWS：§1.6.6に基づき過渡期間のみ可能\nMMS → GRS／RCS：不可\n旧規格TCは、2029年3月31日までに完全かつ有効な申請を提出する必要がある",
+    "images": [
+      {
+        "src": "/files/mtjsjc45-q8fj-MMSRCS2.png",
+        "caption": ""
+      },
+      {
+        "src": "/files/mtjsjdlk-vcmi-MMSRCS1.png",
+        "caption": ""
+      }
+    ],
+    "isNew": true,
+    "newUntil": "2026-10-31",
+    "link": "https://textileexchange.org/app/uploads/2026/04/TE-MM-POL-102-V1.0-Materials-Matter-Transition-Policy.pdf?utm_source=chatgpt.com",
+    "linkLabel": "TE-MM-POL-102-V1.0",
+    "createdAt": "2026-09-02T07:45:40.925Z",
+    "updatedAt": "2026-09-02T07:45:54.046Z",
+    "updatedBy": "admin"
+  },
+  {
     "id": "qa-1787796684239",
     "section": "audit",
     "q": "OCS、RDSおよびMaterials Matter Standardは、同一のScope Certificateに記載できますか？",
