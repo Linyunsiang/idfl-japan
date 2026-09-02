@@ -24,6 +24,12 @@ async function t(name, fn){
 }
 function G(n){ console.log('\n' + n); }
 
+// 集計は終了時に出す。テストを末尾に足しても集計が途中に取り残されない。
+process.on('exit', () => {
+  console.log('\n' + pass + ' passed, ' + fail + ' failed');
+  if(fail) process.exitCode = 1;
+});
+
 // ---------------------------------------------------------------- scanning
 const SKIP_DIRS = new Set(['.git','node_modules','.gstack','dist','build']);
 const SCAN_EXT  = new Set(['.html','.js','.mjs','.cjs','.json','.css']);
@@ -314,7 +320,7 @@ async function target(env){
   delete process.env.CONTEXT; delete process.env.BRANCH;
   Object.assign(process.env, env);
   const mod = await import('file://' + TARGET.split(path.sep).join('/') + '?v=' + Math.random());
-  try{ return mod.default ? mod.default.targetBranch() : mod.targetBranch(); }
+  try{ return await (mod.default ? mod.default.resolveBranch : mod.resolveBranch)(env.GITHUB_TOKEN || null); }
   finally{ process.env = saved; }
 }
 
@@ -390,5 +396,28 @@ await t('no write endpoint hard-codes a branch any more', async () => {
   }
 });
 
-console.log('\n' + pass + ' passed, ' + fail + ' failed');
-process.exitCode = fail ? 1 : 0;
+await t('a deploy preview with no BRANCH and no token refuses', async () => {
+  // BRANCH is a build variable; Netlify does not put it in the function
+  // runtime, so this is the real shape of a preview invocation.
+  assert.equal(await target({ CONTEXT:'deploy-preview', REVIEW_ID:'10' }), null);
+});
+
+await t('a malformed REVIEW_ID is never looked up', async () => {
+  for(const id of ['abc', '1; rm -rf /', '../10', '', '9'.repeat(20)])
+    assert.equal(await target({ CONTEXT:'deploy-preview', REVIEW_ID:id }), null, 'accepted: ' + JSON.stringify(id));
+});
+
+await t('the write endpoints resolve their target asynchronously', async () => {
+  for(const f of ['publish.js','upload-file.js','file-manager.js']){
+    const txt = fs.readFileSync(path.join(ROOT, 'netlify/functions', f), 'utf8');
+    assert.ok(txt.includes('await T.resolveBranch('), f + ' should await resolveBranch');
+  }
+});
+
+await t('the branch is resolved only after the caller is authenticated', async () => {
+  // an unauthenticated request must never reach the GitHub lookup
+  const txt = fs.readFileSync(path.join(ROOT, 'netlify/functions/publish.js'), 'utf8');
+  const authAt = txt.indexOf('password !== process.env.ADMIN_PASSWORD');
+  const branchAt = txt.indexOf('await T.resolveBranch(');
+  assert.ok(authAt >= 0 && branchAt > authAt, 'the password check must come first');
+});

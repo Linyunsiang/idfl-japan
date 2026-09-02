@@ -27,22 +27,47 @@ const SAFE_BRANCH = /^[A-Za-z0-9](?:[A-Za-z0-9._\/-]{0,198}[A-Za-z0-9_-])?$/;
 /**
  * The branch writes should go to, or null when it cannot be established
  * safely. Callers must treat null as a hard error, not as "use main".
+ *
+ * BRANCH is a BUILD variable. Netlify does not put it in the function
+ * runtime, so on a Deploy Preview it is simply absent — which is why this
+ * asks GitHub instead. REVIEW_ID is the pull request number and is available
+ * at runtime, and the PR knows its own head branch.
+ *
+ * Needs a token only for the preview lookup; production never gets that far.
  */
-function targetBranch(){
+async function resolveBranch(token){
   const ctx = String(process.env.CONTEXT || '').trim();
-  const branch = String(process.env.BRANCH || '').trim();
 
-  // A production build always writes to main, whatever BRANCH happens to say.
+  // A production build always writes to main, whatever else is set.
   if(ctx === 'production') return 'main';
 
-  // Any other context writes to its own branch, never to production.
-  if(branch && branch !== 'main' && SAFE_BRANCH.test(branch) && branch.indexOf('..') < 0) return branch;
-
   // A branch deploy of main is legitimately main.
+  const branch = String(process.env.BRANCH || '').trim();
   if(ctx === 'branch-deploy' && branch === 'main') return 'main';
+
+  // If the runtime does happen to carry BRANCH, trust it — but never as main
+  // outside a production or branch-deploy context.
+  if(branch && branch !== 'main' && isSafeBranch(branch)) return branch;
+
+  // Deploy Preview: ask the pull request which branch it is for.
+  const review = String(process.env.REVIEW_ID || '').trim();
+  if(/^[0-9]{1,9}$/.test(review) && token){
+    try{
+      const r = await fetch('https://api.github.com/repos/' + OWNER + '/' + REPO + '/pulls/' + review, {
+        headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json', 'User-Agent': 'idfl-admin-publish' },
+      });
+      if(r.status === 200){
+        const j = await r.json();
+        const head = j && j.head && j.head.ref;
+        if(head && head !== 'main' && isSafeBranch(head)) return head;
+      }
+    }catch(e){ /* fall through to the refusal */ }
+  }
 
   return null;
 }
+
+function isSafeBranch(b){ return SAFE_BRANCH.test(b) && b.indexOf('..') < 0; }
 
 /** A Japanese message for the null case, so every caller says the same thing. */
 const NO_TARGET = '公開先のブランチを特定できませんでした（この環境からは公開できません）。';
@@ -51,4 +76,4 @@ function contentsUrl(path){
   return 'https://api.github.com/repos/' + OWNER + '/' + REPO + '/contents/' + path;
 }
 
-module.exports = { OWNER, REPO, targetBranch, NO_TARGET, contentsUrl, SAFE_BRANCH };
+module.exports = { OWNER, REPO, resolveBranch, isSafeBranch, NO_TARGET, contentsUrl, SAFE_BRANCH };

@@ -41,10 +41,6 @@ exports.handler = async (event) => {
   const ext = (name.split('.').pop()||'').toLowerCase();
   if (!ALLOWED_EXT[ext]) return resp(400,{error:'対応形式は PNG / JPG / WEBP / SVG のみです'});
 
-  // A Deploy Preview writes to its own branch, never to production.
-  const BRANCH = T.targetBranch();
-  if (!BRANCH) return resp(500, {error: T.NO_TARGET});
-
   // SVG sanitize (strip scripts/handlers to prevent stored XSS)
   if (ext === 'svg') {
     const clean = sanitizeSvg(contentBase64);
@@ -58,6 +54,10 @@ exports.handler = async (event) => {
 
   const token = process.env.GITHUB_TOKEN || process.env.GITHUB_TOKEN1;
   if (!token) return resp(500,{error:'server not configured'});
+
+  // A Deploy Preview writes to its own branch, never to production.
+  const BRANCH = await T.resolveBranch(token);
+  if (!BRANCH) return resp(500, {error: T.NO_TARGET});
 
   const path = 'files/' + name;
   const api = `https://api.github.com/repos/${OWNER}/${REPO}/contents/` + path.split('/').map(encodeURIComponent).join('/');

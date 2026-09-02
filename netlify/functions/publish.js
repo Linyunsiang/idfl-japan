@@ -43,7 +43,7 @@ exports.handler = async (event) => {
   if (!token) return resp(500, {error:'server not configured: GITHUB_TOKEN'});
 
   // A Deploy Preview writes to its own branch, never to production.
-  const BRANCH = T.targetBranch();
+  const BRANCH = await T.resolveBranch(token);
   if (!BRANCH) return resp(500, {error: T.NO_TARGET});
 
   const api = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`;
