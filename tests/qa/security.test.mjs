@@ -320,7 +320,7 @@ async function target(env){
   delete process.env.CONTEXT; delete process.env.BRANCH;
   Object.assign(process.env, env);
   const mod = await import('file://' + TARGET.split(path.sep).join('/') + '?v=' + Math.random());
-  try{ return await (mod.default ? mod.default.resolveBranch : mod.resolveBranch)(env.GITHUB_TOKEN || null); }
+  try{ return await (mod.default ? mod.default.resolveBranch : mod.resolveBranch)(env.GITHUB_TOKEN || null, env.__host || null); }
   finally{ process.env = saved; }
 }
 
@@ -420,4 +420,67 @@ await t('the branch is resolved only after the caller is authenticated', async (
   const authAt = txt.indexOf('password !== process.env.ADMIN_PASSWORD');
   const branchAt = txt.indexOf('await T.resolveBranch(');
   assert.ok(authAt >= 0 && branchAt > authAt, 'the password check must come first');
+});
+
+// ==========================================================================
+G('THE HOST DECIDES WHEN NETLIFY PROVIDES NOTHING');
+
+// This site's function runtime carries no CONTEXT / BRANCH / REVIEW_ID at all
+// — confirmed against a live deploy — so these tests describe reality, not a
+// hypothetical. Getting this wrong in the production direction breaks
+// publishing for the whole site, so it is pinned here.
+
+await t('the production domain resolves to main with no env at all', async () => {
+  for(const host of ['idfl-japan.com','www.idfl-japan.com','idfl-japan.netlify.app','main--idfl-japan.netlify.app'])
+    assert.equal(await target({ __host: host }), 'main', 'failed for ' + host);
+});
+
+await t('a port on the host does not confuse it', async () => {
+  assert.equal(await target({ __host: 'idfl-japan.com:443' }), 'main');
+});
+
+await t('case in the host does not confuse it', async () => {
+  assert.equal(await target({ __host: 'IDFL-Japan.COM' }), 'main');
+});
+
+await t('a preview host never resolves to main', async () => {
+  // without a token the PR lookup cannot run, so it must refuse rather than
+  // fall back to production
+  assert.equal(await target({ __host: 'deploy-preview-10--idfl-japan.netlify.app' }), null);
+});
+
+await t('a host that is neither is refused', async () => {
+  for(const host of ['evil.example','idfl-japan.com.evil.example','','deploy-preview--idfl-japan.netlify.app',
+                     'deploy-preview-abc--idfl-japan.netlify.app','feature-x--idfl-japan.netlify.app'])
+    assert.notEqual(await target({ __host: host }), 'main', 'resolved to main for ' + JSON.stringify(host));
+});
+
+await t('a look-alike production host cannot claim main', async () => {
+  for(const host of ['idfl-japan.com.attacker.test','notidfl-japan.com','idfl-japan.netlify.app.evil.test'])
+    assert.equal(await target({ __host: host }), null, 'accepted: ' + host);
+});
+
+await t('CONTEXT still wins where Netlify does provide it', async () => {
+  // a production build must not be re-decided by a host header
+  assert.equal(await target({ CONTEXT:'production', __host:'deploy-preview-10--idfl-japan.netlify.app' }), 'main');
+});
+
+await t('the host classifier agrees with the branch resolver', async () => {
+  const mod = await import('file://' + TARGET.split(path.sep).join('/') + '?v=' + Math.random());
+  const dep = mod.default ? mod.default.deploymentFromHost : mod.deploymentFromHost;
+  assert.equal(dep('idfl-japan.com').kind, 'production');
+  assert.equal(dep('deploy-preview-10--idfl-japan.netlify.app').kind, 'preview');
+  assert.equal(dep('deploy-preview-10--idfl-japan.netlify.app').review, '10');
+  assert.equal(dep('evil.example').kind, 'unknown');
+  assert.equal(dep('').kind, 'unknown');
+  assert.equal(dep(null).kind, 'unknown');
+});
+
+await t('every write endpoint passes the request host through', async () => {
+  for(const f of ['publish.js','upload-file.js']){
+    const txt = fs.readFileSync(path.join(ROOT, 'netlify/functions', f), 'utf8');
+    assert.ok(/resolveBranch\(token, event\.headers/.test(txt), f + ' should pass the host');
+  }
+  const fm = fs.readFileSync(path.join(ROOT, 'netlify/functions/file-manager.js'), 'utf8');
+  assert.ok(/setHost\(event\.headers/.test(fm), 'file-manager.js should record the host');
 });

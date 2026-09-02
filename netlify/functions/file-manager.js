@@ -16,10 +16,11 @@ const OWNER = T.OWNER, REPO = T.REPO;
    ブランチに書き、本番だけが main に書く。 */
 /* 書き込み先ブランチは1リクエストにつき一度だけ解決してキャッシュする。
    Deploy Preview は自分のブランチに書き、本番だけが main に書く。 */
-let _br = null;
+let _br = null, _host = null;
+function setHost(h){ _host = h; _br = null; }
 async function BR(){
   if(_br) return _br;
-  const b = await T.resolveBranch(process.env.GITHUB_TOKEN || process.env.GITHUB_TOKEN1);
+  const b = await T.resolveBranch(process.env.GITHUB_TOKEN || process.env.GITHUB_TOKEN1, _host);
   if(!b) throw new Error(T.NO_TARGET);
   _br = b; return _br;
 }
@@ -78,6 +79,7 @@ function human(bytes){ return bytes>=1048576 ? (bytes/1048576).toFixed(1)+' MB' 
 
 // ============================================================
 exports.handler = async (event) => {
+  setHost(event.headers && (event.headers.host || event.headers.Host));
   if (event.httpMethod === 'OPTIONS') return resp(200,{ok:true});
 
   // config は認証不要で返す（許可拡張子・サイズ上限のみ。秘密なし）

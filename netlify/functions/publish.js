@@ -43,8 +43,8 @@ exports.handler = async (event) => {
   if (!token) return resp(500, {error:'server not configured: GITHUB_TOKEN'});
 
   // A Deploy Preview writes to its own branch, never to production.
-  const BRANCH = await T.resolveBranch(token);
-  if (!BRANCH) return resp(500, {error: T.NO_TARGET, deployContext: T.describeEnv()});
+  const BRANCH = await T.resolveBranch(token, event.headers && (event.headers.host || event.headers.Host));
+  if (!BRANCH) return resp(500, {error: T.NO_TARGET, deployContext: T.describeEnv(), host: (event.headers && (event.headers.host || event.headers.Host)) || null});
 
   const api = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`;
   const H = { 'Authorization':`Bearer ${token}`, 'Accept':'application/vnd.github+json', 'User-Agent':'idfl-admin-publish' };

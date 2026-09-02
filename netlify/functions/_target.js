@@ -25,44 +25,82 @@ const REPO  = 'idfl-japan';
 const SAFE_BRANCH = /^[A-Za-z0-9](?:[A-Za-z0-9._\/-]{0,198}[A-Za-z0-9_-])?$/;
 
 /**
+ * Which deployment is serving this request, worked out from the host it came
+ * in on.
+ *
+ * This site's function runtime carries none of Netlify's deploy metadata —
+ * CONTEXT, BRANCH, REVIEW_ID and DEPLOY_PRIME_URL are all absent, verified by
+ * asking a live deploy. SITE_NAME is the only one set, and it is identical on
+ * production and on a preview, so it cannot tell them apart. The host can:
+ * Netlify routes by it, so a request that reached this deployment arrived on
+ * one of its own hostnames.
+ *
+ *   idfl-japan.com                                  -> production
+ *   main--idfl-japan.netlify.app                    -> production
+ *   deploy-preview-<n>--idfl-japan.netlify.app      -> pull request <n>
+ *   anything else                                   -> unknown, refuse
+ *
+ * Host cannot be used to escalate. Claiming to be a preview sends writes to a
+ * pull request branch, which is strictly less privileged than main; and a
+ * request claiming the production host is routed to the production deployment
+ * by the edge before any of this code runs.
+ */
+function deploymentFromHost(host){
+  const h = String(host || '').toLowerCase().split(':')[0].trim();
+  if(!h) return { kind: 'unknown' };
+  if(PRODUCTION_HOSTS.has(h)) return { kind: 'production' };
+  const preview = /^deploy-preview-([0-9]{1,9})--idfl-japan\.netlify\.app$/.exec(h);
+  if(preview) return { kind: 'preview', review: preview[1] };
+  return { kind: 'unknown' };
+}
+
+const PRODUCTION_HOSTS = new Set([
+  'idfl-japan.com',
+  'www.idfl-japan.com',
+  'idfl-japan.netlify.app',
+  'main--idfl-japan.netlify.app',
+]);
+
+/** The head branch of a pull request, or null. Needs a token; public repo. */
+async function branchOfPullRequest(review, token){
+  if(!/^[0-9]{1,9}$/.test(String(review || '')) || !token) return null;
+  try{
+    const r = await fetch('https://api.github.com/repos/' + OWNER + '/' + REPO + '/pulls/' + review, {
+      headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json', 'User-Agent': 'idfl-admin-publish' },
+    });
+    if(r.status !== 200) return null;
+    const j = await r.json();
+    const head = j && j.head && j.head.ref;
+    return (head && head !== 'main' && isSafeBranch(head)) ? head : null;
+  }catch(e){ return null; }
+}
+
+/**
  * The branch writes should go to, or null when it cannot be established
  * safely. Callers must treat null as a hard error, not as "use main".
  *
- * BRANCH is a BUILD variable. Netlify does not put it in the function
- * runtime, so on a Deploy Preview it is simply absent — which is why this
- * asks GitHub instead. REVIEW_ID is the pull request number and is available
- * at runtime, and the PR knows its own head branch.
- *
- * Needs a token only for the preview lookup; production never gets that far.
+ * `host` is the request's Host header. Environment variables are consulted
+ * first because they are unambiguous where they exist; the host is the
+ * fallback that actually works on this site.
  */
-async function resolveBranch(token){
+async function resolveBranch(token, host){
   const ctx = String(process.env.CONTEXT || '').trim();
-
-  // A production build always writes to main, whatever else is set.
-  if(ctx === 'production') return 'main';
-
-  // A branch deploy of main is legitimately main.
   const branch = String(process.env.BRANCH || '').trim();
+
+  // Where Netlify does provide the context, believe it.
+  if(ctx === 'production') return 'main';
   if(ctx === 'branch-deploy' && branch === 'main') return 'main';
+  if(ctx && branch && branch !== 'main' && isSafeBranch(branch)) return branch;
 
-  // If the runtime does happen to carry BRANCH, trust it — but never as main
-  // outside a production or branch-deploy context.
-  if(branch && branch !== 'main' && isSafeBranch(branch)) return branch;
-
-  // Deploy Preview: ask the pull request which branch it is for.
   const review = String(process.env.REVIEW_ID || '').trim();
-  if(/^[0-9]{1,9}$/.test(review) && token){
-    try{
-      const r = await fetch('https://api.github.com/repos/' + OWNER + '/' + REPO + '/pulls/' + review, {
-        headers: { Authorization: 'Bearer ' + token, Accept: 'application/vnd.github+json', 'User-Agent': 'idfl-admin-publish' },
-      });
-      if(r.status === 200){
-        const j = await r.json();
-        const head = j && j.head && j.head.ref;
-        if(head && head !== 'main' && isSafeBranch(head)) return head;
-      }
-    }catch(e){ /* fall through to the refusal */ }
+  if(ctx === 'deploy-preview' && review){
+    return await branchOfPullRequest(review, token);
   }
+
+  // No deploy metadata: fall back to the host the request arrived on.
+  const dep = deploymentFromHost(host);
+  if(dep.kind === 'production') return 'main';
+  if(dep.kind === 'preview') return await branchOfPullRequest(dep.review, token);
 
   return null;
 }
@@ -76,7 +114,7 @@ const NO_TARGET = '公開先のブランチを特定できませんでした（�
    ここに出るのは Netlify のデプロイ文脈だけで、秘密は含まない。
    呼び出し側は必ず認証の後で使うこと。 */
 function describeEnv(){
-  const names = ['CONTEXT','BRANCH','HEAD','REVIEW_ID','PULL_REQUEST','DEPLOY_PRIME_URL','SITE_NAME'];
+  const names = ['CONTEXT','BRANCH','HEAD','REVIEW_ID','PULL_REQUEST','DEPLOY_PRIME_URL','DEPLOY_URL','URL','SITE_NAME','NETLIFY'];
   const out = {};
   for(const n of names){
     const v = process.env[n];
@@ -89,4 +127,4 @@ function contentsUrl(path){
   return 'https://api.github.com/repos/' + OWNER + '/' + REPO + '/contents/' + path;
 }
 
-module.exports = { OWNER, REPO, resolveBranch, isSafeBranch, NO_TARGET, describeEnv, contentsUrl, SAFE_BRANCH };
+module.exports = { OWNER, REPO, resolveBranch, isSafeBranch, deploymentFromHost, NO_TARGET, describeEnv, contentsUrl, SAFE_BRANCH };
