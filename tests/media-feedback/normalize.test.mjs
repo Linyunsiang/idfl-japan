@@ -53,12 +53,19 @@ t('finds a base64 data URI and decodes it', () => {
   assert.deepEqual(uris[0].data, Buffer.from(PNG, 'base64'));
 });
 
-t('finds a percent-encoded (non-base64) data URI', () => {
-  const html = '<img src="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%2F%3E">';
-  const uris = findDataUris(html);
-  assert.equal(uris.length, 1);
-  assert.equal(uris[0].mime, 'image/svg+xml');
-  assert.ok(uris[0].data.toString('utf8').startsWith('<svg'));
+t('leaves a percent-encoded (non-base64) data URI completely alone', () => {
+  // Its payload legally contains spaces, quotes and angle brackets, so there is
+  // no terminator that both ends the URI and stays inside it. Extracting one
+  // truncated it to a 4-byte "<svg" and left the remaining markup dangling in
+  // the attribute. These are inline SVG icons; leaving them embedded costs
+  // nothing and cannot corrupt anything.
+  const raw = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E%3C/svg%3E";
+  const html = '<img src="' + raw + '">';
+  assert.equal(findDataUris(html).length, 0);
+  const { files, report } = normalize(html);
+  assert.equal(report.extracted, 0);
+  assert.equal(files.length, 1);
+  assert.ok(files[0].data.toString('utf8').includes(raw), 'it must survive byte-identically');
 });
 
 t('handles an SVG data URI', () => {

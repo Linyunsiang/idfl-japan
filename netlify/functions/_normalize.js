@@ -27,15 +27,26 @@ const LIMITS = {
   SAFE_PROTECTED_ASSET: 3.5 * 1024 * 1024,
 };
 
-// data:[<mime>][;charset=…][;base64],<payload>
+// data:<mime>[;param…];base64,<payload>
 //
-// The payload stops at every delimiter that can end a URI in real markup AND in
-// real script. A backslash matters as much as a quote: inside a JavaScript
-// string literal the document writes src=\"data:…\", and a class that allows a
-// backslash swallows that escape, so the payload fails its base64 check and the
-// image is silently left embedded. That is how six large PNGs survived
-// normalisation of the TC manual.
-const DATA_URI_RE = /data:([a-zA-Z0-9.+-]+\/[a-zA-Z0-9.+-]+)((?:;[a-zA-Z0-9.+-]+=?[a-zA-Z0-9.+-]*)*),([^"'\s)\\<>`]*)/g;
+// Only base64 URIs are matched, and the payload is matched as the base64
+// alphabet itself rather than as "everything up to a delimiter". Both halves of
+// that matter, and each was learned from a real failure in the TC manual:
+//
+//   Delimiter scanning is wrong for a payload whose own alphabet overlaps the
+//   delimiters. An unencoded SVG — data:image/svg+xml,<svg xmlns='…'> — legally
+//   contains spaces, quotes and angle brackets, so any terminator set either
+//   cuts the URI short or runs past its end. Cutting it short is the dangerous
+//   outcome: it decoded to a 4-byte "<svg", got stored as an asset, and left
+//   the rest of the markup dangling in the attribute. Corruption, not a missed
+//   extraction. Unencoded URIs are therefore left alone entirely; they are
+//   inline SVG icons, small enough that extracting them buys nothing.
+//
+//   Matching the alphabet also handles the escaped-quote case for free. Inside
+//   a JavaScript string the document writes src=\"data:…\", and a scan that
+//   merely excluded quotes swallowed the backslash, failed the base64 check and
+//   silently left six large PNGs embedded.
+const DATA_URI_RE = /data:([a-zA-Z0-9.+-]+\/[a-zA-Z0-9.+-]+)((?:;[a-zA-Z0-9.+-]+=?[a-zA-Z0-9.+-]*)*;base64),([A-Za-z0-9+/]+={0,2})/g;
 
 const EXT_BY_MIME = {
   'image/png': 'png', 'image/jpeg': 'jpg', 'image/jpg': 'jpg', 'image/gif': 'gif',
@@ -57,20 +68,13 @@ function extForMime(mime){
   return EXT_BY_MIME[m] || '';
 }
 
-function decodeDataUri(params, payload){
-  const isB64 = /;base64/i.test(params);
-  if(isB64){
-    // A data URI may legally contain whitespace; Buffer ignores it, but reject
-    // anything that is not base64 at all rather than storing garbage.
-    const clean = payload.replace(/\s+/g, '');
-    if(!/^[A-Za-z0-9+/]*={0,2}$/.test(clean)) return null;
-    const buf = Buffer.from(clean, 'base64');
-    // Round-trip check: catches truncated or corrupt payloads.
-    if(buf.length === 0 && clean.length > 0) return null;
-    return buf;
-  }
-  try{ return Buffer.from(decodeURIComponent(payload), 'utf8'); }
-  catch(e){ return null; }
+function decodeDataUri(payload){
+  const buf = Buffer.from(payload, 'base64');
+  if(!buf.length) return null;
+  // Re-encode and compare: a payload the regex matched but base64 cannot
+  // represent exactly would otherwise be stored silently truncated.
+  if(buf.toString('base64').replace(/=+$/, '') !== payload.replace(/=+$/, '')) return null;
+  return buf;
 }
 
 /**
@@ -83,9 +87,9 @@ function findDataUris(html){
   DATA_URI_RE.lastIndex = 0;
   let m;
   while((m = DATA_URI_RE.exec(html)) !== null){
-    const [raw, mime, params, payload] = m;
+    const [raw, mime, , payload] = m;
     if(!payload) continue;
-    const data = decodeDataUri(params, payload);
+    const data = decodeDataUri(payload);
     if(!data || !data.length) continue;                 // malformed: leave untouched
     if(!extForMime(mime)) continue;                     // unknown type: leave untouched
     out.push({
@@ -221,7 +225,7 @@ function normalize(html, opts = {}){
   // caught everything. A non-zero count here means the entry document is still
   // carrying payload, and the caller should treat that as a failed extraction
   // rather than a clean package.
-  const leftover = /data:[a-zA-Z0-9.+-]+\/[a-zA-Z0-9.+-]+[^,]{0,64},[A-Za-z0-9+/=%]{64,}/g;
+  const leftover = /data:[a-zA-Z0-9.+-]+\/[a-zA-Z0-9.+-]+[^,]{0,64};base64,[A-Za-z0-9+/=]{64,}/g;
   report.remaining = (out.match(leftover) || []).length;
 
   files.unshift({ path: 'index.html', data: Buffer.from(out, 'utf8') });

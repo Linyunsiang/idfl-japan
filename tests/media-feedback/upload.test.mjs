@@ -350,6 +350,39 @@ await t('a data URI inside an escaped JS string is extracted, not skipped', asyn
   assert.ok(idx.includes('src=\\"assets/embedded-001.png\\"'), 'the rewritten path broke the string literal');
 });
 
+await t('an unencoded data URI is left completely alone, never truncated', async () => {
+  // An inline SVG's payload legally contains spaces, quotes and angle brackets
+  // — the very characters a delimiter scan would stop at. Stopping early here
+  // stored a 4-byte "<svg" as an asset and left the rest of the markup dangling
+  // in the attribute, which is corruption rather than a missed extraction.
+  const svg = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 48 48'%3E" +
+    "%3Crect width='48' height='48' fill='%230B2F53'/%3E%3C/svg%3E";
+  const html = '<html><head><link rel="icon" href="' + svg + '"></head><body>' +
+    '<img src="data:image/png;base64,' + Buffer.alloc(8 * 1024, 0x37).toString('base64') + '">' +
+    '</body></html>';
+
+  const found = N.findDataUris(html);
+  assert.equal(found.length, 1, 'only the base64 URI should be extracted');
+  assert.equal(found[0].mime, 'image/png');
+
+  const { files } = N.normalize(html);
+  const idx = files[0].data.toString('utf8');
+  assert.ok(idx.includes(svg), 'the unencoded SVG must survive byte-identically');
+  assert.equal(files.length, 2, 'the SVG must not become an asset');
+  assert.ok(!/embedded-\d+\.svg/.test(idx), 'no truncated svg reference may be emitted');
+  for(const f of files.slice(1)) assert.ok(f.data.length > 64, 'a truncated asset was stored: ' + f.path);
+});
+
+await t('a base64 payload that is not valid base64 is left in place', async () => {
+  // matched shape, unrepresentable content: storing it silently truncated would
+  // be worse than leaving it embedded
+  const html = '<img src="data:image/png;base64,A">';
+  assert.equal(N.findDataUris(html).length, 0);
+  const { files, report } = N.normalize(html);
+  assert.equal(files.length, 1);
+  assert.equal(report.extracted, 0);
+});
+
 G('THE REAL TC MANUAL');
 
 if(!fs.existsSync(TC)){
@@ -396,7 +429,8 @@ if(!fs.existsSync(TC)){
     assert.ok(html.includes('よくある質問'), 'the FAQ tab should survive normalisation');
     assert.ok(html.includes('2026年8月13日'), 'the information date must be untouched');
     assert.ok(html.includes('"faq"'), 'the FAQ tab key should be present');
-    assert.equal(html.indexOf('data:image'), -1, 'no data URI should remain in the entry');
+    assert.equal(/data:[a-z]+\/[a-z+.-]+;base64,[A-Za-z0-9+/]{64,}/.test(html), false,
+      'no embedded base64 payload should remain in the entry');
   });
 
   await t('every extracted asset is reachable and correctly typed', async () => {
