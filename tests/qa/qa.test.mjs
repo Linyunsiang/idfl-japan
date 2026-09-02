@@ -20,8 +20,11 @@ const SECTIONS_JS = fs.readFileSync(path.join(ROOT, 'js/qa-sections.js'), 'utf8'
 const REAL_DATA = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/qa.json'), 'utf8'));
 
 let pass = 0, fail = 0;
-function t(name, fn){
-  try{ fn(); console.log('  ok   ' + name); pass++; }
+/* Every test here is async. A synchronous runner would call fn(), get a
+   promise back, catch nothing, and print "ok" for a test that actually
+   failed — so this must await. */
+async function t(name, fn){
+  try{ await fn(); console.log('  ok   ' + name); pass++; }
   catch(e){ console.log('  FAIL ' + name + '\n       ' + (e && e.message)); fail++; }
 }
 function G(n){ console.log('\n' + n); }
@@ -298,11 +301,14 @@ await t('every anchor pill points at a section that exists', async () => {
   }
 });
 
-await t('the editor category dropdown offers every section', async () => {
+await t('the public page carries no editor at all', async () => {
+  // editing lives in /admin now; the dropdown is covered by admin-qa.test.mjs
   const w = await boot(REAL_DATA);
-  w.qaPaintSectionSelect();
-  const opts = [...w.document.getElementById('qaEditSection').options].map(o => o.value);
-  assert.equal(opts.join(','), D.keys().join(','));
+  const doc = w.document;
+  for(const id of ['qaEditModal','qaLoginModal','qaEditSection','qaAdminBar','qaFloatBtn','qaAddBtn'])
+    assert.equal(doc.getElementById(id), null, id + ' should not exist on the public page');
+  for(const fn of ['qaDoLogin','qaSaveItem','qaDelete','qaPublish','qaOpenEdit','qaOpenAdd'])
+    assert.equal(typeof w[fn], 'undefined', fn + '() should not exist on the public page');
 });
 
 // ==========================================================================

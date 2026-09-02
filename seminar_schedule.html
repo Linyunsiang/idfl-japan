@@ -465,7 +465,9 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
 <script>
 (function() {
 
-var PASS = 'idfl2026';
+/* 編集機能は /admin に移動しました。
+   このページは閲覧専用です。ここに管理者パスワードを置いてはいけません
+   （公開ファイルなので誰でも読めます）。 */
 var FLAGS = {Japan:'🇯🇵',Korea:'🇰🇷',China:'🇨🇳',Taiwan:'🇹🇼',Indonesia:'🇮🇩',India:'🇮🇳',Philippines:'🇵🇭',Other:'🌐'};
 var MJA  = ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'];
 var MSHO = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
@@ -685,19 +687,8 @@ document.getElementById('adminFloatBtn').addEventListener('click', function() {
 });
 
 function doLogin() {
-  if (document.getElementById('passInput').value !== PASS) {
-    document.getElementById('loginErr').style.display = 'block';
-    return;
-  }
-  isAdmin = true;
-  document.getElementById('loginErr').style.display = 'none';
-  document.getElementById('passInput').value = '';
-  document.getElementById('loginModal').classList.remove('open');
-  document.getElementById('adminBar').style.display = 'block';
-  document.getElementById('adminFloatBtn').classList.add('active');
-  try { var _d=JSON.parse(localStorage.getItem('idflSchedule_draft')); if(Array.isArray(_d)&&_d.length){ events=_d; var _n=document.getElementById('schedDraftNote'); if(_n)_n.style.display='inline'; } } catch(e){}
-  renderEvents();
-  showToast('管理者モードに入りました');
+  // 認証はここでは行わない。管理コンソールへ誘導するだけ。
+  window.location.href = '/admin';
 }
 
 document.getElementById('loginBtn').addEventListener('click', doLogin);
@@ -797,14 +788,9 @@ document.getElementById('saveEventBtn').addEventListener('click', function() {
 /* ── Draft autosave & online publish ── */
 function sdSaveDraft(){ try{ localStorage.setItem('idflSchedule_draft', JSON.stringify(events)); }catch(e){} var n=document.getElementById('schedDraftNote'); if(n)n.style.display='inline'; }
 async function publishSchedule(){
-  if(!confirm('現在のスケジュールをオンラインに公開しますか？\n全てのお客様の画面に反映されます（1〜2分）。'))return;
-  showToast('公開中…');
-  try{
-    var res=await fetch('/.netlify/functions/publish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'schedule',password:PASS,data:events})});
-    var j={}; try{j=await res.json();}catch(e){}
-    if(res.ok&&j.ok){ localStorage.removeItem('idflSchedule_draft'); var n=document.getElementById('schedDraftNote'); if(n)n.style.display='none'; showToast('公開しました。1〜2分で反映されます（'+(j.count||events.length)+'件）'); }
-    else { showToast('公開失敗: '+(j.error||('HTTP '+res.status))); }
-  }catch(e){ showToast('公開失敗: '+e.message); }
+  // 公開は /admin（サーバー側で認証）に移動しました。
+  // 公開ページからサーバーへ書き込む経路は持ちません。
+  showToast('編集・公開は管理コンソール（/admin）から行ってください');
 }
 document.getElementById('publishBtn').addEventListener('click', publishSchedule);
 
