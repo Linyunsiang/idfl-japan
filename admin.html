@@ -130,6 +130,19 @@
   .mrow .th{width:52px;height:40px;border-radius:7px;background:#eef4fb;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto;font-size:18px}
   .mrow .th img{width:100%;height:100%;object-fit:cover}
   .mdesc{font-size:11.5px;color:#4b5563;margin-top:3px;line-height:1.7}
+  .chip.app{background:#dcfce7;color:#166534}
+  .appurl{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11.5px;color:#1255A0;margin-top:3px;word-break:break-all}
+  .slugrow{display:flex;align-items:center;gap:0;margin-top:5px}
+  .slugrow .pre{background:#f3f4f6;border:1.5px solid var(--line);border-right:none;border-radius:8px 0 0 8px;
+                padding:9px 10px;font-size:13px;color:#6b7280;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;white-space:nowrap}
+  .slugrow input{border-radius:0 8px 8px 0 !important;margin-top:0 !important}
+  .urlprev{background:#f0f6fc;border:1px solid #dbe7f3;border-radius:8px;padding:9px 11px;margin-top:7px;font-size:12px;line-height:1.7}
+  .urlprev b{display:block;font-size:10.5px;color:#6b7280;font-weight:700;margin-bottom:3px}
+  .urlprev code{font-family:ui-monospace,SFMono-Regular,Menlo,monospace;color:#0f2c4d;word-break:break-all}
+  .urlprev.bad{background:#fef2f2;border-color:#fecaca}
+  .urlprev.bad code{color:#b91c1c}
+  .health{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#374151;margin-top:8px}
+  .health span b{display:block;font-size:10.5px;color:#6b7280;font-weight:700}
 </style>
 </head>
 <body>
@@ -261,7 +274,11 @@
         <div id="mDrop" class="dropzone" tabindex="0" role="button" aria-label="HTML資料をアップロード">
           <div class="dz-big" id="mDzBig">HTMLプレゼンテーションをドラッグ＆ドロップ</div>
           <div class="dz-sub">またはクリックしてファイルを選択</div>
-          <div class="dz-hint">単体の .html、または index.html を含む .zip パッケージ（CSS・JS・画像などの相対パスをそのまま保持します）　最大 4.0 MB</div>
+          <div class="dz-hint" style="text-align:left;line-height:1.9">
+            <strong>単一HTMLファイル</strong>：HTML単体で動作する場合は、.html ファイルをアップロードしてください。<br>
+            <strong>HTMLパッケージ（ZIP）</strong>：CSS・JavaScript・画像・フォント等の関連ファイルがある場合は、index.html と関連ファイルを含むZIPファイルをアップロードしてください。<br>
+            <span style="color:#92400e">※ 最大 4.0 MB（ZIP圧縮後）。相対パスはそのまま保持されます。</span>
+          </div>
         </div>
         <input type="file" id="mInput" accept=".html,.htm,.zip" style="display:none">
 
@@ -1300,7 +1317,8 @@ function mRow(f,i,n){
   var chips='<span class="chip '+t+'">'+esc(MTYPE_JA[t]||t)+'</span>'
     + (f.role==='staff'?'<span class="chip off">STAFF</span>':'<span class="chip on">お客様</span>')
     + (f.status==='draft'?'<span class="chip pend">下書き</span>':'<span class="chip on">公開中</span>')
-    + (f.version?'<span class="chip" style="background:#e5edf7;color:#1255A0">v'+esc(f.version)+'</span>':'');
+    + (f.version?'<span class="chip" style="background:#e5edf7;color:#1255A0">v'+esc(f.version)+'</span>':'')
+    + (f.appEnabled&&f.appSlug?'<span class="chip app">APP</span>':'');
   var meta=[];
   if(isHtml&&f.assetCount) meta.push(f.assetCount+' ファイル');
   if(!isHtml&&f.name) meta.push(esc(f.name));
@@ -1319,10 +1337,12 @@ function mRow(f,i,n){
     + '</div>'
     + '<div style="flex:1;min-width:0"><div class="pttl">'+esc(f.title||f.name)+' '+chips+'</div>'
     +   (f.description?'<div class="mdesc">'+esc(f.description)+'</div>':'')
+    +   (f.appEnabled&&f.appSlug?'<div class="appurl">'+esc(mAppUrl(f.appSlug))+'</div>':'')
     +   '<div class="pmeta">'+meta.join(' ・ ')+'</div></div>'
     + open
     + '<button class="btn btn-o" onclick="mEdit(\''+esc(f.id)+'\')">編集</button>'
     + (isHtml?'<button class="btn btn-o" onclick="mReplace(\''+esc(f.id)+'\')">置換</button>':'')
+    + (f.appEnabled&&f.appSlug?'<button class="btn btn-g" onclick="mCopyUrl(\''+esc(f.appSlug)+'\')">URLコピー</button>':'')
     + '<button class="btn btn-g" onclick="mToggle(\''+esc(f.id)+'\')">'+(f.status==='draft'?'公開':'非公開')+'</button>'
     + '<button class="btn btn-d" onclick="mDelete(\''+esc(f.id)+'\')">削除</button>'
     + '</div>';
@@ -1384,23 +1404,75 @@ function mReplace(id){
   inp.click();
 }
 
+var M_EDIT_ID='';
 function mEdit(id){
   var f=mFind(id); if(!f) return;
+  M_EDIT_ID=id;
   document.getElementById('povTitle').textContent='メディアを編集';
   document.getElementById('povBody').innerHTML=
      '<label class="f">ID<input type="text" value="'+esc(f.id)+'" readonly style="background:#f3f4f6;color:#6b7280"></label>'
     +'<label class="f">タイトル<input type="text" id="me_title" value="'+esc(f.title||f.name||'')+'"></label>'
     +'<label class="f">説明<textarea id="me_desc" style="min-height:70px">'+esc(f.description||'')+'</textarea></label>'
     +'<label class="f">カテゴリー / グループ<input type="text" id="me_group" list="pGroups" value="'+esc(f.group||'')+'"></label>'
+    +(f.mediaType==='html'
+      ? '<div style="border:1px solid var(--line);border-radius:10px;padding:12px;margin-bottom:13px;background:#fafbfd">'
+        +'<label class="f cb" style="margin-bottom:10px"><input type="checkbox" id="me_appEnabled" '+(f.appEnabled?'checked':'')+' onchange="mSlugPreview()"> 直接アクセスURLを有効にする</label>'
+        +'<label class="f" style="margin-bottom:6px">直接アクセスURL'
+        +'<span class="slugrow"><span class="pre">/customer/</span>'
+        +'<input type="text" id="me_appSlug" value="'+esc(f.appSlug||'')+'" placeholder="mms" oninput="mSlugPreview()"></span></label>'
+        +'<div id="me_urlprev"></div>'
+        +'<label class="f" style="margin-top:11px">システム一覧での説明<input type="text" id="me_appDesc" value="'+esc(f.appDescription||'')+'" placeholder="例：Materials Matter Standard の解説ツール"></label>'
+        +'<div style="display:flex;gap:10px">'
+        +'<label class="f" style="flex:0 0 110px">アイコン<input type="text" id="me_appIcon" maxlength="4" value="'+esc(f.appIcon||'')+'" placeholder="🧩"></label>'
+        +'<label class="f cb" style="flex:1;align-items:flex-start;padding-top:22px"><input type="checkbox" id="me_fb" '+(f.feedbackEnabled!==false?'checked':'')+'> フィードバック機能を使う</label>'
+        +'</div></div>'
+      : '')
     +'<label class="f">サムネイル<input type="text" id="me_thumb" value="'+esc(f.thumb||'')+'" placeholder="画像資料のID、または https:// / /files/... のURL">'
     +'<span class="hint">「ダウンロード資料管理」に画像をアップロードし、そのIDを貼り付けると保護されたサムネイルとして表示されます。</span></label>'
     +'<div style="display:flex;gap:10px"><label class="f" style="flex:1">対象権限<select id="me_role"><option value="customer">お客様専用</option><option value="staff">スタッフ専用</option></select></label>'
     +'<label class="f" style="flex:1">公開状態<select id="me_status"><option value="published">公開</option><option value="draft">下書き</option></select></label></div>'
-    +'<p class="hint">メディア種類: '+esc(MTYPE_JA[f.mediaType]||f.mediaType)+(f.version?('　バージョン: v'+esc(f.version)):'')+(f.entry?('　entry: '+esc(f.entry)):'')+'</p>';
+    +(f.mediaType==='html'
+      ? '<div class="health"><span><b>エントリーファイル</b>'+esc(f.entry||'index.html')+'</span>'
+        +'<span><b>ファイル数</b>'+esc(f.assetCount||1)+'</span>'
+        +'<span><b>展開サイズ</b>'+esc(f.sizeLabel||'-')+'</span>'
+        +'<span><b>状態</b>'+(f.status==='draft'?'下書き（STAFFのみ）':'✓ 表示可能')+'</span></div>'
+      : '<p class="hint">メディア種類: '+esc(MTYPE_JA[f.mediaType]||f.mediaType)+'</p>');
   document.getElementById('me_role').value=f.role||'customer';
   document.getElementById('me_status').value=f.status==='draft'?'draft':'published';
   document.getElementById('povActs').innerHTML='<button class="btn btn-g" onclick="pCloseModal()">キャンセル</button><button class="btn btn-p" onclick="mSaveEdit(\''+esc(id)+'\')">保存</button>';
   document.getElementById('pov').classList.add('open');
+  mSlugPreview();
+}
+
+// The public URL a slug produces, shown live under the field.
+function mAppUrl(slug){ return location.origin + '/customer/' + String(slug||''); }
+
+// Mirrors netlify/functions/_apps.js. The server is still the authority - this
+// only saves staff a round-trip and explains the rule before they submit.
+var M_RESERVED=['media','media.html','media-viewer','media-viewer.html','downloads','downloads.html',
+  'apps','apps.html','app','app.html','login','admin','feedback','index','index.html',
+  'mms','mms.html','fsc','fsc.html','gots-v8','gots-v8.html'];
+
+function mSlugPreview(){
+  var box=document.getElementById('me_urlprev'); if(!box) return;
+  var raw=(document.getElementById('me_appSlug')||{}).value||'';
+  var on=(document.getElementById('me_appEnabled')||{}).checked;
+  var slug=String(raw).trim().toLowerCase();
+  if(!slug){ box.className='urlprev'; box.innerHTML='<b>公開URL</b><code>（URL未設定 — 直接アクセスは無効）</code>'; return; }
+  var bad='';
+  if(!/^[a-z0-9]([a-z0-9-]*[a-z0-9])?$/.test(slug)) bad='URLは半角英小文字・数字・ハイフンのみ使用できます。';
+  else if(M_RESERVED.indexOf(slug)>=0) bad='このURLは既存のページで使用されています。';
+  else if(MITEMS.some(function(x){ return x.id!==M_EDIT_ID && String(x.appSlug||'').toLowerCase()===slug; })) bad='このURLは別のメディアで使用されています。';
+  if(bad){ box.className='urlprev bad'; box.innerHTML='<b>公開URL</b><code>'+esc(bad)+'</code>'; return; }
+  box.className='urlprev';
+  box.innerHTML='<b>公開URL'+(on?'':'（無効 — チェックを入れると有効になります）')+'</b><code>'+esc(mAppUrl(slug))+'</code>';
+}
+
+function mCopyUrl(slug){
+  var url=mAppUrl(slug);
+  function done(){ toast('URLをコピーしました: '+url); }
+  if(navigator.clipboard&&navigator.clipboard.writeText){ navigator.clipboard.writeText(url).then(done).catch(function(){ window.prompt('コピーしてください', url); }); }
+  else { window.prompt('コピーしてください', url); }
 }
 
 function mSaveEdit(id){
@@ -1411,6 +1483,14 @@ function mSaveEdit(id){
     thumb:document.getElementById('me_thumb').value,
     role:document.getElementById('me_role').value,
     status:document.getElementById('me_status').value };
+  // App settings only exist for HTML media.
+  if(document.getElementById('me_appSlug')){
+    body.appSlug=(document.getElementById('me_appSlug').value||'').trim().toLowerCase();
+    body.appEnabled=document.getElementById('me_appEnabled').checked;
+    body.appDescription=document.getElementById('me_appDesc').value;
+    body.appIcon=document.getElementById('me_appIcon').value;
+    body.feedbackEnabled=document.getElementById('me_fb').checked;
+  }
   fetch('/.netlify/functions/protected-update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
    .then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){ pCloseModal(); toast('保存しました'); mLoad(); } else toast((j&&j.error)||'保存に失敗しました'); })
    .catch(function(){ toast('通信エラー'); });

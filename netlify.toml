@@ -27,6 +27,26 @@
   status = 200
   force = true
 
+# Friendly routes for protected customer apps: /customer/<slug> -> the shell,
+# which resolves the slug to a protected media record and mounts the same
+# package the Media Library serves. One source of truth; the slug is an alias.
+#
+# NOT force=true, and that is the point: Netlify serves a matching static file
+# first, so every real page under /customer/ (downloads.html, media.html,
+# mms.html, ...) keeps winning and can never be shadowed by a slug. The server
+# also refuses those names (netlify/functions/_apps.js), so the two layers
+# agree. Only a path with no file behind it reaches the shell.
+[[redirects]]
+  from = "/customer/:slug"
+  to = "/customer/app.html"
+  status = 200
+
+# /customer and /customer/ land on the apps dashboard rather than a directory listing.
+[[redirects]]
+  from = "/customer"
+  to = "/customer/apps.html"
+  status = 200
+
 # QA tooling for /application/gots-te/ ships in git but is not part of the site.
 # Serve nothing from /tests/ — force=true so it wins over the static files.
 [[redirects]]

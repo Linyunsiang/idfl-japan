@@ -46,6 +46,7 @@ preview writes to `idfl-feedback-dp-<n>` and never to `idfl-feedback`.
 | `anchor.test.mjs` | the injected annotation agent against the real deck DOM: selector scoping, text-quote fallback, and the rule that a pin must not drift onto another slide |
 | `admin.test.mjs` | the real `/admin` page and its inline JS: both new tabs, staff gating, reply/status/note/delete, and that no existing tab was lost |
 | `customer.test.mjs` | the real customer pages: library filters, sandbox attributes, submission, reload persistence, and what a second customer must not see |
+| `apps.test.mjs` | the /customer/<slug> direct routes: slug rules, reserved and duplicate refusal, draft/disabled/role visibility, the apps dashboard, and that a slug never shadows a real page |
 
 ## Manual browser pass
 

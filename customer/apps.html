@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>IDFL お客様専用システム | IDFL JAPAN</title>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{--accent:#1255A0;--accent2:#0d4383;--ink:#17171b;--muted:#6b7280;--line:#e5e7eb;--bg:#f4f7fc;
+        --staff:#b91c1c;--staff-bg:#fee2e2;--cust:#166534;--cust-bg:#dcfce7;}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Zen Kaku Gothic New",system-ui,-apple-system,sans-serif;color:var(--ink);background:var(--bg)}
+  .hd{background:#fff;border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:12px;
+      position:sticky;top:0;z-index:5;flex-wrap:wrap}
+  .hd img{height:30px}.hd .nm{font-weight:900;letter-spacing:.14em;font-size:13px}.hd .grow{flex:1}
+  .badge{font-size:11px;font-weight:900;padding:4px 12px;border-radius:999px}
+  .badge.staff{background:var(--staff-bg);color:var(--staff)}.badge.cust{background:var(--cust-bg);color:var(--cust)}
+  .btn{border:none;border-radius:9px;padding:9px 15px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;
+       min-height:40px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+  .btn-p{background:var(--accent);color:#fff}.btn-p:hover{background:var(--accent2)}
+  .btn-g{background:#eef1f5;color:#374151}.btn-g:hover{background:#e2e7ee}
+  .wrap{max-width:1060px;margin:0 auto;padding:26px 18px 70px}
+  h1{font-size:clamp(22px,3vw,30px);margin:0 0 8px;color:#0f2c4d}
+  .sub{color:var(--muted);font-size:14px;margin:0 0 24px;line-height:1.9;max-width:720px}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(252px,1fr));gap:14px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;
+        box-shadow:0 6px 18px rgba(15,58,99,.05)}
+  .card .ic{font-size:30px;line-height:1;margin-bottom:10px}
+  .card .t{font-weight:700;font-size:15.5px;line-height:1.5}
+  .card .d{font-size:12.5px;color:var(--muted);line-height:1.8;margin-top:7px;flex:1}
+  .card .u{font-size:11.5px;color:#94a3b8;margin-top:9px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;word-break:break-all}
+  .card .ft{margin-top:14px}
+  .card .ft .btn{width:100%}
+  .chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px}
+  .chip{display:inline-block;font-size:10px;font-weight:800;padding:3px 9px;border-radius:999px}
+  .chip.draft{background:#fef3c7;color:#92400e}
+  .chip.staff{background:var(--staff-bg);color:var(--staff)}
+  .empty{background:#fff;border:1px solid var(--line);border-radius:14px;color:var(--muted);font-size:13.5px;
+         padding:34px 22px;text-align:center;line-height:1.9}
+  .center{text-align:center;padding:60px 0;color:var(--muted)}
+  .foot{margin-top:34px;font-size:12px;color:var(--muted);line-height:1.9;border-top:1px solid var(--line);padding-top:16px}
+  @media(max-width:520px){ .grid{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+  <div class="hd">
+    <a href="/"><img src="/IDFL-Logo.png" alt="IDFL JAPAN"></a>
+    <span class="nm">IDFL JAPAN</span><div class="grow"></div>
+    <span class="badge" id="roleBadge" style="display:none"></span>
+    <a class="btn btn-g" href="/customer/media.html">メディアライブラリ</a>
+    <button class="btn btn-g" id="logoutBtn" style="display:none" onclick="doLogout()">ログアウト</button>
+  </div>
+  <div class="wrap">
+    <div id="loading" class="center">認証を確認しています…</div>
+    <div id="app" style="display:none">
+      <h1>IDFL お客様専用システム</h1>
+      <p class="sub">IDFLのお客様向けに提供している対話型システム・ツールの一覧です。各システムは専用URLからも直接ご利用いただけます。</p>
+      <div id="list"></div>
+      <p class="foot">※ 本ページのシステムはIDFLのお客様専用です。第三者への共有はご遠慮ください。<br>
+        ご不明な点は担当者までお問い合わせください。</p>
+    </div>
+  </div>
+<script>
+(function(){
+  var ROLE='PUBLIC';
+  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(m){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m];});}
+  function go(){ location.replace('/login.html?role=customer&next='+encodeURIComponent('/customer/apps.html')); }
+
+  fetch('/.netlify/functions/auth-status',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
+    ROLE=(j&&j.role)||'PUBLIC';
+    if(ROLE!=='CUSTOMER'&&ROLE!=='STAFF'){ go(); return; }
+    document.getElementById('loading').style.display='none';
+    document.getElementById('app').style.display='block';
+    var b=document.getElementById('roleBadge'); b.style.display='inline-block';
+    if(ROLE==='STAFF'){ b.textContent='IDFL STAFF'; b.className='badge staff'; }
+    else { b.textContent='お客様専用'; b.className='badge cust'; }
+    document.getElementById('logoutBtn').style.display='inline-flex';
+    load();
+  }).catch(go);
+
+  function load(){
+    var list=document.getElementById('list');
+    list.innerHTML='<div class="empty">読み込み中…</div>';
+    fetch('/.netlify/functions/customer-app?list=1',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
+      var apps=(j&&j.apps)||[];
+      if(!apps.length){
+        list.innerHTML='<div class="empty">現在ご利用いただけるシステムはありません。<br>資料をお探しの場合は<a href="/customer/media.html">メディアライブラリ</a>をご覧ください。</div>';
+        return;
+      }
+      list.innerHTML='<div class="grid">'+apps.map(function(a){
+        return '<div class="card">'
+          +'<div class="ic">'+(a.icon?esc(a.icon):'🧩')+'</div>'
+          +'<div class="t">'+esc(a.title)+'</div>'
+          +(a.description?'<div class="d">'+esc(a.description)+'</div>':'<div class="d"></div>')
+          +'<div class="chips">'
+          +(a.status==='draft'?'<span class="chip draft">下書き（STAFFのみ）</span>':'')
+          +(a.role==='staff'?'<span class="chip staff">STAFF専用</span>':'')
+          +'</div>'
+          +'<div class="u">/customer/'+esc(a.slug)+'</div>'
+          +'<div class="ft"><a class="btn btn-p" href="/customer/'+encodeURIComponent(a.slug)+'">開く</a></div>'
+          +'</div>';
+      }).join('')+'</div>';
+    }).catch(function(){ list.innerHTML='<div class="empty">読み込みに失敗しました。ページを再読み込みしてください。</div>'; });
+  }
+
+  window.doLogout=function(){ fetch('/.netlify/functions/auth-logout',{method:'POST'}).then(function(){location.replace('/');}); };
+})();
+</script>
+</body>
+</html>
