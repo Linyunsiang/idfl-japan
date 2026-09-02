@@ -61,6 +61,18 @@
   .app{display:none}
   .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#063372;color:#fff;padding:12px 22px;border-radius:12px;font-size:13.5px;font-weight:700;box-shadow:0 8px 24px rgba(4,34,88,.25);opacity:0;transition:opacity .3s;pointer-events:none;z-index:50}
   .hint{font-size:12px;color:var(--muted);margin-top:4px}
+  /* Q&A の画像リスト。1行1枚で、並び順がそのまま公開ページの表示順。 */
+  .imgs{display:flex;flex-direction:column;gap:8px}
+  .imgrow{display:flex;gap:10px;align-items:center;border:1.5px solid var(--line);border-radius:8px;padding:8px}
+  .imgrow>img{width:60px;height:60px;object-fit:cover;border-radius:6px;background:#f3f4f6;flex:none}
+  .imgmeta{flex:1;min-width:0}
+  .imgpath{font-size:11px;color:#9ca3af;word-break:break-all;margin-bottom:5px}
+  .imgmeta input[type=text]{width:100%;padding:6px 9px;border:1.5px solid var(--line);border-radius:7px;font-size:12.5px;font-family:inherit}
+  .imgacts{display:flex;gap:4px;flex:none;align-self:center}
+  .imgacts .btn{font-size:12px;padding:3px 9px;line-height:1.5}
+  .imgacts .btn:disabled{opacity:.4;cursor:default}
+  /* 新着バッジ。目に入るが主張しすぎない程度に。 */
+  .chip.new{background:#fee2e2;color:#b91c1c;letter-spacing:.06em}
 
   /* ===== ファイル管理 ===== */
   .dropzone{border:2px dashed var(--accent);border-radius:14px;padding:24px;text-align:center;background:#f0f6fc;cursor:pointer;transition:.15s;margin-bottom:14px;outline:none}
@@ -354,6 +366,7 @@
 
 <div class="toast" id="toast"></div>
 
+<script src="/js/qa-sections.js"></script>
 <script>
 const PUBLISH_URL='/.netlify/functions/publish';
 
@@ -448,12 +461,19 @@ const SCHEMAS={
 
   qa:{label:'よくある質問',file:'/data/qa.json',
     fields:[
-      {k:'id',t:'text',label:'ID',req:true},
-      {k:'section',t:'text',label:'セクション',def:'audit'},
-      {k:'q',t:'text',label:'質問'},
-      {k:'a',t:'textarea',label:'回答'},
+      {k:'id',t:'text',label:'ID',req:true,hint:'自動生成されます。通常は変更しないでください'},
+      {k:'section',t:'section',label:'種類 / セクション',req:true,def:'audit',hint:'公開ページはこの種類ごとにまとめて表示されます'},
+      {k:'q',t:'text',label:'質問',req:true},
+      {k:'a',t:'textarea',label:'回答',req:true},
+      {k:'images',t:'images',label:'画像（任意）',hint:'回答の下に順番どおり表示されます。PNG / JPG / WebP・1枚あたり最大4MB'},
+      {k:'isNew',t:'checkbox',label:'NEW表示（新着バッジを付ける）'},
+      {k:'newUntil',t:'date',label:'NEW表示の終了日（任意）',hint:'この日を過ぎるとNEWバッジは自動的に消えます。空欄なら手動で外すまで表示され続けます'},
+      {k:'link',t:'text',label:'参考リンク（任意）',hint:'https://…'},
+      {k:'linkLabel',t:'text',label:'参考リンクの表示名（任意）',hint:'例：詳しい手順はこちら'},
     ],
-    title:e=>e.q||'(無題)',sub:e=>e.section||'',
+    title:e=>e.q||'(無題)',
+    sub:e=>[qaIsNewNow(e)?'🆕 NEW':'',(window.QA_SECTION_DEFS?QA_SECTION_DEFS.label(e.section):e.section||''),
+            qaImageList(e).length?('🖼 画像'+qaImageList(e).length+'枚'):''].filter(Boolean).join(' · '),
     idp:'qa',sort:null},
 };
 
@@ -534,6 +554,29 @@ function render(){
     <button class="btn btn-g" onclick="dupItem(${i})">複製</button>
     <button class="btn btn-d" onclick="delItem(${i})">削除</button>
   </div>`).join('');
+}
+/* ---------------- Q&A の共通ヘルパー ----------------
+   画像は images:[{src,caption}] が正。ただし古いレコードは img に1枚だけ
+   持っている（しかも data URI）ため、読むときは必ずここを通して形を揃える。
+   これで古いデータを書き換えなくても新旧どちらも同じように扱える。 */
+function qaImageList(e){
+  if(!e) return [];
+  if(Array.isArray(e.images)) {
+    return e.images.map(function(x){
+      return (typeof x==='string') ? {src:x,caption:''} : {src:String(x&&x.src||''),caption:String(x&&x.caption||'')};
+    }).filter(function(x){return x.src;});
+  }
+  if(e.img) return [{src:String(e.img),caption:''}];   // 旧形式
+  return [];
+}
+/* NEW を出すかどうか。newUntil を過ぎていれば isNew が立っていても出さない。 */
+function qaIsNewNow(e){
+  if(!e||!e.isNew) return false;
+  var u=String(e.newUntil||'').trim();
+  if(!u) return true;
+  var d=new Date(u+'T23:59:59');
+  if(isNaN(d.getTime())) return true;                  // 日付が壊れていても NEW は消さない
+  return Date.now()<=d.getTime();
 }
 function esc(x){return String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 
@@ -625,10 +668,18 @@ function openEdit(idx){
   document.getElementById('mBody').innerHTML=s.fields.map(f=>fieldHtml(f,e[f.k])).join('');
   document.querySelectorAll('#mBody [id$="_file"]').forEach(function(fi){
     var base=fi.id.replace(/_file$/,'');
+    var isImages=!!document.getElementById(base+'_list');
     var box=document.getElementById(base+'_box');
     if(box)box.addEventListener('click',function(){fi.click();});
-    fi.addEventListener('change',function(){ if(fi.files&&fi.files[0]) uploadLogo(fi.files[0], base); fi.value=''; });
+    fi.addEventListener('change',function(){
+      if(isImages){
+        var at=fi._replaceAt; fi._replaceAt=null;
+        if(fi.files&&fi.files.length) qaImgAdd(base, fi.files, at);
+      } else if(fi.files&&fi.files[0]) uploadLogo(fi.files[0], base);
+      fi.value='';
+    });
   });
+  document.querySelectorAll('#mBody [id$="_list"]').forEach(function(el){ qaImgPaint(el.id.replace(/_list$/,'')); });
   document.getElementById('ov').classList.add('open');
 }
 async function uploadLogo(file, base){
@@ -672,19 +723,140 @@ function fieldHtml(f,v){
   if(f.t==='checkbox')return `<label class="f cb"><input type="checkbox" id="${id}" ${v?'checked':''}> ${f.label}</label>`;
   if(f.t==='textarea')return `<label class="f">${f.label}${f.req?' <span class=req>*</span>':''}<textarea id="${id}">${esc(v)}</textarea>${hint}</label>`;
   if(f.t==='select')return `<label class="f">${f.label}<select id="${id}">${f.opts.map(o=>`<option ${o===v?'selected':''}>${o}</option>`).join('')}</select>${hint}</label>`;
+  /* 種類はプルダウン固定。自由入力をやめたのは表記ゆれで同じ意味の
+     セクションが増えるのを防ぐため。値は内部キー、表示は日本語。 */
+  if(f.t==='section'){
+    const defs=(window.QA_SECTION_DEFS?QA_SECTION_DEFS.all():[{key:'other',label:'その他編'}]);
+    const cur=(window.QA_SECTION_DEFS?QA_SECTION_DEFS.normalize(v):(v||'other'));
+    const legacy=(v&&window.QA_SECTION_DEFS&&!QA_SECTION_DEFS.has(String(v).trim().toLowerCase()))
+      ? `<div class="hint" style="color:#92400e">※ 以前の値「${esc(v)}」は選択肢にないため「${esc(QA_SECTION_DEFS.label(cur))}」を選択しています。保存すると変更が確定します。</div>` : '';
+    return `<label class="f">${f.label}${f.req?' <span class=req>*</span>':''}
+      <select id="${id}">${defs.map(o=>`<option value="${esc(o.key)}" ${o.key===cur?'selected':''}>${esc(o.label)}</option>`).join('')}</select>
+      ${hint}${legacy}</label>`;
+  }
+  /* 複数画像。並び順そのものが表示順なので、上下の入れ替えを持たせている。 */
+  if(f.t==='images'){
+    return `<div class="f"><span style="display:block;margin-bottom:5px">${f.label}</span>
+      <div id="${id}_list" class="imgs"></div>
+      <div style="display:flex;gap:8px;align-items:center;margin-top:8px">
+        <button type="button" class="btn btn-g" style="font-size:12px;padding:5px 12px" onclick="document.getElementById('${id}_file').click()">＋ 画像を追加</button>
+        <span id="${id}_txt" style="font-size:12px;color:#6b7280"></span>
+      </div>
+      <input type="file" id="${id}_file" accept="image/png,image/jpeg,image/webp" multiple style="display:none">
+      <input type="hidden" id="${id}" value="${esc(JSON.stringify(v||[]))}">${hint}</div>`;
+  }
   if(f.t==='multi')return `<label class="f">${f.label}<input type="text" id="${id}" value="${esc((v||[]).join(', '))}">${hint}</label>`;
   const type=f.t==='date'?'date':'text';
   return `<label class="f">${f.label}${f.req?' <span class=req>*</span>':''}<input type="${type}" id="${id}" value="${esc(v)}">${hint}</label>`;
 }
+/* ================= Q&A 画像フィールド =================
+   画像そのものは data URI としてレコードに埋め込まず、既存の
+   upload-file.js で /files/ に保存してパスだけを持つ。JSON が肥大化すると
+   公開ページの読み込みがそのぶん遅くなるため。 */
+const QA_IMG_MAX_BYTES = 4*1024*1024;
+const QA_IMG_TYPES = {'image/png':'PNG','image/jpeg':'JPG','image/webp':'WebP'};
+
+function qaImgRead(id){
+  try{ const v=JSON.parse(document.getElementById(id).value||'[]'); return Array.isArray(v)?v:[]; }
+  catch(e){ return []; }
+}
+function qaImgWrite(id,arr){
+  document.getElementById(id).value=JSON.stringify(arr);
+  qaImgPaint(id);
+  markDirty();
+}
+function qaImgPaint(id){
+  const arr=qaImgRead(id), box=document.getElementById(id+'_list');
+  if(!box) return;
+  if(!arr.length){ box.innerHTML='<div style="font-size:12px;color:#9ca3af;padding:6px 0">画像はまだありません。</div>'; return; }
+  box.innerHTML=arr.map(function(im,i){
+    const src=esc(im&&im.src||'');
+    return '<div class="imgrow">'
+      + '<img src="'+src+'" alt="" loading="lazy">'
+      + '<div class="imgmeta"><div class="imgpath">'+src+'</div>'
+      + '<input type="text" placeholder="説明（任意・画像の下に表示）" value="'+esc(im&&im.caption||'')+'" oninput="qaImgCaption(\''+id+'\','+i+',this.value)">'
+      + '</div>'
+      + '<div class="imgacts">'
+      + '<button type="button" class="btn btn-g" onclick="qaImgMove(\''+id+'\','+i+',-1)" '+(i===0?'disabled':'')+' title="上へ">↑</button>'
+      + '<button type="button" class="btn btn-g" onclick="qaImgMove(\''+id+'\','+i+',1)" '+(i===arr.length-1?'disabled':'')+' title="下へ">↓</button>'
+      + '<button type="button" class="btn btn-g" onclick="qaImgReplace(\''+id+'\','+i+')" title="差し替え">差替</button>'
+      + '<button type="button" class="btn btn-d" onclick="qaImgRemove(\''+id+'\','+i+')" title="削除">×</button>'
+      + '</div></div>';
+  }).join('');
+}
+function qaImgCaption(id,i,v){ const a=qaImgRead(id); if(a[i]){ a[i].caption=v; document.getElementById(id).value=JSON.stringify(a); markDirty(); } }
+function qaImgMove(id,i,d){ const a=qaImgRead(id), j=i+d; if(j<0||j>=a.length) return; const t=a[i]; a[i]=a[j]; a[j]=t; qaImgWrite(id,a); }
+function qaImgRemove(id,i){
+  const a=qaImgRead(id);
+  if(!confirm('この画像を外しますか？\n（/files/ 内のファイル自体は他でも使われている可能性があるため残します）')) return;
+  a.splice(i,1); qaImgWrite(id,a);
+}
+function qaImgReplace(id,i){
+  const fi=document.getElementById(id+'_file');
+  fi._replaceAt=i; fi.click();
+}
+/** 1ファイル分のアップロード。成否と理由を日本語で返す。 */
+async function qaImgUploadOne(file){
+  if(!QA_IMG_TYPES[file.type]) return {error:'「'+file.name+'」は対応していない形式です（PNG / JPG / WebP のみ）'};
+  if(file.size>QA_IMG_MAX_BYTES) return {error:'「'+file.name+'」が大きすぎます（1枚あたり4MBまで／このファイルは'+(file.size/1048576).toFixed(1)+'MB）'};
+  let b64;
+  try{
+    b64=await new Promise(function(res,rej){
+      const r=new FileReader();
+      r.onload=function(){ res(String(r.result).split(',')[1]||''); };
+      r.onerror=function(){ rej(new Error('読み込みに失敗しました')); };
+      r.readAsDataURL(file);
+    });
+  }catch(e){ return {error:'「'+file.name+'」の読み込みに失敗しました'}; }
+  try{
+    const r=await fetch('/.netlify/functions/upload-file',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({password:PW,filename:file.name,contentBase64:b64})});
+    const j=await r.json().catch(function(){return {};});
+    if(r.ok&&j.ok&&j.path) return {src:j.path,caption:''};
+    return {error:'「'+file.name+'」のアップロードに失敗しました：'+(j.error||('HTTP '+r.status))};
+  }catch(e){ return {error:'「'+file.name+'」のアップロードに失敗しました：'+e.message}; }
+}
+async function qaImgAdd(id,files,replaceAt){
+  const txt=document.getElementById(id+'_txt');
+  const list=[].slice.call(files);
+  if(!list.length) return;
+  let done=0; const errs=[];
+  for(const f of list){
+    if(txt) txt.textContent='アップロード中… ('+(done+1)+'/'+list.length+')';
+    const r=await qaImgUploadOne(f);
+    if(r.error){ errs.push(r.error); continue; }
+    const a=qaImgRead(id);
+    if(replaceAt!=null&&done===0){ r.caption=(a[replaceAt]&&a[replaceAt].caption)||''; a[replaceAt]=r; }
+    else a.push(r);
+    qaImgWrite(id,a);
+    done++;
+  }
+  if(txt) txt.textContent = errs.length ? '' : (done?('✅ '+done+'枚を追加しました'):'');
+  if(errs.length) toast(errs[0]);
+}
+
 function saveModal(){
   const s=SCHEMAS[CUR];const o=EDIT_IDX>=0?Object.assign({},DATA[CUR][EDIT_IDX]):{};
   for(const f of s.fields){
     const el=document.getElementById('fld_'+f.k);
     if(f.t==='checkbox')o[f.k]=el.checked;
     else if(f.t==='multi')o[f.k]=el.value.split(',').map(x=>x.trim()).filter(Boolean);
+    else if(f.t==='images'){ try{ o[f.k]=JSON.parse(el.value||'[]'); }catch(e){ o[f.k]=[]; } }
+    else if(f.t==='section')o[f.k]=(window.QA_SECTION_DEFS?QA_SECTION_DEFS.normalize(el.value):el.value);
     else o[f.k]=el.value.trim();
   }
   if(!o.id){toast('ID は必須です');return;}
+  if(CUR==='qa'){
+    if(!o.section||(window.QA_SECTION_DEFS&&!QA_SECTION_DEFS.has(o.section))){toast('種類 / セクションを選択してください');return;}
+    if(!o.q){toast('質問を入力してください');return;}
+    if(!o.a){toast('回答を入力してください');return;}
+    if(o.newUntil&&isNaN(new Date(o.newUntil+'T00:00:00').getTime())){toast('NEW表示の終了日が正しくありません');return;}
+    /* 画像を images に移した以上、同じ絵を img にも残しておくと公開ページで
+       二重に出る。移行済みのレコードからは古い項目を落とす。 */
+    if(Array.isArray(o.images)&&o.images.length&&o.img) delete o.img;
+    if(Array.isArray(o.images)&&!o.images.length) delete o.images;
+    if(!o.isNew){ delete o.isNew; delete o.newUntil; }
+  }
   const a=DATA[CUR];
   const dup=a.findIndex((x,i)=>x.id===o.id&&i!==EDIT_IDX);
   if(dup>=0){toast('同じ ID が既にあります');return;}

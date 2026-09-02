@@ -472,7 +472,9 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
 <script>
 (function() {
 
-var PASS = 'idfl2026';
+/* 編集機能は /admin に移動しました。
+   このページは閲覧専用です。ここに管理者パスワードを置いてはいけません
+   （公開ファイルなので誰でも読めます）。 */
 var ICONS = {PDF:'📄',PPT:'📊',XLSX:'📈',DOC:'📝',ZIP:'🗜️',LINK:'🔗'};
 var IBGS  = {PDF:'#fee2e2',PPT:'#fed7aa',XLSX:'#d1fae5',DOC:'#dbeafe',ZIP:'#ede9fe',LINK:'#e0f2fe'};
 
@@ -605,22 +607,10 @@ function renderDocs() {
 
 /* ── Publish to Netlify ── */
 async function _downloadsDoPublish() {
-  showToast('公開中…');
-  try {
-    var res = await fetch('/.netlify/functions/publish', {
-      method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({type:'downloads', password: PASS, data: docs})
-    });
-    var j = {}; try { j = await res.json(); } catch(e) {}
-    if (res.ok && j.ok) {
-      showToast('✅ 保存・公開しました（' + (j.count || docs.length) + '件）反映まで約1分');
-    } else {
-      showToast('⚠️ 公開失敗: ' + (j.error || ('HTTP ' + res.status)));
-    }
-  } catch(e) {
-    showToast('⚠️ 公開失敗: ' + e.message);
-  }
+  // 公開は /admin（サーバー側で認証）に移動しました。
+  // 公開ページからサーバーへ書き込む経路は持ちません。
+  showToast('編集・公開は管理コンソール（/admin）から行ってください');
+
 }
 
 /* ── Delete doc ── */
@@ -655,19 +645,8 @@ document.getElementById('adminFloatBtn').addEventListener('click', function() {
 });
 
 function doLogin() {
-  if (document.getElementById('passInput').value !== PASS) {
-    document.getElementById('loginErr').style.display = 'block';
-    return;
-  }
-  isAdmin = true;
-  document.getElementById('loginErr').style.display = 'none';
-  document.getElementById('passInput').value = '';
-  document.getElementById('loginModal').classList.remove('open');
-  document.getElementById('adminBar').style.display = 'block';
-  document.getElementById('adminFloatBtn').classList.add('active');
-  document.body.classList.add('admin-on');
-  renderDocs();
-  showToast('管理者モードに入りました');
+  // 認証はここでは行わない。管理コンソールへ誘導するだけ。
+  window.location.href = '/admin';
 }
 
 document.getElementById('loginBtn').addEventListener('click', doLogin);
@@ -748,17 +727,9 @@ document.getElementById('addDocBtn').addEventListener('click', openAddModal);
     setBusy('アップロード中… ' + file.name);
     try{
       var b64 = await new Promise(function(res,rej){ var r=new FileReader(); r.onload=function(){ res(String(r.result).split(',')[1]); }; r.onerror=function(){ rej(new Error('読込失敗')); }; r.readAsDataURL(file); });
-      var resp = await fetch('/.netlify/functions/upload-file', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ password:PASS, filename:file.name, contentBase64:b64 }) });
-      var j={}; try{ j=await resp.json(); }catch(e){}
-      if(resp.ok && j.ok){
-        document.getElementById('inp_url').value = j.path;
-        var ft=ftypeFromName(j.name||file.name); if(ft) document.getElementById('inp_ftype').value=ft;
-        if(!document.getElementById('inp_size').value) document.getElementById('inp_size').value=humanSize(file.size);
-        setBusy('\u2705 アップロード完了：' + j.path);
-        setTimeout(function(){ setBusy(''); }, 4000);
-      } else {
-        setBusy(''); showErr('アップロード失敗: ' + (j.error||('HTTP '+resp.status)));
-      }
+      // ファイルのアップロードは /admin のファイル管理に移動しました。
+      setBusy(''); showErr('ファイルの追加は管理コンソール（/admin）から行ってください');
+      return;
     }catch(e){ setBusy(''); showErr('アップロード失敗: ' + e.message); }
   }
   dz.addEventListener('click', function(){ fi.click(); });

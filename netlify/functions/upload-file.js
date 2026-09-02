@@ -1,6 +1,7 @@
 // IDFL admin file-upload endpoint: commits an image to files/<unique-name> on GitHub.
 // Env: GITHUB_TOKEN (repo contents rw), ADMIN_PASSWORD
-const OWNER='Linyunsiang', REPO='idfl-japan', BRANCH='main';
+const T = require('./_target');
+const OWNER = T.OWNER, REPO = T.REPO;
 const ALLOWED_EXT = { png:1, jpg:1, jpeg:1, webp:1, svg:1 };
 
 function resp(code,obj){return {statusCode:code,headers:{'Content-Type':'application/json','Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'Content-Type','Access-Control-Allow-Methods':'POST,OPTIONS'},body:JSON.stringify(obj)};}
@@ -53,6 +54,10 @@ exports.handler = async (event) => {
 
   const token = process.env.GITHUB_TOKEN || process.env.GITHUB_TOKEN1;
   if (!token) return resp(500,{error:'server not configured'});
+
+  // A Deploy Preview writes to its own branch, never to production.
+  const BRANCH = await T.resolveBranch(token, event.headers && (event.headers.host || event.headers.Host));
+  if (!BRANCH) return resp(500, {error: T.NO_TARGET, deployContext: T.describeEnv(), host: (event.headers && (event.headers.host || event.headers.Host)) || null});
 
   const path = 'files/' + name;
   const api = `https://api.github.com/repos/${OWNER}/${REPO}/contents/` + path.split('/').map(encodeURIComponent).join('/');

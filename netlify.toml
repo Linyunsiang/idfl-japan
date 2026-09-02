@@ -27,6 +27,17 @@
   status = 200
   force = true
 
+# publish = "." ships the whole repository, so the function sources are
+# otherwise readable at /netlify/functions/*.js. They hold no secrets — they
+# read process.env — but they do spell out the auth logic, the rate limits and
+# the store names, which is not something to hand out. The functions themselves
+# are invoked at /.netlify/functions/* (leading dot) and are unaffected.
+[[redirects]]
+  from = "/netlify/*"
+  to = "/404.html"
+  status = 404
+  force = true
+
 # QA tooling for /application/gots-te/ ships in git but is not part of the site.
 # Serve nothing from /tests/ — force=true so it wins over the static files.
 [[redirects]]

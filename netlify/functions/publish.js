@@ -1,8 +1,8 @@
 // IDFL admin publish endpoint: commits data/<type>.json to GitHub.
 // Requires env vars: GITHUB_TOKEN (repo contents read/write), ADMIN_PASSWORD
-const OWNER = 'Linyunsiang';
-const REPO  = 'idfl-japan';
-const BRANCH = 'main';
+const T = require('./_target');
+const OWNER = T.OWNER;
+const REPO  = T.REPO;
 const ALLOWED = { qa:'data/qa.json', news:'data/news.json', downloads:'downloads-data.json', schedule:'schedule-data.json' , factories:'factories-data.json' };
 
 function resp(code, obj){
@@ -42,6 +42,10 @@ exports.handler = async (event) => {
   const token = process.env.GITHUB_TOKEN || process.env.GITHUB_TOKEN1;
   if (!token) return resp(500, {error:'server not configured: GITHUB_TOKEN'});
 
+  // A Deploy Preview writes to its own branch, never to production.
+  const BRANCH = await T.resolveBranch(token, event.headers && (event.headers.host || event.headers.Host));
+  if (!BRANCH) return resp(500, {error: T.NO_TARGET, deployContext: T.describeEnv(), host: (event.headers && (event.headers.host || event.headers.Host)) || null});
+
   const api = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`;
   const H = { 'Authorization':`Bearer ${token}`, 'Accept':'application/vnd.github+json', 'User-Agent':'idfl-admin-publish' };
 
@@ -57,6 +61,8 @@ exports.handler = async (event) => {
   if (sha) payload.sha = sha;
 
   const put = await fetch(api, { method:'PUT', headers:{...H,'Content-Type':'application/json'}, body: JSON.stringify(payload) });
-  if (put.status >= 200 && put.status < 300) return resp(200, {ok:true, count:data.length});
+  // The branch is reported back so the console can show where it published;
+  // on a preview that is the thing an operator most needs to see.
+  if (put.status >= 200 && put.status < 300) return resp(200, {ok:true, count:data.length, branch:BRANCH});
   return resp(502, {error:'GitHub error '+put.status});
 };
