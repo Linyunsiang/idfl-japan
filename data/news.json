@@ -1,5 +1,25 @@
 [
   {
+    "id": "news-1788343590634",
+    "cat": "idfl",
+    "title": "ご登録住所の変更をご希望のお客様へ",
+    "date": "2026-09-02",
+    "body": "登録住所の変更をご希望の場合は、TC（Transaction Certificate）の円滑な発行および証明書の再修正を防ぐため、以下の手順にてご対応をお願いいたします。\n\n1. 旧住所が記載された書類のTC申請\n\nまず、お手元のInvoice（請求書）や出荷書類をご確認いただき、旧住所が記載されている書類については、住所変更前にすべてのTC申請を完了してください。\n\nTCに記載される住所は、弊社システムに登録されている会社情報と連動しているため、旧住所の書類に対するTCの発行が完了するまでは、Scope Certificate（SC）も旧住所のまま維持する必要があります。\n\n2. 新住所への変更および新しいSCの発行\n\n旧住所が記載された書類のTC申請および発行がすべて完了したことを確認した後、新住所を記載したSCを発行いたします。\n\n新住所への変更後にTCを申請される場合は、Invoiceや出荷書類を含むすべての関連書類に、必ず新住所をご使用ください。\n\n本対応は、TC、SCおよび出荷関連書類の情報を一致させ、下流の取引先や他の認証機関による確認時の不一致を防ぐことを目的としております。\n\n住所変更をご予定の場合は、事前に弊社担当者までご相談くださいますようお願いいたします。皆様のご理解とご協力をお願い申し上げます。",
+    "effectiveDate": "2026-09-02",
+    "tickerText": "",
+    "image": "/files/mtjxnx7u-chm3--2.png",
+    "imageAlt": "",
+    "link": "",
+    "linkLabel": "",
+    "author": "IDFL JAPAN",
+    "published": true,
+    "showInTicker": true,
+    "pinned": false,
+    "createdAt": "2026-09-02T10:09:18.056Z",
+    "updatedAt": "2026-09-02T10:09:18.056Z",
+    "updatedBy": "admin"
+  },
+  {
     "id": "news-1788335903129",
     "cat": "te",
     "title": "Materials Matter Standard（MMS）を理解する",
@@ -16,7 +36,7 @@
     "showInTicker": true,
     "pinned": false,
     "createdAt": "2026-09-02T08:01:15.350Z",
-    "updatedAt": "2026-09-02T08:01:15.350Z",
+    "updatedAt": "2026-09-02T08:04:59.247Z",
     "updatedBy": "admin"
   },
   {
