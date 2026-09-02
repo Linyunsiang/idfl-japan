@@ -5,7 +5,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const SUITES = ['zip.test.mjs', 'api.test.mjs', 'anchor.test.mjs', 'admin.test.mjs', 'customer.test.mjs'];
+const SUITES = ['zip.test.mjs', 'api.test.mjs', 'anchor.test.mjs', 'admin.test.mjs', 'customer.test.mjs', 'upload.test.mjs', 'normalize.test.mjs'];
 
 let failed = 0;
 for(const s of SUITES){

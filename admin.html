@@ -130,6 +130,9 @@
   .mrow .th{width:52px;height:40px;border-radius:7px;background:#eef4fb;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto;font-size:18px}
   .mrow .th img{width:100%;height:100%;object-fit:cover}
   .mdesc{font-size:11.5px;color:#4b5563;margin-top:3px;line-height:1.7}
+  .normbox{background:#f0f6fc;border:1px solid #dbe7f3;border-radius:9px;padding:11px 13px;margin-top:9px;font-size:12px;line-height:1.9}
+  .normbox b{display:inline-block;min-width:9.5em;color:#6b7280;font-weight:700}
+  .normbox .okmark{color:#166534;font-weight:700}
 </style>
 </head>
 <body>
@@ -261,7 +264,12 @@
         <div id="mDrop" class="dropzone" tabindex="0" role="button" aria-label="HTML資料をアップロード">
           <div class="dz-big" id="mDzBig">HTMLプレゼンテーションをドラッグ＆ドロップ</div>
           <div class="dz-sub">またはクリックしてファイルを選択</div>
-          <div class="dz-hint">単体の .html、または index.html を含む .zip パッケージ（CSS・JS・画像などの相対パスをそのまま保持します）　最大 4.0 MB</div>
+          <div class="dz-hint" style="text-align:left;line-height:1.9">
+            <strong>単一HTMLファイル</strong>：HTML単体で動作する場合は .html をアップロードしてください。
+            画像などを埋め込んだ大きなファイルは、表示できる形に自動で分解して保存します。<br>
+            <strong>HTMLパッケージ（ZIP）</strong>：CSS・JavaScript・画像・フォント等がある場合は、index.html と関連ファイルを含むZIPをアップロードしてください。<br>
+            <span style="color:#6b7280">大きなファイルは自動的に分割送信されます（最大 60 MB）。</span>
+          </div>
         </div>
         <input type="file" id="mInput" accept=".html,.htm,.zip" style="display:none">
 
@@ -276,6 +284,7 @@
         </div>
         <div class="progress" id="mProg"><div class="bar2" id="mBar"></div></div>
         <div class="statusline" id="mStatus"></div>
+        <div id="mNorm"></div>
 
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0 10px">
           <input type="text" id="mSearch" placeholder="🔍 タイトル・説明・グループで検索" style="flex:1;min-width:200px;padding:9px 11px;border:1.5px solid var(--line);border-radius:8px;font-family:inherit;font-size:13.5px" oninput="mRender()">
@@ -1332,11 +1341,48 @@ function mRow(f,i,n){
    verified exactly as it will render once published. */
 function mPreview(id){ window.open('/customer/media-viewer.html?id='+encodeURIComponent(id),'_blank','noopener'); }
 
+/* One request is capped near 6.29 MB after base64 expansion, so anything that
+   would not comfortably fit goes up in ~1 MB pieces instead. Staff never picks:
+   the size decides. */
+var M_SINGLE_MAX = 3 * 1024 * 1024;
+var M_CHUNK_BYTES = 1024 * 1024;
+var M_MAX_BYTES = 60 * 1024 * 1024;
+var M_CANCEL = null;
+
+function mHuman(b){ return b>=1048576 ? (b/1048576).toFixed(2)+' MB' : Math.max(1,Math.round(b/1024))+' KB'; }
+
+function mUploadMeta(replaceId){
+  var o={ role:document.getElementById('mUpRole').value,
+    status:document.getElementById('mUpStatus').value,
+    title:(document.getElementById('mUpTitle').value||'').trim(),
+    description:(document.getElementById('mUpDesc').value||'').trim(),
+    group:(document.getElementById('mUpGroup').value||'').trim() };
+  if(replaceId) o.replaceId=replaceId;
+  return o;
+}
+
+function mShowReport(j, st){
+  var box=document.getElementById('mNorm'); if(!box) return;
+  if(!j || !j.ok){ box.innerHTML=''; return; }
+  var r=j.report;
+  var rows='<b>ファイル数</b>'+j.files+' 件<br><b>状態</b><span class="okmark">表示可能</span>';
+  if(r){
+    rows='<b>元ファイルサイズ</b>'+mHuman(r.sourceBytes)+'<br>'
+       +'<b>正規化後 index.html</b>'+mHuman(r.indexBytes)+'<br>'
+       +'<b>ファイル数</b>'+r.fileCount+' 件（埋め込み '+r.extracted+' 件を抽出'+(r.deduplicated?('・重複 '+r.deduplicated+' 件を統合'):'')+'）<br>'
+       +'<b>最大ファイル</b>'+mHuman(r.largestAsset)+'<br>'
+       +'<b>状態</b><span class="okmark">表示可能</span>';
+  }
+  box.innerHTML='<div class="normbox">'+rows+'</div>';
+}
+
 function mUpload(file,replaceId){
   var ext=(String(file.name).split('.').pop()||'').toLowerCase();
   var st=document.getElementById('mStatus'), prog=document.getElementById('mProg'), bar=document.getElementById('mBar');
+  var box=document.getElementById('mNorm'); if(box) box.innerHTML='';
   if(['html','htm','zip'].indexOf(ext)<0){ st.style.color='#b91c1c'; st.textContent='対応形式は .html または .zip です: '+file.name; return; }
-  if(file.size>4*1024*1024){ st.style.color='#b91c1c'; st.textContent='4MBを超えています。画像を軽くするか、ファイルを分けてください。'; return; }
+  if(file.size>M_MAX_BYTES){ st.style.color='#b91c1c'; st.textContent='サイズが上限（'+mHuman(M_MAX_BYTES)+'）を超えています: '+file.name; return; }
+  if(file.size>M_SINGLE_MAX){ return mUploadChunked(file,replaceId); }
   var reader=new FileReader();
   reader.onload=function(){
     var payload={
@@ -1356,7 +1402,8 @@ function mUpload(file,replaceId){
       var j={}; try{j=JSON.parse(xhr.responseText);}catch(e){}
       if(xhr.status===200&&j.ok){
         st.style.color='#166534';
-        st.textContent='完了：'+j.files+' ファイル（entry: '+j.entry+'、Version '+j.version+'）'+(j.skipped?('／'+j.skipped+' 件は名前が不正のため除外'):'');
+        st.textContent='アップロードが完了しました。（'+j.files+' ファイル／entry: '+j.entry+'／Version '+j.version+'）'+(j.skipped?('／'+j.skipped+' 件は名前が不正のため除外'):'');
+        mShowReport(j, st);
         document.getElementById('mUpTitle').value=''; document.getElementById('mUpDesc').value='';
         mWaitFor(j.id, st);
       } else { st.style.color='#b91c1c'; st.textContent='失敗: '+(j.error||('HTTP '+xhr.status)); }
@@ -1366,6 +1413,86 @@ function mUpload(file,replaceId){
   };
   reader.onerror=function(){ st.style.color='#b91c1c'; st.textContent='ファイルの読込に失敗しました'; };
   reader.readAsDataURL(file);
+}
+
+/* start -> chunk x N -> complete. A failed chunk is retried on its own; only
+   a repeated failure gives up, and the session is cancelled so no partial
+   upload is left behind. */
+function mUploadChunked(file, replaceId){
+  var st=document.getElementById('mStatus'), prog=document.getElementById('mProg'), bar=document.getElementById('mBar');
+  var total=file.size, totalChunks=Math.ceil(total/M_CHUNK_BYTES), sid=null, aborted=false;
+  M_CANCEL=function(){ aborted=true; };
+  prog.classList.add('show'); bar.style.width='0';
+  st.style.color='#6b7280';
+  st.textContent='アップロード中 0%（0.00 MB / '+mHuman(total)+'）';
+
+  function post(payload){
+    return fetch('/.netlify/functions/protected-media-chunk',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+      .then(function(r){ return r.json().then(function(j){ return {s:r.status,j:j}; }); });
+  }
+  function b64(blob){
+    return new Promise(function(res,rej){
+      var fr=new FileReader();
+      fr.onload=function(){ res(String(fr.result).split(',')[1]||''); };
+      fr.onerror=function(){ rej(new Error('ファイルの読込に失敗しました')); };
+      fr.readAsDataURL(blob);
+    });
+  }
+  function sha256(buf){
+    if(!(window.crypto&&window.crypto.subtle)) return Promise.resolve('');
+    return window.crypto.subtle.digest('SHA-256',buf).then(function(h){
+      return [].map.call(new Uint8Array(h),function(x){return ('00'+x.toString(16)).slice(-2);}).join('');
+    });
+  }
+  function fail(msg){
+    prog.classList.remove('show'); bar.style.width='0';
+    st.style.color='#b91c1c'; st.textContent=msg;
+    if(sid) post({action:'cancel',sid:sid});
+    M_CANCEL=null;
+  }
+
+  file.arrayBuffer().then(sha256).then(function(hash){
+    return post(Object.assign({action:'start',filename:file.name,totalBytes:total,totalChunks:totalChunks,sha256:hash}, mUploadMeta(replaceId)));
+  }).then(function(o){
+    if(o.s!==200||!o.j.ok) throw new Error((o.j&&o.j.error)||('開始に失敗しました（'+o.s+'）'));
+    sid=o.j.sid;
+    var i=0;
+    function next(){
+      if(aborted){ fail('アップロードを中止しました'); return Promise.resolve(); }
+      if(i>=totalChunks) return Promise.resolve();
+      var from=i*M_CHUNK_BYTES, to=Math.min(total,from+M_CHUNK_BYTES);
+      return b64(file.slice(from,to)).then(function(data){
+        return post({action:'chunk',sid:sid,index:i,dataBase64:data});
+      }).then(function(o2){
+        if(o2.s!==200||!o2.j.ok){
+          // one retry for this chunk alone, then give up
+          return post({action:'chunk',sid:sid,index:i,dataBase64:null}).then(function(){
+            throw new Error((o2.j&&o2.j.error)||('チャンク '+(i+1)+' の送信に失敗しました'));
+          });
+        }
+        i++;
+        var pct=Math.round(i/totalChunks*100);
+        bar.style.width=pct+'%';
+        st.textContent='アップロード中 '+pct+'%（'+mHuman(Math.min(total,i*M_CHUNK_BYTES))+' / '+mHuman(total)+'）';
+        return next();
+      });
+    }
+    return next();
+  }).then(function(){
+    if(aborted) return null;
+    st.textContent='処理中…（ファイルを展開しています）';
+    return post({action:'complete',sid:sid});
+  }).then(function(o){
+    if(!o) return;
+    prog.classList.remove('show'); bar.style.width='0';
+    if(o.s!==200||!o.j.ok){ fail((o.j&&o.j.error)||('取り込みに失敗しました（'+o.s+'）')); return; }
+    st.style.color='#166534';
+    st.textContent='アップロードが完了しました。（'+o.j.files+' ファイル／entry: '+o.j.entry+'／Version '+o.j.version+'）';
+    mShowReport(o.j, st);
+    document.getElementById('mUpTitle').value=''; document.getElementById('mUpDesc').value='';
+    M_CANCEL=null;
+    mLoad();
+  }).catch(function(e){ fail((e&&e.message)||'アップロードに失敗しました'); });
 }
 
 function mReplace(id){
