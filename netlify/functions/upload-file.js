@@ -1,6 +1,7 @@
 // IDFL admin file-upload endpoint: commits an image to files/<unique-name> on GitHub.
 // Env: GITHUB_TOKEN (repo contents rw), ADMIN_PASSWORD
-const OWNER='Linyunsiang', REPO='idfl-japan', BRANCH='main';
+const T = require('./_target');
+const OWNER = T.OWNER, REPO = T.REPO;
 const ALLOWED_EXT = { png:1, jpg:1, jpeg:1, webp:1, svg:1 };
 
 function resp(code,obj){return {statusCode:code,headers:{'Content-Type':'application/json','Access-Control-Allow-Origin':'*','Access-Control-Allow-Headers':'Content-Type','Access-Control-Allow-Methods':'POST,OPTIONS'},body:JSON.stringify(obj)};}
@@ -39,6 +40,10 @@ exports.handler = async (event) => {
     .replace(/\s+/g,'-').replace(/[^A-Za-z0-9._\-]/g,'').replace(/-+/g,'-');
   const ext = (name.split('.').pop()||'').toLowerCase();
   if (!ALLOWED_EXT[ext]) return resp(400,{error:'対応形式は PNG / JPG / WEBP / SVG のみです'});
+
+  // A Deploy Preview writes to its own branch, never to production.
+  const BRANCH = T.targetBranch();
+  if (!BRANCH) return resp(500, {error: T.NO_TARGET});
 
   // SVG sanitize (strip scripts/handlers to prevent stored XSS)
   if (ext === 'svg') {

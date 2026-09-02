@@ -10,7 +10,11 @@
 //   失敗時は本番ファイルを一切破壊しない（pendingのみ）。
 // ============================================================
 const CFG = require('./_config');
-const OWNER='Linyunsiang', REPO='idfl-japan', BRANCH='main';
+const T = require('./_target');
+const OWNER = T.OWNER, REPO = T.REPO;
+/* 書き込み先ブランチは呼び出しごとに解決する。Deploy Preview は自分の
+   ブランチに書き、本番だけが main に書く。 */
+function BR(){ const b = T.targetBranch(); if(!b) throw new Error(T.NO_TARGET); return b; }
 const JSON_PATH='downloads-data.json';
 const FILES_DIR='files';
 const PENDING_DIR='files/_pending';
@@ -40,21 +44,21 @@ function H(){ return { 'Authorization':`Bearer ${token()}`, 'Accept':'applicatio
 function apiUrl(path){ return `https://api.github.com/repos/${OWNER}/${REPO}/contents/`+path.split('/').map(encodeURIComponent).join('/'); }
 
 async function ghGet(path){
-  const r=await fetch(apiUrl(path)+`?ref=${BRANCH}`,{headers:H()});
+  const r=await fetch(apiUrl(path)+`?ref=${BR()}`,{headers:H()});
   if(r.status===404) return null;
   if(!r.ok) throw new Error('GitHub取得エラー '+r.status);
   const j=await r.json();
   return { sha:j.sha, base64:(j.content||'').replace(/\n/g,''), size:j.size };
 }
 async function ghPut(path, base64, message, sha){
-  const payload={ message, content:base64, branch:BRANCH }; if(sha) payload.sha=sha;
+  const payload={ message, content:base64, branch:BR() }; if(sha) payload.sha=sha;
   const r=await fetch(apiUrl(path),{ method:'PUT', headers:{...H(),'Content-Type':'application/json'}, body:JSON.stringify(payload) });
   if(r.status>=200&&r.status<300){ const j=await r.json(); return { commit:(j.commit&&j.commit.sha)||'', sha:(j.content&&j.content.sha)||'' }; }
   const txt=await r.text().catch(()=> '');
   throw new Error('GitHub保存エラー '+r.status+(txt?(': '+txt.slice(0,120)):''));
 }
 async function ghDelete(path, sha, message){
-  const r=await fetch(apiUrl(path),{ method:'DELETE', headers:{...H(),'Content-Type':'application/json'}, body:JSON.stringify({ message, sha, branch:BRANCH }) });
+  const r=await fetch(apiUrl(path),{ method:'DELETE', headers:{...H(),'Content-Type':'application/json'}, body:JSON.stringify({ message, sha, branch:BR() }) });
   return r.ok; // 失敗しても致命的ではない（pendingの掃除）
 }
 

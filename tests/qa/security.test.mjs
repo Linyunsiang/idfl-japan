@@ -171,6 +171,9 @@ async function withPublish(fn){
   const savedFetch = globalThis.fetch;
   process.env.ADMIN_PASSWORD = ADMIN_PW;
   process.env.GITHUB_TOKEN = 'test-token-not-real';
+  // default to the production console unless a test says otherwise
+  if(process.env.CONTEXT === undefined) process.env.CONTEXT = 'production';
+  if(process.env.BRANCH === undefined) process.env.BRANCH = 'main';
   const calls = [];
   globalThis.fetch = async (url, opts) => {
     calls.push({ url: String(url), method: (opts && opts.method) || 'GET' });
@@ -300,6 +303,91 @@ await t('the oversized-payload guard still holds', async () => {
     assert.equal(r.statusCode, 413);
     assert.equal(calls.filter(c => c.method === 'PUT').length, 0);
   });
+});
+
+// ==========================================================================
+G('A DEPLOY PREVIEW MUST NOT WRITE TO PRODUCTION');
+
+const TARGET = path.join(ROOT, 'netlify/functions/_target.js');
+async function target(env){
+  const saved = { ...process.env };
+  delete process.env.CONTEXT; delete process.env.BRANCH;
+  Object.assign(process.env, env);
+  const mod = await import('file://' + TARGET.split(path.sep).join('/') + '?v=' + Math.random());
+  try{ return mod.default ? mod.default.targetBranch() : mod.targetBranch(); }
+  finally{ process.env = saved; }
+}
+
+await t('production writes to main', async () => {
+  assert.equal(await target({ CONTEXT:'production', BRANCH:'main' }), 'main');
+});
+
+await t('production writes to main even if BRANCH says otherwise', async () => {
+  assert.equal(await target({ CONTEXT:'production', BRANCH:'somebody-elses-branch' }), 'main');
+});
+
+await t('a deploy preview writes to its own branch', async () => {
+  assert.equal(await target({ CONTEXT:'deploy-preview', BRANCH:'feature/qa-admin-improvements' }),
+    'feature/qa-admin-improvements');
+});
+
+await t('a deploy preview never resolves to main', async () => {
+  for(const env of [
+    { CONTEXT:'deploy-preview', BRANCH:'main' },
+    { CONTEXT:'deploy-preview' },
+    { CONTEXT:'deploy-preview', BRANCH:'' },
+    { CONTEXT:'deploy-preview', BRANCH:'   ' },
+  ]) assert.notEqual(await target(env), 'main', 'resolved to main for ' + JSON.stringify(env));
+});
+
+await t('an unknown context with no branch refuses rather than guessing', async () => {
+  assert.equal(await target({}), null);
+  assert.equal(await target({ CONTEXT:'dev' }), null);
+});
+
+await t('a branch deploy of main is still main', async () => {
+  assert.equal(await target({ CONTEXT:'branch-deploy', BRANCH:'main' }), 'main');
+});
+
+await t('a branch name that is not a branch name is refused', async () => {
+  for(const b of ['../../etc/passwd', 'a..b', 'branch with spaces', '-leading-dash', 'x'.repeat(300), 'tag\nname'])
+    assert.equal(await target({ CONTEXT:'deploy-preview', BRANCH:b }), null, 'accepted: ' + JSON.stringify(b));
+});
+
+await t('publish.js sends the preview branch, not main', async () => {
+  const saved = { ...process.env };
+  Object.assign(process.env, { CONTEXT:'deploy-preview', BRANCH:'feature/qa-admin-improvements' });
+  try{
+    await withPublish(async (h, calls) => {
+      const r = await call(h, { type:'qa', password: ADMIN_PW, data:[{ id:'x' }] });
+      assert.equal(r.statusCode, 200);
+      assert.equal(J(r).branch, 'feature/qa-admin-improvements', 'the response should name the branch');
+      const put = calls.find(c => c.method === 'PUT');
+      assert.ok(put, 'it should have written');
+    });
+  } finally { process.env = saved; }
+});
+
+await t('publish.js refuses when the target cannot be established', async () => {
+  const saved = { ...process.env };
+  // empty, not deleted: the harness fills in a production context only when the
+  // variables are absent, and this test is about them being present but useless
+  process.env.CONTEXT = ''; process.env.BRANCH = '';
+  try{
+    await withPublish(async (h, calls) => {
+      const r = await call(h, { type:'qa', password: ADMIN_PW, data:[{ id:'x' }] });
+      assert.equal(r.statusCode, 500);
+      assert.equal(calls.filter(c => c.method === 'PUT').length, 0, 'nothing may be written');
+    });
+  } finally { process.env = saved; }
+});
+
+await t('no write endpoint hard-codes a branch any more', async () => {
+  for(const f of ['publish.js','upload-file.js','file-manager.js']){
+    const txt = fs.readFileSync(path.join(ROOT, 'netlify/functions', f), 'utf8');
+    assert.ok(!/BRANCH\s*=\s*['"]main['"]/.test(txt), f + ' still hard-codes main');
+    assert.ok(/require\('\.\/_target'\)/.test(txt), f + ' should resolve its target through _target');
+  }
 });
 
 console.log('\n' + pass + ' passed, ' + fail + ' failed');
