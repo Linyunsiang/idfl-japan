@@ -18,7 +18,7 @@
 const { getStore, connectLambda } = require('@netlify/blobs');
 const A = require('./_auth');
 const M = require('./_media');
-const Z = require('./_zip');
+const P = require('./_package');
 const S = require('./_stores');
 
 const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;   // matches the sync-function request ceiling
@@ -47,22 +47,12 @@ exports.handler = async (event) => {
   if(buf.length > MAX_UPLOAD_BYTES) return M.json(413, { error: 'サイズが上限（' + human(MAX_UPLOAD_BYTES) + '）を超えています' });
 
   // --- unpack -------------------------------------------------------------
-  let files, entry, skipped = 0, rawBytes = 0;
-  if(ext === 'zip'){
-    if(buf.slice(0, 2).toString('hex') !== '504b') return M.json(400, { error: 'ファイルの実体がZIPではありません' });
-    let r;
-    try{ r = Z.readZip(buf); }catch(e){ return M.json(400, { error: (e && e.message) || 'ZIPの読み取りに失敗しました' }); }
-    files = Z.stripCommonRoot(r.files);
-    skipped = r.skipped; rawBytes = r.totalBytes;
-    entry = Z.pickEntry(files);
-    if(!entry) return M.json(400, { error: 'ZIP内にHTMLファイルが見つかりません（index.html を含めてください）' });
-  }else{
-    const head = buf.slice(0, 1024).toString('utf8').toLowerCase();
-    if(head.indexOf('<') < 0) return M.json(400, { error: 'ファイルの実体がHTMLではありません' });
-    files = [{ path: 'index.html', data: buf }];
-    entry = 'index.html';
-    rawBytes = buf.length;
-  }
+  // Shared with the chunked path (_package.js): one extraction implementation,
+  // one set of ZIP safety checks, one normalisation rule.
+  let pkg;
+  try{ pkg = P.buildPackage(buf, ext === 'htm' ? 'html' : ext); }
+  catch(e){ return M.json(400, { error: (e && e.message) || '取り込みに失敗しました' }); }
+  const files = pkg.files, entry = pkg.entry, skipped = pkg.skipped, rawBytes = pkg.rawBytes;
 
   // --- write --------------------------------------------------------------
   let recStore, mediaStore;
@@ -115,6 +105,8 @@ exports.handler = async (event) => {
     sizeLabel: human(rawBytes),
     contentType: 'text/html',
     packaged: ext === 'zip' ? 1 : 0,
+    normalized: pkg.norm ? 1 : 0,
+    sourceSize: buf.length,
     uploadedAt: (prev && prev.uploadedAt) || ts,
     updatedAt: ts,
     uploadedBy: 'staff',
@@ -136,5 +128,7 @@ exports.handler = async (event) => {
     }catch(e){}
   }
 
-  return M.json(200, { ok: true, id, version, entry, files: files.length, skipped, sizeLabel: human(rawBytes) });
+  return M.json(200, { ok: true, id, version, entry, files: files.length, skipped, sizeLabel: human(rawBytes),
+    normalized: !!pkg.norm,
+    report: P.reportFor(pkg.norm) });
 };

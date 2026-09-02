@@ -27,9 +27,12 @@ function ctxSuffix(){
 
 // Bytes of uploaded HTML presentation packages (one blob per asset).
 function mediaStoreName(){ return 'idfl-media-html' + ctxSuffix(); }
+// Upload chunks in flight. Private, short-lived, swept after an hour; nothing
+// here is ever reachable by URL.
+function uploadStoreName(){ return 'idfl-upload-tmp' + ctxSuffix(); }
 // Customer feedback. Contains personal data - never mixed into the site content store.
 function feedbackStoreName(){ return 'idfl-feedback' + ctxSuffix(); }
 
 function isProduction(){ return String(process.env.CONTEXT||'production').toLowerCase() === 'production'; }
 
-module.exports = { PROTECTED_STORE, mediaStoreName, feedbackStoreName, ctxSuffix, isProduction };
+module.exports = { PROTECTED_STORE, mediaStoreName, feedbackStoreName, uploadStoreName, ctxSuffix, isProduction };
