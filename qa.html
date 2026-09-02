@@ -261,6 +261,22 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
   .qa-body .a .a-mark{flex-shrink:0;color:#1255A0;font-family:'Space Mono',monospace;font-weight:700;}
   .qa-body ul{margin:10px 0 4px;padding-left:20px;}
   .qa-body ul li{margin:4px 0;}
+  /* 回答の下に置く画像。枚数に応じて自然に折り返す。 */
+  .qa-figs{display:flex;flex-wrap:wrap;gap:14px;margin:16px 0 4px;}
+  .qa-fig{margin:0;flex:1 1 260px;max-width:100%;min-width:0;}
+  .qa-fig img{display:block;width:100%;height:auto;border:1px solid var(--brand-100);border-radius:10px;background:#fff;cursor:zoom-in;transition:box-shadow .18s;}
+  .qa-fig img:hover{box-shadow:0 6px 20px rgba(18,85,160,.14);}
+  .qa-fig figcaption{margin-top:6px;font-size:13px;font-weight:600;line-height:1.7;color:#5b6472;}
+  /* 1枚だけのときは大きくなりすぎないように上限を置く。 */
+  .qa-figs[data-count="1"] .qa-fig{flex:0 1 520px;}
+  /* 新着バッジ。IDFLのブランド色に寄せた控えめな赤。 */
+  .qa-new{flex-shrink:0;align-self:center;background:#e0342c;color:#fff;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;letter-spacing:.08em;line-height:1;padding:4px 8px;border-radius:5px;}
+  @media(max-width:640px){
+    .qa-figs{gap:12px;}
+    .qa-fig{flex:1 1 100%;}
+    .qa-figs[data-count="1"] .qa-fig{flex:1 1 100%;}
+    .qa-new{font-size:10px;padding:3px 6px;}
+  }
   .qa-body .note{margin-top:10px;color:#74747c;font-size:13px;}
   .qa-empty{display:none;text-align:center;color:#74747c;padding:40px 0;}
   .qa-cta{margin-top:44px;text-align:center;background:var(--brand-050);border:1px solid var(--brand-100);border-radius:16px;padding:32px 24px;}
@@ -398,12 +414,8 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
   <button onclick="qaLogout()">ログアウト</button>
 </div>
 
-<nav class="qa-anchor-nav" id="qaAnchorNav" aria-label="セクションへ移動">
-  <a class="qa-anchor-pill" href="#qa-sec-audit" data-sec="audit"><span class="part-badge">Part 1</span>監査・認証編</a>
-  <a class="qa-anchor-pill" href="#qa-sec-tc"    data-sec="tc"   ><span class="part-badge">Part 2</span>TC（取引証明書）編</a>
-  <a class="qa-anchor-pill" href="#qa-sec-logo"  data-sec="logo" ><span class="part-badge">Part 3</span>LOGO編</a>
-  <a class="qa-anchor-pill" href="#qa-sec-other" data-sec="other"><span class="part-badge">Part 4</span>その他編</a>
-</nav>
+<!-- 中身は qaRender() が実データに合わせて描き直す（質問が0件のセクションは出さない） -->
+<nav class="qa-anchor-nav" id="qaAnchorNav" aria-label="セクションへ移動"></nav>
 
 <main class="qa-wrap">
   <div class="qa-search">
@@ -439,12 +451,7 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
     <h3 id="qaEditTitle">Q&Aを追加</h3>
     <input type="hidden" id="qaEditId" />
     <label>カテゴリ</label>
-    <select id="qaEditSection">
-      <option value="audit">監査・認証編</option>
-      <option value="tc">TC（取引証明書）編</option>
-      <option value="logo">LOGO編</option>
-      <option value="other">その他編</option>
-    </select>
+    <select id="qaEditSection"></select>
     <label>質問（Q）</label>
     <textarea id="qaEditQ" style="min-height:70px" placeholder="質問を入力"></textarea>
     <label>回答（A）</label>
@@ -499,10 +506,24 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
   document.addEventListener('keydown',function(e){if(e.key==='Escape')c();});
 })();
 </script>
+<script src="/js/qa-sections.js"></script>
 <script>
 const QA_KEY='idflQA_v1';
 const QA_PASS='idfl2026';
-const QA_SECTIONS=[{key:'audit',label:'監査・認証編',part:'Part 1'},{key:'tc',label:'TC（取引証明書）編',part:'Part 2'},{key:'logo',label:'LOGO編',part:'Part 3'},{key:'other',label:'その他編',part:'Part 4'}];
+/* セクション定義は /js/qa-sections.js が唯一の元。読み込みに失敗しても
+   ページが真っ白にならないよう、従来の4区分を控えとして持っておく。
+   Part番号は「実際に表示されるセクション」で採番するため、途中の
+   セクションが空でも Part の番号が飛ばない。 */
+const QA_SECTIONS=(window.QA_SECTION_DEFS?QA_SECTION_DEFS.all():[
+  {key:'audit',label:'監査・認証編'},{key:'tc',label:'TC（取引証明書）編'},
+  {key:'logo',label:'LOGO編'},{key:'other',label:'その他編'}
+]).map(function(s){return {key:s.key,label:s.label,short:s.short||s.label};});
+/** 未知・空のセクションは「その他」に寄せて必ずどこかに出す（表示落ち防止）。 */
+function qaSectionOf(it){
+  var k=String(it&&it.section||'').trim().toLowerCase();
+  for(var i=0;i<QA_SECTIONS.length;i++) if(QA_SECTIONS[i].key===k) return k;
+  return 'other';
+}
 const defaultQA = [
   {id:'qa-audit-01', section:'audit', q:'IDFL Japanではどのような認証（規格）の監査を受けられますか？', a:'主に以下の国際的なサステナビリティ基準に対応しています。①GOTS（オーガニックテキスタイルの世界基準）、②Textile Exchangeの全基準（GRS・RCS・OCS・RDS・RWS・RMS・RAS）、③FSC認証（適切に管理された森林由来の木材・繊維製品）。その他の認証も幅広く対応・審査可能な場合がございますので、まずはお気軽にお問い合わせください。'},
   {id:'qa-audit-02', section:'audit', q:'認証を取得（SC発行）するまでに、一般的にどれくらいの期間がかかりますか？', a:'申請から監査の実施、不適合の修正（必要な場合）、SC（事業者認証）の発行まで、一般的におよそ2〜3ヶ月程度かかります。工場の稼働状況や書類の準備状態によって前後するため、余裕を持ったスケジュールでの申請をおすすめします。'},
@@ -572,21 +593,73 @@ async function _qaDoPublish(){
   }catch(e){qaToast('⚠️ 公開失敗: '+e.message);}
 }
 function qaEscape(t){return (t||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+/* 画像は images:[{src,caption}] が正。古いレコードは img に1枚だけ持って
+   いるので、読むときにここで形を揃える。データ側は書き換えなくてよい。 */
+function qaImages(it){
+  if(!it) return [];
+  if(Array.isArray(it.images)){
+    return it.images.map(function(x){
+      return (typeof x==='string')?{src:x,caption:''}:{src:String(x&&x.src||''),caption:String(x&&x.caption||'')};
+    }).filter(function(x){return x.src;});
+  }
+  if(it.img) return [{src:String(it.img),caption:''}];
+  return [];
+}
+/* newUntil を過ぎたら自動で消える。日付が壊れている場合は消さない側に倒す。 */
+function qaIsNew(it){
+  if(!it||!it.isNew) return false;
+  var u=String(it.newUntil||'').trim();
+  if(!u) return true;
+  var d=new Date(u+'T23:59:59');
+  if(isNaN(d.getTime())) return true;
+  return Date.now()<=d.getTime();
+}
+/* セクション追加のたびに手で足さなくて済むよう、ナビと編集用プルダウンは
+   定義から生成する。ナビは「実際に表示されたセクション」だけを出す。 */
+function qaPaintNav(shown){
+  var nav=document.getElementById('qaAnchorNav');
+  if(!nav) return;
+  nav.innerHTML=(shown||[]).map(function(s){
+    return '<a class="qa-anchor-pill" href="#qa-sec-'+s.key+'" data-sec="'+qaAttr(s.key)+'">'
+      +'<span class="part-badge">'+qaEscape(s.part)+'</span>'+qaEscape(s.label)+'</a>';
+  }).join('');
+  nav.style.display=(shown&&shown.length>1)?'':'none';
+}
+function qaPaintSectionSelect(){
+  var sel=document.getElementById('qaEditSection');
+  if(!sel) return;
+  sel.innerHTML=QA_SECTIONS.map(function(s){
+    return '<option value="'+qaAttr(s.key)+'">'+qaEscape(s.label)+'</option>';
+  }).join('');
+}
+function qaFigsHtml(it){
+  var ims=qaImages(it);
+  if(!ims.length) return '';
+  return '<div class="qa-figs" data-count="'+ims.length+'">'+ims.map(function(im){
+    return '<figure class="qa-fig">'
+      +'<img src="'+qaAttr(im.src)+'" alt="'+qaAttr(im.caption||'')+'" loading="lazy" onclick="qaLightbox(this.src)">'
+      +(im.caption?'<figcaption>'+qaEscape(im.caption)+'</figcaption>':'')
+      +'</figure>';
+  }).join('')+'</div>';
+}
 
 function qaRender(){
   const arr=qaLoad();
   const kw=(document.getElementById('qaSearch').value||'').trim().toLowerCase();
   const cont=document.getElementById('qaContainer');
   let html='';let total=0;
+  let partNo=0; const shown=[];
   QA_SECTIONS.forEach(function(sec){
-    let items=arr.filter(x=>x.section===sec.key);
+    let items=arr.filter(function(x){return qaSectionOf(x)===sec.key;});
     if(kw)items=items.filter(x=>((x.q+' '+x.a).toLowerCase().indexOf(kw)>-1));
     if(items.length===0)return;
-    html+='<section class="qa-section" id="qa-sec-'+sec.key+'"><h2 class="qa-section-title"><span class="num">'+sec.part+'</span>'+sec.label+'</h2>';
+    partNo++;
+    shown.push({key:sec.key,label:sec.label,part:'Part '+partNo});
+    html+='<section class="qa-section" id="qa-sec-'+sec.key+'"><h2 class="qa-section-title"><span class="num">Part '+partNo+'</span>'+qaEscape(sec.label)+'</h2>';
     items.forEach(function(it,i){
       html+='<details class="qa"'+(kw?' open':'')+'>'+
-        '<summary><span class="q">Q'+(i+1)+'.</span><span>'+qaEscape(it.q)+'</span><svg class=\"chev\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\"><path d=\"M6 9l6 6 6-6\"/></svg></summary>'+
-        '<div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>'+qaEscape(it.a)+'</span></div>'+(it.img?'<img class="qa-ans-img" src="'+qaAttr(it.img)+'" alt="" loading="lazy" onclick="qaLightbox(this.src)" />':'')+(it.link?'<a class="qa-ans-link" href="'+qaAttr(it.link)+'" target="_blank" rel="noopener">'+qaEscape(it.linkLabel||'詳しくはこちら')+' →</a>':'')+'</div>'+
+        '<summary><span class="q">Q'+(i+1)+'.</span><span>'+qaEscape(it.q)+'</span>'+(qaIsNew(it)?'<span class="qa-new">NEW</span>':'')+'<svg class=\"chev\" width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2.2\"><path d=\"M6 9l6 6 6-6\"/></svg></summary>'+
+        '<div class="qa-body"><div class="a"><span class="a-mark">A.</span><span>'+qaEscape(it.a)+'</span></div>'+qaFigsHtml(it)+(it.link?'<a class="qa-ans-link" href="'+qaAttr(it.link)+'" target="_blank" rel="noopener">'+qaEscape(it.linkLabel||'詳しくはこちら')+' →</a>':'')+'</div>'+
         '<div class="qa-item-admin"><button class="qa-edit-b" onclick="qaOpenEdit(\''+it.id+'\')">✎ 編集</button>'+
         '<button class="qa-del-b" onclick="qaDelete(\''+it.id+'\')">🗑 削除</button></div>'+
         '</details>';
@@ -595,6 +668,7 @@ function qaRender(){
     html+='</section>';
   });
   cont.innerHTML=html;
+  qaPaintNav(shown);
   document.getElementById('qaEmpty').style.display=total?'none':'block';
 }
 
@@ -602,24 +676,26 @@ function qaRender(){
 document.getElementById('qaSearch').addEventListener('input',qaRender);
 
 // ── Anchor nav: smooth scroll + active highlight ──
-document.querySelectorAll('.qa-anchor-pill').forEach(function(a){
-  a.addEventListener('click',function(e){
-    var target=document.getElementById(a.getAttribute('data-sec')?'qa-sec-'+a.getAttribute('data-sec'):null);
+(function(){
+  var nav=document.getElementById('qaAnchorNav');
+  if(nav) nav.addEventListener('click',function(e){
+    var a=e.target.closest?e.target.closest('.qa-anchor-pill'):null;
+    if(!a)return;
+    var target=document.getElementById('qa-sec-'+a.getAttribute('data-sec'));
     if(!target)return;
     e.preventDefault();
-    var offset=target.getBoundingClientRect().top+window.scrollY-130;
-    window.scrollTo({top:offset,behavior:'smooth'});
+    window.scrollTo({top:target.getBoundingClientRect().top+window.scrollY-130,behavior:'smooth'});
   });
-});
-(function(){
-  var pills=document.querySelectorAll('.qa-anchor-pill');
   function updateActive(){
-    var secs=QA_SECTIONS.map(function(s){return document.getElementById('qa-sec-'+s.key);}).filter(Boolean);
+    var pills=document.querySelectorAll('.qa-anchor-pill');
+    if(!pills.length)return;
     var active=null;
-    secs.forEach(function(sec){
-      if(sec.getBoundingClientRect().top<=160)active=sec.id.replace('qa-sec-','');
+    QA_SECTIONS.forEach(function(s){
+      var el=document.getElementById('qa-sec-'+s.key);
+      if(el&&el.getBoundingClientRect().top<=160)active=s.key;
     });
-    pills.forEach(function(p){p.classList.toggle('active',p.getAttribute('data-sec')===(active||QA_SECTIONS[0].key));});
+    if(!active)active=pills[0].getAttribute('data-sec');
+    pills.forEach(function(p){p.classList.toggle('active',p.getAttribute('data-sec')===active);});
   }
   window.addEventListener('scroll',updateActive,{passive:true});
   setTimeout(updateActive,400);
@@ -636,6 +712,7 @@ function qaLogout(){qaIsAdmin=false;document.body.classList.remove('qa-admin');d
 function qaOpenAdd(){
   document.getElementById('qaEditTitle').textContent='Q&Aを追加';
   document.getElementById('qaEditId').value='';
+  qaPaintSectionSelect();
   document.getElementById('qaEditSection').value='audit';
   document.getElementById('qaEditQ').value='';document.getElementById('qaEditA').value='';
   qaResetImgFields();
@@ -646,7 +723,8 @@ function qaOpenEdit(id){
   const it=qaLoad().find(x=>x.id===id);if(!it)return;
   document.getElementById('qaEditTitle').textContent='Q&Aを編集';
   document.getElementById('qaEditId').value=it.id;
-  document.getElementById('qaEditSection').value=it.section;
+  qaPaintSectionSelect();
+  document.getElementById('qaEditSection').value=qaSectionOf(it);
   document.getElementById('qaEditQ').value=it.q;document.getElementById('qaEditA').value=it.a;
   qaResetImgFields();
   if(it.img){document.getElementById('qaEditImg').value=it.img;qaShowPreview(it.img);}
@@ -681,7 +759,9 @@ function qaExport(){
   const a=document.createElement('a');a.href=url;a.download='qa-data.js';a.click();URL.revokeObjectURL(url);
   qaToast('qa-data.js を書き出しました');
 }
-function qaAttr(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;');}
+/* 属性値用のエスケープ。< > も落とすのは、URLでも説明文でも同じ関数を
+   使うため、どの文脈に入るかを考えなくて済むようにするため。 */
+function qaAttr(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function qaShowPreview(src){document.getElementById('qaImgPreviewEl').src=src;document.getElementById('qaImgPreviewWrap').style.display='block';}
 function qaResetImgFields(){document.getElementById('qaEditImg').value='';document.getElementById('qaEditImgUrl').value='';var f=document.getElementById('qaEditImgFile');if(f)f.value='';document.getElementById('qaImgPreviewWrap').style.display='none';document.getElementById('qaImgPreviewEl').removeAttribute('src');}
 function qaClearImg(){qaResetImgFields();qaToast('画像を削除しました');}
