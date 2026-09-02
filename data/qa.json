@@ -1,22 +1,5 @@
 [
   {
-    "id": "qa-TESTDATA-DELETE-ME",
-    "section": "seminar",
-    "q": "【TEST】これは削除予定のテスト用Q&Aです",
-    "a": "【TEST】この項目は Deploy Preview の動作確認用です。確認後に削除します。",
-    "images": [
-      {
-        "src": "/files/mtjrfrbm-4bfj-TEST-image-3-DELETE-ME.png",
-        "caption": "【TEST】図2：2枚目"
-      }
-    ],
-    "link": "",
-    "linkLabel": "",
-    "createdAt": "2026-09-02T07:10:03.242Z",
-    "updatedAt": "2026-09-02T07:14:02.592Z",
-    "updatedBy": "admin"
-  },
-  {
     "id": "qa-1787796684239",
     "section": "audit",
     "q": "OCS、RDSおよびMaterials Matter Standardは、同一のScope Certificateに記載できますか？",
