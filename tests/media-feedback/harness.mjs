@@ -132,6 +132,11 @@ const MIME = {
 function send(res, out){
   const headers = Object.assign({}, out.headers || {});
   const body = out.isBase64Encoded ? Buffer.from(out.body || '', 'base64') : Buffer.from(out.body || '', 'utf8');
+  /* Netlify always returns a length; node defaults to chunked without one.
+     That difference is not cosmetic for media: Chrome's audio pipeline stalls
+     at readyState 0 on a chunked response with no Content-Length, so a clip
+     that plays perfectly in production looks broken here. Match production. */
+  if(headers['Content-Length'] === undefined) headers['Content-Length'] = String(body.length);
   res.writeHead(out.statusCode || 200, headers);
   res.end(body);
 }
