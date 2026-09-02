@@ -112,38 +112,17 @@ exports.handler = async (event) => {
     contentType = 'text/html; charset=utf-8';
   }
 
-  /* The sandbox goes on documents, not on their bytes.
-
-     CSP sandbox exists so a customer HTML package cannot reach the page that
-     frames it. An image, a font or an audio clip is not a browsing context
-     and executes nothing, so sandboxing one protects nothing — but Chrome
-     refuses to decode a media resource whose own response carries it, which
-     is what silenced the narration. Measured, not guessed:
-
-       plain server, no CSP on the clip -> readyState 4, plays
-       this server, CSP on the clip     -> networkState 3, NETWORK_NO_SOURCE
-
-     fetch() retrieves the same bytes either way, which is why the package
-     checks all passed while playback did not. Images tolerate it too, so the
-     117 extracted pictures never showed a symptom.
-
-     Every HTML response still carries it, which is where the guarantee lives:
-     the entry document is the only thing that could run code. */
-  const headers = {
-    'Content-Type': contentType,
-    'X-Content-Type-Options': 'nosniff',
-    'Referrer-Policy': 'no-referrer',
-    'X-Robots-Tag': 'noindex, nofollow',
-    // private: this is behind a session; a shared cache must never keep it.
-    'Cache-Control': 'private, max-age=0, must-revalidate',
-  };
-  if(M.isHtmlPath(safe) || contentType.indexOf('text/html') === 0){
-    headers['Content-Security-Policy'] = CSP_SANDBOX;
-  }
-
   return {
     statusCode: 200,
-    headers: headers,
+    headers: {
+      'Content-Type': contentType,
+      'Content-Security-Policy': CSP_SANDBOX,
+      'X-Content-Type-Options': 'nosniff',
+      'Referrer-Policy': 'no-referrer',
+      'X-Robots-Tag': 'noindex, nofollow',
+      // private: this is behind a session; a shared cache must never keep it.
+      'Cache-Control': 'private, max-age=0, must-revalidate',
+    },
     body: buf.toString('base64'),
     isBase64Encoded: true,
   };
