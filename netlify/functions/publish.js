@@ -44,7 +44,7 @@ exports.handler = async (event) => {
 
   // A Deploy Preview writes to its own branch, never to production.
   const BRANCH = await T.resolveBranch(token);
-  if (!BRANCH) return resp(500, {error: T.NO_TARGET});
+  if (!BRANCH) return resp(500, {error: T.NO_TARGET, deployContext: T.describeEnv()});
 
   const api = `https://api.github.com/repos/${OWNER}/${REPO}/contents/${path}`;
   const H = { 'Authorization':`Bearer ${token}`, 'Accept':'application/vnd.github+json', 'User-Agent':'idfl-admin-publish' };

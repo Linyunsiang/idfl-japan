@@ -72,8 +72,21 @@ function isSafeBranch(b){ return SAFE_BRANCH.test(b) && b.indexOf('..') < 0; }
 /** A Japanese message for the null case, so every caller says the same thing. */
 const NO_TARGET = '公開先のブランチを特定できませんでした（この環境からは公開できません）。';
 
+/* 公開先を決められなかったときに、何が分かっていて何が無いのかを返す。
+   ここに出るのは Netlify のデプロイ文脈だけで、秘密は含まない。
+   呼び出し側は必ず認証の後で使うこと。 */
+function describeEnv(){
+  const names = ['CONTEXT','BRANCH','HEAD','REVIEW_ID','PULL_REQUEST','DEPLOY_PRIME_URL','SITE_NAME'];
+  const out = {};
+  for(const n of names){
+    const v = process.env[n];
+    out[n] = (v === undefined || v === null || v === '') ? null : String(v).slice(0, 120);
+  }
+  return out;
+}
+
 function contentsUrl(path){
   return 'https://api.github.com/repos/' + OWNER + '/' + REPO + '/contents/' + path;
 }
 
-module.exports = { OWNER, REPO, resolveBranch, isSafeBranch, NO_TARGET, contentsUrl, SAFE_BRANCH };
+module.exports = { OWNER, REPO, resolveBranch, isSafeBranch, NO_TARGET, describeEnv, contentsUrl, SAFE_BRANCH };
