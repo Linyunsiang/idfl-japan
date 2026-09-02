@@ -20,6 +20,49 @@ const A = require('./_auth');
 const M = require('./_media');
 const Z = require('./_zip');
 const S = require('./_stores');
+const APPS = require('./_apps');
+
+
+// --------------------------------------------------------------------------
+// Customer-app fields. Validated here, not just in the console: a slug that is
+// reserved or already taken must be refused by the server, whoever is calling.
+// Returns { ok:true, fields } or { ok:false, error }.
+// --------------------------------------------------------------------------
+async function appFieldsFrom(body, store, selfId, prev){
+  const out = {};
+  const has = (k) => Object.prototype.hasOwnProperty.call(body, k);
+
+  if(has('appSlug')){
+    const v = APPS.validateSlug(body.appSlug);
+    if(!v.ok) return { ok:false, error:v.error };
+    if(v.slug){
+      // Uniqueness across every record, checked against storage.
+      let taken = false;
+      try{
+        const l = await store.list();
+        for(const b of ((l && l.blobs) || [])){
+          const key = b.key;
+          if(String(key).indexOf('__') === 0 || key === selfId) continue;
+          let m; try{ m = await store.getMetadata(key); }catch(e){ continue; }
+          const other = (m && m.metadata) || {};
+          if(APPS.normalizeSlug(other.appSlug) === v.slug){ taken = true; break; }
+        }
+      }catch(e){}
+      if(taken) return { ok:false, error:'このURLは別のメディアで使用されています。' };
+    }
+    out.appSlug = v.slug;
+  }
+  if(has('appEnabled')) out.appEnabled = body.appEnabled ? '1' : '0';
+  if(has('appDescription')) out.appDescription = String(body.appDescription||'').slice(0,300);
+  if(has('appIcon')) out.appIcon = String(body.appIcon||'').slice(0,8);
+  if(has('feedbackEnabled')) out.feedbackEnabled = body.feedbackEnabled === false ? '0' : '1';
+
+  // A direct route needs a slug; enabling without one is a configuration error.
+  const slug = out.appSlug !== undefined ? out.appSlug : APPS.normalizeSlug(prev && prev.appSlug);
+  const enabled = out.appEnabled !== undefined ? out.appEnabled === '1' : String((prev && prev.appEnabled)||'') === '1';
+  if(enabled && !slug) return { ok:false, error:'直接アクセスURLを有効にするには、URLを入力してください。' };
+  return { ok:true, fields: out };
+}
 
 const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;   // matches the sync-function request ceiling
 
@@ -45,6 +88,14 @@ exports.handler = async (event) => {
   let buf; try{ buf = Buffer.from(body.contentBase64, 'base64'); }catch(e){ return M.json(400, { error: '復号に失敗しました' }); }
   if(!buf.length) return M.json(400, { error: '空のファイルです' });
   if(buf.length > MAX_UPLOAD_BYTES) return M.json(413, { error: 'サイズが上限（' + human(MAX_UPLOAD_BYTES) + '）を超えています' });
+
+  // --- customer-app fields (validated before anything is written) ---------
+  let recStore0;
+  try{ recStore0 = getStore(S.PROTECTED_STORE); }catch(e){ return M.json(500, { error: 'ストレージに接続できません' }); }
+  let prevMeta0 = null;
+  if(body.replaceId){ try{ const c = await recStore0.getMetadata(String(body.replaceId)); prevMeta0 = (c && c.metadata) || null; }catch(e){} }
+  const appRes = await appFieldsFrom(body, recStore0, String(body.replaceId||''), prevMeta0);
+  if(!appRes.ok) return M.json(400, { error: appRes.error });
 
   // --- unpack -------------------------------------------------------------
   let files, entry, skipped = 0, rawBytes = 0;
@@ -119,6 +170,14 @@ exports.handler = async (event) => {
     updatedAt: ts,
     uploadedBy: 'staff',
   };
+  // Carry existing app settings across a replace, then apply any change from
+  // this request. Replacing a package must not silently drop its direct route.
+  if(prev){
+    ['appSlug','appEnabled','appDescription','appIcon','feedbackEnabled'].forEach(function(k){
+      if(prev[k] !== undefined) metadata[k] = prev[k];
+    });
+  }
+  Object.assign(metadata, appRes.fields);
 
   // The blob value is a small manifest; the record is the metadata.
   try{ await recStore.setJSON(id, { entry, version, files: files.map(f => f.path) }, { metadata }); }

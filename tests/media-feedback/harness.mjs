@@ -174,6 +174,30 @@ export function createServer(){
         return send(res, out);
       }
 
+      // netlify.toml: /customer/:slug -> /customer/app.html, WITHOUT force, so a
+      // real file under /customer/ always wins. Mirrored here exactly, because
+      // that precedence is what stops a slug shadowing a static page.
+      const app = /^\/customer\/([^/]+)\/?$/.exec(p);
+      if(app && !/\./.test(app[1])){
+        const asFile = path.join(ROOT, 'customer', app[1] + '.html');
+        let exists = true;
+        try{ await fsp.access(asFile); }catch(e){ exists = false; }
+        if(!exists){
+          const shell = await fsp.readFile(path.join(ROOT, 'customer/app.html'));
+          res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
+          return res.end(shell);
+        }
+        // The static page wins, served the way Netlify's Pretty URLs would.
+        const page = await fsp.readFile(asFile);
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
+        return res.end(page);
+      }
+      if(p === '/customer' || p === '/customer/'){
+        const home = await fsp.readFile(path.join(ROOT, 'customer/apps.html'));
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8', 'Cache-Control': 'no-store' });
+        return res.end(home);
+      }
+
       // netlify.toml: /admin -> /admin.html ; /tests/* -> 404
       let file = p === '/admin' ? '/admin.html' : p;
       if(file.indexOf('/tests/') === 0){ res.writeHead(404); return res.end('not found'); }

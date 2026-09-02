@@ -33,7 +33,14 @@ exports.handler = async (event) => {
       thumb: meta.thumb||'',
       version: meta.version?(parseInt(meta.version,10)||1):undefined,
       entry: meta.kind==='html'?(meta.entry||'index.html'):undefined,
-      assetCount: meta.kind==='html'?(parseInt(meta.files,10)||0):undefined });
+      assetCount: meta.kind==='html'?(parseInt(meta.files,10)||0):undefined,
+      // Customer-app fields. Only meaningful for kind:'html'; the download
+      // page and the Media Library both ignore what they do not use.
+      appSlug: meta.appSlug||'',
+      appEnabled: String(meta.appEnabled||'')==='1',
+      appDescription: meta.appDescription||'',
+      appIcon: meta.appIcon||'',
+      feedbackEnabled: String(meta.feedbackEnabled||'')!=='0' });
   }
   files.sort((a,b)=>{
     const pa=(a.id in pos)?pos[a.id]:Infinity, pb=(b.id in pos)?pos[b.id]:Infinity;
