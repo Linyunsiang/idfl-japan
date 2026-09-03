@@ -24,7 +24,10 @@
     { key: 'fees',              label: '費用編',              short: '費用' },
     { key: 'seminar',           label: 'セミナー編',          short: 'セミナー' },
     { key: 'logo',              label: 'LOGO編',              short: 'LOGO' },
-    { key: 'other',             label: 'その他編',            short: 'その他' }
+    /* Display label only - the key is unchanged, so no record is touched.
+       Three of the four records filed here are portal login / account /
+       notification problems, which "その他" hid from anyone scanning. */
+    { key: 'other',             label: 'ポータル・アカウント',  short: 'ポータル' }
   ];
 
   /* 未知のキーが来ても表示を壊さないための保険。過去データや手作業で

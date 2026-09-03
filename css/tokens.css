@@ -1,0 +1,158 @@
+/* ============================================================
+   IDFL JAPAN — Design tokens. Single source of truth.
+
+   Loaded BEFORE each page's own <style>, deliberately: a page that still
+   defines its own --accent or --ink keeps winning, so nothing that works
+   today changes. New work uses the --idfl-* names, which nothing else
+   defines, so it cannot collide.
+
+   Values are not invented. The brand ramp, the ink greys and the hairlines
+   are the values already agreed across the existing pages; this file just
+   gives them one home and one spelling.
+   ============================================================ */
+
+:root{
+  /* ---- Brand ------------------------------------------------ */
+  --idfl-brand-50:#F5F8FF;
+  --idfl-brand-100:#C4DAF5;
+  --idfl-brand-200:#9AC0EE;
+  --idfl-brand-300:#5A99E0;
+  --idfl-brand-400:#2B78D4;
+  --idfl-brand-500:#1255A0;   /* primary */
+  --idfl-brand-600:#0D55A8;
+  --idfl-brand-700:#094590;
+  --idfl-brand-800:#063372;
+  --idfl-brand-900:#042258;
+
+  /* ---- Text -------------------------------------------------
+     Contrast on --idfl-bg (#fff): text 15.9:1, soft 11.1:1,
+     muted 4.9:1 — all clear of 4.5:1. --idfl-text-faint is 3.1:1
+     and is therefore for non-text / decorative use only. */
+  --idfl-text:#17171b;
+  --idfl-text-soft:#3c3c43;
+  --idfl-text-muted:#6a6a72;
+  --idfl-text-faint:#a0a0a8;
+  --idfl-text-on-brand:#ffffff;
+  --idfl-text-link:var(--idfl-brand-500);
+
+  /* ---- Background ------------------------------------------- */
+  --idfl-bg:#ffffff;
+  --idfl-bg-soft:#f6f6f4;
+  --idfl-bg-brand-soft:#F5F8FF;
+  --idfl-bg-scrim:rgba(9,31,62,.45);
+
+  /* ---- Border ----------------------------------------------- */
+  --idfl-border:rgba(23,23,27,.12);
+  --idfl-border-soft:rgba(23,23,27,.08);
+  --idfl-border-strong:rgba(23,23,27,.28);
+  --idfl-border-brand:var(--idfl-brand-500);
+
+  /* ---- Space (4px base) ------------------------------------- */
+  --idfl-space-1:4px;
+  --idfl-space-2:8px;
+  --idfl-space-3:12px;
+  --idfl-space-4:16px;
+  --idfl-space-5:24px;
+  --idfl-space-6:32px;
+  --idfl-space-7:48px;
+  --idfl-space-8:64px;
+  --idfl-gutter:clamp(20px,5.2vw,72px);
+  --idfl-maxw:1240px;
+
+  /* ---- Radius ----------------------------------------------- */
+  --idfl-radius-sm:6px;
+  --idfl-radius:10px;
+  --idfl-radius-lg:14px;
+  --idfl-radius-pill:999px;
+
+  /* ---- Shadow (two steps only; Swiss-minimal keeps these rare) */
+  --idfl-shadow-1:0 1px 2px rgba(4,34,88,.06);
+  --idfl-shadow-2:0 8px 24px rgba(4,34,88,.10);
+
+  /* ---- Type ------------------------------------------------- */
+  --idfl-font-sans:"Zen Kaku Gothic New",system-ui,-apple-system,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+  --idfl-font-mono:"Space Mono",ui-monospace,SFMono-Regular,monospace;
+
+  /* ---- Motion ----------------------------------------------- */
+  --idfl-dur-hover:150ms;      /* 120-180 */
+  --idfl-dur-menu:220ms;       /* 200-280 */
+  --idfl-dur-accordion:200ms;  /* 180-240 */
+  --idfl-dur-reveal:400ms;     /* 350-450 */
+  --idfl-dur-exit:140ms;       /* ~64% of enter: exits should feel prompt */
+  --idfl-stagger:40ms;
+  --idfl-ease-out:cubic-bezier(.2,0,0,1);
+  --idfl-ease-in:cubic-bezier(.4,0,1,1);
+
+  /* ---- Interaction targets ----------------------------------
+     min = WCAG 2.2 AA SC 2.5.8 floor, used mainly as the test
+     threshold. comfort/touch are what components actually apply.
+     Visual size and hit area are separate concerns: a 7px dot may
+     keep its 7px and carry a 36px transparent hit box. */
+  --idfl-target-min:24px;
+  --idfl-target-comfort:36px;
+  --idfl-target-touch:44px;
+
+  /* Header height, exposed so page-level sticky bars can sit flush against
+     it instead of hard-coding a number that silently goes stale. */
+  --idfl-header-h:64px;
+
+  /* ---- Layering --------------------------------------------- */
+  --idfl-z-header:100;
+  --idfl-z-scrim:110;
+  --idfl-z-menu:120;
+}
+
+@media (max-width:620px){
+  :root{ --idfl-header-h:56px; }
+}
+
+/* Reduced motion collapses every duration to zero at the token level, so a
+   component never has to remember to opt in. */
+@media (prefers-reduced-motion:reduce){
+  :root{
+    --idfl-dur-hover:0ms;
+    --idfl-dur-menu:0ms;
+    --idfl-dur-accordion:0ms;
+    --idfl-dur-reveal:0ms;
+    --idfl-dur-exit:0ms;
+    --idfl-stagger:0ms;
+  }
+}
+
+/* ============================================================
+   Legacy aliases — compatibility shims only.
+
+   These exist so a page that has NOT yet been migrated still resolves its
+   own names if it stopped defining them. Pages that define these
+   themselves are unaffected (their :root comes later and wins).
+
+   Do not add new names here, and do not use these in new components.
+   tools/check-chrome.mjs fails if either happens.
+   ============================================================ */
+:root{
+  --accent:var(--idfl-brand-500);
+  --accent2:var(--idfl-brand-700);
+  --nav-accent:var(--idfl-brand-500);
+  --b500:var(--idfl-brand-500);
+  --brand-500:var(--idfl-brand-500);
+  --ink:var(--idfl-text);
+  --nav-ink:var(--idfl-text);
+  --ink-soft:var(--idfl-text-soft);
+  --nav-ink-soft:var(--idfl-text-soft);
+  --muted:var(--idfl-text-muted);
+  --nav-muted:var(--idfl-text-muted);
+  --faint:var(--idfl-text-faint);
+  --hairline:var(--idfl-border);
+  --nav-hairline:var(--idfl-border);
+  --hairline-2:var(--idfl-border-soft);
+  --nav-hairline-2:var(--idfl-border-soft);
+  --hairline-strong:var(--idfl-border-strong);
+  --line:var(--idfl-border);
+  --maxw:var(--idfl-maxw);
+  --gut:var(--idfl-gutter);
+  --nav-gut:clamp(16px,3vw,40px);
+  --idfl-sans:var(--idfl-font-sans);
+  --nav-fsans:var(--idfl-font-sans);
+  --idfl-mono:var(--idfl-font-mono);
+  --f-mono:var(--idfl-font-mono);
+}

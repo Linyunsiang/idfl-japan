@@ -16,3 +16,4 @@ __pycache__/
 # test artefacts containing fixture data, and tests/gots-te/ regenerates them:
 #   node tests/gots-te/generate-test-docs.mjs
 generated/
+.gstack/

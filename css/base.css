@@ -1,0 +1,90 @@
+/* ============================================================
+   IDFL JAPAN — base layer.
+
+   Deliberately small. This is not a reset: the existing pages already carry
+   their own layout CSS and rewriting it would be a large change for no user
+   benefit. What lives here is only what was MISSING sitewide — a visible
+   focus ring, a skip link, reduced-motion safety, and interaction-target
+   helpers.
+   ============================================================ */
+
+/* ---- Focus ------------------------------------------------------------
+   11 of 12 public pages had no focus styling at all, so keyboard users had
+   no idea where they were. :focus-visible keeps it off for mouse clicks. */
+:where(a,button,input,select,textarea,summary,[tabindex]):focus-visible{
+  outline:3px solid var(--idfl-brand-500);
+  outline-offset:2px;
+  border-radius:var(--idfl-radius-sm);
+}
+/* Anything already carrying its own outline keeps it; this only removes the
+   UA default where we replaced it above. */
+:where(a,button,input,select,textarea,summary,[tabindex]):focus:not(:focus-visible){
+  outline:none;
+}
+
+/* ---- Skip link --------------------------------------------------------
+   Present on every page, visible only once focused. */
+.idfl-skip{
+  position:absolute;
+  left:var(--idfl-space-4);
+  top:var(--idfl-space-2);
+  z-index:calc(var(--idfl-z-menu) + 10);
+  transform:translateY(-160%);
+  transition:transform var(--idfl-dur-hover) var(--idfl-ease-out);
+  background:var(--idfl-brand-500);
+  color:var(--idfl-text-on-brand);
+  font:700 14px/1 var(--idfl-font-sans);
+  padding:14px 18px;
+  border-radius:var(--idfl-radius);
+  text-decoration:none;
+  min-height:var(--idfl-target-touch);
+  display:inline-flex;
+  align-items:center;
+}
+.idfl-skip:focus{ transform:none; }
+
+/* ---- Interaction target helpers --------------------------------------
+   Visual size and hit area are separate. .idfl-hit lets a control stay
+   visually small while presenting a comfortable target: the pseudo-element
+   is transparent, absolutely positioned and therefore changes no layout. */
+.idfl-hit{ position:relative; }
+.idfl-hit::after{
+  content:"";
+  position:absolute;
+  left:50%; top:50%;
+  width:var(--idfl-target-comfort);
+  height:var(--idfl-target-comfort);
+  transform:translate(-50%,-50%);
+}
+@media (pointer:coarse){
+  .idfl-hit::after{
+    width:var(--idfl-target-touch);
+    height:var(--idfl-target-touch);
+  }
+}
+
+/* ---- Reveal -----------------------------------------------------------
+   Default state is VISIBLE. The hidden state is only applied once
+   site-motion.js has confirmed it is running by adding .js to <html>, so a
+   JavaScript failure leaves every section readable rather than blank. */
+.idfl-reveal{ opacity:1; transform:none; }
+html.js .idfl-reveal{
+  opacity:0;
+  transform:translateY(14px);
+  transition:opacity var(--idfl-dur-reveal) var(--idfl-ease-out),
+             transform var(--idfl-dur-reveal) var(--idfl-ease-out);
+}
+html.js .idfl-reveal.is-in{ opacity:1; transform:none; }
+
+@media (prefers-reduced-motion:reduce){
+  html.js .idfl-reveal{ opacity:1; transform:none; transition:none; }
+}
+
+/* ---- Utility ---------------------------------------------------------- */
+.idfl-visually-hidden{
+  position:absolute !important;
+  width:1px; height:1px;
+  margin:-1px; padding:0; border:0;
+  clip:rect(0 0 0 0); clip-path:inset(50%);
+  overflow:hidden; white-space:nowrap;
+}
