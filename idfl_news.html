@@ -721,140 +721,18 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
             </button>
         </div>
 
-        <!-- LOGIN STATE (not logged in) -->
-        <div id="stateLogin">
-            <p style="font-size:13px;color:var(--brand-600);background:var(--brand-050);border-radius:8px;padding:10px 14px;margin-bottom:18px;">
-                🔒 管理者としてログインすると、投稿の追加・編集・削除ができます。
-            </p>
-            <div style="margin-bottom:14px;">
-                <label class="form-label">パスワード</label>
-                <input id="adminPwInput" type="password" class="form-input" placeholder="パスワードを入力"
-                       onkeydown="if(event.key==='Enter')checkLogin()">
-            </div>
-            <p id="loginError" style="font-size:13px;color:#EF4444;display:none;margin-bottom:12px;">パスワードが正しくありません。</p>
-            <div style="display:flex;gap:10px;">
-                <button class="btn-post" style="flex:1;" onclick="checkLogin()">
-                    <span style="display:flex;align-items:center;justify-content:center;gap:6px;">
-                        <i data-lucide="log-in" style="width:15px;height:15px;"></i> ログイン
-                    </span>
-                </button>
-                <button class="btn-cancel" onclick="closeLogin()">キャンセル</button>
-            </div>
-        </div>
-
-        <!-- ADMIN STATE (logged in) -->
-        <div id="stateAdmin" style="display:none;">
-            <p style="font-size:13px;color:#16A34A;background:#F0FDF4;border:1px solid #BBF7D0;border-radius:8px;padding:10px 14px;margin-bottom:20px;display:flex;align-items:center;gap:6px;">
-                <i data-lucide="check-circle" style="width:14px;height:14px;flex-shrink:0;"></i>
-                管理者としてログイン中です
-            </p>
-
-            <!-- Admin actions -->
-            <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:20px;">
-                <button onclick="closeLogin();openPostModal();"
-                    style="display:flex;align-items:center;gap:10px;background:var(--brand-500);color:white;border:none;border-radius:12px;padding:14px 18px;font-size:15px;font-weight:700;cursor:pointer;font-family:'Meiryo UI',Meiryo,sans-serif;transition:background .2s;text-align:left;"
-                    onmouseover="this.style.background='var(--brand-600)'" onmouseout="this.style.background='var(--brand-500)'">
-                    <div style="width:36px;height:36px;background:rgba(255,255,255,0.2);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                        <i data-lucide="plus" style="width:18px;height:18px;"></i>
-                    </div>
-                    <div>
-                        <div>新規投稿</div>
-                        <div style="font-size:11px;font-weight:400;opacity:.8;">お知らせを新しく追加する</div>
-                    </div>
-                </button>
-
-                <button onclick="closeLogin();"
-                    style="display:flex;align-items:center;gap:10px;background:var(--brand-050);color:var(--brand-700);border:1.5px solid var(--brand-100);border-radius:12px;padding:14px 18px;font-size:15px;font-weight:600;cursor:pointer;font-family:'Meiryo UI',Meiryo,sans-serif;transition:all .2s;text-align:left;"
-                    onmouseover="this.style.background='var(--brand-100)'" onmouseout="this.style.background='var(--brand-050)'">
-                    <div style="width:36px;height:36px;background:var(--brand-100);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-                        <i data-lucide="pencil" style="width:16px;height:16px;color:var(--brand-600);"></i>
-                    </div>
-                    <div>
-                        <div>投稿の編集・削除</div>
-                        <div style="font-size:11px;font-weight:400;color:var(--brand-400);">カード上の編集・削除ボタンを使用</div>
-                    </div>
-                </button>
-            </div>
-
-            <div style="border-top:1px solid #E8EDF5;padding-top:16px;">
-                <button onclick="doLogout()"
-                    style="display:flex;align-items:center;gap:6px;background:none;border:none;color:#94A3B8;font-size:13px;cursor:pointer;font-family:'Meiryo UI',Meiryo,sans-serif;padding:4px 0;"
-                    onmouseover="this.style.color='#EF4444'" onmouseout="this.style.color='#94A3B8'">
-                    <i data-lucide="log-out" style="width:14px;height:14px;"></i>
-                    ログアウト
-                </button>
-            </div>
-        </div>
+        <p style="font-size:13px;color:var(--brand-600);background:var(--brand-050);border-radius:8px;padding:12px 14px;margin-bottom:18px;line-height:1.9;">
+            お知らせの追加・編集・削除は<strong>統合管理コンソール</strong>に一本化されました。<br>
+            このページは公開用の一覧表示です。
+        </p>
+        <a href="/admin" class="btn-post" style="display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;">
+            <i data-lucide="external-link" style="width:15px;height:15px;"></i> 管理画面で編集
+        </a>
+        <button class="btn-cancel" style="width:100%;margin-top:10px;" onclick="closeLogin()">閉じる</button>
 
     </div>
 </div>
 
-<!-- ===== POST MODAL ===== -->
-<div class="admin-overlay" id="postOverlay">
-    <div class="admin-modal">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;">
-            <h2 style="font-size:20px;margin:0;" id="modalTitle">新規投稿</h2>
-            <button onclick="closePostModal()" style="background:none;border:none;cursor:pointer;color:var(--brand-300);padding:4px;">
-                <i data-lucide="x" style="width:20px;height:20px;"></i>
-            </button>
-        </div>
-
-        <input type="hidden" id="editId">
-
-        <!-- カテゴリー -->
-        <div style="margin-bottom:16px;">
-            <label class="form-label">カテゴリー <span style="color:#EF4444;">*</span></label>
-            <select id="fCat" class="form-select">
-                <option value="idfl">📣 IDFL 公告</option>
-                <option value="gots">GOTS</option>
-                <option value="te">Textile Exchange</option>
-                <option value="fsc">FSC</option>
-                <option value="others">Others</option>
-            </select>
-        </div>
-
-        <!-- タイトル -->
-        <div style="margin-bottom:16px;">
-            <label class="form-label">タイトル <span style="color:#EF4444;">*</span></label>
-            <input id="fTitle" type="text" class="form-input" placeholder="お知らせのタイトルを入力">
-        </div>
-
-        <!-- 本文 -->
-        <div style="margin-bottom:16px;">
-            <label class="form-label">本文 <span style="color:#EF4444;">*</span></label>
-            <textarea id="fBody" class="form-textarea" placeholder="詳細内容を入力してください。URLを含める場合はそのまま貼り付けると自動リンクになります。"></textarea>
-        </div>
-
-        <!-- リンク -->
-        <div style="margin-bottom:16px;">
-            <label class="form-label">関連リンク（任意）</label>
-            <input id="fLink" type="url" class="form-input" placeholder="https://...">
-        </div>
-
-        <!-- リンクラベル -->
-        <div style="margin-bottom:16px;">
-            <label class="form-label">リンクのラベル</label>
-            <input id="fLinkLabel" type="text" class="form-input" placeholder="詳細はこちら">
-        </div>
-
-        <!-- ピン留め -->
-        <div style="margin-bottom:24px;display:flex;align-items:center;gap:10px;">
-            <input id="fPinned" type="checkbox" style="width:16px;height:16px;accent-color:var(--brand-500);">
-            <label for="fPinned" style="font-size:14px;font-weight:600;color:var(--brand-700);cursor:pointer;">
-                📌 この投稿をトップに固定する
-            </label>
-        </div>
-
-        <div id="formError" style="font-size:13px;color:#EF4444;display:none;margin-bottom:14px;"></div>
-
-        <div style="display:flex;gap:10px;justify-content:flex-end;">
-            <button class="btn-cancel" onclick="closePostModal()">キャンセル</button>
-            <button class="btn-post" onclick="submitPost()">
-                <span id="submitLabel">投稿する</span>
-            </button>
-        </div>
-    </div>
-</div>
 
 <!-- ===== Admin gear button (bottom-left, subtle) ===== -->
 <button onclick="openLogin()" id="gearBtn" title="システム設置"
@@ -866,314 +744,29 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
 
 <script>
 // ===================== DATA =====================
-const STORAGE_KEY = 'idfl_news_posts';
-let adminPassword = '';   // ログイン時に入力された値のみ保持（ソースに固定パスワードを書かない）
+// /data/news.json is the only source. Editing lives in /admin, so this page
+// never writes: no localStorage mirror, no bundled fallback copy that could
+// drift from what the console publishes.
+let POSTS = [];
+let LOAD_FAILED = false;
 
 let currentCat = 'all';
-let isAdmin = false;
-let editingId = null;
 
-const defaultPosts = [
-    {
-        id: 'news-eu-dpp-textile-20260706',
-        cat: 'others',
-        title: 'EU「デジタル製品パスポート（DPP）」導入へ — 繊維ブランドが今から備えるべきこと',
-        body: 'EU（欧州連合）は、すべての繊維製品に「デジタル製品パスポート（DPP）」の導入を進めています。DPPは、素材構成・原産国・修理可能性・リサイクル方法などを、QRコードやRFIDから確認できる標準化されたデジタル記録です。持続可能な製品のためのエコデザイン規則（ESPR、2024年7月発効）に基づくもので、繊維向けの具体的な要件は委任法（delegated act）で策定中、2027年前後の導入が見込まれています。EU域外の企業であっても、EU市場で販売する製品は対象となるため、欧州へ輸出する日本の繊維・アパレル関連企業にも準備が求められます。重要な点として、GOTSやOEKO-TEXなどの認証はDPPのデータ項目として組み込まれ、認証を保有していることでDPP対応がむしろ容易になります。まずは自社のサプライチェーンと保有認証の棚卸しから始めることをおすすめします。詳しい解説はニュースレターをご覧ください。',
-        link: 'https://commission.europa.eu/energy-climate-change-environment/standards-tools-and-labels/products-labelling-rules-and-requirements/sustainable-products/ecodesign-sustainable-products-regulation_en',
-        linkLabel: '欧州委員会（ESPR）',
-        pinned: false,
-        date: '2026-07-06',
-        author: 'IDFL JAPAN'
-    },
-    {
-        id: 'news-fsc-trademark-etraining-20260626',
-        cat: 'fsc',
-        title: 'FSC商標基準（V3-0）2026年7月1日施行 — 新しいeラーニングを公開',
-        body: 'FSCは、2026年7月1日から施行される改訂版の商標基準（FSC-STD-50-001 V3-0）について、認証事業者・プロモーションライセンス保有者向けの新しいeラーニングを公開しました。施行日以降は、新基準に沿ったFSCロゴ・商標の表示が求められます。表示要件の確認や社内での対応準備にご活用ください。',
-        link: 'https://fsc.org/en/newscentre/standards/fsc-trademark-standard-v3-0-effective-from-1-july-2026-new-e-training-now',
-        linkLabel: 'FSC公式ニュース',
-        pinned: false,
-        date: '2026-06-26',
-        author: 'IDFL JAPAN'
-    },
-    {
-        id: 'news-fsc-pc-dialogues-20260626',
-        cat: 'fsc',
-        title: 'FSC、「原則と基準（P&C）」の見直しに向けたメンバー対話を開催',
-        body: 'FSCは、認証制度の根幹となる「原則と基準（Principles & Criteria, P&C）」の見直しに向け、メンバーを対象とした一連の対話（Members Dialogues）を開催すると発表しました。P&CはFSCの森林管理認証の土台となる文書であり、今回の対話はその将来的な改訂に向けて関係者の意見を集約することを目的としています。主にFSCメンバーを対象とした取り組みですが、FSC制度の今後の方向性を把握する上で参考になります。',
-        link: 'https://fsc.org/en/newscentre/general-news/join-fsc-members-dialogues-around-the-principles-and-criteria',
-        linkLabel: 'FSC公式ニュース',
-        pinned: false,
-        date: '2026-06-26',
-        author: 'IDFL JAPAN'
-    },
-    {
-        id: 'news-fsc-japan-consumer-study-20260623',
-        cat: 'fsc',
-        title: '調査：日本の消費者はインパクト主張付きFSC製品により高い金額を支払う意向',
-        body: 'FSCが公表した調査によると、日本の消費者は、具体的な環境・社会的インパクトを示す主張（impact claims）が付されたFSC認証製品に対して、より高い金額を支払う意向を示すことが分かりました。認証ロゴの表示にとどまらず、製品が生み出す実際の効果を伝えることが、日本市場での購買意欲につながる可能性を示唆しています。基準そのものの変更ではありませんが、FSC認証製品のマーケティングを検討する事業者にとって参考になる調査結果です。',
-        link: 'https://fsc.org/en/newscentre/research/study-shows-japanese-shoppers-willing-to-pay-more-for-fsc-products-with-impact',
-        linkLabel: 'FSC公式ニュース',
-        pinned: false,
-        date: '2026-06-23',
-        author: 'IDFL JAPAN'
-    },
-    {
-        id: 'news-fsc-cb-requirements-v5-20260618',
-        cat: 'fsc',
-        title: 'FSC、認証機関向け要求事項（FSC-STD-20-001 V5-0）を改訂 — 公開ウェビナーを開催',
-        body: 'FSCは、認証機関（CB）向けの一般要求事項「FSC-STD-20-001 General requirements for certification bodies」の改訂版（V5-0）を発行し、改訂内容の理解と適用を支援するための公開ウェビナーの開催を案内しました。今回の改訂では、ISO/IEC 17065への適合やASIのTwo-Tier保証プログラムに基づく認定が認証機関に求められ、不適合の是正期限や認証判定のタイムラインなどが見直されています。また、森林管理（FM）固有の要求事項がFSC-STD-20-007へ移管されるなど、文書構成の再編も行われました。認証機関を通じて認証を受ける事業者にも運用面で影響しうる内容のため、ウェビナーの日時・登録方法などの詳細はFSC公式ページをご確認ください。',
-        link: 'https://fsc.org/en/newscentre/general-news/public-webinar-on-key-changes-to-fscs-certification-body-requirements',
-        linkLabel: 'FSC公式ニュース',
-        pinned: false,
-        date: '2026-06-18',
-        author: 'IDFL JAPAN'
-    },
-    {
-        id: 'news-gots-intertextile-shenzhen-20260525',
-        cat: 'gots',
-        title: 'GOTS、Intertextile Shenzhen Apparel Fabrics 2026 に出展',
-        body: 'Global Standard（GOTS）は、2026年6月9日から11日まで中国・深圳のShenzhen Convention and Exhibition Center（Futian）で開催される「Intertextile Shenzhen Apparel Fabrics 2026」（主催：Messe Frankfurt (HK) Ltd.）に出展しました。会場ではGOTSの担当者が認証や最新基準GOTS 8.0について案内し、来場者からの質問に対応しました。アジア圏でGOTS認証を検討する企業にとって、最新情報を直接得られる機会となりました。',
-        link: 'https://global-standard.org/news/meet-global-standard-at-intertextile-shenzhen',
-        linkLabel: 'GOTS公式ニュース',
-        pinned: false,
-        date: '2026-05-25',
-        author: 'IDFL JAPAN'
-    },
-    {
-        id: 'news-gots-roundtable-vancouver-20260519',
-        cat: 'gots',
-        title: 'GOTS Roundtable Vancouver（カナダ）開催のお知らせ — 2026年10月12日',
-        body: 'Global Standard（GOTS）は、2026年10月12日（月）にカナダ・バンクーバーで「GOTS Roundtable Vancouver」を開催します。昨年リスボンで好評を博したラウンドテーブルに続くもので、関係者が少人数で協働的に意見交換を行う場として設計されています。GOTSの最新動向やサステナビリティ認証に関心のある事業者にとって、ネットワーキングと情報交換の機会となります。',
-        link: 'https://global-standard.org/news/gots-roundtable-vancouver-canada',
-        linkLabel: 'GOTS公式ニュース',
-        pinned: false,
-        date: '2026-05-19',
-        author: 'IDFL JAPAN'
-    },
-    {
-        id: 'news-fsc-coc-revision-d2-20260515',
-        cat: 'fsc',
-        title: 'FSC、加工流通（CoC）基準の改訂 第2次ドラフトを公開諮問（〜2026年6月15日）',
-        body: 'FSC（森林管理協議会）は、加工流通管理（Chain of Custody）に関する基準の全面改訂を進めています。今回、中核基準であるFSC-STD-40-004（バージョン4-0 第2ドラフト）および審査機関向けのFSC-STD-20-011（バージョン4-4 第2ドラフト）について、2026年5月15日から6月15日まで第2次の公開諮問が行われました。これは改訂内容に意見を反映できる最後の機会と位置づけられています。改訂プロセス全体の完了は2027年1月1日が予定されており、CoC認証を保有・取得予定の事業者は、今後の要求事項の変更に注意が必要です。',
-        link: 'https://connect.fsc.org/current-processes/revision-chain-custody-standards-and-fsc-std-20-011-chain-custody-evaluations',
-        linkLabel: 'FSC Connect 公式ページ',
-        pinned: false,
-        date: '2026-05-15',
-        author: 'IDFL JAPAN'
-    },
-    {
-        id: 'news-te-mms-transition-20260401',
-        cat: 'te',
-        title: 'Textile Exchange「Materials Matter Standard」移行ポリシーを公表 — 現行基準からの移行要件',
-        body: 'Textile Exchangeは2026年4月1日付で、新基準「Materials Matter Standard（MMS）」への移行ポリシー（TE-MM-POL-102 バージョン1.0）を公表しました。同ポリシーは、GRS・OCS・RCS・RWSなどの現行基準で認証を保有する事業者が、MMSへ円滑に移行するための具体的な要件を示すものです。MMSは2026年12月31日に発効し、2027年12月31日から義務化される予定で、あわせて新たなクレーム・ラベリング方針や認証マークも導入されます。TE系認証を保有する事業者は、移行スケジュールと必要な準備を早めに確認することが推奨されます。',
-        link: 'https://textileexchange.org/materials-matter-standards-transition/',
-        linkLabel: 'Textile Exchange 移行ページ',
-        pinned: false,
-        date: '2026-04-01',
-        author: 'IDFL JAPAN'
-    },
-    {
-        id: 'news-fsc-trademark-v3-20260101',
-        cat: 'fsc',
-        title: 'FSC商標基準（FSC-STD-50-001 V3-0）改訂 — 2026年7月1日より施行',
-        body: 'FSCは、認証保有者によるFSC商標の使用ルールを定めた基準「FSC-STD-50-001 Use of the FSC Trademarks by Certificate Holders」をバージョン3-0に改訂しました。あわせて販促表現に関する付随文書 FSC-STD-50-001a（バージョン1-0）も発行されています。主な変更点は、FSC QRラベルの導入、製品にラベルを表示する際の必須要素の更新、グラフィックデザインの自由度向上、二重ラベリング制限の撤廃、「Forests For All Forever」マークの廃止などです。改訂はラベル運用の明確化に加え、グリーンウォッシュ防止規制への対応も狙いとしています。新しい要求事項は2026年7月1日に施行され、2029年1月1日までの2年半の移行期間が設けられています。FSC認証を保有するブランド・事業者は早めの対応をご確認ください。',
-        link: 'https://fsc.org/en/newscentre/general-news/fsc-releases-revised-trademark-standard-for-certificate-holders',
-        linkLabel: 'FSC公式ニュース',
-        pinned: false,
-        date: '2026-01-21',
-        author: 'IDFL JAPAN'
-    },
-    {
-        id: 'news-te-calibration-log-v2026-6',
-        cat: 'te',
-        title: 'Textile Exchange、Calibration Log を最新版（TE-TXL-LOG-221 V2026.6）に更新',
-        body: 'Textile Exchangeは2026年6月1日付で、認証機関向けの解釈統一文書「Calibration Log（TE-TXL-LOG-221）」を最新版V2026.6に更新しました。Calibration LogはGRS・OCS・RCS・RWS・RDSなど各基準の運用解釈を統一するための重要文書であり、認証の取得・維持にあたっては最新版の確認が推奨されます。',
-        link: 'https://textileexchange.org/knowledge-center/documents/calibration-log/',
-        linkLabel: 'TE Calibration Log',
-        pinned: false,
-        date: '2026-06-01',
-        author: 'IDFL JAPAN'
-    },
-    {
-        id: 'news-gots-grts-consultation-20260331',
-        cat: 'gots',
-        title: 'GOTS、有機繊維の枠を超える新基準「GRTS（Global Responsible Textile Standard）」第2次公開諮問を実施',
-        body: 'Global Standard gGmbHは2026年4月、新基準「Global Responsible Textile Standard（GRTS）」ドラフト2について第2次公開諮問（2026年4月1日〜30日）を実施しました。GRTSはGOTSの枠組みを有機繊維以外にも拡大する新しい責任繊維基準で、2025年次報告書でも今後の重点施策として位置づけられています。従来のGOTS認証を補完・拡張し、サプライチェーン全体の責任ある調達を後押しすることが期待されています。',
-        link: 'https://global-standard.org/news/global-standard-ggmbh-launches-second-public-consultation-for-grts-draft-2-for-the-textile-industry-1-30-april-2026',
-        linkLabel: 'GOTS公式ニュース（GRTS）',
-        pinned: false,
-        date: '2026-03-31',
-        author: 'IDFL JAPAN'
-    },
-    {
-        id: 'news-gots-report-2025',
-        cat: 'gots',
-        title: 'GOTS認証工場数が世界で15%増加 — 2025年次報告書発表',
-        body: 'GOTSは2026年4月23日、2025年次報告書を公開しました。世界95カ国において約17,800施設がGOTS認証を取得しており、前年比15.3%の増加となりました。GOTS 8.0は2026年3月に正式発効し、義務適用開始日は2027年3月1日に設定されています。また、OECDデューデリジェンス適合性評価では、基準の98%が完全または部分的に適合と評価されました。',
-        link: 'https://global-standard.org/news',
-        linkLabel: 'GOTS公式ニュース',
-        pinned: false,
-        date: '2026-05-15',
-        author: 'IDFL JAPAN'
-    },
-    {
-        id: 'news-gsa-academy',
-        cat: 'gots',
-        title: 'Global Standard Academy（無料オンライン研修）開設のお知らせ',
-        body: 'Global Standardは、GOTSに関する信頼できる教育を広く提供するための新しい学習ハブ「Global Standard Academy」を開設しました。GOTS表示・ロゴ使用に関するインタラクティブな無料トレーニングが含まれており、認証取得を目指す企業・工場・ブランドの担当者が活用できます。',
-        link: 'https://global-standard.org/',
-        linkLabel: 'Global Standard Academy',
-        pinned: false,
-        date: '2026-05-12',
-        author: 'IDFL JAPAN'
-    },
-    {
-        id: 'news-te-materials-matter',
-        cat: 'te',
-        title: 'Textile Exchange、新基準「Materials Matter Standard」最終基準を公開',
-        body: 'Textile Exchangeは5年間の開発期間を経て、新基準「Materials Matter Standard」の最終基準を発表しました。原材料生産・一次加工分野向けの統合的・インパクト重視の基準で、2026年12月31日に発効、2027年12月31日より認証が義務化される予定です。また2026年2月には、ブランド・小売業者・サプライヤー向けの「Action Cohort（アクション・コホート）」3ステップ・パスウェイも発表されました。現行のTextile Exchange各基準は移行期間中も継続使用できます。',
-        link: 'https://textileexchange.org/news/',
-        linkLabel: 'Textile Exchange最新ニュース',
-        pinned: false,
-        date: '2026-05-09',
-        author: 'IDFL JAPAN'
-    },
-    {
-        id: 'news-fsc-climate-strategy',
-        cat: 'fsc',
-        title: 'FSC、新「気候・生物多様性戦略」を発表',
-        body: 'FSC（森林管理協議会）は2026年1月、新たな「気候・生物多様性戦略」を発表しました。また2026年3月には南アフリカおよびコートジボワールにおける新たな暫定森林管理基準を承認するなど、責任ある森林管理の普及に向けた取り組みを強化しています。テキスタイル分野では、ビスコース・モーダル・レーヨンなどの森林由来繊維（MMCF）のFSC認証サプライチェーンの整備が進んでいます。',
-        link: 'https://fsc.org/en/newscentre',
-        linkLabel: 'FSCニュースセンター',
-        pinned: false,
-        date: '2026-05-06',
-        author: 'IDFL JAPAN'
-    },
-    {
-        id: 'sample-1',
-        cat: 'idfl',
-        title: '【IDFL JAPAN】2026年8月7日セミナー開催のお知らせ',
-        body: '大阪・御堂会館にて「IDFL JAPAN サステナビリティ認証セミナー」を開催いたします。GOTS 8.0 移行・MMS 対応・FSC 新規取得を中心に、グループディスカッション形式で実務課題を解決する場です。参加費無料・事前申込制です。',
-        link: '/',
-        linkLabel: 'セミナー詳細はこちら',
-        pinned: true,
-        date: '2026-05-01',
-        author: 'IDFL JAPAN'
-    },
-    {
-        id: 'sample-2',
-        cat: 'gots',
-        title: 'GOTS Version 8.0 施行日のご案内（2026年6月1日より）',
-        body: 'GOTS Version 8.0 は2026年6月1日より正式施行されます。Version 7.0 認証企業は移行期限内に対応が必要です。主な変更点（化学物質規制・社会基準・MMS 連携）については、セミナーにて詳しく解説いたします。',
-        link: 'https://global-standard.org/',
-        linkLabel: 'GOTS 公式サイト',
-        pinned: false,
-        date: '2026-04-20',
-        author: 'IDFL JAPAN'
-    },
-    {
-        id: 'sample-3',
-        cat: 'te',
-        title: 'Textile Exchange — 2026年度 マテリアルベンチマーク調査',
-        body: 'Textile Exchange は毎年実施している Material Benchmark の 2026年度調査への参加を呼びかけています。GRS・OCS・RDS・RWS などの認証素材の使用状況を報告することで、業界全体のサステナビリティ進捗に貢献できます。',
-        link: 'https://textileexchange.org/',
-        linkLabel: 'Textile Exchange 公式',
-        pinned: false,
-        date: '2026-04-10',
-        author: 'IDFL JAPAN'
-    },
-    {
-        id: 'sample-4',
-        cat: 'fsc',
-        title: 'FSC CoC 認証 — 初回審査の申込受付中',
-        body: 'FSC チェーン・オブ・カストディ（CoC）認証の新規申込を受付中です。審査の流れ・必要書類・準備期間についての詳細は、IDFL JAPAN 担当者までお問い合わせください。2026年8月のセミナーでも詳細を解説予定です。',
-        link: 'https://idfl.com/ja/idfl-japan/',
-        linkLabel: 'お問い合わせ',
-        pinned: false,
-        date: '2025-11-15',
-        author: 'IDFL JAPAN'
-    },
-    {
-        id: 'sample-5',
-        cat: 'gots',
-        title: 'GOTS 化学物質規制（PRLリスト）改訂のお知らせ',
-        body: 'GOTS Version 8.0 より、化学物質規制（PRL）リストが大幅に強化されました。製造工程で使用する薬品や染料について、事前確認が必要です。IDFL JAPAN では審査準備のサポートを承っております。',
-        link: 'https://global-standard.org/',
-        linkLabel: 'GOTS 化学物質情報',
-        pinned: false,
-        date: '2025-09-05',
-        author: 'IDFL JAPAN'
-    },
-    {
-        id: 'sample-6',
-        cat: 'others',
-        title: 'RWS（責任ある羊毛基準）認証の取扱い変更について',
-        body: 'RWS 認証に関する申請フローが一部変更になりました。詳細についてはIDFL JAPANまでお問い合わせください。既存認証企業も次回更新時に新フローが適用されます。',
-        link: 'https://idfl.com/ja/idfl-japan/',
-        linkLabel: 'お問い合わせ',
-        pinned: false,
-        date: '2025-07-22',
-        author: 'IDFL JAPAN'
-    },
-];
+function loadPosts() { return POSTS; }
 
-function loadPosts() {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (!stored) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultPosts));
-        return defaultPosts;
-    }
-    try { return JSON.parse(stored); } catch(e) { return defaultPosts; }
-}
-// サーバーの /data/news.json を唯一の正本として localStorage を上書き同期
-// （後台で公開 → 全閲覧者が次回読み込みで最新を取得。編集・削除も反映される）
 async function syncFromServer() {
     try {
         const res = await fetch('/data/news.json', { cache: 'no-cache' });
-        if (!res.ok) return;
+        if (!res.ok) throw new Error('HTTP ' + res.status);
         const data = await res.json();
         const posts = Array.isArray(data) ? data : (data && data.posts);
-        if (Array.isArray(posts) && posts.length) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
-            renderCards();
-        }
-    } catch(e) { /* オフライン等：localStorage / defaultPosts をそのまま使用 */ }
-}
-function savePosts(posts) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(posts));
-    _newsDoPublish(posts);
-}
-function _newsShowToast(msg) {
-    var el = document.getElementById('_newsPublishToast');
-    if (!el) {
-        el = document.createElement('div');
-        el.id = '_newsPublishToast';
-        el.style.cssText = 'position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:9999;background:#063372;color:#fff;padding:12px 22px;border-radius:12px;font-size:13.5px;font-weight:700;box-shadow:0 8px 24px rgba(4,34,88,.25);transition:opacity .3s;pointer-events:none;';
-        document.body.appendChild(el);
+        POSTS = Array.isArray(posts) ? posts : [];
+        LOAD_FAILED = false;
+    } catch (e) {
+        POSTS = [];
+        LOAD_FAILED = true;
     }
-    el.textContent = msg;
-    el.style.opacity = '1';
-    clearTimeout(el._t);
-    el._t = setTimeout(function(){ el.style.opacity = '0'; }, 2800);
-}
-async function _newsDoPublish(posts) {
-    _newsShowToast('公開中…');
-    try {
-        const res = await fetch('/.netlify/functions/publish', {
-            method: 'POST',
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({type:'news', password: adminPassword, data: posts})
-        });
-        let j = {}; try { j = await res.json(); } catch(e) {}
-        if (res.ok && j.ok) {
-            _newsShowToast('✅ 保存・公開しました（' + (j.count || posts.length) + '件）反映まで約1分');
-        } else {
-            _newsShowToast('⚠️ 公開失敗: ' + (j.error || ('HTTP ' + res.status)));
-        }
-    } catch(e) {
-        _newsShowToast('⚠️ 公開失敗: ' + e.message);
-    }
+    renderCards();
 }
 
 // ===================== RENDERING =====================
@@ -1223,7 +816,7 @@ function renderCards() {
     const noPosts = document.getElementById('noPosts');
 
     let filtered = posts.filter(p => {
-        const matchPub = isAdmin || p.published !== false;
+        const matchPub = p.published !== false;
         const matchCat = currentCat === 'all' || p.cat === currentCat;
         const matchSearch = !search ||
             String(p.title || '').toLowerCase().includes(search) ||
@@ -1250,16 +843,6 @@ function renderCards() {
     grid.innerHTML = filtered.map((p, i) => {
         const meta   = catMeta[p.cat] || catMeta.others;
         const newPost = isNew(p.date);
-        const adminBtns = isAdmin ? `
-            <div style="display:flex;gap:8px;margin-top:14px;padding-top:12px;border-top:1px solid #E8EDF5;">
-                <button onclick="openEdit('${p.id}')" style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:var(--brand-600);background:var(--brand-050);border:none;border-radius:8px;padding:6px 12px;cursor:pointer;">
-                    <i data-lucide="pencil" style="width:13px;height:13px;"></i> 編集
-                </button>
-                <button onclick="deletePost('${p.id}')" style="display:flex;align-items:center;gap:5px;font-size:12px;font-weight:600;color:#EF4444;background:#FEF2F2;border:none;border-radius:8px;padding:6px 12px;cursor:pointer;">
-                    <i data-lucide="trash-2" style="width:13px;height:13px;"></i> 削除
-                </button>
-            </div>` : '';
-
         // ---- FEATURED PINNED (first pinned) ----
         if (p.pinned && i === 0) {
             return `
@@ -1283,7 +866,7 @@ function renderCards() {
                         onmouseover="this.style.background='var(--brand-400)'" onmouseout="this.style.background='var(--brand-500)'">
                         詳細を見る <i data-lucide="arrow-right" style="width:14px;height:14px;"></i>
                     </a>
-                    ${adminBtns}
+                    
                 </div>
             </div>`;
         }
@@ -1306,7 +889,7 @@ function renderCards() {
                 onmouseover="this.style.color='var(--brand-700)'" onmouseout="this.style.color='var(--brand-500)'">
                 詳細を見る <i data-lucide="arrow-right" style="width:13px;height:13px;"></i>
             </a>
-            ${adminBtns}
+            
         </div>`;
     }).join('');
 
@@ -1322,123 +905,23 @@ function filterCat(cat) {
     renderCards();
 }
 
-// ===================== ADMIN AUTH =====================
+// ===================== 管理画面への導線 =====================
 function openLogin() {
-    // Show correct state panel
-    document.getElementById('stateLogin').style.display = isAdmin ? 'none' : 'block';
-    document.getElementById('stateAdmin').style.display = isAdmin ? 'block' : 'none';
     document.getElementById('loginOverlay').classList.add('open');
-    if (!isAdmin) {
-        document.getElementById('adminPwInput').value = '';
-        document.getElementById('loginError').style.display = 'none';
-        setTimeout(() => document.getElementById('adminPwInput').focus(), 100);
-    }
     lucide.createIcons();
 }
 function closeLogin() { document.getElementById('loginOverlay').classList.remove('open'); }
-async function checkLogin() {
-    const pw = document.getElementById('adminPwInput').value;
-    const errEl = document.getElementById('loginError');
-    errEl.style.display = 'none';
-    try {
-        // サーバー側でパスワード検証（固定値をクライアントに置かない）
-        const res = await fetch('/.netlify/functions/publish', {
-            method: 'POST',
-            headers: {'Content-Type':'application/json'},
-            body: JSON.stringify({type:'news', password: pw, validateOnly: true})
-        });
-        if (res.ok) {
-            adminPassword = pw;   // 正しいパスワードのみメモリに保持
-            isAdmin = true;
-            document.body.classList.add('admin-mode');
-            document.getElementById('stateLogin').style.display = 'none';
-            document.getElementById('stateAdmin').style.display = 'block';
-            lucide.createIcons();
-            renderCards();
-        } else {
-            errEl.style.display = 'block';
-            document.getElementById('adminPwInput').select();
-        }
-    } catch(e) {
-        errEl.textContent = '接続できませんでした。通信環境をご確認ください。';
-        errEl.style.display = 'block';
-    }
-}
-function doLogout() {
-    isAdmin = false;
-    adminPassword = '';
-    document.body.classList.remove('admin-mode');
-    closeLogin();
-    renderCards();
-}
-
-// ===================== POST MODAL =====================
-function openPostModal(post = null) {
-    editingId = post ? post.id : null;
-    document.getElementById('modalTitle').textContent  = post ? '投稿を編集' : '新規投稿';
-    document.getElementById('submitLabel').textContent = post ? '更新する'   : '投稿する';
-    document.getElementById('fCat').value       = post ? post.cat   : 'idfl';
-    document.getElementById('fTitle').value     = post ? post.title : '';
-    document.getElementById('fBody').value      = post ? post.body  : '';
-    document.getElementById('fLink').value      = post ? (post.link || '')      : '';
-    document.getElementById('fLinkLabel').value = post ? (post.linkLabel || '') : '';
-    document.getElementById('fPinned').checked  = post ? post.pinned : false;
-    document.getElementById('formError').style.display = 'none';
-    document.getElementById('postOverlay').classList.add('open');
-    setTimeout(() => document.getElementById('fTitle').focus(), 100);
-}
-function closePostModal() { document.getElementById('postOverlay').classList.remove('open'); editingId = null; }
-function openEdit(id) { const p = loadPosts().find(p => p.id === id); if (p) openPostModal(p); }
-function submitPost() {
-    const title = document.getElementById('fTitle').value.trim();
-    const body  = document.getElementById('fBody').value.trim();
-    if (!title || !body) {
-        document.getElementById('formError').textContent = 'タイトルと本文は必須です。';
-        document.getElementById('formError').style.display = 'block';
-        return;
-    }
-    const posts = loadPosts();
-    const now   = new Date().toISOString().split('T')[0];
-    if (editingId) {
-        const idx = posts.findIndex(p => p.id === editingId);
-        if (idx !== -1) posts[idx] = { ...posts[idx], cat: document.getElementById('fCat').value, title, body,
-            link: document.getElementById('fLink').value.trim(),
-            linkLabel: document.getElementById('fLinkLabel').value.trim(),
-            pinned: document.getElementById('fPinned').checked };
-    } else {
-        posts.unshift({ id: 'post-'+Date.now(), cat: document.getElementById('fCat').value, title, body,
-            link: document.getElementById('fLink').value.trim(),
-            linkLabel: document.getElementById('fLinkLabel').value.trim(),
-            pinned: document.getElementById('fPinned').checked,
-            date: now, author: 'IDFL JAPAN' });
-    }
-    savePosts(posts);
-    closePostModal();
-    renderCards();
-}
-function deletePost(id) {
-    if (!confirm('この投稿を削除してよろしいですか？')) return;
-    savePosts(loadPosts().filter(p => p.id !== id));
-    renderCards();
-}
 
 // ===================== // ===================== INIT =====================
 document.addEventListener('DOMContentLoaded', () => {
     lucide.createIcons();
-    renderCards();
-    syncFromServer();   // サーバーの最新公告で上書き同期
+    syncFromServer();   // /data/news.json を読み込んで描画
 
     // ESC to close modals
     document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') {
-            closePostModal();
-            closeLogin();
-        }
+        if (e.key === 'Escape') closeLogin();
     });
     // Click outside to close
-    document.getElementById('postOverlay').addEventListener('click', e => {
-        if (e.target === e.currentTarget) closePostModal();
-    });
     document.getElementById('loginOverlay').addEventListener('click', e => {
         if (e.target === e.currentTarget) closeLogin();
     });
