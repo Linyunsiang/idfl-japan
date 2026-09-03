@@ -47,7 +47,7 @@
 .idfl-qa-hero{
   background:linear-gradient(180deg,var(--idfl-bg-brand-soft),var(--idfl-bg));
   border-bottom:1px solid var(--idfl-border-soft);
-  padding:var(--idfl-space-8) var(--idfl-gutter) var(--idfl-space-7);
+  padding:var(--idfl-space-8) var(--idfl-gutter) calc(var(--idfl-space-7) + var(--idfl-space-6));
 }
 .idfl-qa-hero__inner{ max-width:820px; margin:0 auto; text-align:center; }
 .idfl-qa-hero h1{
@@ -97,6 +97,26 @@
 .idfl-qa-h2{
   font-size:14px; font-weight:900; color:var(--idfl-text);
   margin:var(--idfl-space-7) 0 0; letter-spacing:.02em;
+}
+
+/* qa.html paints a photographic body background. The self-help content needs
+   its own opaque surface, otherwise the question list sits directly on the
+   photo and becomes hard to read. */
+main.qa-wrap{
+  background:var(--idfl-bg);
+  border:1px solid var(--idfl-border-soft);
+  border-radius:var(--idfl-radius-lg);
+  max-width:960px;
+  padding:var(--idfl-space-5) var(--idfl-space-6) var(--idfl-space-7);
+  margin:calc(var(--idfl-space-7) * -1) auto var(--idfl-space-8);
+  position:relative;
+}
+@media (max-width:620px){
+  main.qa-wrap{
+    border-radius:0; border-left:0; border-right:0;
+    padding:var(--idfl-space-5) var(--idfl-space-4) var(--idfl-space-7);
+    margin-top:0;
+  }
 }
 
 /* ---- Category cards ---- */
