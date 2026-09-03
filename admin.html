@@ -145,6 +145,67 @@
   .normbox{background:#f0f6fc;border:1px solid #dbe7f3;border-radius:9px;padding:11px 13px;margin-top:9px;font-size:12px;line-height:1.9}
   .normbox b{display:inline-block;min-width:9.5em;color:#6b7280;font-weight:700}
   .normbox .okmark{color:#166534;font-weight:700}
+  /* ===== Phase 1: sidebar shell ===== */
+  .shell{max-width:1240px;margin:0 auto;padding:18px;display:grid;grid-template-columns:214px minmax(0,1fr);gap:18px;align-items:start}
+  .side{background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px;position:sticky;top:72px}
+  .navgrp{margin-top:13px}
+  .navgrp:first-child{margin-top:0}
+  .gh{font-size:10.5px;font-weight:900;color:#9aa3af;letter-spacing:.07em;padding:0 8px 5px;display:flex;align-items:center;flex-wrap:wrap;gap:5px}
+  .gmode{font-size:9.5px;font-weight:700;border-radius:999px;padding:1px 7px;letter-spacing:0}
+  .gmode.draft{background:#e5edf7;color:#1255A0}
+  .gmode.live{background:#dcfce7;color:#166534}
+  .gmode.staged{background:#fef3c7;color:#92400e}
+  .navi{display:flex;align-items:center;gap:7px;width:100%;text-align:left;border:none;background:none;padding:8px 9px;border-radius:9px;font-family:inherit;font-size:13px;font-weight:700;color:#374151;cursor:pointer}
+  .navi:hover{background:#f3f4f6}
+  .navi.on{background:var(--accent);color:#fff}
+  .navi .n{margin-left:auto;font-size:11px;font-weight:700;color:#9aa3af}
+  .navi.on .n{color:rgba(255,255,255,.85)}
+  .navi .dot{color:var(--warn);font-weight:900}
+  .navi.on .dot{color:#ffd48a}
+  .navi.legacy{font-weight:600;color:#6b7280}
+  .tag-old{font-size:9px;background:#e5e7eb;color:#4b5563;border-radius:999px;padding:1px 6px;font-weight:700;margin-left:auto}
+  .navi.on .tag-old{background:rgba(255,255,255,.25);color:#fff}
+  .burger{display:none}
+  .scrim{position:fixed;inset:0;background:rgba(9,31,62,.45);z-index:29;display:none}
+  @media(max-width:900px){
+    .shell{grid-template-columns:minmax(0,1fr);padding:12px}
+    .burger{display:inline-block}
+    .side{position:fixed;top:0;left:0;bottom:0;width:252px;border-radius:0;border-width:0 1px 0 0;z-index:30;transform:translateX(-100%);transition:transform .22s;overflow:auto}
+    .side.open{transform:none}
+    .scrim.open{display:block}
+  }
+  /* ===== status chips ===== */
+  .st{display:inline-flex;align-items:center;gap:3px;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:6px;margin:0 5px 3px 0;white-space:nowrap}
+  .st-pub{background:#dcfce7;color:#166534}
+  .st-draft{background:#eef1f5;color:#4b5563}
+  .st-top{background:#dbeafe;color:#1d4ed8}
+  .st-soon{background:#fef3c7;color:#92400e}
+  .st-done{background:#eef1f5;color:#6b7280}
+  .st-type{background:#f1f5f9;color:#475569}
+  .chips{margin-bottom:2px}
+  /* ===== search + filter toolbar ===== */
+  .tools{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
+  .search{flex:1;min-width:180px;padding:8px 11px;border:1.5px solid var(--line);border-radius:9px;font-family:inherit;font-size:13px}
+  .tools .fpill{margin-left:0}
+  /* ===== dashboard ===== */
+  .dgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:10px}
+  .dcard{border:1px solid var(--line);border-radius:11px;padding:11px 13px;background:#fff;text-align:left;cursor:pointer;font-family:inherit}
+  .dcard:hover{border-color:var(--accent);background:#f8fbff}
+  .dcard .v{font-size:23px;font-weight:900;color:var(--accent);line-height:1.2}
+  .dcard .l{font-size:11.5px;color:var(--muted);font-weight:700;margin-top:1px}
+  .dcard.warn .v{color:var(--warn)}
+  .dcard.zero .v{color:#9aa3af}
+  .dsec{margin-top:20px}
+  .dsec>h3{font-size:12.5px;font-weight:900;color:#0f2c4d;margin:0 0 4px;padding-bottom:5px;border-bottom:2px solid #dbe7f3}
+  .dwhere{font-size:11px;color:var(--muted);margin:0 0 9px;line-height:1.7}
+  .dlist{border:1px solid var(--line);border-radius:11px;overflow:hidden}
+  .dlist .di{display:flex;gap:9px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--line);font-size:12.5px}
+  .dlist .di:last-child{border-bottom:none}
+  .dlist .di .dt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .dlist .di .dd{font-size:11px;color:var(--muted);flex:none}
+  .dlist .di .dn{font-size:11px;color:#9aa3af;flex:none;width:18px}
+  .dempty{padding:11px 12px;font-size:12.5px;color:var(--muted)}
+  .dnote{font-size:11.5px;color:var(--warn);font-weight:700;margin-top:7px}
 </style>
 </head>
 <body>
@@ -161,12 +222,16 @@
 
 <div class="app" id="app">
   <header>
+    <button class="btn btn-g burger" onclick="navOpen()" aria-label="メニュー">☰</button>
     <h1>統合管理コンソール</h1><span class="badge">IDFL JAPAN</span>
     <div class="grow"></div>
     <button class="btn btn-g" onclick="logout()">ログアウト</button>
   </header>
-  <div class="wrap">
-    <div class="tabs" id="tabs"></div>
+  <div class="scrim" id="scrim" onclick="navClose()"></div>
+  <div class="shell">
+    <nav class="side" id="side"></nav>
+    <div>
+    <div class="panel" id="dashPanel" style="display:none"><div id="dashBody"></div></div>
     <div class="panel" id="genericPanel">
       <div class="bar">
         <span class="count" id="count"></span>
@@ -177,6 +242,7 @@
         <button class="btn btn-o" onclick="openEdit(-1)">＋ 新規追加</button>
         <button class="btn btn-p" id="pubBtn" onclick="publishCur()">✔ 変更を公開</button>
       </div>
+      <div class="tools" id="tools"></div>
       <div id="list"></div>
       <div class="hint" id="hint"></div>
     </div>
@@ -345,6 +411,7 @@
         <div class="hint">※ お名前・メールアドレス・電話番号・内部メモは<strong>スタッフのみ</strong>に表示されます。お客様の画面には、ご本人の投稿と「お客様に公開」にした投稿だけが、投稿者を伏せた形で表示されます。個人情報は公開リポジトリには保存されません。</div>
       </div>
     </div>
+    </div>
   </div>
 </div>
 
@@ -391,13 +458,9 @@ const SCHEMAS={
     ],
     title:e=>e.title||'(無題)',
     sub:e=>{
-      const tags=[(e.published===false?'［下書き］':'［公開］')];
-      // TOP reflects what the homepage rotator will actually do: it needs the
-      // record to be public AND not opted out of the ticker.
-      if(e.published!==false&&e.showInTicker!==false)tags.push('［TOP］');
-      if(e.pinned)tags.push('［固定］');
+      // Status now lives in the chip row; this line carries the details only.
       const eff=/^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(String(e.effectiveDate||''));
-      return [tags.join(' '),(e.cat||''),(e.date||''),
+      return [(e.cat||''),(e.date||''),
               (eff?'適用：'+eff[1]+'.'+eff[2].padStart(2,'0')+'.'+eff[3].padStart(2,'0'):''),
               (e.image?'🖼画像':'')].filter(Boolean).join(' · ');
     },
@@ -417,8 +480,9 @@ const SCHEMAS={
       {k:'signup',t:'text',label:'申込リンク(任意)'},
       {k:'related',t:'text',label:'関連リンク(任意)'},
       {k:'published',t:'checkbox',label:'公開する',def:true},
+      {k:'showOnHome',t:'checkbox',label:'トップページに表示する',def:true,hint:'オフにすると、公開中でもトップページのセミナー欄には出ません（セミナー一覧ページには引き続き表示されます）。未設定の既存データは「表示する」として扱われます'},
     ],
-    title:e=>e.name||'(無題)',sub:e=>[(e.published===false?'⛔未公開':''),e.from,e.office,e.location].filter(Boolean).join(' · '),
+    title:e=>e.name||'(無題)',sub:e=>[e.from,e.office,e.location].filter(Boolean).join(' · '),
     idp:'ext',sort:(a,b)=>String(a.from||'').localeCompare(String(b.from||''))},
 
   downloads:{label:'資料ダウンロード',file:'/downloads-data.json',
@@ -456,7 +520,7 @@ const SCHEMAS={
       {k:'published',t:'checkbox',label:'公開する',def:true},
     ],
     title:e=>e.companyName||e.name||'(無題)',
-    sub:e=>[(e.published===false?'⛔非公開':'✅公開'),(e.featured?'★注目':''),e.prefecture,e.region,((e.certificationTypes||e.certs)||[]).join('/')].filter(Boolean).join(' · '),
+    sub:e=>[e.prefecture,e.region,((e.certificationTypes||e.certs)||[]).join('/')].filter(Boolean).join(' · '),
     idp:'company',sort:(a,b)=>(b.featured?1:0)-(a.featured?1:0)||((a.displayOrder!=null?a.displayOrder:9999)-(b.displayOrder!=null?b.displayOrder:9999))},
 
   qa:{label:'よくある質問',file:'/data/qa.json',
@@ -476,6 +540,161 @@ const SCHEMAS={
             qaImageList(e).length?('🖼 画像'+qaImageList(e).length+'枚'):''].filter(Boolean).join(' · '),
     idp:'qa',sort:null},
 };
+
+/* ============================================================
+   Navigation model.
+
+   Grouped by how a change reaches the public site, because that is the
+   difference an operator most needs to keep straight: the JSON sections stage
+   a draft and publish in one go, the protected-content sections write through
+   immediately, and ファイル管理 stages then swaps.
+   ============================================================ */
+const NAV=[
+  {items:[{k:'dash',label:'ダッシュボード',icon:'\uD83D\uDCCA'}]},
+  {title:'公開コンテンツ',mode:'draft',modeLabel:'下書き → 一括公開',
+   items:[{k:'news'},{k:'schedule'},{k:'qa'},{k:'factories'},{k:'downloads'}]},
+  {title:'お客様専用',mode:'live',modeLabel:'即時反映',
+   items:[{k:'media',label:'お客様専用コンテンツ',icon:'\uD83D\uDDA5\uFE0F'},
+          {k:'feedback',label:'フィードバック',icon:'\uD83D\uDCAC'},
+          // Kept reachable on purpose: consolidating it into the entry above is
+          // Phase 4, which is not approved yet, and it still owns the only
+          // upload path for PDFs/images and the only editor for link URLs.
+          {k:'protected',label:'ダウンロード資料管理',icon:'\uD83D\uDCC1',legacy:true}]},
+  {title:'システム',mode:'staged',modeLabel:'段階公開',
+   items:[{k:'files',label:'ファイル管理',icon:'\uD83D\uDCC1'}]}
+];
+const NAV_ICON={news:'\uD83D\uDCF0',schedule:'\uD83D\uDCC5',qa:'\u2753',factories:'\uD83C\uDFED',downloads:'\u2B07\uFE0F'};
+
+function navLabel(it){ return it.label||(SCHEMAS[it.k]?SCHEMAS[it.k].label:it.k); }
+
+function buildNav(){
+  const side=document.getElementById('side');
+  side.innerHTML=NAV.map(function(g){
+    const head=g.title?('<div class="gh">'+esc(g.title)+'<span class="gmode '+g.mode+'">'+esc(g.modeLabel)+'</span></div>'):'';
+    return '<div class="navgrp">'+head+g.items.map(function(it){
+      const ic=it.icon||NAV_ICON[it.k]||'';
+      return '<button class="navi'+(it.legacy?' legacy':'')+'" data-k="'+it.k+'" onclick="navGo(\''+it.k+'\')">'
+        +'<span>'+ic+'</span><span>'+esc(navLabel(it))+'</span>'
+        +(it.legacy?'<span class="tag-old">旧</span>':'<span class="n" id="n-'+it.k+'"></span>')
+        +'<span class="dot" id="dot-'+it.k+'" style="display:none">\u25CF</span></button>';
+    }).join('')+'</div>';
+  }).join('');
+}
+function navCounts(){
+  Object.keys(SCHEMAS).forEach(function(k){
+    const el=document.getElementById('n-'+k);
+    if(el) el.textContent=DATA[k]?String(DATA[k].length):'';
+  });
+}
+function navOpen(){ document.getElementById('side').classList.add('open'); document.getElementById('scrim').classList.add('open'); }
+function navClose(){ document.getElementById('side').classList.remove('open'); document.getElementById('scrim').classList.remove('open'); }
+function navGo(k){ navClose(); switchTab(k); }
+
+/* ============================================================
+   Homepage selection rules.
+
+   These mirror index.html exactly. Kept together so the console and the
+   homepage cannot drift apart: if one changes, this is the other place to
+   change. Verified against index.html at the time of writing.
+   ============================================================ */
+function evEnd(e){
+  const d=e&&(e.to||e.from); if(!d) return null;
+  const x=new Date(String(d)+'T00:00:00');
+  return isNaN(x.getTime())?null:x;
+}
+function todayMid(){ const d=new Date(); d.setHours(0,0,0,0); return d; }
+function evPast(e){ const end=evEnd(e); return !!(end && end<todayMid()); }
+
+const HOME={
+  // index.html: 最新情報バー - published && showInTicker && id, newest 5.
+  ticker:function(a){ return (a||[]).filter(function(p){return p&&p.published!==false&&p.showInTicker!==false&&p.id;})
+    .sort(function(x,y){return String(y.date||'').localeCompare(String(x.date||''));}).slice(0,5); },
+  // index.html: News セクション - published only (showInTicker is NOT consulted
+  // here), pinned first then newest, top 3. The two rules genuinely differ.
+  news:function(a){ return (a||[]).filter(function(p){return p&&p.published!==false;})
+    .sort(function(x,y){return ((y.pinned?1:0)-(x.pinned?1:0))||String(y.date||'').localeCompare(String(x.date||''));}).slice(0,3); },
+  // index.html: セミナー - published && not ended, soonest first, top 3.
+  // Phase 3 adds showOnHome; absent means true, so existing records are unchanged.
+  events:function(a){ const t=todayMid(); return (a||[]).filter(function(e){
+      if(!e||e.published===false) return false;
+      if(e.showOnHome===false) return false;
+      const end=evEnd(e); return !!(end && end>=t);
+    }).sort(function(x,y){return String(x.from||'').localeCompare(String(y.from||''));}).slice(0,3); }
+};
+
+/* ===================== search + filters ===================== */
+const FILTERS={
+  news:[['all','すべて'],['pub','公開中'],['draft','下書き'],['ticker','最新情報バー'],['pinned','固定']],
+  schedule:[['all','すべて'],['upcoming','開催予定'],['past','終了'],['pub','公開中'],['draft','下書き'],['top','TOP掲載']]
+};
+const SEARCH_KEYS={
+  news:['title','body','cat','tickerText'],
+  schedule:['name','location','office','type','mode'],
+  qa:['q','a'],
+  factories:['companyName','companyNameEnglish','prefecture','region','certificationTypes','certs','certificateNumber'],
+  downloads:['title','category','ftype']
+};
+const SEARCH_PH={news:'タイトル・本文・カテゴリーで検索',schedule:'名称・会場・地域で検索',
+  qa:'質問・回答で検索',factories:'会社名・認証で検索',downloads:'タイトル・カテゴリで検索'};
+let LFILTER={}, LSEARCH={};
+// Schedule view order. 'date' is the operational reading order; 'file' is the
+// stored order, which is what the public seminar page uses inside each month -
+// so reordering stays available, it just has to be switched into.
+let LSORT={schedule:'date'};
+function setSort(v){ LSORT[CUR]=v; renderTools(); renderList(); }
+
+function passFilter(k,e){
+  const f=LFILTER[k]||'all'; if(f==='all') return true;
+  if(f==='pub') return e.published!==false;
+  if(f==='draft') return e.published===false;
+  if(k==='news'){
+    if(f==='ticker') return e.published!==false&&e.showInTicker!==false;
+    if(f==='pinned') return !!e.pinned;
+  }
+  if(k==='schedule'){
+    if(f==='upcoming') return !evPast(e);
+    if(f==='past') return evPast(e);
+    if(f==='top') return e.showOnHome!==false;
+  }
+  return true;
+}
+function passSearch(k,e){
+  const q=String(LSEARCH[k]||'').trim().toLowerCase(); if(!q) return true;
+  return (SEARCH_KEYS[k]||[]).some(function(key){
+    let v=e[key]; if(Array.isArray(v)) v=v.join(' ');
+    return String(v==null?'':v).toLowerCase().indexOf(q)>=0;
+  });
+}
+function setSearch(v){ LSEARCH[CUR]=v; renderList(); }
+function setFilter(f){ LFILTER[CUR]=f; renderTools(); renderList(); }
+
+/* Status chips. Deliberately the same vocabulary and colours everywhere:
+   green = public, grey = draft/inactive/finished, blue = homepage,
+   amber = needs attention (upcoming). */
+function chip(cls,txt){ return '<span class="st '+cls+'">'+esc(txt)+'</span>'; }
+function rowChips(k,e,ctx){
+  const c=[];
+  if(k==='news'){
+    c.push(e.published===false?chip('st-draft','\u26AA 下書き'):chip('st-pub','\uD83D\uDFE2 公開中'));
+    if(e.published!==false&&e.showInTicker!==false) c.push(chip('st-top','\uD83C\uDFE0 最新情報バー'));
+    if(ctx&&ctx.homeNews&&e.id&&ctx.homeNews[e.id]) c.push(chip('st-top','\uD83C\uDFE0 Newsセクション'));
+    if(e.pinned) c.push(chip('st-top','\uD83D\uDCCC 固定'));
+  } else if(k==='schedule'){
+    c.push(e.published===false?chip('st-draft','\u26AA 下書き'):chip('st-pub','\uD83D\uDFE2 公開中'));
+    c.push(e.showOnHome===false?chip('st-done','TOP非掲載'):chip('st-top','\uD83C\uDFE0 TOP掲載'));
+    c.push(evPast(e)?chip('st-done','\u2705 終了'):chip('st-soon','\uD83D\uDCC5 開催予定'));
+    if(e.type) c.push(chip('st-type',e.type));
+  } else if(k==='factories'){
+    c.push(e.published===false?chip('st-draft','\u26AA 非公開'):chip('st-pub','\uD83D\uDFE2 公開中'));
+    if(e.featured) c.push(chip('st-top','\u2605 注目'));
+  } else if(k==='downloads'){
+    c.push(e.published===false?chip('st-draft','\u26AA 非公開'):chip('st-pub','\uD83D\uDFE2 公開中'));
+    if(e.isNew) c.push(chip('st-top','NEW'));
+  } else if(k==='qa'){
+    if(qaIsNewNow(e)) c.push(chip('st-top','\uD83C\uDD95 NEW'));
+  }
+  return c.join('');
+}
 
 let PW=null;
 const DATA={}, DIRTY={};
@@ -497,26 +716,22 @@ async function doLogin(){
 function logout(){PW=null;location.reload();}
 
 function initApp(){
-  const tabs=document.getElementById('tabs');
-  tabs.innerHTML=Object.keys(SCHEMAS).map(k=>`<button class="tab" data-k="${k}" onclick="switchTab('${k}')">${SCHEMAS[k].label} <span class="dot" id="dot-${k}" style="display:none">●</span></button>`).join('');
-  tabs.innerHTML+=`<button class="tab" data-k="files" onclick="switchTab('files')">\uD83D\uDCC1 ファイル管理 <span class="dot" id="dot-files" style="display:none">●</span></button>`;
-  tabs.innerHTML+=`<button class="tab" data-k="protected" onclick="switchTab('protected')">\uD83D\uDCC1 ダウンロード資料管理（お客様専用）</button>`;
-  tabs.innerHTML+=`<button class="tab" data-k="media" onclick="switchTab('media')">\uD83D\uDDA5\uFE0F メディアライブラリ</button>`;
-  tabs.innerHTML+=`<button class="tab" data-k="feedback" onclick="switchTab('feedback')">\uD83D\uDCAC メディアフィードバック <span class="dot" id="dot-feedback" style="display:none">●</span></button>`;
-  switchTab('news');
+  buildNav();
+  switchTab('dash');
   qPoll();
 }
 
 // Panels that are not JSON-schema driven. Each owns its own show/hide.
-const CUSTOM_PANELS={files:'filePanel',protected:'protectedPanel',media:'mediaPanel',feedback:'fbPanel'};
+const CUSTOM_PANELS={dash:'dashPanel',files:'filePanel',protected:'protectedPanel',media:'mediaPanel',feedback:'fbPanel'};
 
 async function switchTab(k){
   CUR=k;
-  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',t.dataset.k===k));
+  document.querySelectorAll('.navi').forEach(t=>t.classList.toggle('on',t.dataset.k===k));
   document.getElementById('genericPanel').style.display=CUSTOM_PANELS[k]?'none':'';
   Object.keys(CUSTOM_PANELS).forEach(function(key){
     document.getElementById(CUSTOM_PANELS[key]).style.display=(key===k)?'':'none';
   });
+  if(k==='dash'){ dashInit(); return; }
   if(k==='protected'){ pInit(); return; }
   if(k==='media'){ mInit(); return; }
   if(k==='feedback'){ qInit(); return; }
@@ -524,36 +739,82 @@ async function switchTab(k){
   if(!DATA[k]){await loadData(k);} else {render();}
 }
 
-async function loadData(k){
-  document.getElementById('list').innerHTML='<div style="padding:16px;color:#6b7280">読込中…</div>';
+/** Fetch one section into DATA[k], restoring any local draft over it.
+    Touches no DOM, so the dashboard can warm several sections at once. */
+async function loadDataQuiet(k,quiet){
   try{
     const r=await fetch(SCHEMAS[k].file,{cache:'no-store'});
     const j=r.ok?await r.json():[];
     DATA[k]=Array.isArray(j)?j:(j.posts||j.items||[]);
-  }catch(e){DATA[k]=[];toast('読込失敗: '+e.message);}
+  }catch(e){DATA[k]=[];if(!quiet)toast('読込失敗: '+e.message);}
   DIRTY[k]=false;
   try{ var _dft=JSON.parse(localStorage.getItem('idflAdminDraft_'+k)); if(Array.isArray(_dft)){ DATA[k]=_dft; DIRTY[k]=true; } }catch(e){}
+}
+async function loadData(k){
+  document.getElementById('list').innerHTML='<div style="padding:16px;color:#6b7280">読込中…</div>';
+  await loadDataQuiet(k);
   updateDirty(); render();
 }
 function reloadCur(){ if(DIRTY[CUR] && !confirm('未公開の変更があります。破棄してサーバーから再読込しますか？'))return; try{localStorage.removeItem('idflAdminDraft_'+CUR);}catch(e){} delete DATA[CUR]; switchTab(CUR); }
 
-function render(){
+function render(){ renderTools(); renderList(); }
+
+function renderTools(){
+  const tb=document.getElementById('tools'); if(!tb) return;
+  const fl=FILTERS[CUR]||null, cur=LFILTER[CUR]||'all';
+  const sortUI=(CUR==='schedule')
+    ? '<span style="flex-basis:100%;height:0"></span><span class="hint" style="margin:0 2px 0 0">表示順</span>'
+      +'<button class="fpill'+((LSORT.schedule!=='file')?' on':'')+'" onclick="setSort(&quot;date&quot;)">開催日順</button>'
+      +'<button class="fpill'+((LSORT.schedule==='file')?' on':'')+'" onclick="setSort(&quot;file&quot;)">保存順（並べ替え可）</button>'
+    : '';
+  tb.innerHTML='<input class="search" type="search" placeholder="'+esc(SEARCH_PH[CUR]||'検索')+'" value="'+esc(LSEARCH[CUR]||'')+'" oninput="setSearch(this.value)">'
+    +(fl?fl.map(function(x){return '<button class="fpill'+(cur===x[0]?' on':'')+'" onclick="setFilter(\''+x[0]+'\')">'+esc(x[1])+'</button>';}).join(''):'')+sortUI;
+}
+
+function renderList(){
   const s=SCHEMAS[CUR], arr=DATA[CUR]||[];
-  document.getElementById('count').textContent=arr.length+' 件';
-  document.getElementById('hint').textContent='※「変更を公開」を押すまで、追加・編集・削除・並べ替えはこのブラウザ内だけの状態です（自動保存され、再読み込みしても復元されます）。公開すると全ての閲覧者に反映されます（GitHub へ保存 → 自動デプロイ、1〜2分）。';
+  const ctx={};
+  if(CUR==='news'){ ctx.homeNews={}; HOME.news(arr).forEach(function(p){ if(p.id) ctx.homeNews[p.id]=1; }); }
+  // Reordering moves real array positions, so it is only offered on the full
+  // unfiltered list - dragging row 2 above row 1 of a filtered view would move
+  // something else entirely.
+  const plain=((LFILTER[CUR]||'all')==='all') && !String(LSEARCH[CUR]||'').trim()
+    && !(CUR==='schedule' && LSORT.schedule!=='file');
+  let rows=arr.map(function(e,i){return {e:e,i:i};}).filter(function(r){return passFilter(CUR,r.e)&&passSearch(CUR,r.e);});
+  if(CUR==='schedule' && LSORT.schedule!=='file'){
+    // Operational order for reading only: upcoming soonest-first, then
+    // finished most-recent-first. The stored order is untouched - the public
+    // seminar page groups by month and relies on it.
+    rows=rows.slice().sort(function(x,y){
+      const px=evPast(x.e)?1:0, py=evPast(y.e)?1:0;
+      if(px!==py) return px-py;
+      const A=String(x.e.from||''), B=String(y.e.from||'');
+      return px ? B.localeCompare(A) : A.localeCompare(B);
+    });
+  }
+  document.getElementById('count').textContent=(rows.length===arr.length)?(arr.length+' 件'):(rows.length+' / '+arr.length+' 件');
+  document.getElementById('hint').textContent='※「変更を公開」を押すまで、追加・編集・削除・並べ替えはこのブラウザ内だけの状態です（自動保存され、再読み込みしても復元されます）。公開すると全ての閲覧者に反映されます（GitHub へ保存 → 自動デプロイ、1〜2分）。'
+    +(plain?'':(CUR==='schedule'&&LSORT.schedule!=='file'
+        ?'　並べ替えるには表示順を「保存順」にしてください。'
+        :'　絞り込み中は並べ替えできません。'));
   const list=document.getElementById('list');
   if(!arr.length){list.innerHTML='<div style="padding:16px;color:#6b7280">項目がありません。「＋ 新規追加」から追加できます。</div>';return;}
-  list.innerHTML=arr.map((e,i)=>`<div class="row">
-    <div style="display:flex;flex-direction:column;gap:2px">
-      <button class="mini" onclick="move(${i},-1)" ${i===0?'disabled':''}>▲</button>
-      <button class="mini" onclick="move(${i},1)" ${i===arr.length-1?'disabled':''}>▼</button>
-    </div>
-    <div class="main"><div class="t">${esc(s.title(e))}</div><div class="s">${esc(s.sub(e))}</div></div>
-    ${CUR==='news'?`<button class="btn btn-g" onclick="previewNews(${i})">プレビュー</button>`:''}
-    <button class="btn btn-g" onclick="openEdit(${i})">編集</button>
-    <button class="btn btn-g" onclick="dupItem(${i})">複製</button>
-    <button class="btn btn-d" onclick="delItem(${i})">削除</button>
-  </div>`).join('');
+  if(!rows.length){list.innerHTML='<div style="padding:16px;color:#6b7280">条件に一致する項目がありません。</div>';return;}
+  list.innerHTML=rows.map(function(r){
+    const e=r.e, i=r.i, chips=rowChips(CUR,e,ctx);
+    return '<div class="row">'
+      +'<div style="display:flex;flex-direction:column;gap:2px">'
+      +'<button class="mini" onclick="move('+i+',-1)" '+((!plain||i===0)?'disabled':'')+'>▲</button>'
+      +'<button class="mini" onclick="move('+i+',1)" '+((!plain||i===arr.length-1)?'disabled':'')+'>▼</button>'
+      +'</div>'
+      +'<div class="main">'+(chips?'<div class="chips">'+chips+'</div>':'')
+      +'<div class="t">'+esc(s.title(e))+'</div><div class="s">'+esc(s.sub(e))+'</div></div>'
+      +(CUR==='news'?'<button class="btn btn-g" onclick="previewNews('+i+')">プレビュー</button>':'')
+      +'<button class="btn btn-g" onclick="openEdit('+i+')">編集</button>'
+      +'<button class="btn btn-g" onclick="dupItem('+i+')">複製</button>'
+      +'<button class="btn btn-d" onclick="delItem('+i+')">削除</button>'
+      +'</div>';
+  }).join('');
 }
 /* ---------------- Q&A の共通ヘルパー ----------------
    画像は images:[{src,caption}] が正。ただし古いレコードは img に1枚だけ
@@ -582,8 +843,9 @@ function esc(x){return String(x==null?'':x).replace(/[&<>"]/g,c=>({'&':'&amp;','
 
 function markDirty(){DIRTY[CUR]=true;updateDirty();try{localStorage.setItem('idflAdminDraft_'+CUR,JSON.stringify(DATA[CUR]||[]));}catch(e){}}
 function updateDirty(){
-  document.getElementById('dirty').style.display=DIRTY[CUR]?'inline':'none';
+  const dn=document.getElementById('dirty'); if(dn) dn.style.display=DIRTY[CUR]?'inline':'none';
   Object.keys(SCHEMAS).forEach(k=>{const d=document.getElementById('dot-'+k);if(d)d.style.display=DIRTY[k]?'inline':'none';});
+  navCounts();
 }
 function move(i,dir){const a=DATA[CUR];const j=i+dir;if(j<0||j>=a.length)return;[a[i],a[j]]=[a[j],a[i]];markDirty();render();}
 const PREVIEW={news:'/idfl_news.html',schedule:'/seminar_schedule.html',downloads:'/download.html',factories:'/certified-factories.html',qa:'/qa.html'};
@@ -720,7 +982,10 @@ function fieldHtml(f,v){
       <input type="file" id="${id}_file" accept="image/png,image/jpeg,image/webp,image/svg+xml" style="display:none">
       <input type="hidden" id="${id}" value="${esc(v||'')}">${hint}</div>`;
   }
-  if(f.t==='checkbox')return `<label class="f cb"><input type="checkbox" id="${id}" ${v?'checked':''}> ${f.label}</label>`;
+  if(f.t==='checkbox'){
+    const on=(v===undefined||v===null)?(f.def===true):!!v;
+    return `<label class="f cb"><input type="checkbox" id="${id}" ${on?'checked':''}> ${f.label}</label>${hint}`;
+  }
   if(f.t==='textarea')return `<label class="f">${f.label}${f.req?' <span class=req>*</span>':''}<textarea id="${id}">${esc(v)}</textarea>${hint}</label>`;
   if(f.t==='select')return `<label class="f">${f.label}<select id="${id}">${f.opts.map(o=>`<option ${o===v?'selected':''}>${o}</option>`).join('')}</select>${hint}</label>`;
   /* 種類はプルダウン固定。自由入力をやめたのは表記ゆれで同じ意味の
@@ -867,6 +1132,111 @@ function saveModal(){
 }
 function closeModal(){document.getElementById('ov').classList.remove('open');EDIT_IDX=-1;}
 
+/* ============================================================
+   Dashboard - the default view after login.
+
+   Every number here is derived from data the console already loads. Nothing
+   is estimated and nothing new is stored. Counts follow the working copy
+   (server data with any local draft applied), because that is what the
+   operator will see on clicking through; sections holding an unpublished
+   draft say so rather than quietly showing a number the public cannot see.
+   ============================================================ */
+let DASH_STAFF=null;
+
+async function dashInit(){
+  const box=document.getElementById('dashBody');
+  if(!box.dataset.ready){ box.innerHTML='<div style="padding:16px;color:#6b7280">読込中…</div>'; }
+  await Promise.all(Object.keys(SCHEMAS).map(function(k){
+    return DATA[k]?Promise.resolve():loadDataQuiet(k,true);
+  }));
+  box.dataset.ready='1';
+  navCounts();
+  dashRender();
+  fetch('/.netlify/functions/auth-status',{cache:'no-store'})
+    .then(function(r){return r.json();})
+    .then(function(j){ DASH_STAFF=((j&&j.role)==='STAFF'); dashRender(); })
+    .catch(function(){ DASH_STAFF=false; dashRender(); });
+}
+
+function dcard(v,label,target,filter,warn){
+  const cls='dcard'+(warn&&v?' warn':'')+(v?'':' zero');
+  const act=target?('onclick="dashGo(\''+target+'\',\''+(filter||'all')+'\')"'):'';
+  return '<button class="'+cls+'" '+act+'><div class="v">'+v+'</div><div class="l">'+esc(label)+'</div></button>';
+}
+function dashGo(k,f){ if(FILTERS[k]) LFILTER[k]=f||'all'; navGo(k); }
+
+function dlist(items){
+  if(!items.length) return '<div class="dlist"><div class="dempty">現在ありません</div></div>';
+  return '<div class="dlist">'+items.map(function(x,i){
+    return '<div class="di"><span class="dn">'+(i+1)+'</span><span class="dt">'+esc(x.t)+'</span><span class="dd">'+esc(x.d||'')+'</span></div>';
+  }).join('')+'</div>';
+}
+function dpub(a){ return (a||[]).filter(function(x){return x&&x.published!==false;}).length; }
+function ddraft(a){ return (a||[]).filter(function(x){return x&&x.published===false;}).length; }
+function dnote(keys){
+  const d=keys.filter(function(k){return DIRTY[k];});
+  return d.length?('<div class="dnote">● 未公開のローカル変更があります：'+d.map(function(k){return SCHEMAS[k].label;}).join('・')+'</div>'):'';
+}
+
+function dashRender(){
+  const news=DATA.news||[], sch=DATA.schedule||[], qa=DATA.qa||[],
+        fac=DATA.factories||[], dl=DATA.downloads||[];
+  const dirtyKeys=Object.keys(SCHEMAS).filter(function(k){return DIRTY[k];});
+  const fbNew=QITEMS.filter(function(x){return x.status==='new';}).length;
+  const fbProg=QITEMS.filter(function(x){return x.status==='in_progress';}).length;
+  // Counts what the 開催予定 filter shows, drafts included: clicking the card
+  // must not land on a different number.
+  const upcoming=sch.filter(function(e){return !evPast(e);}).length;
+
+  const tick=HOME.ticker(news), hnews=HOME.news(news), hev=HOME.events(sch);
+  const fmt=function(d){ const m=/^(\d{4})-(\d{1,2})-(\d{1,2})/.exec(String(d||'')); return m?(m[1]+'.'+m[2].padStart(2,'0')+'.'+m[3].padStart(2,'0')):''; };
+
+  let h='<div class="dsec" style="margin-top:0"><h3>公開中</h3><div class="dgrid">'
+    +dcard(dpub(news),'お知らせ','news','pub')
+    +dcard(dpub(sch),'展示会・セミナー','schedule','pub')
+    +dcard(qa.length,'よくある質問','qa')
+    +dcard(dpub(fac),'認証工場・企業','factories','pub')
+    +dcard(dpub(dl),'資料ダウンロード','downloads')
+    +'</div></div>';
+
+  h+='<div class="dsec"><h3>要確認</h3><div class="dgrid">'
+    +dcard(ddraft(news),'下書きのお知らせ','news','draft',true)
+    +dcard(ddraft(sch),'下書きの催事','schedule','draft',true)
+    +dcard(upcoming,'開催予定の催事','schedule','upcoming')
+    +dcard(dirtyKeys.length,'未公開の変更があるセクション',null,null,true)
+    // Only STAFF can read feedback, so anything short of a confirmed STAFF
+    // session shows the gate. Treating "not yet known" as zero would put a
+    // reassuring 0 on screen during the auth round-trip.
+    +(DASH_STAFF===true
+        ? dcard(fbNew+fbProg,'新規・対応中のフィードバック','feedback',null,true)
+        : '<button class="dcard zero" onclick="navGo(&quot;feedback&quot;)"><div class="v">—</div><div class="l">フィードバック（'+(DASH_STAFF===null?'確認中':'要スタッフログイン')+'）</div></button>')
+    +'</div>'+dnote(dirtyKeys)+'</div>';
+
+  h+='<div class="dsec"><h3>現在トップページに表示中</h3>'
+    +'<p class="dwhere">トップページの掲載ルールは場所ごとに異なります。ここは index.html と同じ判定で算出しています。'
+    +(dirtyKeys.length?'<br><strong style="color:var(--warn)">未公開の変更を含んだ状態で表示しています。</strong>':'')+'</p>'
+    +'<h4 style="font-size:11.5px;color:#6b7280;margin:12px 0 6px">\uD83C\uDFE0 最新情報バー（公開中かつ「最新情報に表示」・新しい順に最大5件）</h4>'
+    +dlist(tick.map(function(p){return {t:p.title||'(無題)',d:fmt(p.date)};}))
+    +'<h4 style="font-size:11.5px;color:#6b7280;margin:14px 0 6px">\uD83C\uDFE0 News セクション（公開中のみ・固定→新しい順に3件／「最新情報に表示」は参照しません）</h4>'
+    +dlist(hnews.map(function(p){return {t:(p.pinned?'\uD83D\uDCCC ':'')+(p.title||'(無題)'),d:fmt(p.date)};}))
+    +'<h4 style="font-size:11.5px;color:#6b7280;margin:14px 0 6px">\uD83C\uDFE0 セミナー（公開中かつTOP掲載・未終了・開催日の近い順に3件）</h4>'
+    +dlist(hev.map(function(e){return {t:e.name||'(無題)',d:fmt(e.from)};}))
+    +'</div>';
+
+  h+='<div class="dsec"><h3>最近の変更</h3>'+dlist(dashRecent(news,sch))+'</div>';
+  document.getElementById('dashBody').innerHTML=h;
+}
+
+/** Recent changes, taken from updatedAt/createdAt already present on the
+    records. No new field, no extra request. */
+function dashRecent(news,sch){
+  const out=[];
+  (news||[]).forEach(function(p){ const t=p.updatedAt||p.createdAt; if(t) out.push({ts:String(t),t:'お知らせ：'+(p.title||'(無題)'),d:String(t).slice(0,10)}); });
+  (sch||[]).forEach(function(e){ const t=e.updatedAt||e.createdAt; if(t) out.push({ts:String(t),t:'催事：'+(e.name||'(無題)'),d:String(t).slice(0,10)}); });
+  out.sort(function(a,b){return b.ts.localeCompare(a.ts);});
+  return out.slice(0,8);
+}
+
 async function publishCur(){
   const s=SCHEMAS[CUR],arr=DATA[CUR]||[];
   if(CUR==='factories'){arr.forEach((e,i)=>{e.displayOrder=i;});}
@@ -876,7 +1246,7 @@ async function publishCur(){
   try{
     const r=await fetch(PUBLISH_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:CUR,password:PW,data:arr})});
     const j=await r.json().catch(()=>({}));
-    if(r.ok&&j.ok){DIRTY[CUR]=false;try{localStorage.removeItem('idflAdminDraft_'+CUR);}catch(e){}updateDirty();render();toast('✅ 公開しました（'+(j.count||arr.length)+'件）反映まで約1〜2分');}
+    if(r.ok&&j.ok){DIRTY[CUR]=false;try{localStorage.removeItem('idflAdminDraft_'+CUR);}catch(e){}updateDirty();render();const _db=document.getElementById('dashBody');if(_db)_db.dataset.ready='';toast('✅ 公開しました（'+(j.count||arr.length)+'件）反映まで約1〜2分');}
     else{toast('⚠️ 公開失敗: '+(j.error||('HTTP '+r.status)));}
   }catch(e){toast('⚠️ 公開失敗: '+e.message);}
   btn.disabled=false;

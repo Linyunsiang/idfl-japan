@@ -1803,6 +1803,11 @@ html:not(.js) .jstep__rule::before{ transform:scaleX(1)!important; }
   fetch('/schedule-data.json',{cache:'no-cache'}).then(function(r){return r.ok?r.json():[];}).then(function(d){
     var a=(Array.isArray(d)?d:[]).filter(function(e){
       if(e.published===false)return false;
+      // Explicit homepage control. Absent means shown, so every record that
+      // predates the flag keeps the behaviour it has today - only an
+      // administrator ticking the box off removes an event from here. The
+      // seminar listing page is unaffected and still shows it.
+      if(e.showOnHome===false)return false;
       var end=e.to?new Date(e.to+'T00:00:00'):(e.from?new Date(e.from+'T00:00:00'):null);
       return end && end>=today;
     });
