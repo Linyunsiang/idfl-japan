@@ -240,6 +240,9 @@
              color var(--idfl-dur-hover) var(--idfl-ease-out);
 }
 .idfl-menu__col a:hover{ background:var(--idfl-bg-brand-soft); color:var(--idfl-brand-700); }
+/* Zen Kaku Gothic New maps U+2197 to a slash-like glyph, so the external-link
+   arrow rendered as "／". Draw it from the UI font instead. */
+.ext{ font-family:system-ui,"Segoe UI Symbol","Apple Symbols",sans-serif; }
 .idfl-menu__col a .ext{ color:var(--idfl-text-faint); margin-left:4px; font-size:11px; }
 
 /* Full-width reference row, visually separated from the task columns. */
