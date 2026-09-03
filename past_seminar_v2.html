@@ -130,6 +130,11 @@
             left: 0; right: 0;
         }
         .year-tab:hover { color: var(--brand-600); }
+        /* A fixed-width tab strip cannot fit three years plus their labels on
+           a phone. It scrolls within itself now - the normal behaviour for a
+           tab row - instead of widening the document. */
+        .year-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+        .year-tabs .year-tab { flex: 0 0 auto; }
 
         .year-panel { display: none; }
         .year-panel.active { display: block; animation: fadeUp 0.4s ease; }
@@ -742,9 +747,9 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
     </header>
 
     <!-- ===== 年度タブ ===== -->
-    <div style="background: white; border-bottom: 1px solid var(--border); position: sticky; top: 72px; z-index: 40;">
+    <div style="background: white; border-bottom: 1px solid var(--border); position: sticky; top: var(--idfl-header-h); z-index: 40;">
         <div class="max-w-5xl mx-auto px-6">
-            <div class="flex items-center gap-0">
+            <div class="flex items-center gap-0 year-tabs">
                 <button class="year-tab active" onclick="switchYear('2026', this)">
                     2026
                     <span style="font-size: 10px; vertical-align: super; color: var(--brand-400); font-weight: 700; letter-spacing: 0.05em;">  GROUP DISCUSSION</span>
@@ -1371,14 +1376,16 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
     
 // ハンバーガーメニュー
 // ハンバーガーメニュー開閉
+        // #hamburger / #mobileMenu belonged to the page's own header, which the
+        // shared chrome replaced. Guarded so the rest of this block still runs.
         const hamburger = document.getElementById('hamburger');
         const mobileMenu = document.getElementById('mobileMenu');
-        hamburger.addEventListener('click', () => {
+        if (hamburger && mobileMenu) hamburger.addEventListener('click', () => {
             hamburger.classList.toggle('open');
             mobileMenu.classList.toggle('open');
         });
         // メニュー項目クリックで閉じる
-        mobileMenu.querySelectorAll('a').forEach(link => {
+        if (mobileMenu) mobileMenu.querySelectorAll('a').forEach(link => {
             link.addEventListener('click', () => {
                 hamburger.classList.remove('open');
                 mobileMenu.classList.remove('open');

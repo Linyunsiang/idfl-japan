@@ -26,6 +26,15 @@
     /* Cards */
     .doc-card{background:#fff;border:1px solid var(--b100);border-radius:14px;padding:18px 20px;display:flex;align-items:center;gap:16px;position:relative;transition:transform .18s,box-shadow .18s;}
     .doc-card:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(21,101,192,.09);}
+    /* The card is a flex row of icon + text + button, none of which could
+       shrink, so below ~400px it was wider than the screen and dragged the
+       whole page sideways. Let the text block shrink and the button drop to
+       its own line. */
+    .doc-card > *{min-width:0;}
+    @media(max-width:620px){
+      .doc-card{flex-wrap:wrap;padding:16px;gap:12px;}
+      .doc-card .dl-btn{margin-left:auto;}
+    }
     @keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
     .doc-icon{width:46px;height:46px;border-radius:11px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:20px;}
     .tag{display:inline-flex;align-items:center;padding:2px 9px;border-radius:999px;font-size:11px;font-weight:700;}
@@ -403,7 +412,7 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
     <button class="cat-tab" id="tab_参考資料">参考資料</button>
   </div>
 
-  <div id="docList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(380px,1fr));gap:10px"></div>
+  <div id="docList" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(min(380px,100%),1fr));gap:10px"></div>
   <div id="noDoc" style="display:none;text-align:center;padding:64px;color:var(--b200)">
     <p style="font-size:2rem">🔍</p><p>該当する資料が見つかりませんでした</p>
   </div>

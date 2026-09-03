@@ -92,10 +92,18 @@
   --idfl-target-comfort:36px;
   --idfl-target-touch:44px;
 
+  /* Header height, exposed so page-level sticky bars can sit flush against
+     it instead of hard-coding a number that silently goes stale. */
+  --idfl-header-h:64px;
+
   /* ---- Layering --------------------------------------------- */
   --idfl-z-header:100;
   --idfl-z-scrim:110;
   --idfl-z-menu:120;
+}
+
+@media (max-width:620px){
+  :root{ --idfl-header-h:56px; }
 }
 
 /* Reduced motion collapses every duration to zero at the token level, so a
@@ -119,7 +127,7 @@
    themselves are unaffected (their :root comes later and wins).
 
    Do not add new names here, and do not use these in new components.
-   tools/check-tokens.mjs fails the build if either happens.
+   tools/check-chrome.mjs fails if either happens.
    ============================================================ */
 :root{
   --accent:var(--idfl-brand-500);

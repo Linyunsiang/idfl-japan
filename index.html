@@ -671,8 +671,13 @@ section{position:relative;}
 .rmask.l2 > span{transition-delay:110ms;}
 
 /* ---------- section-progress rail (desktop, subtle) ---------- */
-.sect-rail{position:fixed;right:22px;top:50%;transform:translateY(-50%);z-index:40;display:flex;flex-direction:column;gap:14px;}
+.sect-rail{position:fixed;right:22px;top:50%;transform:translateY(-50%);z-index:40;display:flex;flex-direction:column;gap:19px;}
+/* The marker stays 9px; ::before carries a 28px transparent target so the
+   control clears the WCAG 2.5.8 floor without the rail becoming a row of
+   large dots. Gap is 19px so those boxes sit edge to edge, never overlapping.
+   ::after is already taken by the hover label. */
 .sect-rail button{width:9px;height:9px;padding:0;border:none;border-radius:50%;background:var(--c-line);cursor:pointer;position:relative;transition:background var(--dur-ui) var(--ease-io),transform var(--dur-ui) var(--ease-io);}
+.sect-rail button::before{content:"";position:absolute;left:50%;top:50%;width:28px;height:28px;transform:translate(-50%,-50%);}
 .sect-rail button:hover{transform:scale(1.25);background:#c2c6d0;}
 .sect-rail button.on{background:var(--trace);transform:scale(1.15);}
 .sect-rail button::after{content:attr(data-label);position:absolute;right:20px;top:50%;transform:translateY(-50%) translateX(6px);white-space:nowrap;font-size:11px;letter-spacing:.06em;color:var(--c-ink);background:#fff;border:1px solid var(--c-line);border-radius:6px;padding:3px 9px;opacity:0;pointer-events:none;transition:opacity var(--dur-ui),transform var(--dur-ui);box-shadow:0 6px 18px rgba(4,34,88,.08);}
@@ -2391,8 +2396,15 @@ html:not(.js) .jstep__rule::before{ transform:scaleX(1)!important; }
     var map = [['services','認証サービス'],['find','目的から探す'],['prepare','認証準備'],['journey','認証取得の流れ'],['events','セミナー'],['tools','ツール'],['help','相談']];
     var items = map.filter(function(m){ return document.getElementById(m[0]); });
     if(items.length < 3) return;
-    var rail = document.createElement('div'); rail.className='sect-rail'; rail.setAttribute('aria-hidden','true');
-    rail.innerHTML = items.map(function(m){ return '<button data-target="'+m[0]+'" data-label="'+esc(m[1])+'"></button>'; }).join('');
+    // Was a <div aria-hidden="true"> full of focusable buttons: hidden from
+    // screen readers yet still in the tab order, which is the worst of both.
+    // It is a real navigation aid, so it is exposed as one and labelled.
+    var rail = document.createElement('nav'); rail.className='sect-rail';
+    rail.setAttribute('aria-label','セクションナビゲーション');
+    rail.innerHTML = items.map(function(m){
+      return '<button type="button" data-target="'+m[0]+'" data-label="'+esc(m[1])
+           + '" aria-label="'+esc(m[1])+'へ移動"></button>';
+    }).join('');
     document.body.appendChild(rail);
     var btns = [].slice.call(rail.children);
     btns.forEach(function(b){ b.addEventListener('click', function(){ var t=document.getElementById(b.getAttribute('data-target')); if(t) t.scrollIntoView({behavior:REDUCE?'auto':'smooth'}); }); });
