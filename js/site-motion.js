@@ -139,7 +139,11 @@
     } else {
       var io = new IntersectionObserver(function (entries) {
         entries.forEach(function (entry) {
-          if (!entry.isIntersecting) return;
+          // Reveal on intersection, but also for anything already scrolled
+          // past: following an anchor link jumps over sections that then
+          // never intersect, and they would stay at opacity 0 for good.
+          var passed = entry.boundingClientRect.top < 0;
+          if (!entry.isIntersecting && !passed) return;
           entry.target.classList.add('is-in');
           io.unobserve(entry.target);   // once only
         });

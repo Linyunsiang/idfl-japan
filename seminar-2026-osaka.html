@@ -1163,7 +1163,9 @@ section{position:relative;}
   if (btn) btn.addEventListener('click', open);
   if (closeBtn) closeBtn.addEventListener('click', close);
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && overlay) close(); });
-  overlay.querySelectorAll('a[data-scroll]').forEach(function (a) {
+  // #menuOverlay is gone: the shared mega menu replaced it and handles its
+  // own close-on-navigate. Smooth scrolling below is still wanted.
+  if (overlay) overlay.querySelectorAll('a[data-scroll]').forEach(function (a) {
     a.addEventListener('click', close);
   });
   document.querySelectorAll('a[data-scroll]').forEach(function (a) {

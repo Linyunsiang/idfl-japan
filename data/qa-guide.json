@@ -1,0 +1,73 @@
+{
+  "_comment": [
+    "Guided troubleshooting map for /qa.html.",
+    "",
+    "This file contains NAVIGATION ONLY. It holds no answers and no advice - every",
+    "id below points at a record that already exists in data/qa.json, which stays",
+    "the single source of truth and is edited through /admin.",
+    "",
+    "A step is only defined where the existing records genuinely support it. TC has",
+    "22 records that fall naturally into three stages, so TC has a second step. The",
+    "other categories do not have enough records to split without producing branches",
+    "that lead to one or two answers, so they have no second step rather than a",
+    "faked one.",
+    "",
+    "Any record not listed here is never hidden: it still appears under its category",
+    "and in search. Adding a new Q&A in /admin therefore needs no change here.",
+    "",
+    "TC stages were read off the questions themselves:",
+    "  before  - what to prepare, deadlines, which documents, whether to apply yet",
+    "  filling - working inside the portal form",
+    "  after   - submitted, returned for revision, issued, or needing a correction"
+  ],
+  "steps": {
+    "tc": {
+      "question": "どの段階でお困りですか？",
+      "options": [
+        {
+          "key": "before",
+          "label": "申請前",
+          "hint": "必要書類・期限・申請の可否",
+          "ids": [
+            "qa-tc-01",
+            "qa-tc-02",
+            "qa-tc-04",
+            "qa-tc-05",
+            "qa-tc-09",
+            "qa-tc-10",
+            "qa-tc-13",
+            "qa-tc-14",
+            "qa-custom-1780886873892",
+            "qa-1788335347817"
+          ]
+        },
+        {
+          "key": "filling",
+          "label": "入力中",
+          "hint": "ポータルでの入力・記載内容",
+          "ids": [
+            "qa-tc-03",
+            "qa-tc-06",
+            "qa-tc-11",
+            "qa-tc-12",
+            "qa-tc-16",
+            "qa-custom-1780899231877",
+            "qa-custom-1780899258261",
+            "qa-custom-1780899616290"
+          ]
+        },
+        {
+          "key": "after",
+          "label": "申請後・発行後",
+          "hint": "差し戻し・発行までの時間・記載修正",
+          "ids": [
+            "qa-tc-07",
+            "qa-tc-08",
+            "qa-tc-15",
+            "qa-custom-1780899280156"
+          ]
+        }
+      ]
+    }
+  }
+}
