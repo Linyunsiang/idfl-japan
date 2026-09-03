@@ -1,0 +1,383 @@
+/* ============================================================
+   IDFL JAPAN — global chrome: header, mega menu, footer.
+
+   One system. The header's five nav items are the same five groups the
+   mega menu opens with, so there is a single information architecture
+   rather than one taxonomy in the bar and a different one in the panel.
+
+   Visual language: Swiss-minimal. Hairlines instead of shadows, flat white
+   instead of glass, one accent colour. Motion is short and purposeful.
+   ============================================================ */
+
+/* ==========================================================
+   HEADER
+   ========================================================== */
+.idfl-header{
+  /* converter.html and gots_cas_checker.html carry bare `header{...}` rules
+     (flex layout, padding, and on one page a purple background). Those would
+     otherwise reach this element, so the layout properties are reset here
+     explicitly rather than relying on load order. */
+  display:block;
+  padding:0;
+  position:sticky;
+  top:0;
+  z-index:var(--idfl-z-header);
+  background:var(--idfl-bg);
+  border-bottom:1px solid var(--idfl-border-soft);
+  font-family:var(--idfl-font-sans);
+}
+.idfl-header__bar{
+  max-width:var(--idfl-maxw);
+  margin:0 auto;
+  padding:0 var(--idfl-gutter);
+  height:64px;
+  display:flex;
+  align-items:center;
+  gap:var(--idfl-space-4);
+}
+
+/* ---- Brand ---- */
+.idfl-brand{
+  display:inline-flex;
+  align-items:center;
+  gap:var(--idfl-space-2);
+  text-decoration:none;
+  color:var(--idfl-text);
+  flex:0 0 auto;
+  min-height:var(--idfl-target-touch);   /* logo is a primary control */
+  padding-right:var(--idfl-space-2);
+}
+.idfl-brand img{ display:block; height:30px; width:auto; }
+.idfl-brand__name{
+  font-size:15px;
+  font-weight:900;
+  letter-spacing:.02em;
+  white-space:nowrap;
+}
+
+/* ---- Nav ---- */
+.idfl-header__nav{
+  margin-left:auto;
+  display:flex;
+  align-items:center;
+  gap:var(--idfl-space-1);
+}
+.idfl-header__nav a{
+  display:inline-flex;
+  align-items:center;
+  padding:9px 12px;
+  border-radius:var(--idfl-radius-sm);
+  font-size:13.5px;
+  font-weight:700;
+  color:var(--idfl-text-soft);
+  text-decoration:none;
+  white-space:nowrap;
+  transition:background var(--idfl-dur-hover) var(--idfl-ease-out),
+             color var(--idfl-dur-hover) var(--idfl-ease-out);
+}
+.idfl-header__nav a:hover{ background:var(--idfl-bg-brand-soft); color:var(--idfl-brand-700); }
+
+/* 認証準備 is the task this site most wants to lead people to, so it is
+   marked without being turned into a second competing button. */
+.idfl-header__nav a.is-key{ color:var(--idfl-brand-600); position:relative; }
+.idfl-header__nav a.is-key::before{
+  content:"";
+  position:absolute; left:12px; right:12px; bottom:5px;
+  height:1.5px; background:currentColor; opacity:.35;
+}
+
+/* Primary action. Solid so it reads as the one button in the bar, and it is
+   the last thing to be dropped as the viewport narrows. */
+.idfl-header__nav a.is-apply{
+  background:var(--idfl-brand-500);
+  color:var(--idfl-text-on-brand);
+  padding:10px 16px;
+  border-radius:var(--idfl-radius-pill);
+  min-height:var(--idfl-target-comfort);
+}
+.idfl-header__nav a.is-apply:hover{ background:var(--idfl-brand-700); color:var(--idfl-text-on-brand); }
+
+/* ---- Menu button ---- */
+.idfl-menubtn{
+  display:inline-flex;
+  align-items:center;
+  gap:var(--idfl-space-2);
+  background:none;
+  border:1px solid var(--idfl-border);
+  border-radius:var(--idfl-radius-pill);
+  padding:0 14px;
+  min-height:var(--idfl-target-comfort);
+  font:700 13px/1 var(--idfl-font-sans);
+  color:var(--idfl-text);
+  cursor:pointer;
+  transition:background var(--idfl-dur-hover) var(--idfl-ease-out),
+             border-color var(--idfl-dur-hover) var(--idfl-ease-out);
+}
+.idfl-menubtn:hover{ background:var(--idfl-bg-soft); border-color:var(--idfl-border-strong); }
+.idfl-burger{ display:flex; flex-direction:column; gap:4px; width:16px; }
+.idfl-burger i{
+  display:block; height:1.5px; background:currentColor;
+  transition:transform var(--idfl-dur-hover) var(--idfl-ease-out);
+}
+.idfl-menubtn[aria-expanded="true"] .idfl-burger i:first-child{ transform:translateY(2.75px) rotate(45deg); }
+.idfl-menubtn[aria-expanded="true"] .idfl-burger i:last-child{ transform:translateY(-2.75px) rotate(-45deg); }
+
+@media (pointer:coarse){
+  .idfl-menubtn{ min-height:var(--idfl-target-touch); }
+}
+
+/* Narrow viewports: shed the secondary labels, never the primary action or
+   the menu. 1180 matches the breakpoint the existing nav already used. */
+@media (max-width:1180px){
+  .idfl-header__nav a:not(.is-apply){ display:none; }
+}
+@media (max-width:620px){
+  .idfl-header__bar{ height:56px; gap:var(--idfl-space-2); }
+  .idfl-brand__name{ display:none; }
+  .idfl-header__nav a.is-apply{ padding:9px 13px; font-size:13px; }
+  .idfl-menubtn__label{ display:none; }
+  .idfl-menubtn{ padding:0 11px; }
+}
+
+/* ==========================================================
+   MEGA MENU
+   ========================================================== */
+.idfl-scrim{
+  position:fixed; inset:0;
+  background:var(--idfl-bg-scrim);
+  z-index:var(--idfl-z-scrim);
+  opacity:0;
+  transition:opacity var(--idfl-dur-exit) var(--idfl-ease-in);
+}
+.idfl-scrim[hidden]{ display:none; }
+.idfl-scrim.is-open{ opacity:1; transition-duration:var(--idfl-dur-menu); transition-timing-function:var(--idfl-ease-out); }
+
+.idfl-menu{
+  position:fixed;
+  top:0; left:0; right:0;
+  z-index:var(--idfl-z-menu);
+  background:var(--idfl-bg);
+  border-bottom:1px solid var(--idfl-border);
+  font-family:var(--idfl-font-sans);
+  max-height:88vh;
+  overflow-y:auto;
+  transform:translateY(-8px);
+  opacity:0;
+  transition:opacity var(--idfl-dur-exit) var(--idfl-ease-in),
+             transform var(--idfl-dur-exit) var(--idfl-ease-in);
+}
+.idfl-menu[hidden]{ display:none; }
+.idfl-menu.is-open{
+  transform:none; opacity:1;
+  transition-duration:var(--idfl-dur-menu);
+  transition-timing-function:var(--idfl-ease-out);
+}
+
+.idfl-menu__inner{
+  max-width:var(--idfl-maxw);
+  margin:0 auto;
+  padding:var(--idfl-space-5) var(--idfl-gutter) var(--idfl-space-7);
+}
+.idfl-menu__head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding-bottom:var(--idfl-space-4);
+  margin-bottom:var(--idfl-space-5);
+  border-bottom:1px solid var(--idfl-border-soft);
+}
+.idfl-menu__eyebrow{
+  font:900 11px/1 var(--idfl-font-mono);
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--idfl-text-muted);
+}
+/* Type stays 13px; the box grows via padding so the target is comfortable
+   without the label shouting. */
+.idfl-menu__close{
+  background:none;
+  border:1px solid var(--idfl-border);
+  border-radius:var(--idfl-radius-pill);
+  font:700 13px/1 var(--idfl-font-sans);
+  color:var(--idfl-text-soft);
+  cursor:pointer;
+  padding:0 16px;
+  min-height:var(--idfl-target-comfort);
+  display:inline-flex; align-items:center; gap:6px;
+  transition:background var(--idfl-dur-hover) var(--idfl-ease-out);
+}
+.idfl-menu__close:hover{ background:var(--idfl-bg-soft); }
+@media (pointer:coarse){ .idfl-menu__close{ min-height:var(--idfl-target-touch); } }
+
+.idfl-menu__grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:var(--idfl-space-6) var(--idfl-space-7);
+}
+.idfl-menu__col{ min-width:0; }
+.idfl-menu__col h2{
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.06em;
+  color:var(--idfl-brand-700);
+  margin:0 0 var(--idfl-space-3);
+  padding-bottom:var(--idfl-space-2);
+  border-bottom:1px solid var(--idfl-border-soft);
+}
+.idfl-menu__col ul{ list-style:none; margin:0; padding:0; }
+.idfl-menu__col a{
+  display:flex;
+  align-items:center;
+  min-height:40px;                     /* continuous list: comfortable rows */
+  padding:2px 8px;
+  margin-left:-8px;
+  border-radius:var(--idfl-radius-sm);
+  font-size:14px;
+  line-height:1.5;
+  color:var(--idfl-text-soft);
+  text-decoration:none;
+  transition:background var(--idfl-dur-hover) var(--idfl-ease-out),
+             color var(--idfl-dur-hover) var(--idfl-ease-out);
+}
+.idfl-menu__col a:hover{ background:var(--idfl-bg-brand-soft); color:var(--idfl-brand-700); }
+.idfl-menu__col a .ext{ color:var(--idfl-text-faint); margin-left:4px; font-size:11px; }
+
+/* Full-width reference row, visually separated from the task columns. */
+.idfl-menu__refs{
+  grid-column:1/-1;
+  border-top:1px solid var(--idfl-border-soft);
+  padding-top:var(--idfl-space-4);
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:var(--idfl-space-2) var(--idfl-space-5);
+}
+.idfl-menu__refs h2{
+  border:0; padding:0; margin:0 var(--idfl-space-2) 0 0;
+  font-size:11px; letter-spacing:.06em; color:var(--idfl-text-muted);
+}
+.idfl-menu__refs a{
+  font-size:13px; color:var(--idfl-text-soft); text-decoration:none;
+  min-height:var(--idfl-target-comfort);
+  display:inline-flex; align-items:center; padding:0 6px;
+  border-radius:var(--idfl-radius-sm);
+}
+.idfl-menu__refs a:hover{ background:var(--idfl-bg-soft); color:var(--idfl-brand-700); }
+
+/* Column entrance. Stagger is small and only on the way in; leaving is one
+   quick fade so dismissal never feels held up. */
+html.js .idfl-menu.is-open .idfl-menu__col,
+html.js .idfl-menu.is-open .idfl-menu__refs{
+  animation:idflMenuCol var(--idfl-dur-menu) var(--idfl-ease-out) both;
+}
+html.js .idfl-menu.is-open .idfl-menu__col:nth-child(1){ animation-delay:calc(var(--idfl-stagger) * 0); }
+html.js .idfl-menu.is-open .idfl-menu__col:nth-child(2){ animation-delay:calc(var(--idfl-stagger) * 1); }
+html.js .idfl-menu.is-open .idfl-menu__col:nth-child(3){ animation-delay:calc(var(--idfl-stagger) * 2); }
+/* Row two lands a beat after row one rather than continuing the count, so the
+   whole panel is settled inside ~2 stagger steps instead of six. */
+html.js .idfl-menu.is-open .idfl-menu__col:nth-child(4),
+html.js .idfl-menu.is-open .idfl-menu__col:nth-child(5),
+html.js .idfl-menu.is-open .idfl-menu__col:nth-child(6){ animation-delay:calc(var(--idfl-stagger) * 1.5); }
+html.js .idfl-menu.is-open .idfl-menu__refs{ animation-delay:calc(var(--idfl-stagger) * 2.5); }
+@keyframes idflMenuCol{
+  from{ opacity:0; transform:translateY(6px); }
+  to  { opacity:1; transform:none; }
+}
+@media (prefers-reduced-motion:reduce){
+  html.js .idfl-menu.is-open .idfl-menu__col,
+  html.js .idfl-menu.is-open .idfl-menu__refs{ animation:none; }
+}
+
+@media (max-width:900px){
+  .idfl-menu__grid{ grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+
+/* Mobile: full-height drawer with accordion groups. */
+@media (max-width:620px){
+  .idfl-menu{
+    top:0; bottom:0;
+    max-height:100dvh;
+    height:100dvh;
+    transform:translateY(-100%);
+  }
+  .idfl-menu.is-open{ transform:none; }
+  .idfl-menu__inner{ padding:var(--idfl-space-4) var(--idfl-space-4) var(--idfl-space-8); }
+  .idfl-menu__grid{ grid-template-columns:1fr; gap:0; }
+  .idfl-menu__col h2{
+    margin:0;
+    padding:var(--idfl-space-4) 0;
+    border-bottom:1px solid var(--idfl-border-soft);
+    display:flex; align-items:center; justify-content:space-between;
+    cursor:pointer;
+    min-height:var(--idfl-target-touch);
+    font-size:14px;
+  }
+  .idfl-menu__col h2::after{
+    content:"";
+    width:9px; height:9px;
+    border-right:2px solid currentColor;
+    border-bottom:2px solid currentColor;
+    transform:rotate(45deg) translate(-2px,-2px);
+    transition:transform var(--idfl-dur-accordion) var(--idfl-ease-out);
+    flex:0 0 auto;
+  }
+  .idfl-menu__col.is-open h2::after{ transform:rotate(-135deg) translate(-3px,-3px); }
+  .idfl-menu__col ul{ display:none; padding:var(--idfl-space-2) 0; }
+  .idfl-menu__col.is-open ul{ display:block; }
+  .idfl-menu__col a{ min-height:var(--idfl-target-touch); font-size:15px; }
+  .idfl-menu__refs{ padding-top:var(--idfl-space-5); }
+  /* No JS: every group is open, so the whole menu is still usable. */
+  html:not(.js) .idfl-menu__col ul{ display:block; }
+  html:not(.js) .idfl-menu__col h2::after{ display:none; }
+}
+
+/* ==========================================================
+   FOOTER
+   ========================================================== */
+.idfl-footer{
+  background:var(--idfl-bg-soft);
+  border-top:1px solid var(--idfl-border-soft);
+  font-family:var(--idfl-font-sans);
+  color:var(--idfl-text-soft);
+  margin-top:var(--idfl-space-8);
+}
+.idfl-footer__inner{
+  max-width:var(--idfl-maxw);
+  margin:0 auto;
+  padding:var(--idfl-space-7) var(--idfl-gutter) var(--idfl-space-5);
+}
+.idfl-footer__cols{
+  display:grid;
+  grid-template-columns:1.4fr repeat(3,minmax(0,1fr));
+  gap:var(--idfl-space-6) var(--idfl-space-5);
+}
+.idfl-footer__brand img{ height:32px; width:auto; display:block; margin-bottom:var(--idfl-space-3); }
+.idfl-footer__brand p{ margin:0 0 var(--idfl-space-2); font-size:12.5px; line-height:1.9; color:var(--idfl-text-muted); }
+.idfl-footer h2{
+  font-size:11.5px; font-weight:900; letter-spacing:.06em;
+  color:var(--idfl-text); margin:0 0 var(--idfl-space-3);
+}
+.idfl-footer ul{ list-style:none; margin:0; padding:0; }
+.idfl-footer li a{
+  display:inline-flex; align-items:center;
+  min-height:var(--idfl-target-comfort);
+  font-size:13px; color:var(--idfl-text-soft); text-decoration:none;
+  transition:color var(--idfl-dur-hover) var(--idfl-ease-out);
+}
+.idfl-footer li a:hover{ color:var(--idfl-brand-600); text-decoration:underline; }
+.idfl-footer__legal{
+  margin-top:var(--idfl-space-6);
+  padding-top:var(--idfl-space-4);
+  border-top:1px solid var(--idfl-border-soft);
+  font-size:12px;
+  color:var(--idfl-text-muted);
+  display:flex; flex-wrap:wrap; gap:var(--idfl-space-3) var(--idfl-space-5);
+  align-items:center;
+}
+@media (max-width:900px){
+  .idfl-footer__cols{ grid-template-columns:1fr 1fr; }
+}
+@media (max-width:620px){
+  .idfl-footer__cols{ grid-template-columns:1fr; gap:var(--idfl-space-5); }
+  .idfl-footer__inner{ padding:var(--idfl-space-6) var(--idfl-space-4) var(--idfl-space-5); }
+}
