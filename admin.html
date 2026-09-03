@@ -1204,9 +1204,12 @@ function dashRender(){
     +dcard(ddraft(sch),'下書きの催事','schedule','draft',true)
     +dcard(upcoming,'開催予定の催事','schedule','upcoming')
     +dcard(dirtyKeys.length,'未公開の変更があるセクション',null,null,true)
-    +(DASH_STAFF===false
-        ? '<button class="dcard zero" onclick="navGo(\'feedback\')"><div class="v">—</div><div class="l">フィードバック（要スタッフログイン）</div></button>'
-        : dcard(fbNew+fbProg,'新規・対応中のフィードバック','feedback',null,true))
+    // Only STAFF can read feedback, so anything short of a confirmed STAFF
+    // session shows the gate. Treating "not yet known" as zero would put a
+    // reassuring 0 on screen during the auth round-trip.
+    +(DASH_STAFF===true
+        ? dcard(fbNew+fbProg,'新規・対応中のフィードバック','feedback',null,true)
+        : '<button class="dcard zero" onclick="navGo(&quot;feedback&quot;)"><div class="v">—</div><div class="l">フィードバック（'+(DASH_STAFF===null?'確認中':'要スタッフログイン')+'）</div></button>')
     +'</div>'+dnote(dirtyKeys)+'</div>';
 
   h+='<div class="dsec"><h3>現在トップページに表示中</h3>'
