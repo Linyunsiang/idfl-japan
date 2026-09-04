@@ -718,6 +718,29 @@ h1,h2,h3,h4,h5,h6{ letter-spacing:-.005em; }
 
   function render() { renderCats(); renderGuide(); renderList(); }
 
+  /* Test entry point. tests/qa/qa.test.mjs boots this page in jsdom and
+     drives the real renderer against the real records, which is the only
+     way that suite can guarantee legacy images and unknown sections keep
+     working. Exposing render() keeps that guarantee available without
+     opening up the module's state. */
+  /* Also exposed for tests/qa: every published record must resolve to a
+     real section, and that is worth checking against the page's own
+     resolution rather than a copy of it. */
+  window.qaSectionOf = function (r) {
+    return (window.QA_SECTION_DEFS && QA_SECTION_DEFS.normalize)
+      ? QA_SECTION_DEFS.normalize(r && r.section) : (r && r.section);
+  };
+
+  window.qaRender = function () {
+    // Re-render from whatever the controls currently say. The input is read
+    // here rather than trusted from state so a value set programmatically -
+    // by a test, or restored by the browser - cannot disagree with what is
+    // displayed.
+    state.q = $('qaSearch').value || '';
+    $('qaClear').classList.toggle('is-on', !!state.q);
+    render();
+  };
+
   function reset() {
     state.cat = ''; state.step = ''; state.q = '';
     $('qaSearch').value = '';

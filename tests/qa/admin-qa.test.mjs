@@ -89,7 +89,10 @@ await t('it offers every category, labelled in Japanese', async () => {
   assert.equal(byKey.audit, '監査・認証編');
   assert.equal(byKey.tc, 'TC（取引証明書）編');
   assert.equal(byKey.chemical, 'ケミカル編');
-  assert.equal(byKey.other, 'その他編');
+  // Renamed to describe what the section actually holds (three of its four
+  // records are portal/account problems). The key is unchanged, which is
+  // what the assertions above pin.
+  assert.equal(byKey.other, 'ポータル・アカウント');
 });
 
 await t('an existing record opens with its own category selected', async () => {

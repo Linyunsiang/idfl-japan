@@ -29,8 +29,9 @@ for (const page of sync.PAGES) {
     const ei = html.indexOf(end);
     if (si === -1 || ei === -1) { fail(`${page}: ${region} markers missing`); continue; }
     if (html.indexOf(start, si + 1) !== -1) { fail(`${page}: duplicate ${region}:START`); continue; }
-    const actual = html.slice(si + start.length, ei).trim();
-    const expected = parts[region].trim();
+    // Compared LF-normalised: a CRLF checkout is not drift.
+    const actual = sync.lf(html.slice(si + start.length, ei)).trim();
+    const expected = sync.lf(parts[region]).trim();
     if (actual !== expected) {
       fail(`${page}: ${region} drifted from /partials (run node tools/sync-chrome.js)`);
     }
