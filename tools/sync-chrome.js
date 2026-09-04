@@ -65,8 +65,18 @@ function substitute(html, page) {
   return html.replace(/\{\{HOME\}\}/g, home);
 }
 
+/* Line endings are not content.
+
+   core.autocrlf rewrites the checkout to CRLF on Windows, while the HEAD and
+   SCRIPT regions come from template literals that use LF. Comparing raw
+   strings reported all eleven pages as drifted on a clean tree. Comparison is
+   LF-normalised, and a rewrite keeps whatever the file already uses so no
+   spurious diff appears. */
+const lf = (s) => s.replace(/\r\n/g, '\n');
+const eolOf = (s) => (s.indexOf('\r\n') !== -1 ? '\r\n' : '\n');
+
 function readPartial(name) {
-  return fs.readFileSync(P('partials', name), 'utf8').replace(/\s+$/, '');
+  return lf(fs.readFileSync(P('partials', name), 'utf8')).replace(/\s+$/, '');
 }
 
 function build(page) {
@@ -99,8 +109,9 @@ function writeRegion(html, region, body, page) {
 
   const before = html.slice(0, si + start.length);
   const after = html.slice(ei);
-  const next = `${before}\n${body}\n${after}`;
-  return { html: next, changed: next !== html };
+  const eol = eolOf(html);
+  const next = before + eol + body.split('\n').join(eol) + eol + after;
+  return { html: next, changed: lf(next) !== lf(html) };
 }
 
 function run(checkOnly) {
@@ -149,4 +160,4 @@ function run(checkOnly) {
 if (require.main === module) {
   process.exit(run(process.argv.includes('--check')));
 }
-module.exports = { PAGES, REGIONS, build, markers };
+module.exports = { PAGES, REGIONS, build, markers, lf };

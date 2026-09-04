@@ -102,19 +102,24 @@ await t('the console opens with the admin password', async () => {
   assert.equal($('#app').style.display, 'block');
 });
 
-await t('every pre-existing tab is still registered', async () => {
-  const labels = [...d.querySelectorAll('.tab')].map(t => t.textContent.replace(/\s+/g, ' ').trim());
+await t('every pre-existing section is still registered', async () => {
+  // The console moved from a flat pill strip to a grouped sidebar, so the
+  // selector changed from .tab to .navi. The guarantee is unchanged: no
+  // section may be lost in the rearrangement.
+  const labels = [...d.querySelectorAll('.navi')].map(t => t.textContent.replace(/\s+/g, ' ').trim());
   for(const need of ['お知らせ', '展示会・セミナー', '資料ダウンロード', '認証工場・企業', 'よくある質問', 'ファイル管理', 'ダウンロード資料管理']){
-    assert.ok(labels.some(l => l.indexOf(need) >= 0), 'lost tab: ' + need + ' (have: ' + labels.join(' | ') + ')');
+    assert.ok(labels.some(l => l.indexOf(need) >= 0), 'lost section: ' + need + ' (have: ' + labels.join(' | ') + ')');
   }
 });
 
-await t('the two new tabs are added, not substituted', async () => {
-  const keys = [...d.querySelectorAll('.tab')].map(t => t.dataset.k);
-  assert.ok(keys.indexOf('media') >= 0, 'メディアライブラリ tab missing');
-  assert.ok(keys.indexOf('feedback') >= 0, 'フィードバック tab missing');
-  assert.ok(keys.indexOf('protected') >= 0, 'the existing protected tab must remain');
-  assert.equal(keys.length, 9);
+await t('the new sections are added, not substituted', async () => {
+  const keys = [...d.querySelectorAll('.navi')].map(t => t.dataset.k);
+  assert.ok(keys.indexOf('media') >= 0, 'お客様専用コンテンツ missing');
+  assert.ok(keys.indexOf('feedback') >= 0, 'フィードバック missing');
+  assert.ok(keys.indexOf('protected') >= 0, 'the existing protected section must remain');
+  // dash sits on top of the original nine; nothing was removed to make room.
+  assert.ok(keys.indexOf('dash') >= 0, 'the dashboard is the default view and must be reachable');
+  assert.equal(keys.length, 10);
 });
 
 await t('an existing tab still loads its data', async () => {

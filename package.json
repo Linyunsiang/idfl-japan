@@ -4,7 +4,11 @@
   "private": true,
   "description": "IDFL JAPAN static site + Netlify functions",
   "scripts": {
-    "test": "node tests/media-feedback/run-all.mjs"
+    "test": "node tools/check-chrome.mjs && node tests/qa/run-all.mjs && node tests/media-feedback/run-all.mjs",
+    "test:chrome": "node tools/check-chrome.mjs",
+    "test:qa": "node tests/qa/run-all.mjs",
+    "test:media": "node tests/media-feedback/run-all.mjs",
+    "sync:chrome": "node tools/sync-chrome.js"
   },
   "dependencies": {
     "@netlify/blobs": "^8.1.0"
