@@ -62,13 +62,13 @@
     "title": "厚生労働省-職場における熱中症予防対策の周知事業",
     "category": "参考資料",
     "ftype": "LINK",
-    "url": "https://www.meti.go.jp/shingikai/energy_environment/carbon_footprint/pdf/20230526_3.pdf",
+    "url": "https://neccyusho.mhlw.go.jp/",
     "size": "",
     "date": "",
     "isNew": false,
     "expiry": "",
     "createdAt": "2026-08-02T01:11:33.284Z",
-    "updatedAt": "2026-08-05T08:15:19.201Z",
+    "updatedAt": "2026-09-07T04:58:10.721Z",
     "updatedBy": "admin"
   },
   {
@@ -491,20 +491,5 @@
     "updatedAt": "2026-09-07T04:31:39.327Z",
     "updatedBy": "admin",
     "published": false
-  },
-  {
-    "id": "ref-test-crawler-e2e-20260907",
-    "title": "【TEST】週次クローラー書き込みテスト（削除予定）",
-    "category": "参考資料",
-    "ftype": "LINK",
-    "url": "https://example.com/idfl-crawler-e2e-test",
-    "date": "2026-09",
-    "published": false,
-    "size": "",
-    "expiry": "",
-    "isNew": true,
-    "createdAt": "2026-09-07T04:55:00.384Z",
-    "updatedAt": "2026-09-07T04:55:00.384Z",
-    "updatedBy": "weekly-crawl"
   }
 ]
