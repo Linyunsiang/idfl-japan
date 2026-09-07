@@ -62,13 +62,13 @@
     "title": "厚生労働省-職場における熱中症予防対策の周知事業",
     "category": "参考資料",
     "ftype": "LINK",
-    "url": "https://neccyusho.mhlw.go.jp/",
+    "url": "https://www.meti.go.jp/shingikai/energy_environment/carbon_footprint/pdf/20230526_3.pdf",
     "size": "",
     "date": "",
     "isNew": false,
     "expiry": "",
     "createdAt": "2026-08-02T01:11:33.284Z",
-    "updatedAt": "2026-09-07T02:15:36.386Z",
+    "updatedAt": "2026-08-05T08:15:19.201Z",
     "updatedBy": "admin"
   },
   {
@@ -188,8 +188,8 @@
     "isNew": true,
     "expiry": "",
     "createdAt": "2026-09-07T01:45:44.843Z",
-    "updatedAt": "2026-09-07T01:45:44.843Z",
-    "updatedBy": "weekly-crawl",
+    "updatedAt": "2026-09-07T04:29:10.249Z",
+    "updatedBy": "admin",
     "published": false
   },
   {
@@ -293,8 +293,8 @@
     "isNew": true,
     "expiry": "",
     "createdAt": "2026-09-07T01:45:44.843Z",
-    "updatedAt": "2026-09-07T01:45:44.843Z",
-    "updatedBy": "weekly-crawl",
+    "updatedAt": "2026-09-07T02:12:46.704Z",
+    "updatedBy": "admin",
     "published": false
   },
   {
@@ -418,51 +418,6 @@
     "published": false
   },
   {
-    "id": "ref-cert-grts-v1-0-202606",
-    "title": "GOTS運営団体-GRTS（Global Responsible Textile Standard）v1.0",
-    "category": "参考資料",
-    "ftype": "PDF",
-    "url": "https://global-standards.org/images/downloads/standard-manual/global_responsible_textile_standard_v1.0_June_2026_R.pdf",
-    "size": "",
-    "date": "2026-06",
-    "isNew": true,
-    "expiry": "",
-    "createdAt": "2026-09-07T01:45:44.843Z",
-    "updatedAt": "2026-09-07T01:45:44.843Z",
-    "updatedBy": "weekly-crawl",
-    "published": false
-  },
-  {
-    "id": "ref-cert-gots-manual-v8-1-202607",
-    "title": "GOTS実施マニュアル v8.1（Manual for the Implementation of GOTS）",
-    "category": "GOTS",
-    "ftype": "PDF",
-    "url": "https://global-standards.org/images/downloads/standard-manual/global_organic_textile_standard_manual_v8.1_2026.pdf",
-    "size": "",
-    "date": "2026-07",
-    "isNew": true,
-    "expiry": "",
-    "createdAt": "2026-09-07T01:45:44.843Z",
-    "updatedAt": "2026-09-07T01:45:44.843Z",
-    "updatedBy": "weekly-crawl",
-    "published": false
-  },
-  {
-    "id": "ref-cert-te-mm-pol-201-v1-20260806",
-    "title": "Textile Exchange-Materials Matter 認証機関向け基準 (TE-MM-POL-201 V1.0)",
-    "category": "MMS",
-    "ftype": "PDF",
-    "url": "https://textileexchange.org/app/uploads/2026/08/TE-MM-POL-201-V1.0-Materials-Matter-Criteria-for-Certification-Bodies.pdf",
-    "size": "",
-    "date": "2026-08",
-    "isNew": true,
-    "expiry": "",
-    "createdAt": "2026-09-07T01:45:44.843Z",
-    "updatedAt": "2026-09-07T01:45:44.843Z",
-    "updatedBy": "weekly-crawl",
-    "published": false
-  },
-  {
     "id": "ref-cert-te-mm-pol-202-v1-20260806",
     "title": "Textile Exchange-Materials Matter リスク・サンプリング基準 (TE-MM-POL-202 V1.0)",
     "category": "MMS",
@@ -473,8 +428,8 @@
     "isNew": true,
     "expiry": "",
     "createdAt": "2026-09-07T01:45:44.843Z",
-    "updatedAt": "2026-09-07T01:45:44.843Z",
-    "updatedBy": "weekly-crawl",
+    "updatedAt": "2026-09-07T04:31:05.811Z",
+    "updatedBy": "admin",
     "published": false
   },
   {
@@ -488,8 +443,8 @@
     "isNew": true,
     "expiry": "",
     "createdAt": "2026-09-07T01:45:44.843Z",
-    "updatedAt": "2026-09-07T01:45:44.843Z",
-    "updatedBy": "weekly-crawl",
+    "updatedAt": "2026-09-07T04:31:22.414Z",
+    "updatedBy": "admin",
     "published": false
   },
   {
@@ -503,8 +458,8 @@
     "isNew": true,
     "expiry": "",
     "createdAt": "2026-09-07T01:45:44.843Z",
-    "updatedAt": "2026-09-07T01:45:44.843Z",
-    "updatedBy": "weekly-crawl",
+    "updatedAt": "2026-09-07T04:31:29.886Z",
+    "updatedBy": "admin",
     "published": false
   },
   {
@@ -533,8 +488,8 @@
     "isNew": true,
     "expiry": "",
     "createdAt": "2026-09-07T01:45:44.843Z",
-    "updatedAt": "2026-09-07T01:45:44.843Z",
-    "updatedBy": "weekly-crawl",
+    "updatedAt": "2026-09-07T04:31:39.327Z",
+    "updatedBy": "admin",
     "published": false
   }
 ]
