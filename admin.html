@@ -29,6 +29,7 @@
   .grow{flex:1}
   button{font-family:inherit}
   .btn{border:none;border-radius:9px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer}
+  a.btn{display:inline-block;text-decoration:none;line-height:normal}
   .btn-p{background:var(--accent);color:#fff}
   .btn-p:hover{background:var(--accent2)}
   .btn-o{background:#fff;color:var(--accent);border:1.5px solid var(--accent)}
@@ -183,6 +184,30 @@
   .st-done{background:#eef1f5;color:#6b7280}
   .st-type{background:#f1f5f9;color:#475569}
   .chips{margin-bottom:2px}
+  /* ===== bulk publish (資料ダウンロード) =====
+     The row checkbox is a *selection* for "publish these now"; it is not the
+     record's published flag (that lives in the edit form). */
+  .selbox{width:18px;height:18px;flex:none;accent-color:var(--accent);cursor:pointer;margin:0}
+  .selbox-gap{width:18px;flex:none}
+  .row.is-sel{background:#f3f8ff}
+  .bulkbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 12px;margin:0 0 10px;border:1.5px solid #cfe0f5;background:#f3f8ff;border-radius:11px}
+  .bulkbar label{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:700;cursor:pointer;margin:0}
+  .bulkbar .cnt{font-size:13px;color:#0f2c4d;font-weight:700}
+  .bulkbar .btn-p:disabled{opacity:.45;cursor:not-allowed}
+  .row .btn-mini-pub{padding:5px 9px;font-size:11.5px}
+  .spin{display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,.45);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;vertical-align:-2px;margin-right:6px}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .bov-list{margin:10px 0 14px;padding:10px 12px;background:var(--bg);border-radius:9px;max-height:260px;overflow:auto;font-size:13px;line-height:1.7}
+  .bov-list div{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .bov-note{font-size:12.5px;color:#374151;line-height:1.7}
+  .bov-err{background:#fee2e2;color:#b91c1c;font-size:13px;font-weight:700;padding:10px 12px;border-radius:9px;margin:8px 0}
+  .bov-ok{background:#dcfce7;color:#166534;font-size:15px;font-weight:900;padding:12px 14px;border-radius:9px;margin:8px 0}
+  @media(max-width:900px){
+    .bulkbar{position:sticky;top:0;z-index:5}
+    .bulkbar .btn-p{width:100%;padding:12px}
+    .bulkbar .grow{display:none}
+    .row .btn-mini-pub{padding:8px 10px}
+  }
   /* ===== search + filter toolbar ===== */
   .tools{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-bottom:12px}
   .search{flex:1;min-width:180px;padding:8px 11px;border:1.5px solid var(--line);border-radius:9px;font-family:inherit;font-size:13px}
@@ -420,6 +445,9 @@
 </div></div>
 
 <div class="ov" id="fov"><div class="modal"><h3 id="fmTitle"></h3><div id="fmBody"></div><div class="acts" id="fmActs"></div></div></div>
+<!-- 資料ダウンロード 一括公開の確認／進行／結果。bulkOpen() が中身を描く。
+     ここで「公開」を押すまで何も送信しない。 -->
+<div class="ov" id="bov"><div class="modal" style="max-width:560px"><h3 id="bovTitle"></h3><div id="bovBody"></div><div class="acts" id="bovActs"></div></div></div>
 
 <div class="ov" id="pov"><div class="modal"><h3 id="povTitle"></h3><div id="povBody"></div><div class="acts" id="povActs"></div></div></div>
 
@@ -770,7 +798,13 @@ function renderTools(){
       +'<button class="fpill'+((LSORT.schedule==='file')?' on':'')+'" onclick="setSort(&quot;file&quot;)">保存順（並べ替え可）</button>'
     : '';
   tb.innerHTML='<input class="search" type="search" placeholder="'+esc(SEARCH_PH[CUR]||'検索')+'" value="'+esc(LSEARCH[CUR]||'')+'" oninput="setSearch(this.value)">'
-    +(fl?fl.map(function(x){return '<button class="fpill'+(cur===x[0]?' on':'')+'" onclick="setFilter(\''+x[0]+'\')">'+esc(x[1])+'</button>';}).join(''):'')+sortUI;
+    +(fl?fl.map(function(x){
+        let lab=x[1];
+        // 資料ダウンロード: show how many drafts are waiting, so Monday's review
+        // starts from the pill itself (「下書き 24」).
+        if(CUR==='downloads'&&x[0]==='draft'){ const n=ddraft(DATA[CUR]); if(n) lab+=' '+n; }
+        return '<button class="fpill'+(cur===x[0]?' on':'')+'" onclick="setFilter(\''+x[0]+'\')">'+esc(lab)+'</button>';
+      }).join(''):'')+sortUI;
 }
 
 function renderList(){
@@ -802,9 +836,16 @@ function renderList(){
   const list=document.getElementById('list');
   if(!arr.length){list.innerHTML='<div style="padding:16px;color:#6b7280">項目がありません。「＋ 新規追加」から追加できます。</div>';return;}
   if(!rows.length){list.innerHTML='<div style="padding:16px;color:#6b7280">条件に一致する項目がありません。</div>';return;}
-  list.innerHTML=rows.map(function(r){
+  const bulk=(CUR==='downloads');
+  if(bulk) bulkPrune();
+  const draftRows=bulk?rows.filter(function(r){return r.e.published===false;}):[];
+  list.innerHTML=(bulk&&draftRows.length?bulkBarHtml(draftRows):'')+rows.map(function(r){
     const e=r.e, i=r.i, chips=rowChips(CUR,e,ctx);
-    return '<div class="row">'
+    const isDraft=bulk&&e.published===false, sel=isDraft&&bulkIsSel(e);
+    return '<div class="row'+(sel?' is-sel':'')+'">'
+      +(bulk?(isDraft
+          ?'<input type="checkbox" class="selbox" aria-label="選択" '+(sel?'checked ':'')+'onchange="bulkToggle('+i+',this.checked)">'
+          :'<span class="selbox-gap"></span>'):'')
       +'<div style="display:flex;flex-direction:column;gap:2px">'
       +'<button class="mini" onclick="move('+i+',-1)" '+((!plain||i===0)?'disabled':'')+'>▲</button>'
       +'<button class="mini" onclick="move('+i+',1)" '+((!plain||i===arr.length-1)?'disabled':'')+'>▼</button>'
@@ -812,6 +853,7 @@ function renderList(){
       +'<div class="main">'+(chips?'<div class="chips">'+chips+'</div>':'')
       +'<div class="t">'+esc(s.title(e))+'</div><div class="s">'+esc(s.sub(e))+'</div></div>'
       +(CUR==='news'?'<button class="btn btn-g" onclick="previewNews('+i+')">プレビュー</button>':'')
+      +(isDraft?'<button class="btn btn-p btn-mini-pub" onclick="bulkOpen(['+i+'])">公開</button>':'')
       +'<button class="btn btn-g" onclick="openEdit('+i+')">編集</button>'
       +'<button class="btn btn-g" onclick="dupItem('+i+')">複製</button>'
       +'<button class="btn btn-d" onclick="delItem('+i+')">削除</button>'
@@ -1252,6 +1294,129 @@ async function publishCur(){
     else{toast('⚠️ 公開失敗: '+(j.error||('HTTP '+r.status)));}
   }catch(e){toast('⚠️ 公開失敗: '+e.message);}
   btn.disabled=false;
+}
+
+/* ============================================================
+   資料ダウンロード: 下書きの一括公開
+   ------------------------------------------------------------
+   Monday's workflow. The crawler lands candidates as published:false; the
+   operator ticks the ones that may go live and presses 「選択した資料を公開」.
+   Nothing is sent until the confirmation dialog's own 公開 button is pressed,
+   and then the whole working copy is saved through the existing publish
+   Function in ONE request (never one request per item).
+
+   Rules this code must keep:
+     - only the selected items flip to published:true
+     - every other draft stays published:false
+     - already-public records and every other field are left untouched
+     - on failure DATA is not modified and no success message is shown
+     - a request in flight blocks a second one (double click)
+   The row checkbox is a selection; the record's own 公開する checkbox in the
+   edit form is a different thing and is left alone. */
+const BULK={sel:{},busy:false,last:null};
+function bulkKey(e){ return String(e&&e.id||''); }
+function bulkIsSel(e){ const k=bulkKey(e); return !!(k&&BULK.sel[k]); }
+function bulkSelected(){
+  const arr=DATA.downloads||[];
+  return arr.map(function(e,i){return {e:e,i:i};}).filter(function(r){return r.e.published===false&&bulkIsSel(r.e);});
+}
+/* Drop selections that no longer point at a draft (published meanwhile, deleted, edited). */
+function bulkPrune(){
+  const live={}; (DATA.downloads||[]).forEach(function(e){ if(e.published===false&&e.id) live[String(e.id)]=1; });
+  Object.keys(BULK.sel).forEach(function(k){ if(!live[k]) delete BULK.sel[k]; });
+}
+function bulkToggle(i,on){
+  const e=(DATA.downloads||[])[i]; if(!e||e.published!==false) return;
+  const k=bulkKey(e); if(!k){ toast('IDのない項目は選択できません'); return; }
+  if(on) BULK.sel[k]=1; else delete BULK.sel[k];
+  renderList();
+}
+function bulkSelectAll(on,idxs){
+  const arr=DATA.downloads||[];
+  idxs.forEach(function(i){ const e=arr[i]; if(e&&e.published===false&&e.id){ if(on) BULK.sel[String(e.id)]=1; else delete BULK.sel[String(e.id)]; } });
+  renderList();
+}
+function bulkBarHtml(draftRows){
+  const idxs=draftRows.map(function(r){return r.i;});
+  const n=draftRows.filter(function(r){return bulkIsSel(r.e);}).length;
+  const all=n>0&&n===draftRows.length;
+  return '<div class="bulkbar" id="bulkbar">'
+    +'<label><input type="checkbox" class="selbox" id="bulkAll" '+(all?'checked ':'')+'onchange="bulkSelectAll(this.checked,['+idxs.join(',')+'])"> すべて選択</label>'
+    +'<span class="cnt" id="bulkCnt">選択中：'+n+'件</span>'
+    +'<span class="grow"></span>'
+    +'<button class="btn btn-p" id="bulkPubBtn" onclick="bulkOpen()" '+(n?'':'disabled')+'>選択した資料を公開</button>'
+    +'</div>';
+}
+/* Open the confirmation for the current selection, or for an explicit list of
+   array indexes (the per-row 公開 button). Sends nothing. */
+function bulkOpen(idxs){
+  if(BULK.busy) return;
+  const arr=DATA.downloads||[];
+  let items;
+  if(Array.isArray(idxs)) items=idxs.map(function(i){return {e:arr[i],i:i};}).filter(function(r){return r.e&&r.e.published===false;});
+  else items=bulkSelected();
+  if(!items.length){ toast('公開する資料が選択されていません'); return; }
+  BULK.last=items.map(function(r){return bulkKey(r.e);});
+  const ov=document.getElementById('bov');
+  document.getElementById('bovTitle').textContent='選択した資料を公開しますか？';
+  document.getElementById('bovBody').innerHTML=
+     '<p class="bov-note">以下の <b>'+items.length+' 件</b> を IDFL JAPAN の資料ダウンロードページに公開します。</p>'
+    +'<div class="bov-list">'+items.map(function(r){return '<div>・'+esc(r.e.title||'(無題)')+'</div>';}).join('')+'</div>'
+    +'<p class="bov-note">公開すると、お客様から閲覧できるようになります。選択していない下書きは非公開のままです。</p>';
+  document.getElementById('bovActs').innerHTML=
+     '<button class="btn btn-g" onclick="bulkClose()">キャンセル</button>'
+    +'<button class="btn btn-p" id="bovGo" onclick="bulkPublish()">'+items.length+'件を公開する</button>';
+  ov.classList.add('open');
+}
+function bulkClose(){ if(BULK.busy) return; document.getElementById('bov').classList.remove('open'); }
+/* The publish itself. Builds a new working copy with ONLY the confirmed ids
+   flipped, sends it once, and swaps it in only after the server says ok. */
+async function bulkPublish(){
+  if(BULK.busy) return;                       // double click / double submit
+  const ids=(BULK.last||[]).slice(); if(!ids.length) return;
+  const want={}; ids.forEach(function(k){want[k]=1;});
+  const arr=DATA.downloads||[];
+  const next=arr.map(function(e){
+    return (e&&e.published===false&&e.id&&want[String(e.id)]) ? Object.assign({},e,{published:true}) : e;
+  });
+  const n=next.filter(function(e,i){return e!==arr[i];}).length;
+  if(!n){ toast('公開する資料がありません'); return; }
+  BULK.busy=true;
+  const go=document.getElementById('bovGo'); if(go){ go.disabled=true; go.innerHTML='<span class="spin"></span>公開しています…'; }
+  const cancel=document.querySelector('#bovActs .btn-g'); if(cancel) cancel.disabled=true;
+  const pb=document.getElementById('bulkPubBtn'); if(pb) pb.disabled=true;
+  let ok=false, err='';
+  try{
+    const r=await fetch(PUBLISH_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'downloads',password:PW,data:next})});
+    const j=await r.json().catch(function(){return {};});
+    if(r.ok&&j.ok) ok=true; else err=(j&&j.error)||('HTTP '+r.status);
+  }catch(e){ err=e&&e.message||String(e); }
+  BULK.busy=false;
+  if(ok){
+    DATA.downloads=next; DIRTY.downloads=false;
+    try{localStorage.removeItem('idflAdminDraft_downloads');}catch(e){}
+    ids.forEach(function(k){delete BULK.sel[k];});
+    updateDirty(); if(CUR==='downloads') render();
+    const _db=document.getElementById('dashBody'); if(_db) _db.dataset.ready='';
+    document.getElementById('bovTitle').textContent='公開しました';
+    document.getElementById('bovBody').innerHTML=
+       '<div class="bov-ok">✅ '+n+'件を公開しました</div>'
+      +'<p class="bov-note">Webサイトへ反映中です。通常 1〜2 分で公開ページに反映されます。</p>';
+    document.getElementById('bovActs').innerHTML=
+       '<a class="btn btn-g" href="/download.html" target="_blank" rel="noopener">公開ページを確認</a>'
+      +'<button class="btn btn-p" onclick="bulkClose()">閉じる</button>';
+  }else{
+    // DATA untouched, selection kept, so 再試行 sends exactly the same set.
+    document.getElementById('bovTitle').textContent='公開に失敗しました';
+    document.getElementById('bovBody').innerHTML=
+       '<div class="bov-err">⚠️ 公開に失敗しました。変更は公開されていません。</div>'
+      +'<p class="bov-note">'+esc(err)+'</p>'
+      +'<p class="bov-note">対象 '+n+' 件は下書きのままです。もう一度お試しください。</p>';
+    document.getElementById('bovActs').innerHTML=
+       '<button class="btn btn-g" onclick="bulkClose()">閉じる</button>'
+      +'<button class="btn btn-p" id="bovGo" onclick="bulkPublish()">再試行（'+n+'件を公開する）</button>';
+    if(pb) pb.disabled=false;
+  }
 }
 /* ================= ファイル管理モジュール ================= */
 const FM_URL='/.netlify/functions/file-manager';
