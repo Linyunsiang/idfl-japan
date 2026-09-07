@@ -496,6 +496,7 @@ const SCHEMAS={
       {k:'date',t:'text',label:'日付',hint:'YYYY-MM'},
       {k:'isNew',t:'checkbox',label:'NEW 表示'},
       {k:'expiry',t:'text',label:'公開期限(任意)',hint:'YYYY-MM-DD'},
+      {k:'published',t:'checkbox',label:'公開する',def:true,hint:'チェックを外すと下書き（非公開）になります。週次クロールが追加した候補は下書きで届くので、内容を確認してからチェックを入れてください'},
     ],
     title:e=>e.title||'(無題)',sub:e=>[e.category,e.ftype,e.date].filter(Boolean).join(' · '),
     idp:'d',sort:null},
@@ -625,7 +626,8 @@ const HOME={
 /* ===================== search + filters ===================== */
 const FILTERS={
   news:[['all','すべて'],['pub','公開中'],['draft','下書き'],['ticker','最新情報バー'],['pinned','固定']],
-  schedule:[['all','すべて'],['upcoming','開催予定'],['past','終了'],['pub','公開中'],['draft','下書き'],['top','TOP掲載']]
+  schedule:[['all','すべて'],['upcoming','開催予定'],['past','終了'],['pub','公開中'],['draft','下書き'],['top','TOP掲載']],
+  downloads:[['all','すべて'],['pub','公開中'],['draft','下書き']]
 };
 const SEARCH_KEYS={
   news:['title','body','cat','tickerText'],
