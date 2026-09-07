@@ -3,7 +3,7 @@ import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
-const SUITES = ['security.test.mjs', 'qa.test.mjs', 'admin-qa.test.mjs'];
+const SUITES = ['security.test.mjs', 'qa.test.mjs', 'admin-qa.test.mjs', 'admin-bulk-publish.test.mjs'];
 let failed = 0;
 for(const s of SUITES){
   console.log('=== ' + s + ' ' + '='.repeat(Math.max(0, 56 - s.length)));
