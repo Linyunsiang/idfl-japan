@@ -190,7 +190,7 @@
     "createdAt": "2026-09-07T01:45:44.843Z",
     "updatedAt": "2026-09-07T04:29:10.249Z",
     "updatedBy": "admin",
-    "published": false
+    "published": true
   },
   {
     "id": "ref-jp-caa-whistleblower-handbook-20260630",
@@ -205,7 +205,7 @@
     "createdAt": "2026-09-07T01:45:44.843Z",
     "updatedAt": "2026-09-07T01:45:44.843Z",
     "updatedBy": "weekly-crawl",
-    "published": false
+    "published": true
   },
   {
     "id": "ref-jp-jetro-ppwr-qa-20260812",
@@ -220,7 +220,7 @@
     "createdAt": "2026-09-07T01:45:44.843Z",
     "updatedAt": "2026-09-07T01:45:44.843Z",
     "updatedBy": "weekly-crawl",
-    "published": false
+    "published": true
   },
   {
     "id": "ref-jp-jetro-eu-hr-env-policy-20260612",
@@ -235,7 +235,7 @@
     "createdAt": "2026-09-07T01:45:44.843Z",
     "updatedAt": "2026-09-07T01:45:44.843Z",
     "updatedBy": "weekly-crawl",
-    "published": false
+    "published": true
   },
   {
     "id": "ref-jp-mhlw-sole-proprietor-accident-report-20260624",
@@ -250,7 +250,7 @@
     "createdAt": "2026-09-07T01:45:44.843Z",
     "updatedAt": "2026-09-07T01:45:44.843Z",
     "updatedBy": "weekly-crawl",
-    "published": false
+    "published": true
   },
   {
     "id": "ref-jp-meti-attendance-digital-ssw-20260814",
@@ -265,7 +265,7 @@
     "createdAt": "2026-09-07T01:45:44.843Z",
     "updatedAt": "2026-09-07T01:45:44.843Z",
     "updatedBy": "weekly-crawl",
-    "published": false
+    "published": true
   },
   {
     "id": "ref-jp-env-sustainable-fashion-partner-20260806",
@@ -280,7 +280,7 @@
     "createdAt": "2026-09-07T01:45:44.843Z",
     "updatedAt": "2026-09-07T01:45:44.843Z",
     "updatedBy": "weekly-crawl",
-    "published": false
+    "published": true
   },
   {
     "id": "ref-jp-caa-household-goods-labeling-r7-20260626",
@@ -295,7 +295,7 @@
     "createdAt": "2026-09-07T01:45:44.843Z",
     "updatedAt": "2026-09-07T02:12:46.704Z",
     "updatedBy": "admin",
-    "published": false
+    "published": true
   },
   {
     "id": "ref-eu-eudr-product-scope-delegated-20260713",
@@ -310,7 +310,7 @@
     "createdAt": "2026-09-07T01:45:44.843Z",
     "updatedAt": "2026-09-07T01:45:44.843Z",
     "updatedBy": "weekly-crawl",
-    "published": false
+    "published": true
   },
   {
     "id": "ref-eu-eudr-information-system-implementing-20260713",
@@ -325,7 +325,7 @@
     "createdAt": "2026-09-07T01:45:44.843Z",
     "updatedAt": "2026-09-07T01:45:44.843Z",
     "updatedBy": "weekly-crawl",
-    "published": false
+    "published": true
   },
   {
     "id": "ref-eu-dpp-registry-regulation-2026-1778",
@@ -340,7 +340,7 @@
     "createdAt": "2026-09-07T01:45:44.843Z",
     "updatedAt": "2026-09-07T01:45:44.843Z",
     "updatedBy": "weekly-crawl",
-    "published": false
+    "published": true
   },
   {
     "id": "ref-eu-ppwr-application-start-20260811",
@@ -355,7 +355,7 @@
     "createdAt": "2026-09-07T01:45:44.843Z",
     "updatedAt": "2026-09-07T01:45:44.843Z",
     "updatedBy": "weekly-crawl",
-    "published": false
+    "published": true
   },
   {
     "id": "ref-eu-dpp-registry-live-20260720",
@@ -370,7 +370,7 @@
     "createdAt": "2026-09-07T01:45:44.843Z",
     "updatedAt": "2026-09-07T01:45:44.843Z",
     "updatedBy": "weekly-crawl",
-    "published": false
+    "published": true
   },
   {
     "id": "ref-eu-ppwr-guidance-notice-20260610",
@@ -385,7 +385,7 @@
     "createdAt": "2026-09-07T01:45:44.843Z",
     "updatedAt": "2026-09-07T01:45:44.843Z",
     "updatedBy": "weekly-crawl",
-    "published": false
+    "published": true
   },
   {
     "id": "ref-eu-ecgt-old-stock-cpc-202606",
@@ -400,7 +400,7 @@
     "createdAt": "2026-09-07T01:45:44.843Z",
     "updatedAt": "2026-09-07T01:45:44.843Z",
     "updatedBy": "weekly-crawl",
-    "published": false
+    "published": true
   },
   {
     "id": "ref-intl-ilo-c193-platform-economy-20260612",
@@ -415,7 +415,7 @@
     "createdAt": "2026-09-07T01:45:44.843Z",
     "updatedAt": "2026-09-07T01:45:44.843Z",
     "updatedBy": "weekly-crawl",
-    "published": false
+    "published": true
   },
   {
     "id": "ref-cert-te-mm-pol-202-v1-20260806",
@@ -430,7 +430,7 @@
     "createdAt": "2026-09-07T01:45:44.843Z",
     "updatedAt": "2026-09-07T04:31:05.811Z",
     "updatedBy": "admin",
-    "published": false
+    "published": true
   },
   {
     "id": "ref-cert-fsc-ra-baltics-20260901",
@@ -445,7 +445,7 @@
     "createdAt": "2026-09-07T01:45:44.843Z",
     "updatedAt": "2026-09-07T04:31:22.414Z",
     "updatedBy": "admin",
-    "published": false
+    "published": true
   },
   {
     "id": "ref-cert-zdhc-supplier-to-zero-v2-20260731",
@@ -460,7 +460,7 @@
     "createdAt": "2026-09-07T01:45:44.843Z",
     "updatedAt": "2026-09-07T04:31:29.886Z",
     "updatedBy": "admin",
-    "published": false
+    "published": true
   },
   {
     "id": "ref-cert-te-mm-gui-603-v1-20260901",
@@ -475,7 +475,7 @@
     "createdAt": "2026-09-07T01:45:44.843Z",
     "updatedAt": "2026-09-07T01:45:44.843Z",
     "updatedBy": "weekly-crawl",
-    "published": false
+    "published": true
   },
   {
     "id": "ref-cert-iso-14068-202609",
@@ -490,6 +490,6 @@
     "createdAt": "2026-09-07T01:45:44.843Z",
     "updatedAt": "2026-09-07T04:31:39.327Z",
     "updatedBy": "admin",
-    "published": false
+    "published": true
   }
 ]
