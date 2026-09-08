@@ -231,10 +231,17 @@ G('ASSEMBLY');
 
 let MULTI_ID, MULTI_SID;
 await t('a multi-chunk upload assembles, verifies and publishes', async () => {
-  const buf = bigHtml(Math.floor(CHUNK_BYTES * 2.4));
+  // Sized in absolute bytes, not in chunks: the piece size is a transport
+  // detail that has changed once already, and a fixture pinned to it silently
+  // becomes a different test (at 3 MB pieces, "2.4 chunks" was a 7.2 MB
+  // document that normalisation could not bring under the serving ceiling).
+  // What this test is actually about is assembly, so: comfortably servable,
+  // and more than one piece at any supported piece size.
+  const buf = bigHtml(Math.floor(N.LIMITS.SAFE_PROTECTED_ASSET * 0.95));
   const r = await upload(STAFF, buf, 'assembled.html', { title: 'Assembled', status: 'published' });
   assert.ok(!r.failed, JSON.stringify(r));
-  assert.equal(r.totalChunks, 3);
+  assert.equal(r.totalChunks, Math.ceil(buf.length / CHUNK_BYTES));
+  assert.ok(r.totalChunks >= 2, 'the fixture must span more than one chunk');
   assert.equal(r.done.status, 200, JSON.stringify(r.done.body));
   assert.equal(r.done.body.sourceSha256, r.sha, 'the assembled bytes must hash to the source');
   MULTI_ID = r.done.body.id; MULTI_SID = r.sid;
@@ -402,7 +409,8 @@ if(!fs.existsSync(TC)){
       description: 'TC申請・Trackit操作・審査時の注意点をまとめたインタラクティブマニュアルです。',
     });
     assert.ok(!r.failed, JSON.stringify(r));
-    assert.ok(r.totalChunks >= 8, 'expected several chunks, got ' + r.totalChunks);
+    assert.equal(r.totalChunks, Math.ceil(src.length / CHUNK_BYTES));
+    assert.ok(r.totalChunks >= 2, 'expected several chunks, got ' + r.totalChunks);
     assert.equal(r.done.status, 200, JSON.stringify(r.done.body));
     const j = r.done.body;
     TCID = j.id;

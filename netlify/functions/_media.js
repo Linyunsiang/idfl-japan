@@ -21,12 +21,51 @@ const MIME = {
   avif:'image/avif', ico:'image/x-icon', bmp:'image/bmp', svg:'image/svg+xml',
   woff:'font/woff', woff2:'font/woff2', ttf:'font/ttf', otf:'font/otf', eot:'application/vnd.ms-fontobject',
   mp4:'video/mp4', webm:'video/webm', ogg:'audio/ogg', mp3:'audio/mpeg', wav:'audio/wav',
+  m4v:'video/x-m4v', mov:'video/quicktime', ogv:'video/ogg',
+  m4a:'audio/mp4', aac:'audio/aac', flac:'audio/flac',
+  // Subtitle sidecars travel with the video clips in a teaching package.
+  vtt:'text/vtt; charset=utf-8', srt:'text/plain; charset=utf-8',
   pdf:'application/pdf',
 };
+
+// Extensions served by byte range rather than in one response. A media element
+// always asks for ranges, so these need never cross the wire whole - which is
+// what lets a package carry a 6.5 MB video past a 6.29 MB response ceiling.
+const RANGE_EXT = ['mp4','m4v','mov','webm','ogv','ogg','mp3','m4a','wav','aac','flac'];
 
 function extOf(name){ return (String(name || '').split('.').pop() || '').toLowerCase(); }
 function mimeFor(path){ return MIME[extOf(path)] || 'application/octet-stream'; }
 function isHtmlPath(path){ const e = extOf(path); return e === 'html' || e === 'htm'; }
+/** True for assets the protected asset server delivers by byte range. */
+function isRangePath(path){ return RANGE_EXT.indexOf(extOf(path)) >= 0; }
+
+/**
+ * Run `fn` over `items` with at most `limit` in flight, preserving order.
+ *
+ * Why this exists: a synchronous Netlify function has ten seconds, and a
+ * 147-file package meant 147 sequential round trips to Blobs - comfortably
+ * over budget. Done a dozen at a time the same work lands in about a second.
+ * The first rejection wins; nothing is retried here on purpose, because the
+ * callers need to know exactly which keys they managed to write.
+ */
+async function mapPool(items, limit, fn){
+  const list = Array.from(items || []);
+  const out = new Array(list.length);
+  const width = Math.max(1, Math.min(limit | 0 || 1, list.length));
+  let next = 0;
+  const workers = [];
+  for(let w = 0; w < width; w++){
+    workers.push((async () => {
+      for(;;){
+        const i = next++;
+        if(i >= list.length) return;
+        out[i] = await fn(list[i], i);
+      }
+    })());
+  }
+  await Promise.all(workers);
+  return out;
+}
 
 /**
  * The media type shown in the library, derived from what is already stored so
@@ -95,7 +134,7 @@ function badOrigin(event){
 }
 
 module.exports = {
-  ID_RE, MIME, extOf, mimeFor, isHtmlPath, mediaTypeOf,
+  ID_RE, MIME, RANGE_EXT, extOf, mimeFor, isHtmlPath, isRangePath, mediaTypeOf, mapPool,
   signGrant, verifyGrant, GRANT_TTL,
   nowJst, human, newId, json, badOrigin, b64url,
 };

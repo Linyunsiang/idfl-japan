@@ -22,6 +22,13 @@ suite at a local copy of the unpacked deck:
 IDFL_TEST_PKG=/path/to/gots-scope4-presentation npm test
 ```
 
+Neither is the TC manual video package. `video-package.test.mjs` skips its
+end-to-end half if the archive is absent, and runs the limit checks either way:
+
+```bash
+IDFL_TC_PACKAGE=/path/to/IDFL_TC_Manual_web_v6.zip npm test
+```
+
 ## Why there is a harness at all
 
 `harness.mjs` runs the **real** functions against an in-memory stand-in for
@@ -46,6 +53,7 @@ preview writes to `idfl-feedback-dp-<n>` and never to `idfl-feedback`.
 | `anchor.test.mjs` | the injected annotation agent against the real deck DOM: selector scoping, text-quote fallback, and the rule that a pin must not drift onto another slide |
 | `admin.test.mjs` | the real `/admin` page and its inline JS: both new tabs, staff gating, reply/status/note/delete, and that no existing tab was lost |
 | `customer.test.mjs` | the real customer pages: library filters, sandbox attributes, submission, reload persistence, and what a second customer must not see |
+| `video-package.test.mjs` | the 48.6 MB / 147-file TC manual with its 14 MP4 clips: ingest, per-file ceilings by delivery type, the zip-bomb ratio guard, byte-range serving and seeking, and that auth, sandboxing and draft visibility did not move |
 
 ## Manual browser pass
 

@@ -25,12 +25,23 @@ const M = require('./_media');
 const S = require('./_stores');
 const P = require('./_package');
 
-// 1 MB of raw bytes is ~1.34 MB as base64 — a fifth of the request ceiling,
-// which leaves room for the JSON envelope and any proxy overhead.
-const CHUNK_BYTES = 1024 * 1024;
-// A ceiling that is generous for real presentations but still bounded.
-const MAX_TOTAL_BYTES = 60 * 1024 * 1024;
-const MAX_CHUNKS = Math.ceil(MAX_TOTAL_BYTES / CHUNK_BYTES) + 4;
+// The default piece size the browser is told to use. 3 MB of raw bytes is
+// ~4.0 MB as base64, comfortably inside the ~6.29 MB request ceiling once the
+// JSON envelope and any proxy overhead are allowed for. At 1 MB a 48 MB
+// package took 49 round trips; at 3 MB it takes 17.
+const CHUNK_BYTES = 3 * 1024 * 1024;
+// The browser may choose its own piece size - an older cached admin page still
+// uses 1 MB - so the session records what it declared instead of assuming.
+const MIN_CHUNK_BYTES = 256 * 1024;
+const MAX_CHUNK_BYTES = 4 * 1024 * 1024;
+// A ceiling that is generous for a real teaching package and still bounded.
+// The TC manual with its 14 clips is 48.6 MB; this leaves it room to grow by
+// half again without anyone touching this file.
+const MAX_TOTAL_BYTES = 96 * 1024 * 1024;
+const MAX_CHUNKS = Math.ceil(MAX_TOTAL_BYTES / MIN_CHUNK_BYTES) + 4;
+// Reading the pieces back is network-bound; a few at once turns a serial wait
+// into a parallel one, which is what keeps `complete` inside its ten seconds.
+const READ_CONCURRENCY = 6;
 const SESSION_TTL_MS = 60 * 60 * 1000;                     // one hour
 
 const SID_RE = /^[a-f0-9]{32}$/;
@@ -61,7 +72,9 @@ async function readSession(store, sid, event){
 async function sweep(store, sid){
   try{
     const l = await store.list({ prefix: 'up/' + sid + '/' });
-    for(const b of ((l && l.blobs) || [])){ try{ await store.delete(b.key); }catch(e){} }
+    await M.mapPool(((l && l.blobs) || []).map(b => b.key), READ_CONCURRENCY, async (k) => {
+      try{ await store.delete(k); }catch(e){}
+    });
   }catch(e){}
   try{ await store.delete(metaKey(sid)); }catch(e){}
 }
@@ -101,11 +114,18 @@ exports.handler = async (event) => {
 
     const totalBytes = parseInt(body.totalBytes, 10);
     const totalChunks = parseInt(body.totalChunks, 10);
+    // The client declares the piece size it is about to use. Accepting it (within
+    // bounds) instead of hard-coding one means a browser holding a cached copy of
+    // the previous admin page keeps working across a deploy that changes CHUNK_BYTES.
+    const chunkBytes = body.chunkBytes == null ? CHUNK_BYTES : parseInt(body.chunkBytes, 10);
+    if(!(chunkBytes >= MIN_CHUNK_BYTES && chunkBytes <= MAX_CHUNK_BYTES)){
+      return M.json(400, { error: '分割サイズが不正です' });
+    }
     if(!(totalBytes > 0) || totalBytes > MAX_TOTAL_BYTES){
       return M.json(413, { error: 'サイズが上限（' + M.human(MAX_TOTAL_BYTES) + '）を超えています' });
     }
     if(!(totalChunks > 0) || totalChunks > MAX_CHUNKS) return M.json(400, { error: '分割数が不正です' });
-    if(totalChunks !== Math.ceil(totalBytes / CHUNK_BYTES)) return M.json(400, { error: '分割数とサイズが一致しません' });
+    if(totalChunks !== Math.ceil(totalBytes / chunkBytes)) return M.json(400, { error: '分割数とサイズが一致しません' });
     if(body.sha256 != null && !/^[a-f0-9]{64}$/.test(String(body.sha256))) return M.json(400, { error: 'ハッシュの形式が不正です' });
 
     const targetRole = body.role === 'staff' ? 'staff' : (body.role === 'customer' ? 'customer' : null);
@@ -115,7 +135,7 @@ exports.handler = async (event) => {
 
     const sid = crypto.randomBytes(16).toString('hex');
     const session = {
-      sid, name, ext, totalBytes, totalChunks,
+      sid, name, ext, totalBytes, totalChunks, chunkBytes,
       sha256: body.sha256 ? String(body.sha256) : '',
       owner: ownerTag(event),
       startedAt: Date.now(),
@@ -131,7 +151,7 @@ exports.handler = async (event) => {
       },
     };
     try{ await store.setJSON(metaKey(sid), session); }catch(e){ return M.json(502, { error: 'アップロードの開始に失敗しました' }); }
-    return M.json(200, { ok: true, sid, chunkBytes: CHUNK_BYTES, totalChunks });
+    return M.json(200, { ok: true, sid, chunkBytes, totalChunks });
   }
 
   // ------------------------------------------------------------------ chunk
@@ -149,10 +169,12 @@ exports.handler = async (event) => {
     let buf; try{ buf = Buffer.from(body.dataBase64, 'base64'); }catch(e){ return M.json(400, { error: '復号に失敗しました' }); }
     if(!buf.length) return M.json(400, { error: '空のチャンクです' });
 
-    // Every chunk is CHUNK_BYTES except the last, which is the remainder.
+    // Every chunk is the session's declared size except the last, which is the
+    // remainder. Sessions opened before this field existed used 1 MB.
+    const size = s.chunkBytes || 1024 * 1024;
     const expected = (index === s.totalChunks - 1)
-      ? (s.totalBytes - CHUNK_BYTES * (s.totalChunks - 1))
-      : CHUNK_BYTES;
+      ? (s.totalBytes - size * (s.totalChunks - 1))
+      : size;
     if(buf.length !== expected) return M.json(400, { error: 'チャンクのサイズが想定と一致しません（' + buf.length + ' / ' + expected + '）' });
 
     // A retry of the same chunk is fine. A *different* body for an index we
@@ -182,12 +204,13 @@ exports.handler = async (event) => {
 
     // Read the chunks back by key rather than trusting the session's own tally:
     // a listing can lag, but a keyed read is consistent.
-    const parts = [];
-    for(let i = 0; i < s.totalChunks; i++){
+    const idx = Array.from({ length: s.totalChunks }, (_, i) => i);
+    const parts = await M.mapPool(idx, READ_CONCURRENCY, async (i) => {
       let d; try{ d = await store.get(chunkKey(sid, i), { type: 'arrayBuffer' }); }catch(e){ d = null; }
-      if(!d) return M.json(409, { error: 'チャンク ' + (i + 1) + '/' + s.totalChunks + ' が見つかりません。再送してください。' });
-      parts.push(Buffer.from(d));
-    }
+      return d ? Buffer.from(d) : null;
+    });
+    const missing = parts.findIndex(x => !x);
+    if(missing >= 0) return M.json(409, { error: 'チャンク ' + (missing + 1) + '/' + s.totalChunks + ' が見つかりません。再送してください。' });
     const buf = Buffer.concat(parts);
     if(buf.length !== s.totalBytes){
       return M.json(409, { error: '結合後のサイズが一致しません（' + buf.length + ' / ' + s.totalBytes + '）' });
@@ -221,15 +244,9 @@ exports.handler = async (event) => {
     }
 
     const prefix = id + '/v' + version + '/';
-    let written = 0;
-    try{
-      for(const f of pkg.files){
-        const ab = f.data.buffer.slice(f.data.byteOffset, f.data.byteOffset + f.data.byteLength);
-        await mediaStore.set(prefix + f.path, ab, { metadata: { contentType: M.mimeFor(f.path), size: f.data.length } });
-        written++;
-      }
-    }catch(e){
-      for(const f of pkg.files.slice(0, written)){ try{ await mediaStore.delete(prefix + f.path); }catch(_){} }
+    // Shared with the single-request path: same concurrency, same rollback.
+    try{ await P.writePackage(mediaStore, prefix, pkg.files); }
+    catch(e){
       return M.json(502, { error: 'パッケージの保存に失敗しました: ' + ((e && e.message) || '') });
     }
 
@@ -260,17 +277,14 @@ exports.handler = async (event) => {
 
     try{ await recStore.setJSON(id, { entry: pkg.entry, version, files: pkg.files.map(f => f.path) }, { metadata }); }
     catch(e){
-      for(const f of pkg.files){ try{ await mediaStore.delete(prefix + f.path); }catch(_){} }
+      await P.removeKeys(mediaStore, pkg.files.map(f => prefix + f.path));
       return M.json(502, { error: '保存に失敗しました: ' + ((e && e.message) || '') });
     }
 
-    if(prev && version > 1){
-      const old = id + '/v' + (version - 1) + '/';
-      try{
-        const l = await mediaStore.list({ prefix: old });
-        for(const b of (l && l.blobs) || []){ try{ await mediaStore.delete(b.key); }catch(_){} }
-      }catch(e){}
-    }
+    // The version this one replaces keeps its bytes - a reader may still have it
+    // open, and it is what a rollback restores. Only older ones are swept.
+    let pruned = null;
+    if(prev && version > 1) pruned = await P.pruneOldVersions(mediaStore, id, version);
 
     // The chunks have done their job.
     await sweep(store, sid);
@@ -279,6 +293,7 @@ exports.handler = async (event) => {
       ok: true, id, version, entry: pkg.entry, files: pkg.files.length,
       sizeLabel: M.human(pkg.rawBytes), sourceSha256: sha,
       normalized: !!pkg.norm,
+      keptVersions: pruned ? pruned.kept : 0,
       report: P.reportFor(pkg.norm),
     });
   }

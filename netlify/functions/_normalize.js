@@ -24,7 +24,24 @@ const LIMITS = {
   FUNCTION_RESPONSE_HARD_LIMIT: 6291556,
   // Deliberately well under (6291556 / 4 * 3) = 4,718,667. Headroom covers the
   // JSON envelope, headers, and any future growth in the response wrapper.
+  //
+  // This is the ceiling for an asset that must be returned WHOLE in one
+  // response: HTML, CSS, JS, images and fonts. Browsers do not range-request
+  // those, so a single response is the only way they can arrive.
   SAFE_PROTECTED_ASSET: 3.5 * 1024 * 1024,
+
+  // Audio and video are different: a media element always asks for byte ranges,
+  // so the file never has to cross the wire in one response. The asset server
+  // answers each Range with at most RANGE_SLICE_BYTES, which keeps every single
+  // response far below the hard limit no matter how large the file is.
+  //
+  // 3 MiB raw is 4,194,304 bytes as base64 - a third under the 6,291,556 ceiling,
+  // leaving room for headers and the response wrapper.
+  RANGE_SLICE_BYTES: 3 * 1024 * 1024,
+  // The ceiling for a range-served asset. Bounded by _zip.js maxEntryBytes
+  // rather than by the response limit; it exists so a package cannot smuggle in
+  // something unreasonable, not because the wire cannot carry it.
+  SAFE_RANGED_ASSET: 24 * 1024 * 1024,
 };
 
 // data:<mime>[;param…];base64,<payload>
