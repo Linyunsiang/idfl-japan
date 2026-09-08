@@ -75,16 +75,9 @@ exports.handler = async (event) => {
   // Assets are versioned in their key, so a replace never half-overwrites a
   // package that a customer is reading right now.
   const prefix = id + '/v' + version + '/';
-  let written = 0;
-  try{
-    for(const f of files){
-      const ab = f.data.buffer.slice(f.data.byteOffset, f.data.byteOffset + f.data.byteLength);
-      await mediaStore.set(prefix + f.path, ab, { metadata: { contentType: M.mimeFor(f.path), size: f.data.length } });
-      written++;
-    }
-  }catch(e){
-    // Roll back this version's assets so a partial package is never reachable.
-    for(const f of files.slice(0, written)){ try{ await mediaStore.delete(prefix + f.path); }catch(_){} }
+  // Shared with the chunked path: same concurrency, same rollback on failure.
+  try{ await P.writePackage(mediaStore, prefix, files); }
+  catch(e){
     return M.json(502, { error: 'パッケージの保存に失敗しました: ' + ((e && e.message) || '') });
   }
 
@@ -115,20 +108,17 @@ exports.handler = async (event) => {
   // The blob value is a small manifest; the record is the metadata.
   try{ await recStore.setJSON(id, { entry, version, files: files.map(f => f.path) }, { metadata }); }
   catch(e){
-    for(const f of files){ try{ await mediaStore.delete(prefix + f.path); }catch(_){} }
+    await P.removeKeys(mediaStore, files.map(f => prefix + f.path));
     return M.json(502, { error: '保存に失敗しました: ' + ((e && e.message) || '') });
   }
 
-  // Best-effort cleanup of the superseded version's bytes.
-  if(prev && version > 1){
-    const old = id + '/v' + (version - 1) + '/';
-    try{
-      const l = await mediaStore.list({ prefix: old });
-      for(const b of (l && l.blobs) || []){ try{ await mediaStore.delete(b.key); }catch(_){} }
-    }catch(e){}
-  }
+  // The version this one replaces keeps its bytes: a customer may still have it
+  // open, and it is what a rollback would restore. Only older ones are swept.
+  let pruned = null;
+  if(prev && version > 1) pruned = await P.pruneOldVersions(mediaStore, id, version);
 
   return M.json(200, { ok: true, id, version, entry, files: files.length, skipped, sizeLabel: human(rawBytes),
     normalized: !!pkg.norm,
+    keptVersions: pruned ? pruned.kept : 0,
     report: P.reportFor(pkg.norm) });
 };

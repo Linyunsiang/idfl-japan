@@ -346,7 +346,7 @@
             <strong>単一HTMLファイル</strong>：HTML単体で動作する場合は .html をアップロードしてください。
             画像などを埋め込んだ大きなファイルは、表示できる形に自動で分解して保存します。<br>
             <strong>HTMLパッケージ（ZIP）</strong>：CSS・JavaScript・画像・フォント等がある場合は、index.html と関連ファイルを含むZIPをアップロードしてください。<br>
-            <span style="color:#6b7280">大きなファイルは自動的に分割送信されます（最大 60 MB）。</span>
+            <span style="color:#6b7280">大きなファイルは自動的に分割送信されます（最大 96 MB）。動画（MP4等）を含むZIPにも対応しています。</span>
           </div>
         </div>
         <input type="file" id="mInput" accept=".html,.htm,.zip" style="display:none">
@@ -1887,8 +1887,12 @@ function mPreview(id){ window.open('/customer/media-viewer.html?id='+encodeURICo
    would not comfortably fit goes up in ~1 MB pieces instead. Staff never picks:
    the size decides. */
 var M_SINGLE_MAX = 3 * 1024 * 1024;
-var M_CHUNK_BYTES = 1024 * 1024;
-var M_MAX_BYTES = 60 * 1024 * 1024;
+/* Piece size for split upload. Declared to the server in `start`, so this can
+   change without a cached copy of this page breaking against a new deploy. */
+var M_CHUNK_BYTES = 3 * 1024 * 1024;
+var M_MAX_BYTES = 96 * 1024 * 1024;
+/* A dropped piece is a network hiccup, not a reason to resend 48 MB. */
+var M_CHUNK_RETRIES = 3;
 var M_CANCEL = null;
 
 function mHuman(b){ return b>=1048576 ? (b/1048576).toFixed(2)+' MB' : Math.max(1,Math.round(b/1024))+' KB'; }
@@ -1972,6 +1976,7 @@ function mUploadChunked(file, replaceId){
     return fetch('/.netlify/functions/protected-media-chunk',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
       .then(function(r){ return r.json().then(function(j){ return {s:r.status,j:j}; }); });
   }
+  function delay(ms){ return new Promise(function(r){ setTimeout(r,ms); }); }
   function b64(blob){
     return new Promise(function(res,rej){
       var fr=new FileReader();
@@ -1994,24 +1999,34 @@ function mUploadChunked(file, replaceId){
   }
 
   file.arrayBuffer().then(sha256).then(function(hash){
-    return post(Object.assign({action:'start',filename:file.name,totalBytes:total,totalChunks:totalChunks,sha256:hash}, mUploadMeta(replaceId)));
+    return post(Object.assign({action:'start',filename:file.name,totalBytes:total,totalChunks:totalChunks,chunkBytes:M_CHUNK_BYTES,sha256:hash}, mUploadMeta(replaceId)));
   }).then(function(o){
     if(o.s!==200||!o.j.ok) throw new Error((o.j&&o.j.error)||('開始に失敗しました（'+o.s+'）'));
     sid=o.j.sid;
     var i=0;
+    /* Resend one piece before giving up on the whole upload. A 48 MB package is
+       17 requests over a normal office line; losing one of them to a hiccup must
+       not cost the other sixteen. Statuses that mean the session itself is gone
+       are not retried - resending into a dead session cannot succeed. */
+    function sendChunk(index, attempt){
+      var from=index*M_CHUNK_BYTES, to=Math.min(total,from+M_CHUNK_BYTES);
+      function again(err){
+        if(aborted || attempt>=M_CHUNK_RETRIES) throw err;
+        return delay(600*Math.pow(2,attempt)).then(function(){ return sendChunk(index,attempt+1); });
+      }
+      return b64(file.slice(from,to)).then(function(data){
+        return post({action:'chunk',sid:sid,index:index,dataBase64:data});
+      }).then(function(o2){
+        if(o2.s===200&&o2.j&&o2.j.ok) return;
+        var msg=(o2.j&&o2.j.error)||('チャンク '+(index+1)+' の送信に失敗しました（HTTP '+o2.s+'）');
+        if(o2.s===403||o2.s===404||o2.s===409||o2.s===410) throw new Error(msg);
+        return again(new Error(msg));
+      }, again);
+    }
     function next(){
       if(aborted){ fail('アップロードを中止しました'); return Promise.resolve(); }
       if(i>=totalChunks) return Promise.resolve();
-      var from=i*M_CHUNK_BYTES, to=Math.min(total,from+M_CHUNK_BYTES);
-      return b64(file.slice(from,to)).then(function(data){
-        return post({action:'chunk',sid:sid,index:i,dataBase64:data});
-      }).then(function(o2){
-        if(o2.s!==200||!o2.j.ok){
-          // one retry for this chunk alone, then give up
-          return post({action:'chunk',sid:sid,index:i,dataBase64:null}).then(function(){
-            throw new Error((o2.j&&o2.j.error)||('チャンク '+(i+1)+' の送信に失敗しました'));
-          });
-        }
+      return sendChunk(i,0).then(function(){
         i++;
         var pct=Math.round(i/totalChunks*100);
         bar.style.width=pct+'%';

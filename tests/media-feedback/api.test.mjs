@@ -320,15 +320,21 @@ await t('a staff-only presentation is hidden from customers', async () => {
   assert.equal((await invoke('media-grant', { headers: as(CUST), queryStringParameters: { id } })).statusCode, 403);
 });
 
-await t('replacing a package bumps the version and retires the old bytes', async () => {
-  const before = dumpStore('idfl-media-html-dev').size;
+await t('replacing a package bumps the version and keeps the one it replaced', async () => {
+  const keysFor = (v) => [...dumpStore('idfl-media-html-dev').keys()].filter(k => k.indexOf(MEDIA_ID + '/v' + v + '/') === 0);
+  const before = keysFor(1).length;
+  assert.ok(before > 0);
   const r = await uploadPackage(STAFF, ZIP, { replaceId: MEDIA_ID, title: 'GOTS Scope 4 意見交換会' });
   assert.equal(r.status, 200);
   assert.equal(r.body.version, 2);
   const media = dumpStore('idfl-media-html-dev');
   assert.ok(media.has(MEDIA_ID + '/v2/index.html'));
-  assert.ok(!media.has(MEDIA_ID + '/v1/index.html'), 'v1 bytes were not cleaned up');
-  assert.equal(media.size, before, 'asset count should be stable after a replace');
+  // The superseded version keeps its bytes on purpose: a reader may still have
+  // it open, and it is what a rollback restores if the new upload is wrong.
+  assert.ok(media.has(MEDIA_ID + '/v1/index.html'), 'v1 should be retained for one version');
+  assert.equal(keysFor(2).length, before, 'the new version holds the same assets');
+  assert.equal(keysFor(1).length, before, 'the replaced version is kept whole, not partly swept');
+  assert.equal(r.body.keptVersions, 1);
   const it = J(await invoke('protected-list', { headers: as(CUST) })).files.find(f => f.id === MEDIA_ID);
   assert.equal(it.version, 2);
 });
@@ -585,6 +591,18 @@ await t('feedback survives a version replace and remembers its version', async (
   const after = J(await invoke('feedback-list', { headers: as(STAFF), queryStringParameters: { mediaId: MEDIA_ID } })).items;
   assert.equal(after.length, before, 'feedback was lost on replace');
   assert.equal(after.find(x => x.message === 'v2 へのコメント').mediaVersion, 2);
+});
+
+await t('the retention window is one version deep, not unbounded', async () => {
+  // v3 is live at this point. A further replace must keep v3 and sweep what is
+  // two versions back, so a package never accumulates every version it ever had.
+  const r = await uploadPackage(STAFF, ZIP, { replaceId: MEDIA_ID });
+  assert.equal(r.body.version, 4);
+  const media = dumpStore('idfl-media-html-dev');
+  assert.ok(media.has(MEDIA_ID + '/v4/index.html'));
+  assert.ok(media.has(MEDIA_ID + '/v3/index.html'), 'v3 is the rollback target and must survive');
+  assert.ok(!media.has(MEDIA_ID + '/v2/index.html'), 'v2 is two versions back and should be swept');
+  assert.ok(!media.has(MEDIA_ID + '/v1/index.html'));
 });
 
 // ==========================================================================

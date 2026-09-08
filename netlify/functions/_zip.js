@@ -15,8 +15,26 @@ const SIG_CEN  = 0x02014b50;
 const SIG_LOC  = 0x04034b50;
 const SIG_EOCD64_LOC = 0x07064b50;
 
-// Hard ceilings. A 4 MB archive that claims to expand to 2 GB is a zip bomb.
-const LIMITS = { maxFiles: 300, maxTotalBytes: 24 * 1024 * 1024, maxEntryBytes: 12 * 1024 * 1024, maxNameLen: 180 };
+// Hard ceilings.
+//
+// The absolute caps are sized for a real teaching package: the TC manual ships
+// index.html, ~130 images and 14 MP4 clips - 147 entries, 50.5 MB expanded from
+// a 48.6 MB archive. They are NOT the zip-bomb defence on their own.
+//
+// The bomb defence is `maxRatio`: a 4 MB archive that claims to expand to 2 GB
+// is refused however generous the absolute cap is, because the expansion ratio
+// gives it away. Below `ratioFloorBytes` the ratio is not enforced, so a small
+// archive of highly compressible text is not punished for being text; above it,
+// every archive must carry roughly its own weight in compressed bytes.
+// A video package sits at ratio ~1.04, so this costs real packages nothing.
+const LIMITS = {
+  maxFiles: 600,
+  maxTotalBytes: 96 * 1024 * 1024,
+  maxEntryBytes: 24 * 1024 * 1024,
+  maxNameLen: 180,
+  maxRatio: 20,
+  ratioFloorBytes: 8 * 1024 * 1024,
+};
 
 let CRC_TABLE = null;
 function crcTable(){
@@ -102,6 +120,12 @@ function readZip(buf, limits){
     if(uncSize > L.maxEntryBytes) throw new Error('ZIP内のファイル「' + rawName.slice(0, 60) + '」が大きすぎます');
     totalBytes += uncSize;
     if(totalBytes > L.maxTotalBytes) throw new Error('ZIPの展開後サイズが上限（' + Math.round(L.maxTotalBytes / 1048576) + 'MB）を超えています');
+    // Zip-bomb guard. Checked against the sizes DECLARED in the central
+    // directory, so it fires before the offending entry is ever inflated.
+    if(totalBytes > L.ratioFloorBytes && totalBytes > buf.length * L.maxRatio){
+      throw new Error('ZIPの圧縮率が異常です（展開後 ' + Math.round(totalBytes / 1048576) +
+        'MB / 圧縮後 ' + Math.round(buf.length / 1048576) + 'MB）。展開爆弾の疑いがあるため取り込みません');
+    }
 
     const path = safePath(rawName);
     if(!path){ skipped++; continue; }                         // traversal / odd characters: drop it
