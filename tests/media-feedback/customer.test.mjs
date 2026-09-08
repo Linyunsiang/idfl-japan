@@ -218,6 +218,23 @@ await t('the presentation frame is sandboxed without allow-same-origin', async (
   assert.equal(frame.getAttribute('referrerpolicy'), 'no-referrer');
 });
 
+await t('autoplay is delegated to the frame, and nothing else is', async () => {
+  // A package with narration cannot turn its own sound on without this: its
+  // clips sit in a nested frame that is cross-origin to the package, so the
+  // user's click never reaches the frame owning the <video> and Chrome refuses
+  // to unmute. Delegation widens nothing else - the sandbox above still
+  // withholds allow-same-origin, so the package keeps its opaque origin.
+  const allow = String(A.viewer.window.document.getElementById('frame').getAttribute('allow') || '');
+  // Parsed as a feature list rather than matched as a substring, so a
+  // future 'autoplay-something' cannot pass this by accident.
+  const features = allow.split(';').map(x => x.trim()).filter(Boolean);
+  assert.ok(features.includes('autoplay'), 'autoplay must be delegated: ' + allow);
+  assert.ok(features.includes('fullscreen'), 'fullscreen must stay delegated: ' + allow);
+  for(const risky of ['camera', 'microphone', 'geolocation', 'payment', 'usb', 'display-capture']){
+    assert.equal(allow.indexOf(risky), -1, risky + ' must never be delegated to an uploaded package');
+  }
+});
+
 await t('the frame is mounted under a scoped, tokenised path', async () => {
   const src = A.viewer.window.document.getElementById('frame').src;
   assert.ok(/\/media\/[^/]+\/[^/]+\/f-[A-Za-z0-9_-]+\/index\.html$/.test(src), 'unexpected mount: ' + src);

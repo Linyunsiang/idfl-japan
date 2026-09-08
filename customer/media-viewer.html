@@ -214,7 +214,15 @@
         // reach neither this page's DOM nor the session cookie. The response
         // itself also carries a CSP sandbox directive.
         f.setAttribute('sandbox','allow-scripts allow-popups allow-popups-to-escape-sandbox allow-modals allow-forms allow-downloads');
-        f.setAttribute('allow','fullscreen');
+        // fullscreen, and autoplay so a package that carries narration can turn
+        // sound on from its own controls. A cross-origin frame holds no autoplay
+        // permission of its own, and the manual's clips live in a nested frame of
+        // their own again - without this delegation the user's click on the
+        // manual's 音声 button never reaches the frame that owns the <video>, and
+        // Chrome refuses to unmute. Delegating autoplay does not widen what the
+        // package can reach: the sandbox still withholds allow-same-origin, so it
+        // still has an opaque origin, no session cookie and no access to this page.
+        f.setAttribute('allow','fullscreen; autoplay');
         f.setAttribute('referrerpolicy','no-referrer');
         el('stage').innerHTML=''; el('stage').appendChild(f);
         FRAME=f;
