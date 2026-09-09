@@ -21,45 +21,43 @@
   <nav class="lib-rail" id="libRail" aria-label="メディアライブラリ ナビゲーション">
 
     <a class="lib-rail__brand" href="/">
-      <img src="/IDFL-Logo.png" alt="" width="90" height="28">
+      <span class="lib-rail__logo"><img src="/IDFL-Logo.png" alt="" width="90" height="28"></span>
       <span class="lib-rail__names">
         <span class="lib-rail__name">IDFL JAPAN</span>
-        <span class="lib-rail__sub">CUSTOMER PORTAL</span>
+        <span class="lib-rail__sub">Customer Portal</span>
       </span>
     </a>
 
     <div class="lib-rail__head">
+      <h2 class="lib-rail__label">Media Library</h2>
       <div class="lib-search" id="libSearchWrap">
         <svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
-        <label class="lib-sr-only" for="libSearch">資料を検索</label>
-        <input type="search" id="libSearch" placeholder="資料を検索" autocomplete="off" spellcheck="false">
+        <label class="lib-sr-only" for="libSearch">タイトル・説明で検索</label>
+        <input type="search" id="libSearch" placeholder="タイトル・説明で検索" autocomplete="off" spellcheck="false">
         <button type="button" class="lib-search__clear" id="libSearchClear" aria-label="検索条件を消す">
           <svg class="lib-i lib-i-sm" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18 6 6 18M6 6l12 12"/></svg>
         </button>
       </div>
     </div>
 
-    <div>
-      <h2 class="lib-rail__label">資料の種類</h2>
-      <ul class="lib-types" id="libTypes"></ul>
-    </div>
-
     <div class="lib-rail__scroll lib-scroll">
-      <h2 class="lib-rail__label" style="padding-left:10px">コレクション</h2>
-      <ul class="lib-coll" id="libColl"></ul>
+      <ul class="lib-types" id="libTypes" aria-label="資料の種類でしぼり込む"></ul>
+      <div class="lib-rail__rule" role="presentation"></div>
+      <h2 class="lib-rail__label" id="libCollLabel" style="padding:0 12px">Collections</h2>
+      <ul class="lib-tree" id="libTree" aria-label="コレクション"></ul>
     </div>
 
     <div class="lib-rail__foot">
       <b>
         <svg class="lib-i lib-i-sm" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.2 5 6v5.4c0 4 2.9 7.6 7 9.4 4.1-1.8 7-5.4 7-9.4V6z"/><path d="m9.2 12.1 2 2 3.6-3.9"/></svg>
-        セキュア ワークスペース
+        Secure Workspace
       </b>
-      <span>IDFLのお客様専用の保護領域です。アクセスのたびに権限を確認しています。</span>
+      <span>権限のある方のみ閲覧できます</span>
     </div>
   </nav>
 
   <!-- ================================================================ work -->
-  <main class="lib-work" id="libWork">
+  <div class="lib-work" id="libWork">
 
     <header class="lib-bar">
       <button type="button" class="lib-btn lib-btn--quiet lib-btn--icon lib-railtoggle" id="libRailToggle"
@@ -69,39 +67,58 @@
 
       <nav aria-label="パンくずリスト">
         <ol class="lib-crumb">
-          <li><a href="/">IDFL JAPAN</a></li>
-          <li><span class="lib-crumb__sep" aria-hidden="true">/</span><span aria-current="page">メディアライブラリ</span></li>
+          <li><a href="/">Customer Portal</a></li>
+          <li><span class="lib-crumb__sep" aria-hidden="true">/</span><span aria-current="page">Media Library</span></li>
         </ol>
       </nav>
 
       <span class="lib-bar__grow"></span>
 
       <div class="lib-bar__acts">
-        <span class="lib-badge" id="libRole" hidden></span>
-        <a class="lib-btn lib-btn--quiet" href="/customer/downloads.html">ダウンロード一覧</a>
+        <span class="lib-pill" id="libRole" hidden></span>
         <button type="button" class="lib-btn lib-btn--secondary" id="libFs" aria-pressed="false" aria-label="全画面表示">
           <svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4H4v5M15 4h5v5M15 20h5v-5M9 20H4v-5"/></svg>
           <span class="lib-fs-t">全画面表示</span>
         </button>
-        <button type="button" class="lib-btn lib-btn--quiet lib-btn--icon" id="libUser" hidden aria-label="ログイン中のアカウント">
+        <button type="button" class="lib-btn lib-btn--secondary" id="libLogout" hidden aria-label="ログアウト"><svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.5 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h6.5a2 2 0 0 0 2-2v-2"/><path d="M20 12H9.5"/><path d="m16.8 8.8 3.2 3.2-3.2 3.2"/></svg><span class="lib-btn__t">ログアウト</span></button>
+        <button type="button" class="lib-avatar" id="libUser" hidden aria-label="ログイン中のアカウント">
           <svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8.4" r="3.7"/><path d="M4.8 20a7.4 7.4 0 0 1 14.4 0"/></svg>
         </button>
-        <button type="button" class="lib-btn lib-btn--quiet" id="libLogout" hidden>ログアウト</button>
       </div>
     </header>
 
-    <section class="lib-lead" aria-labelledby="libH1">
-      <h1 id="libH1">メディアライブラリ</h1>
-      <p>左の一覧から資料を選ぶと、右側に内容とダウンロードの操作が表示されます。選択しただけではダウンロードは始まりません。</p>
-      <dl class="lib-stats" id="libStats"></dl>
-    </section>
+    <main class="lib-body lib-scroll" id="libBody">
+      <div class="lib-inner">
 
-    <div class="lib-cols">
-      <section class="lib-list lib-scroll" id="libList" aria-label="資料一覧"></section>
-      <aside class="lib-insp lib-scroll" id="libInsp" aria-label="選択中の資料"></aside>
-    </div>
+        <div class="lib-head">
+          <div class="lib-head__main">
+            <p class="lib-eyebrow">Verified resources</p>
+            <h1 class="lib-h1">メディアライブラリ</h1>
+            <p class="lib-lede">セミナー資料、認証ガイド、操作マニュアルを安全なワークスペースに集約。<br>
+              左のコレクションから選び、内容と権限を確認してご覧いただけます。</p>
+          </div>
+          <div class="lib-gsearch">
+            <svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+            <label class="lib-sr-only" for="libGSearch">資料名・規格・キーワードで検索</label>
+            <input type="search" id="libGSearch" placeholder="資料名・規格・キーワードで検索" autocomplete="off" spellcheck="false">
+            <span class="lib-kbd" aria-hidden="true">⌘K</span>
+          </div>
+        </div>
 
-  </main>
+        <dl class="lib-cards" id="libCards"></dl>
+
+        <div class="lib-panel">
+          <section class="lib-listwrap" aria-label="資料一覧">
+            <div class="lib-listhead" id="libListHead"></div>
+            <div id="libList"></div>
+          </section>
+          <aside class="lib-insp lib-scroll" id="libInsp" aria-label="選択中の資料"></aside>
+        </div>
+
+      </div>
+    </main>
+
+  </div>
 </div>
 
 <div class="lib-scrim" id="libScrim"></div>

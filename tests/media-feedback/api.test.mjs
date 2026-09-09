@@ -749,13 +749,40 @@ await t('protected-list still returns the original fields', async () => {
   assert.equal(pdf.kind, 'file');
 });
 
-await t('a protected file still downloads as an attachment', async () => {
+await t('a customer reads a PDF and is never handed it as a download', async () => {
   const j = J(await invoke('protected-list', { headers: as(CUST) }));
   const pdf = j.files.find(f => f.title === 'ガイド');
+  // No inline parameter, which is what a hand-typed URL looks like. The rule
+  // is enforced here, not merely left out of the UI, so knowing the address is
+  // not a way around it.
   const r = await invoke('protected-file', { headers: as(CUST), queryStringParameters: { id: pdf.id } });
   assert.equal(r.statusCode, 200);
-  assert.match(r.headers['Content-Disposition'], /^attachment/);
+  assert.match(r.headers['Content-Disposition'], /^inline/, 'a customer was handed a PDF as a download');
   assert.equal(r.headers['Content-Type'], 'application/pdf');
+  assert.equal(r.headers['X-Content-Type-Options'], 'nosniff');
+});
+
+await t('staff still download the same PDF', async () => {
+  const j = J(await invoke('protected-list', { headers: as(STAFF) }));
+  const pdf = j.files.find(f => f.title === 'ガイド');
+  const r = await invoke('protected-file', { headers: as(STAFF), queryStringParameters: { id: pdf.id } });
+  assert.match(r.headers['Content-Disposition'], /^attachment/, 'the rule must not touch staff');
+  const inline = await invoke('protected-file', { headers: as(STAFF), queryStringParameters: { id: pdf.id, inline: '1' } });
+  assert.match(inline.headers['Content-Disposition'], /^inline/, 'staff can still preview when they ask');
+});
+
+await t('a customer still downloads what the browser cannot render', async () => {
+  // The TC application template is the case this exists for: it is only useful
+  // filled in and sent back, so read-only would make it useless.
+  const doc = Buffer.from('PK\u0003\u0004 not really a docx', 'utf8');
+  const up = J(await invoke('protected-upload', {
+    httpMethod: 'POST', headers: as(STAFF),
+    body: JSON.stringify({ filename: 'tc-template.xlsx', contentBase64: doc.toString('base64'), role: 'customer', title: '申請テンプレート' }),
+  }));
+  const r = await invoke('protected-file', { headers: as(CUST), queryStringParameters: { id: up.id } });
+  assert.match(r.headers['Content-Disposition'], /^attachment/, 'a spreadsheet must stay downloadable');
+  const forced = await invoke('protected-file', { headers: as(CUST), queryStringParameters: { id: up.id, inline: '1' } });
+  assert.match(forced.headers['Content-Disposition'], /^attachment/, 'and must never render in-page on our origin');
 });
 
 await t('an external link still redirects', async () => {
@@ -766,7 +793,7 @@ await t('an external link still redirects', async () => {
   assert.equal(r.headers.Location, 'https://example.com/deck');
 });
 
-await t('images and PDF can be served inline, and nothing else can', async () => {
+await t('images and PDF are inline for a customer, and nothing else ever is', async () => {
   // Inline is what lets the library show a thumbnail and the viewer preview a
   // PDF in place. It is opt-in per request and restricted by type: rendering
   // an arbitrary upload in-page on our own origin is exactly what attachment
@@ -786,9 +813,10 @@ await t('images and PDF can be served inline, and nothing else can', async () =>
   assert.match(pdfInline.headers['Content-Disposition'], /^inline/, 'a PDF should preview in place');
   assert.equal(pdfInline.headers['X-Content-Type-Options'], 'nosniff');
 
-  // Without asking, a PDF is still a download.
+  // Without asking, a customer still gets it inline: reading is the only thing
+  // on offer for a record the browser can render.
   const pdfPlain = await invoke('protected-file', { headers: as(CUST), queryStringParameters: { id: pdf.id } });
-  assert.match(pdfPlain.headers['Content-Disposition'], /^attachment/);
+  assert.match(pdfPlain.headers['Content-Disposition'], /^inline/);
 
   // An office document is never inline, however it is asked for.
   const doc = Buffer.from('PK not really a docx', 'utf8');

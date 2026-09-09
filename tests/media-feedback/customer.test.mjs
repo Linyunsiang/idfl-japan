@@ -161,7 +161,7 @@ await t('every row names its type in words, not by icon alone', async () => {
   assert.equal(rows.find(b => b.textContent.indexOf('GOTS 公式サイト') >= 0).dataset.type, 'external');
 });
 
-await t('choosing a row fills the inspector and starts no download', async () => {
+await t('choosing a row fills the inspector and starts nothing', async () => {
   const w = A.dom.window, d = w.document;
   const pdf = [...d.querySelectorAll('.lib-row')].find(b => b.dataset.type === 'pdf');
   pdf.dispatchEvent(new w.Event('click', { bubbles: true }));
@@ -169,10 +169,25 @@ await t('choosing a row fills the inspector and starts no download', async () =>
   assert.equal(pdf.getAttribute('aria-current'), 'true', 'the row was not marked current');
   const insp = d.getElementById('libInsp');
   assert.ok(insp.textContent.indexOf('準備チェックリスト') >= 0, 'the inspector did not follow the selection');
-  // Downloading is an explicit action, never a side effect of selecting.
-  assert.ok(insp.querySelector('[data-dl]'), 'no download control for a file record');
   assert.equal(w.location.pathname, '/customer/media.html', 'selecting must not navigate');
   assert.ok(w.location.search.indexOf('id=') >= 0, 'the selection is not in the URL');
+});
+
+await t('a record the browser can render offers reading, not a download', async () => {
+  const w = A.dom.window, d = w.document;
+  const pick = (type) => {
+    [...d.querySelectorAll('.lib-row')].find(b => b.dataset.type === type)
+      .dispatchEvent(new w.Event('click', { bubbles: true }));
+    return d.getElementById('libInsp');
+  };
+  const pdf = pick('pdf');
+  assert.equal(pdf.querySelector('[data-dl]'), null, 'a PDF must not offer a download');
+  const read = pdf.querySelector('a.lib-btn--primary');
+  assert.ok(read.getAttribute('href').indexOf('inline=1') > 0, 'the primary action should open it for reading');
+  assert.ok(pdf.textContent.indexOf('閲覧のみ') >= 0, 'the page should say so plainly');
+
+  // The other half of the rule - that a spreadsheet stays downloadable - is
+  // covered at the gate itself in api.test.mjs, where the fixture set has one.
 });
 
 await t('the inspector offers the right primary action per type', async () => {
@@ -207,11 +222,15 @@ await t('STAFF ONLY is a label on a decision the server already made', async () 
 
 await t('the header counts what is really there', async () => {
   const d = A.dom.window.document;
-  const stats = d.getElementById('libStats').textContent.replace(/\s+/g, ' ');
-  assert.ok(stats.indexOf('閲覧可能な資料') >= 0);
-  assert.ok(/3\s*\/\s*3 件/.test(stats), 'got: ' + stats);
-  assert.ok(stats.indexOf('コレクション') >= 0);
-  assert.ok(stats.indexOf('最終更新') >= 0);
+  const cards = [...d.querySelectorAll('#libCards .lib-card')];
+  assert.equal(cards.length, 3, 'expected three stat cards');
+  const txt = cards.map(c => c.textContent.replace(/\s+/g, ' ').trim());
+  assert.ok(txt[0].indexOf('閲覧可能な資料') >= 0, 'got: ' + txt.join(' | '));
+  assert.ok(/^0?3/.test(txt[0]), 'the count is not the real one: ' + txt[0]);
+  assert.ok(txt[1].indexOf('コレクション') >= 0);
+  assert.ok(txt[2].indexOf('最終更新') >= 0);
+  // Dates read as the console spells them, from the record's own value.
+  assert.ok(/\d{4}\.\d{2}\.\d{2}/.test(txt[2]), 'got: ' + txt[2]);
 });
 
 await t('search narrows the list, and clearing it restores every record', async () => {
@@ -238,20 +257,69 @@ await t('the media-type filter narrows the list and reports it', async () => {
   w.IDFLLib.setType('pdf');
   assert.equal(d.querySelectorAll('.lib-row').length, 1);
   assert.equal(d.querySelector('.lib-types__btn[data-type="pdf"]').getAttribute('aria-pressed'), 'true');
-  assert.ok(d.querySelector('.lib-scope').textContent.indexOf('PDF') >= 0);
+  const head = d.getElementById('libListHead').textContent.replace(/\s+/g, ' ');
+  assert.ok(head.indexOf('PDF') >= 0, 'the table head does not name the filter: ' + head);
+  assert.ok(head.indexOf('1件を表示中') >= 0, 'got: ' + head);
   w.IDFLLib.setType('all');
   assert.equal(d.querySelectorAll('.lib-row').length, 3);
 });
 
-await t('collections list every group and filter to one', async () => {
+await t('the table can be reordered, and says which order it is in', async () => {
   const w = A.dom.window, d = w.document;
-  const names = [...d.querySelectorAll('.lib-coll__btn')].map(b => b.dataset.coll);
+  const names = () => [...d.querySelectorAll('.lib-row__t')].map(e => e.textContent);
+  assert.ok(d.getElementById('libListHead').textContent.indexOf('更新日の新しい順') >= 0);
+  const byDate = names();
+  d.getElementById('libSort').dispatchEvent(new w.Event('click', { bubbles: true }));
+  assert.ok(d.getElementById('libListHead').textContent.indexOf('名前順') >= 0);
+  const byName = names();
+  assert.equal(byName.length, byDate.length);
+  assert.deepEqual(byName, byDate.slice().sort((a, b) => a.localeCompare(b, 'ja')));
+  d.getElementById('libSort').dispatchEvent(new w.Event('click', { bubbles: true }));
+});
+
+await t('the ACCESS column reports what the record actually is', async () => {
+  const d = A.dom.window.document;
+  const cell = (type) => [...d.querySelectorAll('.lib-row')]
+    .find(b => b.dataset.type === type).querySelector('.lib-access').textContent.trim();
+  assert.equal(cell('pdf'), 'CUSTOMER');
+  assert.equal(cell('external'), 'PUBLIC');
+});
+
+await t('the collections tree lists every group and the records inside it', async () => {
+  const d = A.dom.window.document;
+  const names = [...d.querySelectorAll('.lib-tree__btn')].map(b => b.dataset.coll);
   assert.ok(names.indexOf('IDFL Guide') >= 0, 'got: ' + names.join(' | '));
   assert.ok(names.indexOf('2026 大阪セミナー') >= 0);
-  w.IDFLLib.setCollection('2026 大阪セミナー');
+  // Each group carries its records, so the rail is a directory rather than a
+  // list of folder names.
+  const guide = [...d.querySelectorAll('.lib-tree__grp')]
+    .find(g => g.querySelector('.lib-tree__btn').dataset.coll === 'IDFL Guide');
+  const titles = [...guide.querySelectorAll('.lib-tree__item')].map(b => b.textContent.trim());
+  assert.equal(titles.length, 2, 'got: ' + titles.join(' | '));
+  assert.ok(titles.some(t => t.indexOf('準備チェックリスト') >= 0));
+});
+
+await t('a group scopes the table, and a record inside it selects', async () => {
+  const w = A.dom.window, d = w.document;
+  const grp = [...d.querySelectorAll('.lib-tree__btn')].find(b => b.dataset.coll === '2026 大阪セミナー');
+  grp.dispatchEvent(new w.Event('click', { bubbles: true }));
   assert.equal(d.querySelectorAll('.lib-row').length, 1);
-  w.IDFLLib.setCollection('');
+  assert.ok(d.getElementById('libListHead').textContent.indexOf('2026 大阪セミナー') >= 0);
+  // Pressing the scoped group again releases the scope.
+  d.querySelector('.lib-tree__btn[data-coll="2026 大阪セミナー"]').dispatchEvent(new w.Event('click', { bubbles: true }));
   assert.equal(d.querySelectorAll('.lib-row').length, 3);
+
+  const item = d.querySelector('.lib-tree__item');
+  const id = item.dataset.id;
+  item.dispatchEvent(new w.Event('click', { bubbles: true }));
+  assert.equal(w.IDFLLib.state.activeId, id, 'a record in the tree did not select');
+  assert.ok(d.getElementById('libInsp').textContent.trim().length > 0);
+});
+
+await t('the retired downloads page is gone from the toolbar', async () => {
+  const d = A.dom.window.document;
+  assert.equal(d.querySelector('a[href*="downloads.html"]'), null,
+    'the library still advertises the retired download page');
 });
 
 await t('the fullscreen control degrades where the API is absent', async () => {

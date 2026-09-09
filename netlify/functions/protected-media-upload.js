@@ -10,7 +10,7 @@
 // scripts/deck.js ...) exactly as authored.
 //
 // The record itself goes into the SAME idfl-protected store the customer
-// download page already reads, so the Media Library and /customer/downloads.html
+// list already reads, so the Media Library and the admin console
 // share one source of truth. Only the asset bytes live elsewhere.
 //
 // Nothing here is ever written to the public repository.

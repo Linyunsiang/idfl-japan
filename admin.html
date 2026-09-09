@@ -1738,7 +1738,7 @@ function pLogin(){
    .then(function(o){ if(o.s===200&&o.j.ok){ document.getElementById('pPw').value=''; pInit(); } else { err.textContent=(o.j&&o.j.error)||('エラー HTTP '+o.s); } })
    .catch(function(){ err.textContent='通信エラー'; });
 }
-function pPreview(){ window.open('/customer/downloads.html','_blank','noopener'); }
+function pPreview(){ window.open('/customer/media.html','_blank','noopener'); }
 
 function pSetup(){
   PLOADED=true;
