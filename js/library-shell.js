@@ -327,8 +327,8 @@
       + '<span class="lib-eyelabel">Selected resource</span></p>'
       + '<div class="lib-msg">' + icon('all')
       + '<h2>資料を選択してください</h2>'
-      + '<p>一覧から資料を選ぶと、ここに内容とダウンロードの操作が表示されます。'
-      + '選択しただけではダウンロードは始まりません。</p></div></div>';
+      + '<p>一覧から資料を選ぶと、ここに内容と操作が表示されます。'
+      + '選択しただけでは何も始まりません。</p></div></div>';
   }
 
   /** The real thing where there is one; the record's own name on a sheet where
