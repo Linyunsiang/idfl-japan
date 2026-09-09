@@ -2,7 +2,7 @@
 // IDFL - shared helpers for the customer Media Library.
 //
 // Media *records* live in the existing idfl-protected store (single source of
-// truth, same as /customer/downloads.html). Only the bytes of an HTML
+// truth for every customer-facing surface). Only the bytes of an HTML
 // presentation package live in a separate store, one blob per asset, so the
 // download list never has to page past them.
 // ============================================================

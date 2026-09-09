@@ -161,7 +161,7 @@ await t('every row names its type in words, not by icon alone', async () => {
   assert.equal(rows.find(b => b.textContent.indexOf('GOTS 公式サイト') >= 0).dataset.type, 'external');
 });
 
-await t('choosing a row fills the inspector and starts no download', async () => {
+await t('choosing a row fills the inspector and starts nothing', async () => {
   const w = A.dom.window, d = w.document;
   const pdf = [...d.querySelectorAll('.lib-row')].find(b => b.dataset.type === 'pdf');
   pdf.dispatchEvent(new w.Event('click', { bubbles: true }));
@@ -169,10 +169,25 @@ await t('choosing a row fills the inspector and starts no download', async () =>
   assert.equal(pdf.getAttribute('aria-current'), 'true', 'the row was not marked current');
   const insp = d.getElementById('libInsp');
   assert.ok(insp.textContent.indexOf('準備チェックリスト') >= 0, 'the inspector did not follow the selection');
-  // Downloading is an explicit action, never a side effect of selecting.
-  assert.ok(insp.querySelector('[data-dl]'), 'no download control for a file record');
   assert.equal(w.location.pathname, '/customer/media.html', 'selecting must not navigate');
   assert.ok(w.location.search.indexOf('id=') >= 0, 'the selection is not in the URL');
+});
+
+await t('a record the browser can render offers reading, not a download', async () => {
+  const w = A.dom.window, d = w.document;
+  const pick = (type) => {
+    [...d.querySelectorAll('.lib-row')].find(b => b.dataset.type === type)
+      .dispatchEvent(new w.Event('click', { bubbles: true }));
+    return d.getElementById('libInsp');
+  };
+  const pdf = pick('pdf');
+  assert.equal(pdf.querySelector('[data-dl]'), null, 'a PDF must not offer a download');
+  const read = pdf.querySelector('a.lib-btn--primary');
+  assert.ok(read.getAttribute('href').indexOf('inline=1') > 0, 'the primary action should open it for reading');
+  assert.ok(pdf.textContent.indexOf('閲覧のみ') >= 0, 'the page should say so plainly');
+
+  // The other half of the rule - that a spreadsheet stays downloadable - is
+  // covered at the gate itself in api.test.mjs, where the fixture set has one.
 });
 
 await t('the inspector offers the right primary action per type', async () => {
@@ -299,6 +314,12 @@ await t('a group scopes the table, and a record inside it selects', async () => 
   item.dispatchEvent(new w.Event('click', { bubbles: true }));
   assert.equal(w.IDFLLib.state.activeId, id, 'a record in the tree did not select');
   assert.ok(d.getElementById('libInsp').textContent.trim().length > 0);
+});
+
+await t('the retired downloads page is gone from the toolbar', async () => {
+  const d = A.dom.window.document;
+  assert.equal(d.querySelector('a[href*="downloads.html"]'), null,
+    'the library still advertises the retired download page');
 });
 
 await t('the fullscreen control degrades where the API is absent', async () => {

@@ -101,6 +101,9 @@
   function groupOf(f) { return (f && f.group) || 'その他'; }
 
   /** What the ACCESS column says. External links are public by nature. */
+  /** Records the browser renders are for reading, not for taking away. */
+  function readOnly(k) { return k === 'pdf' || k === 'image'; }
+
   function accessKey(f) {
     if (f.role === 'staff') return 'staff';
     if (typeOf(f) === 'external') return 'public';
@@ -372,19 +375,21 @@
       more.push('<div><dt>構成</dt><dd class="lib-num">' + esc(f.assetCount) + ' ファイル</dd></div>');
     }
 
+    // A record the browser can render is for reading here; only a record it
+    // cannot render is handed over as a file. protected-file enforces the same
+    // rule, so this is the affordance for a decision, not the decision itself.
     var primary, menu = [];
     if (k === 'html') {
       primary = '<a class="lib-btn lib-btn--primary" href="' + esc(viewerUrl(f.id)) + '">' + icon('html') + 'ビューアで開く</a>';
     } else if (k === 'external') {
       primary = '<a class="lib-btn lib-btn--primary" href="' + esc(fileUrl(f.id)) + '" target="_blank" rel="noopener noreferrer">'
         + icon('external') + '外部サイトを開く</a>';
+    } else if (readOnly(k)) {
+      primary = '<a class="lib-btn lib-btn--primary" href="' + esc(fileUrl(f.id) + '&inline=1') + '" target="_blank" rel="noopener noreferrer">'
+        + icon('external') + '大きく表示する</a>';
     } else {
       primary = '<button type="button" class="lib-btn lib-btn--primary" data-dl="' + esc(f.id) + '">'
         + icon('download') + 'ダウンロード</button>';
-      if (k === 'pdf' || k === 'image') {
-        menu.push('<a href="' + esc(fileUrl(f.id) + '&inline=1') + '" target="_blank" rel="noopener noreferrer">'
-          + icon('external') + '別のタブで開く</a>');
-      }
     }
     menu.push('<a href="' + esc(viewerUrl(f.id)) + '">' + icon('comment') + '質問・コメントを送る</a>');
     if (k !== 'html' && k !== 'external') {
@@ -411,7 +416,9 @@
       + '</div>'
       + '<p class="lib-guard">' + icon('shield')
       + '<span>IDFLのお客様専用資料です。アクセスのたびにサーバー側で権限を確認しており、'
-      + 'ファイルの直接URLは発行されません。第三者への再配布はご遠慮ください。</span></p>'
+      + 'ファイルの直接URLは発行されません。'
+      + (readOnly(k) ? 'この資料は閲覧のみで、ダウンロードはできません。' : '')
+      + '第三者への再配布はご遠慮ください。</span></p>'
       + '</div>';
 
     var c = el('libInspClose');

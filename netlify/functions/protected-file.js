@@ -16,7 +16,7 @@ exports.handler = async (event) => {
   const role = A.roleFromCookies(event.headers.cookie) || 'PUBLIC';
   if(!A.meets(role,need)){
     const rp = need==='STAFF'?'staff':'customer';
-    return { statusCode:302, headers:{ 'Location':`/login.html?role=${rp}&next=${encodeURIComponent('/customer/downloads.html')}`, 'Cache-Control':'no-store' }, body:'' };
+    return { statusCode:302, headers:{ 'Location':`/login.html?role=${rp}&next=${encodeURIComponent('/customer/media.html')}`, 'Cache-Control':'no-store' }, body:'' };
   }
   // Draft items are only accessible to STAFF (defence in depth: cannot be fetched by URL even if id is known)
   if(meta.status==='draft' && role!=='STAFF') return resp(404,{error:'not found'});
@@ -27,15 +27,28 @@ exports.handler = async (event) => {
   // The Media Library renders protected images as thumbnails, which needs an
   // inline disposition. Images only - everything else stays a download.
   const ct = meta.contentType || 'application/octet-stream';
-  // Inline is opt-in per request AND restricted by type. Images have always
-  // been served inline for the library's thumbnails; PDF joins them so the
-  // viewer can preview one in place instead of forcing a download for a
-  // customer who only wants to read a page. Nothing else is ever inline: an
-  // Office file or an unknown type rendered in-page is a way to get markup
-  // interpreted on our origin, which is exactly what nosniff plus attachment
-  // is here to prevent.
-  const INLINE_OK = /^image\//.test(ct) || String(ct).split(';')[0].trim() === 'application/pdf';
-  const wantInline = ((event.queryStringParameters||{}).inline==='1') && INLINE_OK;
+  // What a customer may take away.
+  //
+  // A record the browser can render - an image, a PDF - is served to a customer
+  // for reading and never as a download. The library offers no download control
+  // for these, and this function will not produce one either, so knowing the
+  // URL is not a way around that decision. It is a deterrent against casual
+  // redistribution, not DRM: anything on screen can still be photographed, and
+  // the browser's own PDF viewer keeps a save button of its own.
+  //
+  // A record the browser cannot render - a spreadsheet, a Word template - stays
+  // a download, because using it is the whole point. The TC application
+  // template exists to be filled in and sent back.
+  //
+  // STAFF are unaffected: inline when they ask for it, attachment otherwise.
+  //
+  // Inline also stays restricted by type either way. An Office file or an
+  // unknown type rendered in-page is a way to get markup interpreted on our
+  // own origin, which is what nosniff plus attachment is here to prevent.
+  const previewable = /^image\//.test(ct) || String(ct).split(';')[0].trim() === 'application/pdf';
+  const readOnlyForCustomer = previewable && role !== 'STAFF';
+  const askedInline = ((event.queryStringParameters||{}).inline === '1');
+  const wantInline = previewable && (askedInline || readOnlyForCustomer);
   return {
     statusCode:200,
     headers:{

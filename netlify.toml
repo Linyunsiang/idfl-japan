@@ -27,6 +27,16 @@
   status = 200
   force = true
 
+# /customer/downloads.html was retired in favour of the Media Library, which
+# lists the same records and is where the read-only rule is enforced. A second
+# page whose only job was handing files over would be a way around that
+# decision. Old links and old e-mails land on the library rather than a 404.
+[[redirects]]
+  from = "/customer/downloads.html"
+  to = "/customer/media.html"
+  status = 301
+  force = true
+
 # publish = "." ships the whole repository, so the function sources are
 # otherwise readable at /netlify/functions/*.js. They hold no secrets — they
 # read process.env — but they do spell out the auth logic, the rate limits and

@@ -77,7 +77,6 @@
           <svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 13.5a2.5 2.5 0 0 1-2.5 2.5H9l-4.5 3.4V6.5A2.5 2.5 0 0 1 7 4h10.5A2.5 2.5 0 0 1 20 6.5z"/></svg>
           <span class="lib-btn__t">フィードバック</span>
         </button>
-        <a class="lib-btn lib-btn--secondary" href="/customer/downloads.html" aria-label="ダウンロード一覧"><svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4v11"/><path d="m7.5 10.5 4.5 4.5 4.5-4.5"/><path d="M4.5 19.5h15"/></svg><span class="lib-btn__t">ダウンロード一覧</span></a>
         <button type="button" class="lib-btn lib-btn--secondary" id="libFs" aria-pressed="false" aria-label="全画面表示">
           <svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4H4v5M15 4h5v5M15 20h5v-5M9 20H4v-5"/></svg>
           <span class="lib-fs-t">全画面表示</span>
@@ -300,21 +299,23 @@
     var stage=el('stage');
     stage.className='lib-stage lib-stage--scroll lib-scroll';
 
+    // Images and PDFs are for reading here; protected-file will not hand a
+    // customer an attachment for them, so no control offers one.
     if(k==='image'){
       stage.innerHTML='<div class="lib-pad">'
         + '<p style="display:flex;gap:9px;flex-wrap:wrap;margin:0 0 16px">'
-        +   '<button type="button" class="lib-btn lib-btn--primary" data-dl="'+esc(MEDIA_ID)+'">'+icon('download')+'ダウンロード</button>'
+        +   '<a class="lib-btn lib-btn--primary" href="'+esc(url)+'&inline=1" target="_blank" rel="noopener noreferrer">'+icon('external')+'大きく表示する</a>'
         + '</p>'
         + '<div class="lib-box"><img class="lib-shot" src="'+esc(url)+'&inline=1" alt="'+esc(MEDIA.title||MEDIA.name||'画像')+'"></div>'
+        + '<p class="lib-guard" style="margin-top:16px">'+icon('shield')+'<span>この資料は閲覧のみです。第三者への再配布はご遠慮ください。</span></p>'
         + '</div>';
     } else if(k==='pdf'){
       stage.innerHTML='<div class="lib-pad">'
         + '<p style="display:flex;gap:9px;flex-wrap:wrap;margin:0 0 16px">'
-        +   '<button type="button" class="lib-btn lib-btn--primary" data-dl="'+esc(MEDIA_ID)+'">'+icon('download')+'ダウンロード</button>'
-        +   '<a class="lib-btn lib-btn--secondary" href="'+esc(url)+'&inline=1" target="_blank" rel="noopener noreferrer">'+icon('external')+'別のタブで開く</a>'
+        +   '<a class="lib-btn lib-btn--primary" href="'+esc(url)+'&inline=1" target="_blank" rel="noopener noreferrer">'+icon('external')+'別のタブで開く</a>'
         + '</p>'
         + '<div class="lib-box"><iframe class="lib-pdf" src="'+esc(url)+'&inline=1" title="'+esc(MEDIA.title||MEDIA.name||'PDF')+'"></iframe></div>'
-        + '<p class="lib-guard" style="margin-top:16px">'+icon('info')+'<span>プレビューが表示されない場合は、上の「ダウンロード」からご覧ください。</span></p>'
+        + '<p class="lib-guard" style="margin-top:16px">'+icon('shield')+'<span>この資料は閲覧のみです。プレビューが表示されない場合は「別のタブで開く」をお試しください。第三者への再配布はご遠慮ください。</span></p>'
         + '</div>';
     } else if(k==='external'){
       stage.innerHTML='<div class="lib-pad"><div class="lib-box"><div class="lib-box__body">'

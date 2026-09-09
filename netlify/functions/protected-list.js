@@ -27,7 +27,7 @@ exports.handler = async (event) => {
     if(status==='draft' && role!=='STAFF') continue; // drafts are hidden from customers
     files.push({ id:key, kind:meta.kind||'file', url:(meta.kind==='link'?meta.url:undefined), name:meta.name, title:meta.title||meta.name, group:meta.group||'', role:meta.role, status, sizeLabel:meta.sizeLabel, contentType:meta.contentType, uploadedAt:meta.uploadedAt, updatedAt:meta.updatedAt||meta.uploadedAt,
       // Media Library fields. Derived where possible so existing records need
-      // no migration; /customer/downloads.html simply ignores the extras.
+      // no migration; a client that does not know the extra fields ignores them.
       mediaType: M.mediaTypeOf(meta),
       description: meta.description||'',
       thumb: meta.thumb||'',
