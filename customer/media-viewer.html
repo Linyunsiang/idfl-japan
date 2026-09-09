@@ -8,130 +8,142 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <meta name="referrer" content="no-referrer">
-<title>資料ビューア | IDFL JAPAN</title>
-<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
-<style>
-  :root{--accent:#1255A0;--accent2:#0d4383;--ink:#17171b;--muted:#6b7280;--line:#e5e7eb;--bg:#f4f7fc;
-        --staff:#b91c1c;--staff-bg:#fee2e2;--cust:#166534;--cust-bg:#dcfce7;
-        --q:#1d4ed8;--q-bg:#dbeafe;--c:#166534;--c-bg:#dcfce7;--fix:#b45309;--fix-bg:#fef3c7;}
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{margin:0;font-family:"Zen Kaku Gothic New",system-ui,-apple-system,sans-serif;color:var(--ink);background:var(--bg);
-       display:flex;flex-direction:column;overflow:hidden}
-  .hd{background:#fff;border-bottom:1px solid var(--line);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex:0 0 auto}
-  .hd img{height:26px}
-  .hd .ttl{font-weight:900;font-size:14px;line-height:1.4;max-width:44vw;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-  .hd .grow{flex:1}
-  .badge{font-size:10.5px;font-weight:900;padding:3px 10px;border-radius:999px}
-  .badge.staff{background:var(--staff-bg);color:var(--staff)}.badge.cust{background:var(--cust-bg);color:var(--cust)}
-  .badge.ver{background:#e5edf7;color:var(--accent)}
-  .badge.draft{background:#fef3c7;color:#92400e}
-  .btn{border:none;border-radius:9px;padding:8px 14px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;min-height:38px;
-       text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
-  .btn-p{background:var(--accent);color:#fff}.btn-p:hover{background:var(--accent2)}
-  .btn-o{background:#fff;color:var(--accent);border:1.5px solid var(--accent)}.btn-o:hover{background:#f0f6fc}
-  .btn-g{background:#eef1f5;color:#374151}.btn-g:hover{background:#e2e7ee}
-  .btn-d{background:#fee2e2;color:#b91c1c}
-  .btn:disabled{opacity:.55;cursor:not-allowed}
-  .btn.on{background:var(--accent);color:#fff}
-
-  .main{flex:1;display:flex;min-height:0}
-  .stage{flex:1;min-width:0;position:relative;background:#fff}
-  .stage iframe{width:100%;height:100%;border:0;display:block;background:#fff}
-  .stage .msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:30px;color:var(--muted);font-size:14px;line-height:1.9}
-  .filecard{max-width:520px;margin:0 auto;background:#fff;border:1px solid var(--line);border-radius:14px;padding:26px;text-align:center}
-  .filecard h2{font-size:17px;margin:0 0 8px;color:#0f2c4d}
-  .filecard p{font-size:13px;color:var(--muted);line-height:1.9;margin:0 0 16px;white-space:pre-wrap}
-
-  .drawer{width:372px;max-width:100%;flex:0 0 auto;background:#fff;border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
-  .drawer.hide{display:none}
-  .dhd{padding:13px 16px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:8px;flex:0 0 auto}
-  .dhd h2{font-size:14px;margin:0;font-weight:900;color:#0f2c4d}
-  .dbody{flex:1;overflow:auto;padding:14px 16px 22px}
-  .dfoot{border-top:1px solid var(--line);padding:12px 16px;flex:0 0 auto;background:#fafbfd}
-  .hint{font-size:11.5px;color:var(--muted);line-height:1.8}
-  .fbitem{border:1px solid var(--line);border-radius:11px;padding:11px 12px;margin-bottom:10px;background:#fff;cursor:pointer}
-  .fbitem:hover{border-color:var(--accent);background:#f8fbff}
-  .fbitem .top{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-  .fbitem .n{background:var(--accent);color:#fff;min-width:22px;height:22px;border-radius:999px;font-size:11.5px;font-weight:900;
-             display:inline-flex;align-items:center;justify-content:center;padding:0 6px;flex:0 0 auto}
-  .fbitem .n.off{background:#9aa3af}
-  .fbitem .msg{font-size:12.5px;line-height:1.8;margin-top:7px;white-space:pre-wrap;word-break:break-word}
-  .fbitem .sec{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.7;word-break:break-word}
-  .fbitem .reply{margin-top:9px;background:#f0f6fc;border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:8px 10px;font-size:12px;line-height:1.8;white-space:pre-wrap;word-break:break-word}
-  .fbitem .reply b{display:block;font-size:10.5px;color:var(--accent);margin-bottom:3px}
-  .tag{font-size:10px;font-weight:800;padding:3px 8px;border-radius:999px}
-  .tag.question{background:var(--q-bg);color:var(--q)}
-  .tag.comment{background:var(--c-bg);color:var(--c)}
-  .tag.correction{background:var(--fix-bg);color:var(--fix)}
-  .tag.st{background:#eef1f5;color:#374151}
-  .tag.old{background:#fef3c7;color:#92400e}
-  .empty{color:var(--muted);font-size:12.5px;line-height:1.9;padding:14px 2px}
-
-  .ov{position:fixed;inset:0;background:rgba(9,31,62,.55);display:none;align-items:flex-start;justify-content:center;z-index:40;padding:24px 14px;overflow:auto}
-  .ov.open{display:flex}
-  .modal{background:#fff;border-radius:14px;max-width:520px;width:100%;padding:22px}
-  .modal h3{margin:0 0 4px;font-size:16px;color:#0f2c4d}
-  .modal .lead{font-size:12px;color:var(--muted);line-height:1.8;margin:0 0 15px;word-break:break-word}
-  label.f{display:block;margin-bottom:13px;font-size:12.5px;font-weight:700;color:#374151}
-  label.f .req{color:#b91c1c;margin-left:2px}
-  .f input[type=text],.f input[type=email],.f input[type=tel],.f textarea,.f select{width:100%;margin-top:5px;padding:10px 11px;
-      border:1.5px solid var(--line);border-radius:8px;font-size:13.5px;font-family:inherit;font-weight:400}
-  .f input:focus,.f textarea:focus,.f select:focus{outline:3px solid rgba(18,85,160,.22);border-color:var(--accent)}
-  .f textarea{min-height:104px;resize:vertical}
-  .privacy{background:#f4f7fc;border:1px solid var(--line);border-radius:9px;padding:10px 12px;font-size:11.5px;color:#374151;line-height:1.85;margin-bottom:13px}
-  .acts{display:flex;gap:8px;justify-content:flex-end;margin-top:6px;flex-wrap:wrap}
-  .err{color:#b91c1c;font-size:12.5px;font-weight:700;min-height:18px;margin-top:8px}
-  .ok{color:#166534;font-size:12.5px;font-weight:700}
-  .toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#063372;color:#fff;padding:11px 20px;border-radius:11px;
-         font-size:13px;font-weight:700;box-shadow:0 8px 24px rgba(4,34,88,.25);opacity:0;transition:opacity .25s;pointer-events:none;z-index:60}
-
-  @media(max-width:860px){
-    .main{flex-direction:column}
-    .drawer{width:100%;border-left:none;border-top:1px solid var(--line);max-height:52vh}
-    .hd .ttl{max-width:100%;white-space:normal}
-  }
-</style>
+<title>資料ビューア | IDFL JAPAN お客様ポータル</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/library.css">
 </head>
 <body>
-  <div class="hd">
-    <a href="/customer/media.html" title="メディアライブラリへ"><img src="/IDFL-Logo.png" alt="IDFL JAPAN"></a>
-    <span class="ttl" id="mTitle">読み込み中…</span>
-    <span class="badge ver" id="mVer" style="display:none"></span>
-    <span class="badge draft" id="mDraft" style="display:none">下書き</span>
-    <div class="grow"></div>
-    <button class="btn btn-o" id="fbToggle" style="display:none" onclick="toggleDrawer()">フィードバック</button>
-    <a class="btn btn-g" href="/customer/media.html">← ライブラリに戻る</a>
-  </div>
 
-  <div class="main">
-    <div class="stage" id="stage"><div class="msg" id="stageMsg">認証を確認しています…</div></div>
-    <aside class="drawer hide" id="drawer">
-      <div class="dhd"><h2>フィードバック</h2><div class="grow" style="flex:1"></div>
-        <button class="btn btn-g" onclick="toggleDrawer()" aria-label="閉じる">✕</button></div>
-      <div class="dbody" id="fbList"><div class="empty">読み込み中…</div></div>
-      <div class="dfoot">
-        <button class="btn btn-p" id="addBtn" style="width:100%" onclick="startPick()">コメントを追加</button>
-        <p class="hint" id="pickHint" style="margin:9px 0 0">資料の中でコメントしたい箇所をクリックすると、その位置にコメントを残せます。</p>
-      </div>
-    </aside>
-  </div>
+<div class="lib-app">
 
-  <div class="ov" id="ov"><div class="modal">
-    <h3 id="ovTitle">フィードバックを送る</h3>
-    <p class="lead" id="ovLead"></p>
-    <div id="ovBody"></div>
-    <div class="err" id="ovErr" role="alert"></div>
-    <div class="acts">
-      <button class="btn btn-g" onclick="closeModal()">キャンセル</button>
-      <button class="btn btn-p" id="ovSend" onclick="submitFeedback()">送信する</button>
+  <header class="lib-head" id="libHeadBar">
+    <button type="button" class="lib-btn lib-btn--quiet lib-railtoggle" id="libRailToggle"
+            aria-expanded="false" aria-controls="libRail">
+      <svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      資料一覧
+    </button>
+
+    <a class="lib-head__brand" href="/">
+      <img src="/IDFL-Logo.png" alt="IDFL JAPAN" width="88" height="26">
+      <span class="lib-head__wordmark">IDFL JAPAN</span>
+    </a>
+    <span class="lib-head__sep" aria-hidden="true"></span>
+    <span class="lib-head__portal">お客様ポータル</span>
+
+    <span class="lib-head__grow"></span>
+
+    <div class="lib-head__actions">
+      <span class="lib-badge" id="libRole" hidden></span>
+      <a class="lib-btn lib-btn--quiet" href="/customer/downloads.html">ダウンロード一覧</a>
+      <button type="button" class="lib-btn lib-btn--quiet" id="libLogout" hidden>ログアウト</button>
     </div>
-  </div></div>
+  </header>
 
-  <div class="toast" id="toast"></div>
+  <div class="lib-body">
 
+    <aside class="lib-rail" id="libRail" aria-label="資料の一覧">
+      <div class="lib-rail__head">
+        <h2 class="lib-rail__title">
+          メディアライブラリ
+          <span class="lib-head__grow"></span>
+          <button type="button" class="lib-btn lib-btn--quiet lib-btn--icon lib-rail__close" id="libRailClose" aria-label="資料一覧を閉じる">
+            <svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </h2>
+
+        <div class="lib-search" id="libSearchWrap">
+          <svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+          <label class="lib-sr-only" for="libSearch">資料を検索</label>
+          <input type="search" id="libSearch" placeholder="タイトル・説明で検索" autocomplete="off" spellcheck="false">
+          <button type="button" class="lib-search__clear" id="libSearchClear" aria-label="検索条件を消す">
+            <svg class="lib-i lib-i-sm" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <ul class="lib-types" id="libTypes" aria-label="資料の種類でしぼり込む"></ul>
+
+      <div class="lib-rail__scroll lib-scroll">
+        <p class="lib-scope" id="libScope" role="status" aria-live="polite"></p>
+        <nav id="libList" aria-label="資料"></nav>
+      </div>
+
+      <p class="lib-rail__foot">IDFLのお客様専用の保護領域です。第三者への再配布はご遠慮ください。</p>
+    </aside>
+
+    <main class="lib-main lib-main--viewer" id="libMain">
+
+      <div class="vw-head" id="vwHead">
+        <ol class="lib-crumb" id="vwCrumb">
+          <li><a href="/customer/media.html">メディアライブラリ</a></li>
+        </ol>
+        <div class="vw-head__row">
+          <div class="vw-head__main">
+            <h1 class="vw-title" id="mTitle">読み込み中…</h1>
+            <ul class="vw-facts" id="vwFacts"></ul>
+            <p class="vw-desc" id="vwDesc" hidden></p>
+          </div>
+          <div class="vw-head__tools" id="vwTools">
+            <button type="button" class="lib-btn lib-btn--secondary" id="fbToggle" hidden aria-expanded="false" aria-controls="drawer">
+              <svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 13.5a2.5 2.5 0 0 1-2.5 2.5H9l-4.5 3.4V6.5A2.5 2.5 0 0 1 7 4h10.5A2.5 2.5 0 0 1 20 6.5z"/></svg>
+              フィードバック
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="vw-body">
+        <div class="vw-stage" id="stage">
+          <div class="lib-msg" id="stageMsg"><p>認証を確認しています…</p></div>
+        </div>
+
+        <aside class="vw-drawer" id="drawer" hidden aria-label="この資料へのフィードバック">
+          <div class="vw-drawer__head">
+            <svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 13.5a2.5 2.5 0 0 1-2.5 2.5H9l-4.5 3.4V6.5A2.5 2.5 0 0 1 7 4h10.5A2.5 2.5 0 0 1 20 6.5z"/></svg>
+            フィードバック
+            <span class="lib-head__grow"></span>
+            <button type="button" class="lib-btn lib-btn--quiet lib-btn--icon" id="fbClose" aria-label="フィードバックを閉じる">
+              <svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+          <div class="vw-drawer__body lib-scroll" id="fbList"><div class="vw-empty">読み込み中…</div></div>
+          <div class="vw-drawer__foot">
+            <button type="button" class="lib-btn lib-btn--primary" id="addBtn" style="width:100%">コメントを追加</button>
+            <p class="vw-fb__where" id="pickHint" style="margin:9px 0 0">資料の中でコメントしたい箇所をクリックすると、その位置にコメントを残せます。</p>
+          </div>
+        </aside>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<div class="lib-scrim" id="libScrim"></div>
+
+<div class="vw-ov" id="ov" role="dialog" aria-modal="true" aria-labelledby="ovTitle">
+  <div class="vw-modal">
+    <h2 id="ovTitle">フィードバックを送る</h2>
+    <p class="vw-modal__lead" id="ovLead"></p>
+    <div id="ovBody"></div>
+    <div class="vw-err" id="ovErr" role="alert"></div>
+    <div class="vw-acts">
+      <button type="button" class="lib-btn lib-btn--quiet" id="ovCancel">キャンセル</button>
+      <button type="button" class="lib-btn lib-btn--primary" id="ovSend">送信する</button>
+    </div>
+  </div>
+</div>
+
+<div class="vw-toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="/js/library-shell.js"></script>
 <script>
 (function(){
+  'use strict';
+  var L = window.IDFLLib;
+  var esc = L.esc, icon = L.icon;
+
   var ROLE='PUBLIC', MEDIA=null, ITEMS=[], NONCE='', FRAME=null, PICKING=false, PENDING=null, DRAWER=false;
   var TOKEN_KEY='idflFbToken', CONTACT_KEY='idflFbContact';
   var TAG='__idflfb';
@@ -143,11 +155,17 @@
   var FOCUS_ID=String(qs.get('fb')||'');
   var SELF='/customer/media-viewer.html?id='+encodeURIComponent(MEDIA_ID)+(FOCUS_ID?('&fb='+encodeURIComponent(FOCUS_ID)):'');
 
-  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(m){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m];});}
   function el(id){return document.getElementById(id);}
-  function toast(m){var t=el('toast');t.textContent=m;t.style.opacity='1';clearTimeout(t._t);t._t=setTimeout(function(){t.style.opacity='0';},2800);}
+  function toast(m){var t=el('toast');t.textContent=m;t.classList.add('is-on');clearTimeout(t._t);t._t=setTimeout(function(){t.classList.remove('is-on');},2800);}
   function go(){ location.replace('/login.html?role=customer&next='+encodeURIComponent(SELF)); }
-  function stageMsg(html){ el('stage').innerHTML='<div class="msg">'+html+'</div>'; }
+
+  function stageMsg(iconName, title, body, action){
+    el('stage').className='vw-stage vw-stage--scroll';
+    el('stage').innerHTML='<div class="lib-msg">'+icon(iconName)
+      +(title?'<h2>'+title+'</h2>':'')
+      +(body?'<p>'+body+'</p>':'')
+      +(action||'')+'</div>';
+  }
 
   // Stable per-browser handle so a customer can see their own feedback again
   // later. Random, not derived from the e-mail address, and never in a URL.
@@ -173,28 +191,70 @@
   }
 
   // ------------------------------------------------------------- bootstrap
-  if(!/^[A-Za-z0-9_-]{1,64}$/.test(MEDIA_ID)){ stageMsg('資料IDが指定されていません。<br><a href="/customer/media.html">メディアライブラリへ戻る</a>'); return; }
+  if(!/^[A-Za-z0-9_-]{1,64}$/.test(MEDIA_ID)){
+    stageMsg('alert','資料が指定されていません','アドレスに資料の指定が含まれていません。左の一覧から資料をお選びください。',
+      '<a class="lib-btn lib-btn--secondary" href="/customer/media.html">メディアライブラリへ</a>');
+  }
 
-  fetch('/.netlify/functions/auth-status',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
-    ROLE=(j&&j.role)||'PUBLIC';
-    if(ROLE!=='CUSTOMER'&&ROLE!=='STAFF'){ go(); return; }
-    return fetch('/.netlify/functions/protected-list',{cache:'no-store'}).then(function(r){return r.json();});
-  }).then(function(j){
-    if(!j) return;
-    var found=null, files=(j&&j.files)||[];
-    for(var i=0;i<files.length;i++) if(files[i].id===MEDIA_ID){ found=files[i]; break; }
-    if(!found){ stageMsg('この資料は見つからないか、閲覧権限がありません。<br><a href="/customer/media.html">メディアライブラリへ戻る</a>'); return; }
-    MEDIA=found;
-    el('mTitle').textContent=MEDIA.title||MEDIA.name||'資料';
-    document.title=(MEDIA.title||MEDIA.name||'資料')+' | IDFL JAPAN';
-    if(MEDIA.version){ el('mVer').textContent='Version '+MEDIA.version; el('mVer').style.display='inline-block'; }
-    if(MEDIA.status==='draft') el('mDraft').style.display='inline-block';
-    el('fbToggle').style.display='inline-flex';
-    if(MEDIA.mediaType==='html') mountHtml(); else mountFile();
-    loadFeedback();
-  }).catch(function(){ stageMsg('読み込みに失敗しました。ページを再読み込みしてください。'); });
+  L.boot({
+    activeId: MEDIA_ID,
+    next: SELF,
+    onReady: function(ctx){
+      ROLE=ctx.role;
+      if(!/^[A-Za-z0-9_-]{1,64}$/.test(MEDIA_ID)) return;
+      if(!ctx.active){
+        el('mTitle').textContent='資料が見つかりません';
+        stageMsg('alert','この資料は表示できません',
+          '削除されたか、閲覧権限がない可能性があります。左の一覧から他の資料をお選びください。',
+          '<a class="lib-btn lib-btn--secondary" href="/customer/media.html">メディアライブラリへ</a>');
+        return;
+      }
+      MEDIA=ctx.active;
+      renderHead();
+      el('fbToggle').hidden=false;
+      if(MEDIA.mediaType==='html') mountHtml(); else mountFile();
+      loadFeedback();
+    },
+    onListFail: function(){
+      stageMsg('alert','読み込みに失敗しました','通信が不安定な可能性があります。ページを再読み込みしてください。',
+        '<button type="button" class="lib-btn lib-btn--secondary" onclick="location.reload()">再読み込み</button>');
+    }
+  });
+
+  // ------------------------------------------------------------ the header
+  function renderHead(){
+    var t=MEDIA.title||MEDIA.name||'資料';
+    document.title=t+' | IDFL JAPAN お客様ポータル';
+    el('mTitle').textContent=t;
+
+    var g=L.groupOf(MEDIA);
+    el('vwCrumb').innerHTML=
+       '<li><a href="/customer/media.html'+(L.railParams()?('?'+L.railParams().slice(1)):'')+'">メディアライブラリ</a></li>'
+      +'<li><span class="lib-crumb__sep" aria-hidden="true">/</span><span>'+esc(g)+'</span></li>'
+      +'<li><span class="lib-crumb__sep" aria-hidden="true">/</span><span aria-current="page">'+esc(t)+'</span></li>';
+
+    var k=L.typeOf(MEDIA);
+    var facts=[];
+    facts.push('<li><span class="lib-badge lib-badge--type">'+icon(L.typeIcon(k),'lib-i-sm')+esc(L.typeLabel(k))+'</span></li>');
+    var staffOnly = MEDIA.role==='staff';
+    facts.push('<li><span class="lib-badge '+(staffOnly?'lib-badge--staff':'lib-badge--customer')+'">'
+      + (staffOnly?'IDFL STAFF専用':'お客様専用') + '</span></li>');
+    if(MEDIA.status==='draft') facts.push('<li><span class="lib-badge lib-badge--draft">下書き（STAFFのみ）</span></li>');
+    if(MEDIA.version) facts.push('<li><span class="lib-badge lib-badge--version lib-num" id="mVer">Version '+esc(MEDIA.version)+'</span></li>');
+    var d=L.day(MEDIA);
+    if(d) facts.push('<li>更新 <b class="lib-num">'+esc(d)+'</b></li>');
+    if(MEDIA.sizeLabel) facts.push('<li>サイズ <b class="lib-num">'+esc(MEDIA.sizeLabel)+'</b></li>');
+    if(k!=='external'&&k!=='html'&&MEDIA.name) facts.push('<li>ファイル <b>'+esc(MEDIA.name)+'</b></li>');
+    if(k==='html'&&MEDIA.assetCount) facts.push('<li>構成 <b class="lib-num">'+esc(MEDIA.assetCount)+' ファイル</b></li>');
+    el('vwFacts').innerHTML=facts.join('');
+
+    if(MEDIA.description){ el('vwDesc').textContent=MEDIA.description; el('vwDesc').hidden=false; }
+  }
 
   // ------------------------------------------------------------ presentation
+  // Unchanged from the previous viewer: a one-time nonce, a grant scoped to
+  // this record, and a frame with no allow-same-origin. Only the surrounding
+  // markup moved.
   function mountHtml(){
     NONCE=randNonce();
     fetch('/.netlify/functions/media-grant?id='+encodeURIComponent(MEDIA_ID),{cache:'no-store'})
@@ -202,12 +262,13 @@
       .then(function(o){
         if(o.s!==200||!o.j.ok){
           if(o.s===401){ go(); return; }
-          stageMsg(esc((o.j&&o.j.error)||'資料を開けませんでした。'));
+          stageMsg('alert','資料を開けませんでした',esc((o.j&&o.j.error)||'もう一度お試しください。'));
           return;
         }
         var base='/media/'+encodeURIComponent(MEDIA_ID)+'/'+encodeURIComponent(o.j.token)+'/f-'+NONCE+'/';
         var f=document.createElement('iframe');
         f.id='frame';
+        f.className='vw-frame';
         f.title=MEDIA.title||'資料';
         f.src=base+o.j.entry;
         // No allow-same-origin: the presentation gets an opaque origin and can
@@ -216,30 +277,69 @@
         f.setAttribute('sandbox','allow-scripts allow-popups allow-popups-to-escape-sandbox allow-modals allow-forms allow-downloads');
         // fullscreen, and autoplay so a package that carries narration can turn
         // sound on from its own controls. A cross-origin frame holds no autoplay
-        // permission of its own, and the manual's clips live in a nested frame of
+        // permission of its own, and a package's clips live in a nested frame of
         // their own again - without this delegation the user's click on the
-        // manual's 音声 button never reaches the frame that owns the <video>, and
-        // Chrome refuses to unmute. Delegating autoplay does not widen what the
-        // package can reach: the sandbox still withholds allow-same-origin, so it
-        // still has an opaque origin, no session cookie and no access to this page.
+        // package's sound button never reaches the frame that owns the <video>,
+        // and Chrome refuses to unmute. Delegating autoplay does not widen what
+        // the package can reach: the sandbox still withholds allow-same-origin,
+        // so it still has an opaque origin, no session cookie and no access to
+        // this page.
         f.setAttribute('allow','fullscreen; autoplay');
         f.setAttribute('referrerpolicy','no-referrer');
-        el('stage').innerHTML=''; el('stage').appendChild(f);
+        var stage=el('stage');
+        stage.className='vw-stage';
+        stage.innerHTML='';
+        stage.appendChild(f);
         FRAME=f;
       })
-      .catch(function(){ stageMsg('資料を開けませんでした。'); });
+      .catch(function(){ stageMsg('alert','資料を開けませんでした','通信が不安定な可能性があります。ページを再読み込みしてください。'); });
   }
 
+  // ---------------------------------------------------- everything else
   function mountFile(){
-    var url='/.netlify/functions/protected-file?id='+encodeURIComponent(MEDIA_ID);
-    var isLink=MEDIA.mediaType==='external';
-    el('stage').innerHTML='<div class="msg"><div class="filecard">'
-      + '<h2>'+esc(MEDIA.title||MEDIA.name)+'</h2>'
-      + (MEDIA.description?'<p>'+esc(MEDIA.description)+'</p>':'<p>この資料はブラウザ内表示に対応していません。下のボタンからご利用ください。</p>')
-      + (isLink
-          ? '<a class="btn btn-o" href="'+url+'" target="_blank" rel="noopener">開く ↗</a>'
-          : '<a class="btn btn-p" href="'+url+'" download>ダウンロード</a>')
-      + '</div></div>';
+    var url=L.fileUrl(MEDIA_ID);
+    var k=L.typeOf(MEDIA);
+    var stage=el('stage');
+    stage.className='vw-stage vw-stage--scroll lib-scroll';
+
+    if(k==='image'){
+      stage.innerHTML='<div class="vw-pad">'
+        + '<div class="lib-actions">'
+        +   '<a class="lib-btn lib-btn--primary" href="'+url+'" download>'+icon('download')+'ダウンロード</a>'
+        + '</div>'
+        + '<div class="lib-panel"><img class="lib-stage__img" src="'+url+'&inline=1" alt="'+esc(MEDIA.title||MEDIA.name||'画像')+'"></div>'
+        + '</div>';
+      return;
+    }
+
+    if(k==='pdf'){
+      stage.innerHTML='<div class="vw-pad">'
+        + '<div class="lib-actions">'
+        +   '<a class="lib-btn lib-btn--primary" href="'+url+'" download>'+icon('download')+'ダウンロード</a>'
+        +   '<a class="lib-btn lib-btn--secondary" href="'+url+'&inline=1" target="_blank" rel="noopener noreferrer">'+icon('external')+'別のタブで開く</a>'
+        + '</div>'
+        + '<div class="lib-panel"><iframe class="lib-stage__pdf" src="'+url+'&inline=1" title="'+esc(MEDIA.title||MEDIA.name||'PDF')+'"></iframe></div>'
+        + '<p class="lib-note">'+icon('info')+'<span>プレビューが表示されない場合は、上の「ダウンロード」からご覧ください。</span></p>'
+        + '</div>';
+      return;
+    }
+
+    if(k==='external'){
+      stage.innerHTML='<div class="vw-pad">'
+        + '<div class="lib-panel"><div class="lib-panel__body">'
+        +   '<h2 class="lib-h2">外部サイトの資料です</h2>'
+        +   '<p style="margin:0 0 18px;color:var(--lib-ink-2)">この項目はIDFL以外のサイトで公開されています。新しいタブで開きます。</p>'
+        +   '<a class="lib-btn lib-btn--primary" href="'+url+'" target="_blank" rel="noopener noreferrer">'+icon('external')+'開く</a>'
+        + '</div></div></div>';
+      return;
+    }
+
+    stage.innerHTML='<div class="vw-pad">'
+      + '<div class="lib-panel"><div class="lib-panel__body">'
+      +   '<h2 class="lib-h2">'+icon('document')+'この資料はダウンロードしてご覧ください</h2>'
+      +   '<p style="margin:0 0 18px;color:var(--lib-ink-2)">ブラウザー内での表示に対応していない形式です。</p>'
+      +   '<a class="lib-btn lib-btn--primary" href="'+url+'" download>'+icon('download')+'ダウンロード</a>'
+      + '</div></div></div>';
   }
 
   // ---------------------------------------------------------- iframe bridge
@@ -302,7 +402,7 @@
         FOCUS_ID='';
       }
     }).catch(function(){
-      if(!ITEMS.length) el('fbList').innerHTML='<div class="empty">フィードバックを読み込めませんでした。</div>';
+      if(!ITEMS.length) el('fbList').innerHTML='<div class="vw-empty">フィードバックを読み込めませんでした。</div>';
     });
   }
 
@@ -310,82 +410,106 @@
     var box=el('fbList');
     var top=keepScroll?box.scrollTop:0;
     if(!ITEMS.length){
-      box.innerHTML='<div class="empty">まだフィードバックはありません。<br>「コメントを追加」から、資料の気になる箇所についてご質問・ご意見をお送りいただけます。<br><br>ここには、お客様ご自身が送信された内容と、IDFLが共有として公開した内容のみが表示されます。</div>';
+      box.innerHTML='<div class="vw-empty">まだフィードバックはありません。<br>「コメントを追加」から、資料の気になる箇所についてご質問・ご意見をお送りいただけます。<br><br>ここには、お客様ご自身が送信された内容と、IDFLが共有として公開した内容のみが表示されます。</div>';
       return;
     }
     box.innerHTML=ITEMS.map(function(it,i){
       var n=i+1;
       var old = MEDIA && MEDIA.version && it.mediaVersion && it.mediaVersion!==MEDIA.version;
-      return '<div class="fbitem" onclick="focusItem('+n+')">'
-        + '<div class="top"><span class="n'+(it._unresolved?' off':'')+'">'+n+'</span>'
-        + '<span class="tag '+esc(it.type)+'">'+esc(it.typeLabel||TYPE_LABEL[it.type]||it.type)+'</span>'
-        + '<span class="tag st">'+esc(it.statusLabel||'受付済み')+'</span>'
-        + (old?'<span class="tag old">Version '+esc(it.mediaVersion)+' へのコメント</span>':'')
-        + '</div>'
-        + '<div class="msg">'+esc(it.message)+'</div>'
+      return '<button type="button" class="vw-fb" data-n="'+n+'">'
+        + '<span class="vw-fb__top"><span class="vw-fb__n'+(it._unresolved?' is-stale':'')+'">'+n+'</span>'
+        + '<span class="vw-tag vw-tag--'+esc(it.type)+'">'+esc(it.typeLabel||TYPE_LABEL[it.type]||it.type)+'</span>'
+        + '<span class="vw-tag vw-tag--status">'+esc(it.statusLabel||'受付済み')+'</span>'
+        + (old?'<span class="vw-tag vw-tag--stale">Version '+esc(it.mediaVersion)+' へのコメント</span>':'')
+        + '</span>'
+        + '<span class="vw-fb__msg">'+esc(it.message)+'</span>'
         + (it.anchor&&(it.anchor.section||it.anchor.textQuote)
-            ? '<div class="sec">対象箇所: '+esc((it.anchor.section?it.anchor.section+' / ':'')+String(it.anchor.textQuote||'').slice(0,70))+'</div>' : '')
-        + (it._unresolved&&it.anchor?'<div class="sec">※ 資料が更新されたため、この位置は表示できません。</div>':'')
-        + (it.staffReply?'<div class="reply"><b>IDFLからの回答</b>'+esc(it.staffReply)+'</div>':'')
-        + '</div>';
+            ? '<span class="vw-fb__where">対象箇所: '+esc((it.anchor.section?it.anchor.section+' / ':'')+String(it.anchor.textQuote||'').slice(0,70))+'</span>' : '')
+        + (it._unresolved&&it.anchor?'<span class="vw-fb__where">※ 資料が更新されたため、この位置は表示できません。</span>':'')
+        + (it.staffReply?'<span class="vw-fb__reply"><b>IDFLからの回答</b>'+esc(it.staffReply)+'</span>':'')
+        + '</button>';
     }).join('');
     box.scrollTop=top;
   }
 
-  window.focusItem=function(n){
+  el('fbList').addEventListener('click',function(e){
+    var b=e.target.closest('.vw-fb');
+    if(b) focusItem(parseInt(b.dataset.n,10));
+  });
+
+  function focusItem(n){
     if(!DRAWER) toggleDrawer();
     send({cmd:'focusPin', n:n});
-  };
+  }
+  window.focusItem=focusItem;
 
-  window.toggleDrawer=function(){
+  function toggleDrawer(){
     DRAWER=!DRAWER;
-    el('drawer').classList.toggle('hide',!DRAWER);
-    el('fbToggle').classList.toggle('on',DRAWER);
-  };
+    el('drawer').hidden=!DRAWER;
+    el('fbToggle').classList.toggle('is-on',DRAWER);
+    el('fbToggle').setAttribute('aria-expanded',DRAWER?'true':'false');
+    document.body.setAttribute('data-drawer',DRAWER?'open':'');
+    if(!DRAWER) el('fbToggle').focus();
+  }
+  window.toggleDrawer=toggleDrawer;
+  el('fbToggle').addEventListener('click',toggleDrawer);
+  el('fbClose').addEventListener('click',toggleDrawer);
 
   function setPickUi(on){
     el('addBtn').textContent = on ? 'クリック待ち…（中止するにはもう一度押す）' : 'コメントを追加';
-    el('addBtn').classList.toggle('on',on);
+    el('addBtn').classList.toggle('is-on',on);
     el('pickHint').textContent = on
       ? '資料内のコメントしたい箇所をクリックしてください。Esc または上のボタンで中止できます。'
       : '資料の中でコメントしたい箇所をクリックすると、その位置にコメントを残せます。';
   }
 
-  window.startPick=function(){
+  function startPick(){
     if(!MEDIA) return;
     if(MEDIA.mediaType!=='html'||!FRAME){ openForm(null); return; }   // no anchor: general feedback
     PICKING=!PICKING;
     setPickUi(PICKING);
     send({cmd:'pickMode', on:PICKING});
-  };
+  }
+  window.startPick=startPick;
+  el('addBtn').addEventListener('click',startPick);
 
   // ----------------------------------------------------------------- form
+  var lastModalFocus=null;
   function openForm(anchor){
     PENDING={anchor:anchor||null};
+    lastModalFocus=document.activeElement;
     var c=savedContact();
     var where = anchor ? [anchor.section, String(anchor.textQuote||'').slice(0,80)].filter(Boolean).join(' / ') : '';
     el('ovLead').textContent = where ? ('対象箇所: '+where) : '資料全体へのフィードバックとして送信します。';
     el('ovBody').innerHTML=
-       '<label class="f">フィードバックの種類<span class="req">*</span>'
+       '<label class="vw-field">フィードバックの種類<span class="vw-req">*</span>'
       +'<select id="fType"><option value="question">質問</option><option value="comment">コメント・補足</option><option value="correction">修正依頼</option></select></label>'
-      +'<label class="f">フィードバック内容<span class="req">*</span>'
+      +'<label class="vw-field">フィードバック内容<span class="vw-req">*</span>'
       +'<textarea id="fMsg" maxlength="4000" placeholder="ご質問・ご意見・修正のご依頼をご記入ください。"></textarea></label>'
-      +'<div class="privacy">ご入力いただいた情報は、本資料に関するご質問・ご連絡への対応のために使用します。<br>お名前・メールアドレス・電話番号が他のお客様に表示されることはありません。</div>'
-      +'<label class="f">お名前<span class="req">*</span><input type="text" id="fName" maxlength="100" autocomplete="name" value="'+esc(c.name||'')+'"></label>'
-      +'<label class="f">メールアドレス<span class="req">*</span><input type="email" id="fEmail" maxlength="200" autocomplete="email" value="'+esc(c.email||'')+'"></label>'
-      +'<label class="f">電話番号<span class="req">*</span><input type="tel" id="fPhone" maxlength="40" autocomplete="tel" placeholder="06-1234-5678" value="'+esc(c.phone||'')+'"></label>';
+      +'<div class="vw-privacy">ご入力いただいた情報は、本資料に関するご質問・ご連絡への対応のために使用します。<br>お名前・メールアドレス・電話番号が他のお客様に表示されることはありません。</div>'
+      +'<label class="vw-field">お名前<span class="vw-req">*</span><input type="text" id="fName" maxlength="100" autocomplete="name" value="'+esc(c.name||'')+'"></label>'
+      +'<label class="vw-field">メールアドレス<span class="vw-req">*</span><input type="email" id="fEmail" maxlength="200" autocomplete="email" value="'+esc(c.email||'')+'"></label>'
+      +'<label class="vw-field">電話番号<span class="vw-req">*</span><input type="tel" id="fPhone" maxlength="40" autocomplete="tel" placeholder="06-1234-5678" value="'+esc(c.phone||'')+'"></label>';
     el('ovErr').textContent='';
     el('ovSend').disabled=false; el('ovSend').textContent='送信する';
-    el('ov').classList.add('open');
+    el('ov').classList.add('is-open');
     setTimeout(function(){ el('fMsg').focus(); },40);
   }
 
-  window.closeModal=function(){ el('ov').classList.remove('open'); PENDING=null; };
+  function closeModal(){
+    el('ov').classList.remove('is-open');
+    PENDING=null;
+    if(lastModalFocus&&lastModalFocus.focus) lastModalFocus.focus();
+    lastModalFocus=null;
+  }
+  window.closeModal=closeModal;
+  el('ovCancel').addEventListener('click',closeModal);
+  el('ov').addEventListener('mousedown',function(e){ if(e.target===el('ov')) closeModal(); });
 
   function emailOk(v){ return /^[^\s@]{1,64}@[A-Za-z0-9][A-Za-z0-9.-]*\.[A-Za-z]{2,}$/.test(v); }
   function phoneOk(v){ return /^[0-9+\-() .]+$/.test(v) && v.replace(/[^0-9]/g,'').length>=9; }
 
-  window.submitFeedback=function(){
+  function submitFeedback(){
     if(!PENDING) return;
     var err=el('ovErr'); err.textContent='';
     var type=el('fType').value;
@@ -428,13 +552,20 @@
         btn.disabled=false; btn.textContent='送信する';
       })
       .catch(function(){ err.textContent='通信エラーが発生しました。'; btn.disabled=false; btn.textContent='送信する'; });
-  };
+  }
+  window.submitFeedback=submitFeedback;
+  el('ovSend').addEventListener('click',submitFeedback);
 
   document.addEventListener('keydown',function(e){
-    if(e.key==='Escape'){
-      if(el('ov').classList.contains('open')) closeModal();
-      else if(PICKING){ PICKING=false; setPickUi(false); send({cmd:'pickMode',on:false}); }
-    }
+    if(e.key!=='Escape') return;
+    if(el('ov').classList.contains('is-open')){ closeModal(); return; }
+    if(PICKING){ PICKING=false; setPickUi(false); send({cmd:'pickMode',on:false}); return; }
+    if(DRAWER && window.matchMedia('(max-width:1100px)').matches){ toggleDrawer(); }
+  });
+
+  // The one scrim serves whichever panel is open.
+  el('libScrim').addEventListener('click',function(){
+    if(DRAWER && window.matchMedia('(max-width:1100px)').matches) toggleDrawer();
   });
 })();
 </script>

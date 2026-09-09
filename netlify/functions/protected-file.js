@@ -27,7 +27,15 @@ exports.handler = async (event) => {
   // The Media Library renders protected images as thumbnails, which needs an
   // inline disposition. Images only - everything else stays a download.
   const ct = meta.contentType || 'application/octet-stream';
-  const wantInline = ((event.queryStringParameters||{}).inline==='1') && /^image\//.test(ct);
+  // Inline is opt-in per request AND restricted by type. Images have always
+  // been served inline for the library's thumbnails; PDF joins them so the
+  // viewer can preview one in place instead of forcing a download for a
+  // customer who only wants to read a page. Nothing else is ever inline: an
+  // Office file or an unknown type rendered in-page is a way to get markup
+  // interpreted on our origin, which is exactly what nosniff plus attachment
+  // is here to prevent.
+  const INLINE_OK = /^image\//.test(ct) || String(ct).split(';')[0].trim() === 'application/pdf';
+  const wantInline = ((event.queryStringParameters||{}).inline==='1') && INLINE_OK;
   return {
     statusCode:200,
     headers:{

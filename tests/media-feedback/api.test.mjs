@@ -766,7 +766,11 @@ await t('an external link still redirects', async () => {
   assert.equal(r.headers.Location, 'https://example.com/deck');
 });
 
-await t('an image can be served inline for a thumbnail, other types cannot', async () => {
+await t('images and PDF can be served inline, and nothing else can', async () => {
+  // Inline is what lets the library show a thumbnail and the viewer preview a
+  // PDF in place. It is opt-in per request and restricted by type: rendering
+  // an arbitrary upload in-page on our own origin is exactly what attachment
+  // plus nosniff exists to prevent.
   const png = Buffer.concat([Buffer.from('89504e470d0a1a0a', 'hex'), Buffer.alloc(200)]);
   const up = J(await invoke('protected-upload', {
     httpMethod: 'POST', headers: as(STAFF),
@@ -774,10 +778,26 @@ await t('an image can be served inline for a thumbnail, other types cannot', asy
   }));
   const img = await invoke('protected-file', { headers: as(CUST), queryStringParameters: { id: up.id, inline: '1' } });
   assert.match(img.headers['Content-Disposition'], /^inline/);
+  assert.equal(img.headers['X-Content-Type-Options'], 'nosniff');
+
   const j = J(await invoke('protected-list', { headers: as(CUST) }));
   const pdf = j.files.find(f => f.title === 'ガイド');
-  const notImg = await invoke('protected-file', { headers: as(CUST), queryStringParameters: { id: pdf.id, inline: '1' } });
-  assert.match(notImg.headers['Content-Disposition'], /^attachment/, 'inline must be images-only');
+  const pdfInline = await invoke('protected-file', { headers: as(CUST), queryStringParameters: { id: pdf.id, inline: '1' } });
+  assert.match(pdfInline.headers['Content-Disposition'], /^inline/, 'a PDF should preview in place');
+  assert.equal(pdfInline.headers['X-Content-Type-Options'], 'nosniff');
+
+  // Without asking, a PDF is still a download.
+  const pdfPlain = await invoke('protected-file', { headers: as(CUST), queryStringParameters: { id: pdf.id } });
+  assert.match(pdfPlain.headers['Content-Disposition'], /^attachment/);
+
+  // An office document is never inline, however it is asked for.
+  const doc = Buffer.from('PK not really a docx', 'utf8');
+  const up2 = J(await invoke('protected-upload', {
+    httpMethod: 'POST', headers: as(STAFF),
+    body: JSON.stringify({ filename: 'sheet.xlsx', contentBase64: doc.toString('base64'), role: 'customer', title: '表' }),
+  }));
+  const office = await invoke('protected-file', { headers: as(CUST), queryStringParameters: { id: up2.id, inline: '1' } });
+  assert.match(office.headers['Content-Disposition'], /^attachment/, 'only images and PDF may be inline');
 });
 
 await t('an unauthenticated download still redirects to login', async () => {
