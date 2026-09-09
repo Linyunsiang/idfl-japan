@@ -20,44 +20,42 @@
 
   <nav class="lib-rail" id="libRail" aria-label="メディアライブラリ ナビゲーション">
     <a class="lib-rail__brand" href="/">
-      <img src="/IDFL-Logo.png" alt="" width="90" height="28">
+      <span class="lib-rail__logo"><img src="/IDFL-Logo.png" alt="" width="90" height="28"></span>
       <span class="lib-rail__names">
         <span class="lib-rail__name">IDFL JAPAN</span>
-        <span class="lib-rail__sub">CUSTOMER PORTAL</span>
+        <span class="lib-rail__sub">Customer Portal</span>
       </span>
     </a>
 
     <div class="lib-rail__head">
+      <h2 class="lib-rail__label">Media Library</h2>
       <div class="lib-search" id="libSearchWrap">
         <svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
-        <label class="lib-sr-only" for="libSearch">資料を検索</label>
-        <input type="search" id="libSearch" placeholder="資料を検索" autocomplete="off" spellcheck="false">
+        <label class="lib-sr-only" for="libSearch">タイトル・説明で検索</label>
+        <input type="search" id="libSearch" placeholder="タイトル・説明で検索" autocomplete="off" spellcheck="false">
         <button type="button" class="lib-search__clear" id="libSearchClear" aria-label="検索条件を消す">
           <svg class="lib-i lib-i-sm" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18 6 6 18M6 6l12 12"/></svg>
         </button>
       </div>
     </div>
 
-    <div>
-      <h2 class="lib-rail__label">資料の種類</h2>
-      <ul class="lib-types" id="libTypes"></ul>
-    </div>
-
     <div class="lib-rail__scroll lib-scroll">
-      <h2 class="lib-rail__label" style="padding-left:10px">コレクション</h2>
-      <ul class="lib-coll" id="libColl"></ul>
+      <ul class="lib-types" id="libTypes" aria-label="資料の種類でしぼり込む"></ul>
+      <div class="lib-rail__rule" role="presentation"></div>
+      <h2 class="lib-rail__label" id="libCollLabel" style="padding:0 12px">Collections</h2>
+      <ul class="lib-tree" id="libTree" aria-label="コレクション"></ul>
     </div>
 
     <div class="lib-rail__foot">
       <b>
         <svg class="lib-i lib-i-sm" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.2 5 6v5.4c0 4 2.9 7.6 7 9.4 4.1-1.8 7-5.4 7-9.4V6z"/><path d="m9.2 12.1 2 2 3.6-3.9"/></svg>
-        セキュア ワークスペース
+        Secure Workspace
       </b>
-      <span>IDFLのお客様専用の保護領域です。アクセスのたびに権限を確認しています。</span>
+      <span>権限のある方のみ閲覧できます</span>
     </div>
   </nav>
 
-  <main class="lib-work" id="libWork">
+  <div class="lib-work lib-work--viewer" id="libWork">
 
     <header class="lib-bar">
       <button type="button" class="lib-btn lib-btn--quiet lib-btn--icon lib-railtoggle" id="libRailToggle"
@@ -67,37 +65,37 @@
 
       <nav aria-label="パンくずリスト">
         <ol class="lib-crumb" id="libCrumb">
-          <li><a href="/customer/media.html">メディアライブラリ</a></li>
+          <li><a href="/customer/media.html">Media Library</a></li>
         </ol>
       </nav>
 
       <span class="lib-bar__grow"></span>
 
       <div class="lib-bar__acts">
-        <span class="lib-badge" id="libRole" hidden></span>
-        <button type="button" class="lib-btn lib-btn--secondary" id="fbToggle" hidden aria-expanded="false" aria-controls="drawer">
+        <span class="lib-pill" id="libRole" hidden></span>
+        <button type="button" class="lib-btn lib-btn--secondary" id="fbToggle" hidden aria-expanded="false" aria-controls="drawer" aria-label="フィードバック">
           <svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20 13.5a2.5 2.5 0 0 1-2.5 2.5H9l-4.5 3.4V6.5A2.5 2.5 0 0 1 7 4h10.5A2.5 2.5 0 0 1 20 6.5z"/></svg>
-          フィードバック
+          <span class="lib-btn__t">フィードバック</span>
         </button>
-        <a class="lib-btn lib-btn--quiet" href="/customer/downloads.html">ダウンロード一覧</a>
+        <a class="lib-btn lib-btn--secondary" href="/customer/downloads.html" aria-label="ダウンロード一覧"><svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 4v11"/><path d="m7.5 10.5 4.5 4.5 4.5-4.5"/><path d="M4.5 19.5h15"/></svg><span class="lib-btn__t">ダウンロード一覧</span></a>
         <button type="button" class="lib-btn lib-btn--secondary" id="libFs" aria-pressed="false" aria-label="全画面表示">
           <svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4H4v5M15 4h5v5M15 20h5v-5M9 20H4v-5"/></svg>
           <span class="lib-fs-t">全画面表示</span>
         </button>
-        <button type="button" class="lib-btn lib-btn--quiet lib-btn--icon" id="libUser" hidden aria-label="ログイン中のアカウント">
+        <button type="button" class="lib-btn lib-btn--secondary" id="libLogout" hidden aria-label="ログアウト"><svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M14.5 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h6.5a2 2 0 0 0 2-2v-2"/><path d="M20 12H9.5"/><path d="m16.8 8.8 3.2 3.2-3.2 3.2"/></svg><span class="lib-btn__t">ログアウト</span></button>
+        <button type="button" class="lib-avatar" id="libUser" hidden aria-label="ログイン中のアカウント">
           <svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8.4" r="3.7"/><path d="M4.8 20a7.4 7.4 0 0 1 14.4 0"/></svg>
         </button>
-        <button type="button" class="lib-btn lib-btn--quiet" id="libLogout" hidden>ログアウト</button>
       </div>
     </header>
 
-    <section class="lib-lead" aria-labelledby="mTitle">
+    <section class="lib-vhead" aria-labelledby="mTitle">
       <h1 id="mTitle">読み込み中…</h1>
-      <div class="lib-insp__tags" id="vwTags"></div>
-      <p class="lib-lead__desc" id="vwDesc" hidden></p>
+      <div class="lib-vtags" id="vwTags"></div>
+      <p class="lib-vdesc" id="vwDesc" hidden></p>
     </section>
 
-    <div class="lib-cols lib-cols--viewer">
+    <div class="lib-vbody">
       <div class="lib-stage" id="stage">
         <div class="lib-msg"><p>認証を確認しています…</p></div>
       </div>
@@ -119,7 +117,7 @@
       </aside>
     </div>
 
-  </main>
+  </div>
 </div>
 
 <div class="lib-scrim" id="libScrim"></div>
@@ -132,7 +130,7 @@
     <div id="ovBody"></div>
     <div class="lib-err" id="ovErr" role="alert"></div>
     <div class="lib-modal__acts">
-      <button type="button" class="lib-btn lib-btn--quiet" id="ovCancel">キャンセル</button>
+      <button type="button" class="lib-btn lib-btn--secondary" id="ovCancel">キャンセル</button>
       <button type="button" class="lib-btn lib-btn--primary" id="ovSend">送信する</button>
     </div>
   </div>
@@ -203,8 +201,6 @@
     // The viewer shows one record, so a filter here means "show me the library
     // narrowed like this" rather than a control that does nothing.
     filtersGoTo: '/customer/media.html',
-    // In the viewer a row in the rail opens that record here.
-    onSelect: function(f){ if(f && f.id !== MEDIA_ID) location.href = L.viewerUrl(f.id); },
     onReady: function(ctx){
       ROLE=ctx.role;
       if(!/^[A-Za-z0-9_-]{1,64}$/.test(MEDIA_ID)) return;
@@ -235,7 +231,7 @@
 
     var g=L.groupOf(MEDIA);
     el('libCrumb').innerHTML=
-       '<li><a href="/customer/media.html">メディアライブラリ</a></li>'
+       '<li><a href="/customer/media.html">Media Library</a></li>'
       +'<li><span class="lib-crumb__sep" aria-hidden="true">/</span><span>'+esc(g)+'</span></li>'
       +'<li><span class="lib-crumb__sep" aria-hidden="true">/</span><span aria-current="page">'+esc(t)+'</span></li>';
 
@@ -247,7 +243,7 @@
           : '<span class="lib-badge lib-badge--customer">お客様専用</span>')
       + (MEDIA.status==='draft' ? '<span class="lib-badge lib-badge--draft">下書き</span>' : '')
       + (MEDIA.version ? '<span class="lib-badge lib-badge--version lib-num" id="mVer">Version '+esc(MEDIA.version)+'</span>' : '')
-      + (L.day(MEDIA) ? '<span class="lib-badge lib-badge--type lib-num">更新 '+esc(L.day(MEDIA))+'</span>' : '')
+      + (L.day(MEDIA) ? '<span class="lib-badge lib-badge--type lib-num">更新 '+esc(L.dot(L.day(MEDIA)))+'</span>' : '')
       + (MEDIA.sizeLabel ? '<span class="lib-badge lib-badge--type lib-num">'+esc(MEDIA.sizeLabel)+'</span>' : '');
     el('vwTags').innerHTML=tags;
 
@@ -306,28 +302,28 @@
 
     if(k==='image'){
       stage.innerHTML='<div class="lib-pad">'
-        + '<div class="lib-acts" style="grid-auto-flow:column;justify-content:start;gap:8px">'
+        + '<p style="display:flex;gap:9px;flex-wrap:wrap;margin:0 0 16px">'
         +   '<button type="button" class="lib-btn lib-btn--primary" data-dl="'+esc(MEDIA_ID)+'">'+icon('download')+'ダウンロード</button>'
-        + '</div>'
-        + '<div class="lib-panel"><img class="lib-shot" src="'+esc(url)+'&inline=1" alt="'+esc(MEDIA.title||MEDIA.name||'画像')+'"></div>'
+        + '</p>'
+        + '<div class="lib-box"><img class="lib-shot" src="'+esc(url)+'&inline=1" alt="'+esc(MEDIA.title||MEDIA.name||'画像')+'"></div>'
         + '</div>';
     } else if(k==='pdf'){
       stage.innerHTML='<div class="lib-pad">'
-        + '<div class="lib-acts" style="grid-auto-flow:column;justify-content:start;gap:8px">'
+        + '<p style="display:flex;gap:9px;flex-wrap:wrap;margin:0 0 16px">'
         +   '<button type="button" class="lib-btn lib-btn--primary" data-dl="'+esc(MEDIA_ID)+'">'+icon('download')+'ダウンロード</button>'
         +   '<a class="lib-btn lib-btn--secondary" href="'+esc(url)+'&inline=1" target="_blank" rel="noopener noreferrer">'+icon('external')+'別のタブで開く</a>'
-        + '</div>'
-        + '<div class="lib-panel"><iframe class="lib-pdf" src="'+esc(url)+'&inline=1" title="'+esc(MEDIA.title||MEDIA.name||'PDF')+'"></iframe></div>'
+        + '</p>'
+        + '<div class="lib-box"><iframe class="lib-pdf" src="'+esc(url)+'&inline=1" title="'+esc(MEDIA.title||MEDIA.name||'PDF')+'"></iframe></div>'
         + '<p class="lib-guard" style="margin-top:16px">'+icon('info')+'<span>プレビューが表示されない場合は、上の「ダウンロード」からご覧ください。</span></p>'
         + '</div>';
     } else if(k==='external'){
-      stage.innerHTML='<div class="lib-pad"><div class="lib-panel"><div class="lib-panel__body">'
+      stage.innerHTML='<div class="lib-pad"><div class="lib-box"><div class="lib-box__body">'
         + '<h2 style="margin:0 0 8px;font-size:var(--fs-lg);color:var(--ink-navy)">外部サイトの資料です</h2>'
         + '<p style="margin:0 0 18px;color:var(--ink-2)">この項目はIDFL以外のサイトで公開されています。新しいタブで開きます。</p>'
         + '<a class="lib-btn lib-btn--primary" href="'+esc(url)+'" target="_blank" rel="noopener noreferrer">'+icon('external')+'開く</a>'
         + '</div></div></div>';
     } else {
-      stage.innerHTML='<div class="lib-pad"><div class="lib-panel"><div class="lib-panel__body">'
+      stage.innerHTML='<div class="lib-pad"><div class="lib-box"><div class="lib-box__body">'
         + '<h2 style="margin:0 0 8px;font-size:var(--fs-lg);color:var(--ink-navy)">ダウンロードしてご覧ください</h2>'
         + '<p style="margin:0 0 18px;color:var(--ink-2)">ブラウザー内での表示に対応していない形式です。</p>'
         + '<button type="button" class="lib-btn lib-btn--primary" data-dl="'+esc(MEDIA_ID)+'">'+icon('download')+'ダウンロード</button>'
