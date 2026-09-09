@@ -124,106 +124,147 @@ await t('the library sends an unauthenticated visitor to the login page', async 
   const d = dom.window.document;
   // location.replace is inert in jsdom, so assert on what matters: the page
   // never reveals its contents without a session.
-  assert.equal(d.querySelectorAll('.lib-item').length, 0);
+  assert.equal(d.querySelectorAll('.lib-row').length, 0);
   assert.equal(d.getElementById('libRole').hidden, true, 'the role badge showed without a session');
   assert.equal(d.getElementById('libLogout').hidden, true);
 });
 
-await t('a customer session opens the library', async () => {
+await t('a customer session opens the console', async () => {
   assert.equal(await A.login('customer', ENV.CUSTOMER_ACCESS_PASSWORD, '10.1.0.1'), 200);
   const dom = await A.open('/customer/media.html');
   const d = dom.window.document;
   assert.equal(d.getElementById('libRole').hidden, false);
   assert.equal(d.getElementById('libRole').textContent, 'お客様専用');
-  assert.ok(d.querySelectorAll('.lib-item').length > 0, 'the rail stayed empty');
+  assert.ok(d.querySelectorAll('.lib-row').length > 0, 'the list stayed empty');
   A.dom = dom;
 });
 
 await t('published records are shown and the draft is not', async () => {
   const d = A.dom.window.document;
-  const titles = [...d.querySelectorAll('.lib-item__t')].map(e => e.textContent);
+  const titles = [...d.querySelectorAll('.lib-row__t')].map(e => e.textContent);
   assert.equal(titles.length, 3, 'got: ' + titles.join(' | '));
   assert.ok(titles.some(t => t.indexOf('GOTS 8.0 スコープ4 化学品承認') >= 0));
   assert.ok(!titles.some(t => t.indexOf('（下書き）') >= 0), 'a draft was shown to a customer');
 });
 
-await t('every record in the rail names its type and opens in the viewer', async () => {
+await t('every row names its type in words, not by icon alone', async () => {
   const d = A.dom.window.document;
-  const items = [...d.querySelectorAll('.lib-item')];
-  assert.equal(items.length, 3);
-  for(const a of items){
-    assert.ok(a.getAttribute('href').indexOf('/customer/media-viewer.html?id=') === 0,
-      'a record did not open in the viewer: ' + a.getAttribute('href'));
-    assert.ok(a.dataset.type, 'a record carries no media type');
-    // Type is spelled out, never conveyed by the icon alone.
-    assert.ok(a.querySelector('.lib-item__meta').textContent.trim().length > 0);
+  const rows = [...d.querySelectorAll('.lib-row')];
+  assert.equal(rows.length, 3);
+  for(const b of rows){
+    assert.ok(b.dataset.id, 'a row carries no record id');
+    assert.ok(b.dataset.type, 'a row carries no media type');
+    assert.ok(b.querySelector('.lib-row__m').textContent.trim().length > 0);
   }
-  const deck = items.find(a => a.textContent.indexOf('GOTS 8.0 スコープ4') >= 0);
-  assert.equal(deck.dataset.type, 'html');
-  assert.ok(items.find(a => a.textContent.indexOf('準備チェックリスト') >= 0).dataset.type === 'pdf');
-  assert.ok(items.find(a => a.textContent.indexOf('GOTS 公式サイト') >= 0).dataset.type === 'external');
+  assert.equal(rows.find(b => b.textContent.indexOf('GOTS 8.0 スコープ4') >= 0).dataset.type, 'html');
+  assert.equal(rows.find(b => b.textContent.indexOf('準備チェックリスト') >= 0).dataset.type, 'pdf');
+  assert.equal(rows.find(b => b.textContent.indexOf('GOTS 公式サイト') >= 0).dataset.type, 'external');
 });
 
-await t('an external link is never exposed as a raw URL on the library page', async () => {
+await t('choosing a row fills the inspector and starts no download', async () => {
+  const w = A.dom.window, d = w.document;
+  const pdf = [...d.querySelectorAll('.lib-row')].find(b => b.dataset.type === 'pdf');
+  pdf.dispatchEvent(new w.Event('click', { bubbles: true }));
+  await settle();
+  assert.equal(pdf.getAttribute('aria-current'), 'true', 'the row was not marked current');
+  const insp = d.getElementById('libInsp');
+  assert.ok(insp.textContent.indexOf('準備チェックリスト') >= 0, 'the inspector did not follow the selection');
+  // Downloading is an explicit action, never a side effect of selecting.
+  assert.ok(insp.querySelector('[data-dl]'), 'no download control for a file record');
+  assert.equal(w.location.pathname, '/customer/media.html', 'selecting must not navigate');
+  assert.ok(w.location.search.indexOf('id=') >= 0, 'the selection is not in the URL');
+});
+
+await t('the inspector offers the right primary action per type', async () => {
+  const w = A.dom.window, d = w.document;
+  const pick = (type) => {
+    const b = [...d.querySelectorAll('.lib-row')].find(x => x.dataset.type === type);
+    b.dispatchEvent(new w.Event('click', { bubbles: true }));
+    return d.getElementById('libInsp');
+  };
+  const open = pick('html').querySelector('a.lib-btn--primary');
+  assert.ok(open.getAttribute('href').indexOf('/customer/media-viewer.html?id=') === 0,
+    'a presentation should open in the viewer');
+
+  const go = pick('external').querySelector('a.lib-btn--primary');
+  assert.ok(go.getAttribute('href').indexOf('/.netlify/functions/protected-file?id=') === 0,
+    'an external link must be proxied');
+  assert.equal(go.getAttribute('rel'), 'noopener noreferrer');
+  assert.equal(go.getAttribute('target'), '_blank');
+});
+
+await t('an external link is never exposed as a raw URL', async () => {
   const d = A.dom.window.document;
-  const link = [...d.querySelectorAll('.lib-item')].find(c => c.textContent.indexOf('GOTS 公式サイト') >= 0);
-  assert.ok(link.getAttribute('href').indexOf('/customer/media-viewer.html?id=') === 0);
   assert.equal(d.body.innerHTML.indexOf('global-standard.org'), -1, 'the destination URL leaked into the page');
 });
 
-await t('the overview counts each media type and lists what changed recently', async () => {
+await t('STAFF ONLY is a label on a decision the server already made', async () => {
   const d = A.dom.window.document;
-  const kinds = [...d.querySelectorAll('#ovKinds button')].map(b => b.textContent.replace(/\s+/g, ' ').trim());
-  assert.ok(kinds.some(k => k.indexOf('プレゼンテーション') >= 0 && k.indexOf('1') >= 0), 'got: ' + kinds.join(' | '));
-  assert.ok(d.querySelectorAll('.lib-recent a').length > 0, 'nothing in the recent list');
-  for(const a of d.querySelectorAll('.lib-recent a')){
-    assert.ok(a.getAttribute('href').indexOf('/customer/media-viewer.html?id=') === 0);
-  }
+  assert.equal(d.querySelectorAll('.lib-tag--staff').length, 0, 'a customer was shown a STAFF ONLY row');
+  const j = await (await fetch(BASE + '/.netlify/functions/protected-list', { headers: { cookie: A.cookieHeader() } })).json();
+  assert.equal(j.files.filter(f => f.role === 'staff').length, 0, 'the API sent a customer a staff record');
 });
 
-await t('search narrows the rail, and clearing it restores every record', async () => {
+await t('the header counts what is really there', async () => {
+  const d = A.dom.window.document;
+  const stats = d.getElementById('libStats').textContent.replace(/\s+/g, ' ');
+  assert.ok(stats.indexOf('閲覧可能な資料') >= 0);
+  assert.ok(/3\s*\/\s*3 件/.test(stats), 'got: ' + stats);
+  assert.ok(stats.indexOf('コレクション') >= 0);
+  assert.ok(stats.indexOf('最終更新') >= 0);
+});
+
+await t('search narrows the list, and clearing it restores every record', async () => {
   const w = A.dom.window, d = w.document;
   w.IDFLLib.setQuery('チェックリスト');
-  assert.equal(d.querySelectorAll('.lib-item').length, 1);
-  assert.ok(d.querySelector('.lib-item').textContent.indexOf('準備チェックリスト') >= 0);
+  assert.equal(d.querySelectorAll('.lib-row').length, 1);
+  assert.ok(d.querySelector('.lib-row').textContent.indexOf('準備チェックリスト') >= 0);
   w.IDFLLib.setQuery('');
-  assert.equal(d.querySelectorAll('.lib-item').length, 3);
+  assert.equal(d.querySelectorAll('.lib-row').length, 3);
 });
 
 await t('a search that matches nothing explains itself and offers a way back', async () => {
   const w = A.dom.window, d = w.document;
   w.IDFLLib.setQuery('この語はどの資料にもありません');
-  assert.equal(d.querySelectorAll('.lib-item').length, 0);
+  assert.equal(d.querySelectorAll('.lib-row').length, 0);
   assert.ok(d.getElementById('libList').textContent.indexOf('該当する資料がありません') >= 0);
   assert.ok(d.getElementById('libReset'), 'no way to clear the filter');
   d.getElementById('libReset').dispatchEvent(new w.Event('click', { bubbles: true }));
-  assert.equal(d.querySelectorAll('.lib-item').length, 3);
+  assert.equal(d.querySelectorAll('.lib-row').length, 3);
 });
 
-await t('the media-type filter narrows the rail and reports the count', async () => {
+await t('the media-type filter narrows the list and reports it', async () => {
   const w = A.dom.window, d = w.document;
   w.IDFLLib.setType('pdf');
-  assert.equal(d.querySelectorAll('.lib-item').length, 1);
-  assert.ok(d.querySelector('.lib-item').textContent.indexOf('準備チェックリスト') >= 0);
-  assert.ok(d.getElementById('libScope').textContent.indexOf('PDF') >= 0);
+  assert.equal(d.querySelectorAll('.lib-row').length, 1);
   assert.equal(d.querySelector('.lib-types__btn[data-type="pdf"]').getAttribute('aria-pressed'), 'true');
-  w.IDFLLib.setType('external');
-  assert.equal(d.querySelectorAll('.lib-item').length, 1);
+  assert.ok(d.querySelector('.lib-scope').textContent.indexOf('PDF') >= 0);
   w.IDFLLib.setType('all');
-  assert.equal(d.querySelectorAll('.lib-item').length, 3);
+  assert.equal(d.querySelectorAll('.lib-row').length, 3);
 });
 
-await t('the rail groups records under every group present, and groups collapse', async () => {
+await t('collections list every group and filter to one', async () => {
   const w = A.dom.window, d = w.document;
-  const groups = [...d.querySelectorAll('.lib-group__btn')].map(b => b.dataset.group);
-  assert.ok(groups.indexOf('IDFL Guide') >= 0, 'got: ' + groups.join(' | '));
-  assert.ok(groups.indexOf('2026 大阪セミナー') >= 0);
-  const first = d.querySelector('.lib-group__btn');
-  assert.equal(first.getAttribute('aria-expanded'), 'true');
-  first.dispatchEvent(new w.Event('click', { bubbles: true }));
-  assert.equal(first.getAttribute('aria-expanded'), 'false', 'the group did not collapse');
-  first.dispatchEvent(new w.Event('click', { bubbles: true }));
-  assert.equal(first.getAttribute('aria-expanded'), 'true');
+  const names = [...d.querySelectorAll('.lib-coll__btn')].map(b => b.dataset.coll);
+  assert.ok(names.indexOf('IDFL Guide') >= 0, 'got: ' + names.join(' | '));
+  assert.ok(names.indexOf('2026 大阪セミナー') >= 0);
+  w.IDFLLib.setCollection('2026 大阪セミナー');
+  assert.equal(d.querySelectorAll('.lib-row').length, 1);
+  w.IDFLLib.setCollection('');
+  assert.equal(d.querySelectorAll('.lib-row').length, 3);
+});
+
+await t('the fullscreen control degrades where the API is absent', async () => {
+  const w = A.dom.window, d = w.document;
+  const btn = d.getElementById('libFs');
+  assert.ok(btn, 'no fullscreen control');
+  assert.ok(btn.getAttribute('aria-label'), 'the icon button has no label');
+  // jsdom implements no Fullscreen API, which is exactly the unsupported case:
+  // the control disables itself and explains why, rather than throwing.
+  assert.equal(btn.disabled, true, 'an unsupported browser must not offer it');
+  assert.equal(btn.getAttribute('aria-disabled'), 'true');
+  assert.ok(String(btn.title).indexOf('対応していません') >= 0, 'no explanation: ' + btn.title);
+  btn.dispatchEvent(new w.Event('click', { bubbles: true }));
 });
 
 // ==================================================================== viewer
@@ -328,7 +369,7 @@ await t('a valid submission is saved and appears in the drawer', async () => {
   w.submitFeedback();
   await settle(30);
   assert.equal(d.getElementById('ov').className.indexOf('open'), -1, 'form stayed open');
-  const items = [...d.querySelectorAll('.vw-fb')];
+  const items = [...d.querySelectorAll('.lib-fbitem')];
   assert.equal(items.length, 1, 'drawer did not update');
   assert.ok(items[0].textContent.indexOf('テストの質問です。') >= 0);
   assert.ok(items[0].textContent.indexOf('質問') >= 0);
@@ -350,7 +391,7 @@ await t('contact details are remembered for the session but never put in a URL',
 await t('reopening the viewer restores the customer\'s own feedback', async () => {
   const dom = await A.open('/customer/media-viewer.html?id=' + seeded.mediaId);
   await settle(20);
-  const items = [...dom.window.document.querySelectorAll('.vw-fb')];
+  const items = [...dom.window.document.querySelectorAll('.lib-fbitem')];
   assert.equal(items.length, 1, 'feedback did not survive a reload');
   assert.ok(items[0].textContent.indexOf('テストの質問です。') >= 0);
   A.viewer = dom;
@@ -378,7 +419,7 @@ await t('a just-submitted item stays visible while the listing lags', async () =
     const dom = await A.open('/customer/media-viewer.html?id=' + seeded.mediaId);
     await settle(20);
     const w = dom.window, d = w.document;
-    const before = d.querySelectorAll('.vw-fb').length;
+    const before = d.querySelectorAll('.lib-fbitem').length;
     pickInFrame(dom, ANCHOR);
     await settle(3);
     F._resetRateLimit();
@@ -388,7 +429,7 @@ await t('a just-submitted item stays visible while the listing lags', async () =
     d.getElementById('fPhone').value = '+81-00-0000-0000';
     w.submitFeedback();
     await settle(40);
-    const items = [...d.querySelectorAll('.vw-fb')];
+    const items = [...d.querySelectorAll('.lib-fbitem')];
     assert.equal(items.length, before + 1, 'the submitted item vanished while the listing lagged');
     assert.ok(items.some(i => i.textContent.indexOf('一覧の反映が遅れても') >= 0), 'the new item is not the one shown');
   } finally { setListLag(0); }
@@ -397,7 +438,7 @@ await t('a just-submitted item stays visible while the listing lags', async () =
 await t('it is not duplicated once the listing catches up', async () => {
   const dom = await A.open('/customer/media-viewer.html?id=' + seeded.mediaId);
   await settle(25);
-  const texts = [...dom.window.document.querySelectorAll('.vw-fb .vw-fb__msg')].map(e => e.textContent);
+  const texts = [...dom.window.document.querySelectorAll('.lib-fbitem .lib-fbitem__msg')].map(e => e.textContent);
   const dupes = texts.filter(t => t.indexOf('一覧の反映が遅れても') >= 0);
   assert.equal(dupes.length, 1, 'the item appears ' + dupes.length + ' times after the listing caught up');
 });
@@ -409,7 +450,7 @@ await t('a different customer with the same password sees none of it', async () 
   const dom = await B.open('/customer/media-viewer.html?id=' + seeded.mediaId);
   await settle(20);
   const d = dom.window.document;
-  assert.equal(d.querySelectorAll('.vw-fb').length, 0, 'another customer\'s feedback was visible');
+  assert.equal(d.querySelectorAll('.lib-fbitem').length, 0, 'another customer\'s feedback was visible');
   const html = d.body.innerHTML;
   for(const secret of ['QA FIXTURE', 'qa-fixture-a@example.invalid', '+81-00-0000-0000', A.local.get('idflFbToken')]){
     assert.equal(html.indexOf(secret), -1, 'leaked: ' + secret);
@@ -427,7 +468,7 @@ await t('a staff-published item becomes visible to others, still anonymous', asy
   const dom = await B.open('/customer/media-viewer.html?id=' + seeded.mediaId);
   await settle(20);
   const d = dom.window.document;
-  const items = [...d.querySelectorAll('.vw-fb')];
+  const items = [...d.querySelectorAll('.lib-fbitem')];
   assert.equal(items.length, 1, 'published item not shared');
   assert.ok(items[0].textContent.indexOf('テストの質問です。') >= 0);
   assert.ok(items[0].textContent.indexOf('公開回答です。') >= 0, 'the public reply should be shown');
@@ -452,7 +493,7 @@ await t('an XSS payload in feedback renders as text in the viewer', async () => 
   d2.getElementById('fPhone').value = '+81-00-0000-0001';
   w2.submitFeedback();
   await settle(30);
-  const row = [...d2.querySelectorAll('.vw-fb')].find(r => r.textContent.indexOf('onerror') >= 0);
+  const row = [...d2.querySelectorAll('.lib-fbitem')].find(r => r.textContent.indexOf('onerror') >= 0);
   assert.ok(row, 'payload not listed');
   assert.equal(row.querySelectorAll('img').length, 0, 'payload parsed as markup');
   assert.equal(w2.__pwned, undefined, 'payload executed');
@@ -474,7 +515,7 @@ await t('staff can preview the same draft through the same viewer', async () => 
   const d = dom.window.document;
   assert.ok(d.getElementById('frame'), 'staff preview did not mount');
   assert.ok(d.querySelector('.lib-badge--draft'), 'draft badge not shown');
-  assert.ok(d.getElementById('vwFacts').textContent.indexOf('下書き') >= 0);
+  assert.ok(d.getElementById('vwTags').textContent.indexOf('下書き') >= 0);
   assert.ok(d.getElementById('mVer').textContent.indexOf('Version') >= 0, 'version badge missing for staff preview');
 });
 

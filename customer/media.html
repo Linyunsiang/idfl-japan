@@ -7,7 +7,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>メディアライブラリ | IDFL JAPAN お客様ポータル</title>
+<title>メディアライブラリ | IDFL JAPAN カスタマーポータル</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
@@ -15,172 +15,103 @@
 </head>
 <body>
 
-<div class="lib-app">
+<div class="lib-app" id="libApp">
 
-  <header class="lib-head" id="libHeadBar">
-    <button type="button" class="lib-btn lib-btn--quiet lib-railtoggle" id="libRailToggle"
-            aria-expanded="false" aria-controls="libRail">
-      <svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
-      資料一覧
-    </button>
+  <!-- ================================================================ rail -->
+  <nav class="lib-rail" id="libRail" aria-label="メディアライブラリ ナビゲーション">
 
-    <a class="lib-head__brand" href="/">
-      <img src="/IDFL-Logo.png" alt="IDFL JAPAN" width="88" height="26">
-      <span class="lib-head__wordmark">IDFL JAPAN</span>
+    <a class="lib-rail__brand" href="/">
+      <img src="/IDFL-Logo.png" alt="" width="90" height="28">
+      <span class="lib-rail__names">
+        <span class="lib-rail__name">IDFL JAPAN</span>
+        <span class="lib-rail__sub">CUSTOMER PORTAL</span>
+      </span>
     </a>
-    <span class="lib-head__sep" aria-hidden="true"></span>
-    <span class="lib-head__portal">お客様ポータル</span>
 
-    <span class="lib-head__grow"></span>
-
-    <div class="lib-head__actions">
-      <span class="lib-badge" id="libRole" hidden></span>
-      <a class="lib-btn lib-btn--quiet" href="/customer/downloads.html">ダウンロード一覧</a>
-      <button type="button" class="lib-btn lib-btn--quiet" id="libLogout" hidden>ログアウト</button>
+    <div class="lib-rail__head">
+      <div class="lib-search" id="libSearchWrap">
+        <svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+        <label class="lib-sr-only" for="libSearch">資料を検索</label>
+        <input type="search" id="libSearch" placeholder="資料を検索" autocomplete="off" spellcheck="false">
+        <button type="button" class="lib-search__clear" id="libSearchClear" aria-label="検索条件を消す">
+          <svg class="lib-i lib-i-sm" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
     </div>
-  </header>
 
-  <div class="lib-body">
+    <div>
+      <h2 class="lib-rail__label">資料の種類</h2>
+      <ul class="lib-types" id="libTypes"></ul>
+    </div>
 
-    <!-- ------------------------------------------------------------- rail -->
-    <aside class="lib-rail" id="libRail" aria-label="資料の一覧">
-      <div class="lib-rail__head">
-        <h2 class="lib-rail__title">
-          メディアライブラリ
-          <span class="lib-head__grow"></span>
-          <button type="button" class="lib-btn lib-btn--quiet lib-btn--icon lib-rail__close" id="libRailClose" aria-label="資料一覧を閉じる">
-            <svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18 6 6 18M6 6l12 12"/></svg>
-          </button>
-        </h2>
+    <div class="lib-rail__scroll lib-scroll">
+      <h2 class="lib-rail__label" style="padding-left:10px">コレクション</h2>
+      <ul class="lib-coll" id="libColl"></ul>
+    </div>
 
-        <div class="lib-search" id="libSearchWrap">
-          <svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
-          <label class="lib-sr-only" for="libSearch">資料を検索</label>
-          <input type="search" id="libSearch" placeholder="タイトル・説明で検索" autocomplete="off" spellcheck="false">
-          <button type="button" class="lib-search__clear" id="libSearchClear" aria-label="検索条件を消す">
-            <svg class="lib-i lib-i-sm" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18 6 6 18M6 6l12 12"/></svg>
-          </button>
-        </div>
+    <div class="lib-rail__foot">
+      <b>
+        <svg class="lib-i lib-i-sm" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 3.2 5 6v5.4c0 4 2.9 7.6 7 9.4 4.1-1.8 7-5.4 7-9.4V6z"/><path d="m9.2 12.1 2 2 3.6-3.9"/></svg>
+        セキュア ワークスペース
+      </b>
+      <span>IDFLのお客様専用の保護領域です。アクセスのたびに権限を確認しています。</span>
+    </div>
+  </nav>
+
+  <!-- ================================================================ work -->
+  <main class="lib-work" id="libWork">
+
+    <header class="lib-bar">
+      <button type="button" class="lib-btn lib-btn--quiet lib-btn--icon lib-railtoggle" id="libRailToggle"
+              aria-expanded="false" aria-controls="libRail" aria-label="ナビゲーションを開く">
+        <svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      </button>
+
+      <nav aria-label="パンくずリスト">
+        <ol class="lib-crumb">
+          <li><a href="/">IDFL JAPAN</a></li>
+          <li><span class="lib-crumb__sep" aria-hidden="true">/</span><span aria-current="page">メディアライブラリ</span></li>
+        </ol>
+      </nav>
+
+      <span class="lib-bar__grow"></span>
+
+      <div class="lib-bar__acts">
+        <span class="lib-badge" id="libRole" hidden></span>
+        <a class="lib-btn lib-btn--quiet" href="/customer/downloads.html">ダウンロード一覧</a>
+        <button type="button" class="lib-btn lib-btn--secondary" id="libFs" aria-pressed="false" aria-label="全画面表示">
+          <svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 4H4v5M15 4h5v5M15 20h5v-5M9 20H4v-5"/></svg>
+          <span class="lib-fs-t">全画面表示</span>
+        </button>
+        <button type="button" class="lib-btn lib-btn--quiet lib-btn--icon" id="libUser" hidden aria-label="ログイン中のアカウント">
+          <svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="8.4" r="3.7"/><path d="M4.8 20a7.4 7.4 0 0 1 14.4 0"/></svg>
+        </button>
+        <button type="button" class="lib-btn lib-btn--quiet" id="libLogout" hidden>ログアウト</button>
       </div>
+    </header>
 
-      <ul class="lib-types" id="libTypes" aria-label="資料の種類でしぼり込む"></ul>
+    <section class="lib-lead" aria-labelledby="libH1">
+      <h1 id="libH1">メディアライブラリ</h1>
+      <p>左の一覧から資料を選ぶと、右側に内容とダウンロードの操作が表示されます。選択しただけではダウンロードは始まりません。</p>
+      <dl class="lib-stats" id="libStats"></dl>
+    </section>
 
-      <div class="lib-rail__scroll lib-scroll">
-        <p class="lib-scope" id="libScope" role="status" aria-live="polite"></p>
-        <nav id="libList" aria-label="資料"></nav>
-      </div>
+    <div class="lib-cols">
+      <section class="lib-list lib-scroll" id="libList" aria-label="資料一覧"></section>
+      <aside class="lib-insp lib-scroll" id="libInsp" aria-label="選択中の資料"></aside>
+    </div>
 
-      <p class="lib-rail__foot">IDFLのお客様専用の保護領域です。第三者への再配布はご遠慮ください。</p>
-    </aside>
-
-    <!-- ---------------------------------------------------------- content -->
-    <main class="lib-main" id="libMain">
-      <div class="lib-pane lib-scroll" id="libPane">
-        <div class="lib-inner" id="libInner">
-          <div class="lib-msg"><p>認証を確認しています…</p></div>
-        </div>
-      </div>
-    </main>
-
-  </div>
+  </main>
 </div>
 
 <div class="lib-scrim" id="libScrim"></div>
+<div class="lib-toast" id="libToast" role="status" aria-live="polite"></div>
 
 <script src="/js/library-shell.js"></script>
 <script>
 (function(){
   'use strict';
-  var L = window.IDFLLib, esc = L.esc, icon = L.icon;
-
-  // An id in the address bar belongs to the viewer; keep old deep links alive.
-  var qs = new URLSearchParams(location.search);
-  var deep = String(qs.get('id') || '');
-  if (/^[A-Za-z0-9_-]{1,64}$/.test(deep)) {
-    location.replace(L.viewerUrl(deep) + L.railParams());
-    return;
-  }
-
-  function inner(html){ document.getElementById('libInner').innerHTML = html; }
-
-  function overview(items){
-    var counts = {};
-    items.forEach(function(f){ var k = L.typeOf(f); counts[k] = (counts[k]||0)+1; });
-
-    var kinds = L.TYPES.filter(function(t){ return t.key !== 'all'; }).map(function(t){
-      var n = counts[t.key] || 0;
-      return '<li><button type="button" data-type="' + esc(t.key) + '"'
-        + (n ? '' : ' disabled aria-disabled="true"') + '>'
-        + icon(t.icon) + '<span>' + esc(t.label) + '</span><b class="lib-num">' + n + '</b></button></li>';
-    }).join('');
-
-    var recent = items.slice().sort(function(a,b){
-      return String(L.day(b)).localeCompare(String(L.day(a)));
-    }).slice(0,5).map(function(f){
-      var k = L.typeOf(f);
-      return '<li><a href="' + L.viewerUrl(f.id) + L.railParams() + '">'
-        + icon(L.typeIcon(k))
-        + '<span><span class="lib-recent__t">' + esc(f.title || f.name || '(無題)') + '</span>'
-        + '<span class="lib-recent__m lib-num">' + esc(L.typeLabel(k))
-        + (L.day(f) ? ' · 更新 ' + esc(L.day(f)) : '') + '</span></span></a></li>';
-    }).join('');
-
-    inner(
-      '<h1 class="lib-h1">メディアライブラリ</h1>'
-      + '<p class="lib-lede">IDFLのお客様向けにご用意した、セミナー資料・認証ガイド・操作マニュアル・解説コンテンツをまとめています。'
-      + 'すべての資料はIDFLのサーバー内に保護保管され、権限のある方だけが閲覧できます。</p>'
-      + '<p class="lib-lede" style="margin-bottom:26px">左の一覧から資料を選ぶと、この場所に内容が表示されます。</p>'
-
-      + '<div class="lib-overview__grid">'
-      +   '<section class="lib-panel">'
-      +     '<h2 class="lib-panel__head">' + icon('all','lib-i-sm') + '資料の種類</h2>'
-      +     '<ul class="lib-kinds" id="ovKinds">' + kinds + '</ul>'
-      +   '</section>'
-      +   '<section class="lib-panel">'
-      +     '<h2 class="lib-panel__head">' + icon('clock','lib-i-sm') + '最近更新された資料</h2>'
-      +     (recent ? '<ul class="lib-recent">' + recent + '</ul>'
-                    : '<div class="lib-panel__body"><p style="margin:0;color:var(--lib-ink-3);font-size:var(--lib-fs-md)">まだ資料がありません。</p></div>')
-      +   '</section>'
-      + '</div>'
-
-      + '<p class="lib-note">' + icon('shield')
-      + '<span>この領域の資料は、ログインされたお客様のみが閲覧できます。ファイルの直接URLは発行されず、'
-      + 'アクセスのたびに権限を確認しています。第三者への再配布はご遠慮ください。<br>'
-      + 'ご不明な点は担当者までお問い合わせください。</span></p>'
-    );
-
-    var box = document.getElementById('ovKinds');
-    if (box) box.addEventListener('click', function(e){
-      var b = e.target.closest('button[data-type]');
-      if (!b || b.disabled) return;
-      L.setType(b.dataset.type);
-      if (window.matchMedia('(max-width:1024px)').matches) {
-        document.getElementById('libRailToggle').click();
-      } else {
-        var first = document.querySelector('#libList .lib-item');
-        if (first) first.focus();
-      }
-    });
-  }
-
-  function skeleton(){
-    inner('<div class="lib-sk lib-sk--line" style="width:38%;height:22px;margin-bottom:18px"></div>'
-      + '<div class="lib-sk lib-sk--line" style="width:76%"></div>'
-      + '<div class="lib-sk lib-sk--line" style="width:64%;margin-bottom:26px"></div>'
-      + '<div class="lib-sk" style="height:190px;border-radius:12px"></div>');
-  }
-  skeleton();
-
-  L.boot({
-    next: '/customer/media.html',
-    onReady: function(ctx){ overview(ctx.items); },
-    onListFail: function(){
-      inner('<div class="lib-msg">' + icon('alert')
-        + '<h2>資料を読み込めませんでした</h2>'
-        + '<p>通信が不安定な可能性があります。しばらくしてからページを再読み込みしてください。</p>'
-        + '<button type="button" class="lib-btn lib-btn--secondary" onclick="location.reload()">再読み込み</button></div>');
-    }
-  });
+  window.IDFLLib.boot({ next: '/customer/media.html' });
 })();
 </script>
 </body>
