@@ -322,6 +322,11 @@ body{
    rule wins, and this button must not exist on the desktop layout. */
 .lib-railtoggle{display:none}
 
+/* Above the phone breakpoint the plain actions read as words, the way the
+   pinned direction has them. The fullscreen control keeps its icon: it is a
+   toggle, and the icon is what carries the state. */
+.lib-bar__acts .lib-btn:not(#libFs) .lib-i{display:none}
+
 /* ---- role pill and avatar ---- */
 .lib-pill{
   display:inline-flex;align-items:center;gap:7px;
@@ -742,8 +747,14 @@ body{
   /* The bar clips rather than scrolls, so on a phone the buttons keep
      their icons and hand their text to aria-label. */
   .lib-btn__t,.lib-fs-t{display:none}
+  /* Labels gone, so every action needs its icon back. */
+  .lib-bar__acts .lib-btn:not(#libFs) .lib-i{display:block}
   .lib-bar .lib-btn{padding:0 12px;min-width:44px}
   .lib-pill{padding:7px 10px;letter-spacing:.06em}
+  /* The viewer carries one control more than the library, which is one more
+     than the bar can hold at this width. The role pill goes: the record's own
+     badge row directly below already says お客様専用 or IDFL STAFF ONLY. */
+  .lib-work--viewer .lib-bar .lib-pill{display:none}
   .lib-pad{padding:16px 13px 46px}
   .lib-pdf{height:64vh}
 }
