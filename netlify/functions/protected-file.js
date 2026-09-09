@@ -24,8 +24,6 @@ exports.handler = async (event) => {
     return { statusCode:302, headers:{ 'Location':meta.url, 'Cache-Control':'no-store' }, body:'' };
   }
   const buf=Buffer.from(res.data);
-  // The Media Library renders protected images as thumbnails, which needs an
-  // inline disposition. Images only - everything else stays a download.
   const ct = meta.contentType || 'application/octet-stream';
   // What a customer may take away.
   //
