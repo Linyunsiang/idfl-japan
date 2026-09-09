@@ -43,6 +43,7 @@
     image: '<rect x="3" y="4.5" width="18" height="15" rx="2"/><circle cx="8.8" cy="10" r="1.6"/><path d="m3.6 17.5 4.6-4.3a1.6 1.6 0 0 1 2.2 0l3.5 3.3M14 14.6l1.6-1.5a1.6 1.6 0 0 1 2.2 0l2.6 2.4"/>',
     external: '<path d="M13.5 5H19v5.5"/><path d="m18.4 5.6-7.6 7.6"/><path d="M18 14.5V18a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h3.6"/>',
     chevron: '<path d="m6 9.5 6 6 6-6"/>',
+    go: '<path d="m9.5 5.5 6.5 6.5-6.5 6.5"/>',
     download: '<path d="M12 4v11"/><path d="m7.5 10.5 4.5 4.5 4.5-4.5"/><path d="M4.5 19.5h15"/>',
     info: '<circle cx="12" cy="12" r="8.6"/><path d="M12 11.2v5M12 8.1v.1"/>',
     alert: '<path d="M12 4.6 2.9 19.4h18.2z"/><path d="M12 10.2v4.1M12 17.1v.1"/>',
@@ -255,7 +256,8 @@
       + (f.id === S.activeId ? ' aria-current="true"' : '') + '>'
       + '<span class="lib-row__res">'
       +   '<span class="lib-row__ic">' + icon(typeIcon(k)) + '</span>'
-      +   '<span><span class="lib-row__t">' + esc(f.title || f.name || '(無題)') + '</span>'
+      +   '<span><span class="lib-row__t" title="' + esc(f.title || f.name || '(無題)') + '">'
+      +     esc(f.title || f.name || '(無題)') + '</span>'
       +   '<span class="lib-row__m"><span class="lib-row__mark">● 表示中 </span>'
       +     esc(typeShort(k)) + ' <span class="lib-sep" aria-hidden="true">・</span> ' + esc(groupOf(f))
       +     (f.status === 'draft' ? ' <span class="lib-sep" aria-hidden="true">・</span> 下書き' : '')
@@ -263,6 +265,7 @@
       + '</span>'
       + '<span><span class="lib-access lib-access--' + a + '">' + esc(ACCESS_LABEL[a]) + '</span></span>'
       + '<span class="lib-row__when">' + esc(dot(day(f))) + '</span>'
+      + '<span class="lib-row__go">開く' + icon('go', 'lib-i-sm') + '</span>'
       + '</button></li>';
   }
 
@@ -278,7 +281,9 @@
     var sub = shown.length + '件を表示中 ・ ' + (S.sort === 'name' ? '名前順' : '更新日の新しい順');
     var head = el('libListHead');
     if (head) {
-      head.innerHTML = '<div><h2>' + esc(title) + '</h2><p>' + esc(sub) + '</p></div>'
+      head.innerHTML = '<div><h2>' + esc(title) + '</h2><p>' + esc(sub) + '</p>'
+        + '<p class="lib-listhint">' + icon('go', 'lib-i-sm')
+        + '行をダブルクリック（または「開く」）で資料を開きます。</p></div>'
         + '<span class="lib-bar__grow"></span>'
         + '<button type="button" class="lib-btn lib-btn--secondary" id="libSort" aria-label="並び順を切り替える">'
         + icon('sort', 'lib-i-sm') + (S.sort === 'name' ? '名前順' : '更新順') + '</button>';
@@ -306,7 +311,7 @@
     }
 
     box.innerHTML =
-        '<div class="lib-thead" aria-hidden="true"><span>Resource</span><span>Access</span><span>Updated</span></div>'
+        '<div class="lib-thead" aria-hidden="true"><span>Resource</span><span>Access</span><span>Updated</span><span></span></div>'
       + '<ul class="lib-rows">' + shown.map(rowHtml).join('') + '</ul>';
   }
 
@@ -328,7 +333,7 @@
       + '<div class="lib-msg">' + icon('all')
       + '<h2>資料を選択してください</h2>'
       + '<p>一覧から資料を選ぶと、ここに内容と操作が表示されます。'
-      + '選択しただけでは何も始まりません。</p></div></div>';
+      + 'ダブルクリックすると、そのまま開きます。</p></div></div>';
   }
 
   /** The real thing where there is one; the record's own name on a sheet where
@@ -521,6 +526,16 @@
     location.href = filtersGoTo + (qs ? '?' + qs : '');
   }
 
+  // Opening a record means the viewer, which is where reading, the feedback
+  // drawer and the security headers all live. A link is the one record that
+  // lives somewhere else, so it opens there.
+  function openRecord(id) {
+    var f = byId(id);
+    if (!f) return;
+    if (typeOf(f) === 'external') { global.open(fileUrl(f.id), '_blank', 'noopener'); return; }
+    location.href = viewerUrl(f.id);
+  }
+
   function select(id, opts) {
     S.activeId = String(id || '');
     var f = byId(S.activeId);
@@ -669,6 +684,7 @@
       var item = e.target.closest('.lib-tree__item');
       if (item) {
         if (filtersGoTo) { location.href = viewerUrl(item.dataset.id); return; }
+        if (item.getAttribute('aria-current') === 'true') { openRecord(item.dataset.id); return; }
         select(item.dataset.id);
         if (isNarrowRail()) closeRail(false);
         return;
@@ -693,8 +709,17 @@
     var list = el('libList');
     if (list) on(list, 'click', function (e) {
       var row = e.target.closest('.lib-row');
-      // Choosing a row switches the inspector. It never starts a download.
-      if (row) select(row.dataset.id);
+      if (!row) return;
+      // Pressing the row's own "open" opens it outright. Otherwise the first
+      // press shows the record and a second press on the one already shown
+      // opens it - which is what makes a double-click work with no timer, and
+      // gives a keyboard or touch user the same way in. Opening still never
+      // starts a download; that remains its own deliberate action.
+      if (e.target.closest('.lib-row__go') || row.getAttribute('aria-current') === 'true') {
+        openRecord(row.dataset.id);
+        return;
+      }
+      select(row.dataset.id);
     });
 
     var insp = el('libInsp');
@@ -841,7 +866,7 @@
   global.IDFLLib = {
     esc: esc, icon: icon,
     TYPES: TYPES, typeOf: typeOf, typeLabel: typeLabel, typeShort: typeShort, typeIcon: typeIcon,
-    fileUrl: fileUrl, viewerUrl: viewerUrl, thumbUrl: thumbUrl,
+    fileUrl: fileUrl, viewerUrl: viewerUrl, thumbUrl: thumbUrl, openRecord: openRecord,
     day: day, dot: dot, groupOf: groupOf, accessKey: accessKey, accessDetail: accessDetail,
     boot: boot, state: S, byId: byId,
     setType: setType, setQuery: setQuery, setCollection: setCollection, select: select,

@@ -190,6 +190,82 @@ await t('a record the browser can render offers reading, not a download', async 
   // covered at the gate itself in api.test.mjs, where the fixture set has one.
 });
 
+await t('a row says how to open it, and opening it is one press away', async () => {
+  const d = A.dom.window.document;
+  const row = d.querySelector('.lib-row');
+  const go = row.querySelector('.lib-row__go');
+  assert.ok(go, 'a row carries no visible way to open it');
+  assert.ok(go.textContent.indexOf('開く') >= 0, 'the affordance does not say what it does');
+  const hint = d.querySelector('.lib-listhint');
+  assert.ok(hint && hint.textContent.indexOf('ダブルクリック') >= 0,
+    'the list never tells anyone the gesture exists');
+});
+
+await t('the first press shows a record, the second opens it', async () => {
+  const w = A.dom.window, d = w.document;
+  // jsdom will not navigate; it reports the attempt instead, and that report is
+  // the only evidence available that the page tried to leave.
+  A.dom.virtualConsole.removeAllListeners('jsdomError');
+  const went = [];
+  A.dom.virtualConsole.on('jsdomError', (e) => {
+    // The same channel carries unrelated complaints, a blocked web font among
+    // them. Only a navigation is evidence that the page tried to leave.
+    if (/navigation/.test(String(e.message))) went.push(String(e.message));
+  });
+
+  const row = [...d.querySelectorAll('.lib-row')].find(b => b.dataset.type === 'pdf');
+  // Start from somewhere else, so this row is not already the current one.
+  [...d.querySelectorAll('.lib-row')].find(b => b.dataset.type !== 'pdf')
+    .dispatchEvent(new w.Event('click', { bubbles: true }));
+  await settle();
+
+  row.dispatchEvent(new w.Event('click', { bubbles: true }));
+  await settle();
+  assert.equal(row.getAttribute('aria-current'), 'true', 'the first press did not show the record');
+  assert.deepEqual(went, [], 'the first press must never open anything');
+
+  row.dispatchEvent(new w.Event('click', { bubbles: true }));
+  await settle();
+  assert.equal(went.length, 1, 'the second press on the same row did not open it');
+  assert.match(went[0], /navigation/, 'something other than a navigation happened');
+
+  // Where it goes is asserted directly, because jsdom will not say.
+  assert.equal(w.IDFLLib.viewerUrl(row.dataset.id),
+    '/customer/media-viewer.html?id=' + encodeURIComponent(row.dataset.id));
+});
+
+await t('pressing a row’s own open control skips the selection step', async () => {
+  const w = A.dom.window, d = w.document;
+  const went = [];
+  A.dom.virtualConsole.removeAllListeners('jsdomError');
+  A.dom.virtualConsole.on('jsdomError', (e) => {
+    if (/navigation/.test(String(e.message))) went.push(String(e.message));
+  });
+
+  const row = [...d.querySelectorAll('.lib-row')].find(
+    b => b.getAttribute('aria-current') !== 'true' && b.dataset.type !== 'external');
+  row.querySelector('.lib-row__go').dispatchEvent(new w.Event('click', { bubbles: true }));
+  await settle();
+  assert.equal(went.length, 1, 'the open control did not open the record');
+});
+
+await t('a link opens where it lives, not inside the portal', async () => {
+  const w = A.dom.window, d = w.document;
+  const opened = [];
+  const realOpen = w.open;
+  w.open = (url, target, features) => { opened.push([url, target, features]); return null; };
+  try {
+    const link = [...d.querySelectorAll('.lib-row')].find(b => b.dataset.type === 'external');
+    link.querySelector('.lib-row__go').dispatchEvent(new w.Event('click', { bubbles: true }));
+    await settle();
+  } finally { w.open = realOpen; }
+  assert.equal(opened.length, 1, 'the link did not open');
+  assert.equal(opened[0][1], '_blank');
+  assert.equal(opened[0][2], 'noopener', 'a new tab must not keep a handle on this one');
+  // Still through the gate, so the destination is never in the page's markup.
+  assert.ok(opened[0][0].indexOf('protected-file') > 0, 'the raw URL leaked into the page');
+});
+
 await t('the inspector offers the right primary action per type', async () => {
   const w = A.dom.window, d = w.document;
   const pick = (type) => {

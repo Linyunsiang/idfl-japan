@@ -423,14 +423,16 @@ body{
 .lib-listhead p{margin:3px 0 0;font-size:var(--fs-sm);color:var(--ink-3)}
 
 .lib-thead{
-  display:grid;grid-template-columns:minmax(0,1fr) 128px 108px;gap:14px;align-items:center;
+  display:grid;grid-template-columns:minmax(0,1fr) 128px 108px auto;gap:14px;align-items:center;
   padding:0 12px 9px;border-bottom:1px solid var(--hairline);
   font-size:var(--fs-2xs);font-weight:700;letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);
 }
 .lib-rows{margin:0;padding:0;list-style:none}
 .lib-row{
-  display:grid;grid-template-columns:minmax(0,1fr) 128px 108px;gap:14px;align-items:center;
+  display:grid;grid-template-columns:minmax(0,1fr) 128px 108px auto;gap:14px;align-items:center;
   width:100%;text-align:left;font:inherit;color:inherit;cursor:pointer;
+  /* A double-click must open the record, not leave a smear of selected text. */
+  -webkit-user-select:none;user-select:none;
   padding:14px 12px;background:transparent;
   border:0;border-bottom:1px solid var(--hairline);border-left:3px solid transparent;
   transition:background var(--dur) var(--ease),border-left-color var(--dur) var(--ease);
@@ -457,6 +459,23 @@ body{
 }
 .lib-row__m .lib-sep{color:var(--ink-3)}
 .lib-row__when{font-size:var(--fs-sm);color:var(--ink-3);font-variant-numeric:tabular-nums}
+.lib-row__go{
+  display:inline-flex;align-items:center;gap:4px;justify-self:end;
+  font-size:var(--fs-2xs);font-weight:700;letter-spacing:.08em;color:var(--ink-3);
+  transition:color var(--dur) var(--ease),transform var(--dur) var(--ease);
+}
+.lib-row__go .lib-i-sm{flex:none}
+.lib-row:hover .lib-row__go,
+.lib-row[aria-current="true"] .lib-row__go{color:var(--blue-text);transform:translateX(2px)}
+
+/* The gesture, written down. A row that only reveals itself on hover teaches
+   nobody, and this list is read by people who open it a few times a year. */
+.lib-listhint{
+  display:flex;align-items:center;gap:5px;margin:5px 0 0;
+  font-size:var(--fs-xs);color:var(--ink-3);
+}
+.lib-listhint .lib-i-sm{flex:none;color:var(--blue-text)}
+
 /* Selection is never colour alone. */
 .lib-row__mark{display:none;color:var(--blue-text);font-weight:700}
 .lib-row[aria-current="true"] .lib-row__mark{display:inline}
@@ -683,7 +702,7 @@ body{
 
 @media (max-width:1399px){
   :root{--insp-w:352px}
-  .lib-thead,.lib-row{grid-template-columns:minmax(0,1fr) 112px 92px}
+  .lib-thead,.lib-row{grid-template-columns:minmax(0,1fr) 112px 92px auto}
 }
 
 @media (max-width:1199px){
@@ -694,7 +713,7 @@ body{
   .lib-cards{gap:10px}
   .lib-card{padding:14px 15px;gap:11px}
   .lib-card dd{font-size:22px}
-  .lib-thead,.lib-row{grid-template-columns:minmax(0,1fr) 110px 92px}
+  .lib-thead,.lib-row{grid-template-columns:minmax(0,1fr) 110px 92px auto}
 }
 
 /* Under 980 the inspector becomes a panel that slides over the table. */
@@ -708,6 +727,10 @@ body{
   body[data-insp="open"] .lib-insp{transform:translateX(0)}
   body[data-insp="open"] .lib-scrim{opacity:1;pointer-events:auto}
   .lib-insp__close{display:inline-flex}
+  /* One tap here opens the inspector over the table, which carries the same
+     action at full size. The row keeps its width for the title instead. */
+  .lib-thead,.lib-row{grid-template-columns:minmax(0,1fr) 110px 92px}
+  .lib-row__go,.lib-listhint{display:none}
   .lib-cards{grid-template-columns:repeat(3,minmax(0,1fr))}
   .lib-head{gap:16px}
   .lib-gsearch{flex:1 1 100%}
