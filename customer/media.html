@@ -7,202 +7,180 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>IDFL メディアライブラリ | IDFL JAPAN</title>
-<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700;900&display=swap" rel="stylesheet">
-<style>
-  :root{--accent:#1255A0;--accent2:#0d4383;--ink:#17171b;--muted:#6b7280;--line:#e5e7eb;--bg:#f4f7fc;
-        --staff:#b91c1c;--staff-bg:#fee2e2;--cust:#166534;--cust-bg:#dcfce7;--link:#155e75;--link-bg:#cffafe;
-        --html:#5b21b6;--html-bg:#ede9fe;--pdf:#9a3412;--pdf-bg:#ffedd5;--img:#0f766e;--img-bg:#ccfbf1;}
-  *{box-sizing:border-box}
-  body{margin:0;font-family:"Zen Kaku Gothic New",system-ui,-apple-system,sans-serif;color:var(--ink);background:var(--bg);}
-  .hd{background:#fff;border-bottom:1px solid var(--line);padding:14px 20px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:5;flex-wrap:wrap}
-  .hd img{height:30px}.hd .nm{font-weight:900;letter-spacing:.14em;font-size:13px}.hd .grow{flex:1}
-  .badge{font-size:11px;font-weight:900;padding:4px 12px;border-radius:999px}
-  .badge.staff{background:var(--staff-bg);color:var(--staff)}.badge.cust{background:var(--cust-bg);color:var(--cust)}
-  .btn{border:none;border-radius:9px;padding:9px 15px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;min-height:40px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:6px}
-  .btn-p{background:var(--accent);color:#fff}.btn-p:hover{background:var(--accent2)}
-  .btn-o{background:#fff;color:var(--accent);border:1.5px solid var(--accent)}
-  .btn-o:hover{background:#f0f6fc}
-  .btn-g{background:#eef1f5;color:#374151}.btn-g:hover{background:#e2e7ee}
-  .wrap{max-width:1100px;margin:0 auto;padding:26px 18px 70px}
-  h1{font-size:clamp(22px,3vw,30px);margin:0 0 8px;color:#0f2c4d}
-  .sub{color:var(--muted);font-size:14px;margin:0 0 22px;line-height:1.9;max-width:760px}
-  .toolbar{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-bottom:18px}
-  .toolbar .srow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-  .toolbar input[type=text]{flex:1;min-width:210px;padding:10px 13px;border:1.5px solid var(--line);border-radius:9px;font-size:14px;font-family:inherit}
-  .toolbar input:focus,.toolbar select:focus{outline:3px solid rgba(18,85,160,.22);border-color:var(--accent)}
-  .toolbar select{padding:10px 12px;border:1.5px solid var(--line);border-radius:9px;font-size:13.5px;font-family:inherit;background:#fff;min-width:150px}
-  .pills{display:flex;gap:6px;flex-wrap:wrap;margin-top:11px}
-  .pill{padding:6px 13px;border-radius:999px;border:1.5px solid var(--line);background:#fff;font-weight:700;font-size:12.5px;cursor:pointer;color:#374151;font-family:inherit}
-  .pill.on{background:var(--accent);color:#fff;border-color:var(--accent)}
-  .grpttl{font-size:15px;font-weight:900;color:#0f2c4d;margin:26px 0 12px;padding-bottom:7px;border-bottom:2px solid #dbe7f3;display:flex;align-items:baseline;gap:9px}
-  .grpttl .n{font-weight:400;color:var(--muted);font-size:11.5px}
-  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(268px,1fr));gap:14px}
-  .card{background:#fff;border:1px solid var(--line);border-radius:14px;overflow:hidden;display:flex;flex-direction:column;box-shadow:0 6px 18px rgba(15,58,99,.05)}
-  .card .thumb{height:132px;background:#eef4fb;display:flex;align-items:center;justify-content:center;border-bottom:1px solid var(--line);overflow:hidden}
-  .card .thumb img{width:100%;height:100%;object-fit:cover}
-  .card .thumb .ph{font-size:36px;opacity:.5}
-  .card .bd{padding:14px 15px 0;flex:1}
-  .card .t{font-weight:700;font-size:14.5px;line-height:1.55}
-  .card .d{font-size:12.5px;color:var(--muted);line-height:1.8;margin-top:7px;white-space:pre-wrap}
-  .card .m{font-size:11.5px;color:var(--muted);margin-top:9px;line-height:1.75;word-break:break-all}
-  .card .ft{padding:12px 15px 15px;display:flex;gap:7px;flex-wrap:wrap;align-items:center}
-  .card .ft .btn{flex:1;min-width:118px}
-  .chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px}
-  .chip{display:inline-block;font-size:10px;font-weight:800;padding:3px 9px;border-radius:999px}
-  .chip.cust{background:var(--cust-bg);color:var(--cust)}
-  .chip.staff{background:var(--staff-bg);color:var(--staff)}
-  .chip.draft{background:#fef3c7;color:#92400e}
-  .chip.t-html{background:var(--html-bg);color:var(--html)}
-  .chip.t-pdf{background:var(--pdf-bg);color:var(--pdf)}
-  .chip.t-image{background:var(--img-bg);color:var(--img)}
-  .chip.t-external{background:var(--link-bg);color:var(--link)}
-  .chip.t-document{background:#e5edf7;color:#1255A0}
-  .empty{background:#fff;border:1px solid var(--line);border-radius:14px;color:var(--muted);font-size:13.5px;padding:26px 20px;text-align:center}
-  .center{text-align:center;padding:60px 0;color:var(--muted)}
-  .foot{margin-top:34px;font-size:12px;color:var(--muted);line-height:1.9;border-top:1px solid var(--line);padding-top:16px}
-  @media(max-width:520px){ .grid{grid-template-columns:1fr} .toolbar select{width:100%} }
-</style>
+<title>メディアライブラリ | IDFL JAPAN お客様ポータル</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/library.css">
 </head>
 <body>
-  <div class="hd">
-    <a href="/"><img src="/IDFL-Logo.png" alt="IDFL JAPAN"></a>
-    <span class="nm">IDFL JAPAN</span><div class="grow"></div>
-    <span class="badge" id="roleBadge" style="display:none"></span>
-    <a class="btn btn-g" href="/customer/downloads.html">ダウンロード一覧</a>
-    <button class="btn btn-g" id="logoutBtn" style="display:none" onclick="doLogout()">ログアウト</button>
-  </div>
-  <div class="wrap">
-    <div id="loading" class="center">認証を確認しています…</div>
-    <div id="app" style="display:none">
-      <h1>IDFL メディアライブラリ</h1>
-      <p class="sub">IDFLのお客様向けの限定資料、セミナー資料、ガイド、インタラクティブコンテンツをご覧いただけます。ファイルはIDFLのサーバー内で保護保管され、権限のある方だけがアクセスできます。</p>
 
-      <div class="toolbar">
-        <div class="srow">
-          <input type="text" id="search" placeholder="🔍 タイトル・説明・グループで検索" oninput="renderList()">
-          <select id="groupSel" onchange="renderList()"><option value="">すべてのカテゴリー</option></select>
-        </div>
-        <div class="pills" id="typePills">
-          <button class="pill on" data-t="all" onclick="setType('all')">すべて</button>
-          <button class="pill" data-t="html" onclick="setType('html')">プレゼンテーション</button>
-          <button class="pill" data-t="pdf" onclick="setType('pdf')">PDF</button>
-          <button class="pill" data-t="document" onclick="setType('document')">ドキュメント</button>
-          <button class="pill" data-t="image" onclick="setType('image')">画像</button>
-          <button class="pill" data-t="external" onclick="setType('external')">外部リンク</button>
+<div class="lib-app">
+
+  <header class="lib-head" id="libHeadBar">
+    <button type="button" class="lib-btn lib-btn--quiet lib-railtoggle" id="libRailToggle"
+            aria-expanded="false" aria-controls="libRail">
+      <svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+      資料一覧
+    </button>
+
+    <a class="lib-head__brand" href="/">
+      <img src="/IDFL-Logo.png" alt="IDFL JAPAN" width="88" height="26">
+      <span class="lib-head__wordmark">IDFL JAPAN</span>
+    </a>
+    <span class="lib-head__sep" aria-hidden="true"></span>
+    <span class="lib-head__portal">お客様ポータル</span>
+
+    <span class="lib-head__grow"></span>
+
+    <div class="lib-head__actions">
+      <span class="lib-badge" id="libRole" hidden></span>
+      <a class="lib-btn lib-btn--quiet" href="/customer/downloads.html">ダウンロード一覧</a>
+      <button type="button" class="lib-btn lib-btn--quiet" id="libLogout" hidden>ログアウト</button>
+    </div>
+  </header>
+
+  <div class="lib-body">
+
+    <!-- ------------------------------------------------------------- rail -->
+    <aside class="lib-rail" id="libRail" aria-label="資料の一覧">
+      <div class="lib-rail__head">
+        <h2 class="lib-rail__title">
+          メディアライブラリ
+          <span class="lib-head__grow"></span>
+          <button type="button" class="lib-btn lib-btn--quiet lib-btn--icon lib-rail__close" id="libRailClose" aria-label="資料一覧を閉じる">
+            <svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
+        </h2>
+
+        <div class="lib-search" id="libSearchWrap">
+          <svg class="lib-i" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/></svg>
+          <label class="lib-sr-only" for="libSearch">資料を検索</label>
+          <input type="search" id="libSearch" placeholder="タイトル・説明で検索" autocomplete="off" spellcheck="false">
+          <button type="button" class="lib-search__clear" id="libSearchClear" aria-label="検索条件を消す">
+            <svg class="lib-i lib-i-sm" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M18 6 6 18M6 6l12 12"/></svg>
+          </button>
         </div>
       </div>
 
-      <div id="list"></div>
-      <p class="foot">※ 本ページの資料はIDFLのお客様専用です。第三者への再配布はご遠慮ください。<br>
-        ご不明な点は担当者までお問い合わせください。</p>
-    </div>
+      <ul class="lib-types" id="libTypes" aria-label="資料の種類でしぼり込む"></ul>
+
+      <div class="lib-rail__scroll lib-scroll">
+        <p class="lib-scope" id="libScope" role="status" aria-live="polite"></p>
+        <nav id="libList" aria-label="資料"></nav>
+      </div>
+
+      <p class="lib-rail__foot">IDFLのお客様専用の保護領域です。第三者への再配布はご遠慮ください。</p>
+    </aside>
+
+    <!-- ---------------------------------------------------------- content -->
+    <main class="lib-main" id="libMain">
+      <div class="lib-pane lib-scroll" id="libPane">
+        <div class="lib-inner" id="libInner">
+          <div class="lib-msg"><p>認証を確認しています…</p></div>
+        </div>
+      </div>
+    </main>
+
   </div>
+</div>
+
+<div class="lib-scrim" id="libScrim"></div>
+
+<script src="/js/library-shell.js"></script>
 <script>
 (function(){
-  var ROLE='PUBLIC', ITEMS=[], TYPE='all';
-  var TYPE_LABEL={html:'プレゼンテーション',pdf:'PDF',document:'ドキュメント',image:'画像',external:'外部リンク'};
-  var TYPE_ICON={html:'🖥️',pdf:'📕',document:'📄',image:'🖼️',external:'🔗'};
+  'use strict';
+  var L = window.IDFLLib, esc = L.esc, icon = L.icon;
 
-  function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(m){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m];});}
-  function go(){ location.replace('/login.html?role=customer&next='+encodeURIComponent('/customer/media.html')); }
-  function fileUrl(id){ return '/.netlify/functions/protected-file?id='+encodeURIComponent(id); }
-
-  // A thumbnail may be a protected item id (served inline) or a plain URL.
-  function thumbUrl(v){
-    var s=String(v||'').trim();
-    if(!s) return '';
-    if(/^[A-Za-z0-9_-]{1,64}$/.test(s)) return fileUrl(s)+'&inline=1';
-    if(/^https:\/\//i.test(s) || s.charAt(0)==='/') return s;
-    return '';
+  // An id in the address bar belongs to the viewer; keep old deep links alive.
+  var qs = new URLSearchParams(location.search);
+  var deep = String(qs.get('id') || '');
+  if (/^[A-Za-z0-9_-]{1,64}$/.test(deep)) {
+    location.replace(L.viewerUrl(deep) + L.railParams());
+    return;
   }
 
-  fetch('/.netlify/functions/auth-status',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
-    ROLE=(j&&j.role)||'PUBLIC';
-    if(ROLE!=='CUSTOMER'&&ROLE!=='STAFF'){ go(); return; }
-    document.getElementById('loading').style.display='none';
-    document.getElementById('app').style.display='block';
-    var badge=document.getElementById('roleBadge'); badge.style.display='inline-block';
-    if(ROLE==='STAFF'){ badge.textContent='IDFL STAFF'; badge.className='badge staff'; }
-    else { badge.textContent='お客様専用'; badge.className='badge cust'; }
-    document.getElementById('logoutBtn').style.display='inline-flex';
-    load();
-  }).catch(go);
+  function inner(html){ document.getElementById('libInner').innerHTML = html; }
 
-  function load(){
-    var list=document.getElementById('list'); list.innerHTML='<div class="empty">読み込み中…</div>';
-    fetch('/.netlify/functions/protected-list',{cache:'no-store'}).then(function(r){return r.json();}).then(function(j){
-      ITEMS=(j&&j.files)||[];
-      fillGroups(); renderList();
-    }).catch(function(){ list.innerHTML='<div class="empty">読み込みに失敗しました。ページを再読み込みしてください。</div>'; });
-  }
+  function overview(items){
+    var counts = {};
+    items.forEach(function(f){ var k = L.typeOf(f); counts[k] = (counts[k]||0)+1; });
 
-  function fillGroups(){
-    var sel=document.getElementById('groupSel'), seen={}, out=[];
-    ITEMS.forEach(function(f){ var g=f.group||'その他'; if(!seen[g]){seen[g]=1;out.push(g);} });
-    sel.innerHTML='<option value="">すべてのカテゴリー</option>'+out.map(function(g){return '<option value="'+esc(g)+'">'+esc(g)+'</option>';}).join('');
-  }
-
-  window.setType=function(t){
-    TYPE=t;
-    document.querySelectorAll('#typePills .pill').forEach(function(b){ b.classList.toggle('on', b.dataset.t===t); });
-    renderList();
-  };
-
-  function actionsFor(f){
-    if(f.mediaType==='html'){
-      return '<a class="btn btn-p" href="/customer/media-viewer.html?id='+encodeURIComponent(f.id)+'">閲覧する</a>';
-    }
-    if(f.mediaType==='external'){
-      return '<a class="btn btn-o" href="'+fileUrl(f.id)+'" target="_blank" rel="noopener">開く ↗</a>';
-    }
-    return '<a class="btn btn-p" href="'+fileUrl(f.id)+'" download>ダウンロード</a>';
-  }
-
-  function cardHtml(f){
-    var t=f.mediaType||'document';
-    var tu=thumbUrl(f.thumb);
-    var chips='<span class="chip t-'+esc(t)+'">'+esc(TYPE_LABEL[t]||t)+'</span>'
-      + (f.role==='staff'?'<span class="chip staff">STAFF専用</span>':'<span class="chip cust">お客様</span>')
-      + (f.status==='draft'?'<span class="chip draft">下書き（STAFFのみ）</span>':'');
-    var meta=[];
-    if(f.version) meta.push('Version '+esc(f.version));
-    if(t!=='external'&&t!=='html'&&f.name) meta.push(esc(f.name));
-    if(f.sizeLabel) meta.push(esc(f.sizeLabel));
-    var day=(f.updatedAt||f.uploadedAt||'').slice(0,10);
-    if(day) meta.push('更新 '+esc(day));
-    return '<div class="card">'
-      + '<div class="thumb">'+(tu?'<img src="'+esc(tu)+'" alt="" loading="lazy" onerror="this.parentNode.innerHTML=\'<span class=&quot;ph&quot;>'+(TYPE_ICON[t]||'📄')+'</span>\'">':'<span class="ph">'+(TYPE_ICON[t]||'📄')+'</span>')+'</div>'
-      + '<div class="bd"><div class="t">'+esc(f.title||f.name)+'</div>'
-      + (f.description?'<div class="d">'+esc(f.description)+'</div>':'')
-      + '<div class="chips">'+chips+'</div>'
-      + '<div class="m">'+meta.join('　')+'</div></div>'
-      + '<div class="ft">'+actionsFor(f)+'</div></div>';
-  }
-
-  window.renderList=function(){
-    var list=document.getElementById('list');
-    var q=(document.getElementById('search').value||'').trim().toLowerCase();
-    var g=document.getElementById('groupSel').value;
-    var items=ITEMS.filter(function(f){
-      if(TYPE!=='all' && (f.mediaType||'document')!==TYPE) return false;
-      if(g && (f.group||'その他')!==g) return false;
-      if(!q) return true;
-      return [f.title,f.name,f.group,f.description].some(function(v){return String(v||'').toLowerCase().indexOf(q)>=0;});
-    });
-    if(!items.length){
-      list.innerHTML='<div class="empty">'+((q||g||TYPE!=='all')?'条件に一致する資料はありません。':'現在ご覧いただける資料はありません。')+'</div>';
-      return;
-    }
-    var map={}, order=[];
-    items.forEach(function(f){ var k=f.group||'その他'; if(!map[k]){map[k]=[];order.push(k);} map[k].push(f); });
-    list.innerHTML=order.map(function(k){
-      return '<div class="grpttl">'+esc(k)+'<span class="n">'+map[k].length+'件</span></div>'
-           + '<div class="grid">'+map[k].map(cardHtml).join('')+'</div>';
+    var kinds = L.TYPES.filter(function(t){ return t.key !== 'all'; }).map(function(t){
+      var n = counts[t.key] || 0;
+      return '<li><button type="button" data-type="' + esc(t.key) + '"'
+        + (n ? '' : ' disabled aria-disabled="true"') + '>'
+        + icon(t.icon) + '<span>' + esc(t.label) + '</span><b class="lib-num">' + n + '</b></button></li>';
     }).join('');
-  };
 
-  window.doLogout=function(){ fetch('/.netlify/functions/auth-logout',{method:'POST'}).then(function(){location.replace('/');}); };
+    var recent = items.slice().sort(function(a,b){
+      return String(L.day(b)).localeCompare(String(L.day(a)));
+    }).slice(0,5).map(function(f){
+      var k = L.typeOf(f);
+      return '<li><a href="' + L.viewerUrl(f.id) + L.railParams() + '">'
+        + icon(L.typeIcon(k))
+        + '<span><span class="lib-recent__t">' + esc(f.title || f.name || '(無題)') + '</span>'
+        + '<span class="lib-recent__m lib-num">' + esc(L.typeLabel(k))
+        + (L.day(f) ? ' · 更新 ' + esc(L.day(f)) : '') + '</span></span></a></li>';
+    }).join('');
+
+    inner(
+      '<h1 class="lib-h1">メディアライブラリ</h1>'
+      + '<p class="lib-lede">IDFLのお客様向けにご用意した、セミナー資料・認証ガイド・操作マニュアル・解説コンテンツをまとめています。'
+      + 'すべての資料はIDFLのサーバー内に保護保管され、権限のある方だけが閲覧できます。</p>'
+      + '<p class="lib-lede" style="margin-bottom:26px">左の一覧から資料を選ぶと、この場所に内容が表示されます。</p>'
+
+      + '<div class="lib-overview__grid">'
+      +   '<section class="lib-panel">'
+      +     '<h2 class="lib-panel__head">' + icon('all','lib-i-sm') + '資料の種類</h2>'
+      +     '<ul class="lib-kinds" id="ovKinds">' + kinds + '</ul>'
+      +   '</section>'
+      +   '<section class="lib-panel">'
+      +     '<h2 class="lib-panel__head">' + icon('clock','lib-i-sm') + '最近更新された資料</h2>'
+      +     (recent ? '<ul class="lib-recent">' + recent + '</ul>'
+                    : '<div class="lib-panel__body"><p style="margin:0;color:var(--lib-ink-3);font-size:var(--lib-fs-md)">まだ資料がありません。</p></div>')
+      +   '</section>'
+      + '</div>'
+
+      + '<p class="lib-note">' + icon('shield')
+      + '<span>この領域の資料は、ログインされたお客様のみが閲覧できます。ファイルの直接URLは発行されず、'
+      + 'アクセスのたびに権限を確認しています。第三者への再配布はご遠慮ください。<br>'
+      + 'ご不明な点は担当者までお問い合わせください。</span></p>'
+    );
+
+    var box = document.getElementById('ovKinds');
+    if (box) box.addEventListener('click', function(e){
+      var b = e.target.closest('button[data-type]');
+      if (!b || b.disabled) return;
+      L.setType(b.dataset.type);
+      if (window.matchMedia('(max-width:1024px)').matches) {
+        document.getElementById('libRailToggle').click();
+      } else {
+        var first = document.querySelector('#libList .lib-item');
+        if (first) first.focus();
+      }
+    });
+  }
+
+  function skeleton(){
+    inner('<div class="lib-sk lib-sk--line" style="width:38%;height:22px;margin-bottom:18px"></div>'
+      + '<div class="lib-sk lib-sk--line" style="width:76%"></div>'
+      + '<div class="lib-sk lib-sk--line" style="width:64%;margin-bottom:26px"></div>'
+      + '<div class="lib-sk" style="height:190px;border-radius:12px"></div>');
+  }
+  skeleton();
+
+  L.boot({
+    next: '/customer/media.html',
+    onReady: function(ctx){ overview(ctx.items); },
+    onListFail: function(){
+      inner('<div class="lib-msg">' + icon('alert')
+        + '<h2>資料を読み込めませんでした</h2>'
+        + '<p>通信が不安定な可能性があります。しばらくしてからページを再読み込みしてください。</p>'
+        + '<button type="button" class="lib-btn lib-btn--secondary" onclick="location.reload()">再読み込み</button></div>');
+    }
+  });
 })();
 </script>
 </body>
