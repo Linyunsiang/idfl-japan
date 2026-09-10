@@ -143,6 +143,21 @@
   .mrow .th{width:52px;height:40px;border-radius:7px;background:#eef4fb;display:flex;align-items:center;justify-content:center;overflow:hidden;flex:0 0 auto;font-size:18px}
   .mrow .th img{width:100%;height:100%;object-fit:cover}
   .mdesc{font-size:11.5px;color:#4b5563;margin-top:3px;line-height:1.7}
+  /* The links a record actually has: the one handed to customers, and - for an
+     external record - where it points. Both belong on the row: a link nobody
+     can see is a link nobody checks. */
+  .mlinks{margin-top:5px;display:flex;flex-direction:column;gap:3px}
+  .mlink{display:flex;align-items:center;gap:6px;font-size:11px;line-height:1.6;min-width:0}
+  .mlink>b{flex:0 0 auto;color:var(--muted);font-weight:700;font-size:10.5px;letter-spacing:.02em}
+  .mlink>code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;
+              color:#1f2937;background:#f3f6fa;border:1px solid #e3eaf2;border-radius:6px;
+              padding:1px 6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+  .mlink>code a{color:#1255A0;text-decoration:none}
+  .mlink>code a:hover{text-decoration:underline}
+  .mlink .lnkbtn{flex:0 0 auto;border:1px solid var(--line);background:#fff;border-radius:6px;
+                 padding:1px 7px;font-size:10.5px;color:#374151;cursor:pointer;line-height:1.7}
+  .mlink .lnkbtn:hover{background:#f3f6fa}
+  @media(max-width:700px){ .mlink{flex-wrap:wrap} .mlink>code{width:100%} }
   .normbox{background:#f0f6fc;border:1px solid #dbe7f3;border-radius:9px;padding:11px 13px;margin-top:9px;font-size:12px;line-height:1.9}
   .normbox b{display:inline-block;min-width:9.5em;color:#6b7280;font-weight:700}
   .normbox .okmark{color:#166534;font-weight:700}
@@ -396,7 +411,7 @@
         <div id="mNorm"></div>
 
         <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin:14px 0 10px">
-          <input type="text" id="mSearch" placeholder="🔍 タイトル・説明・グループで検索" style="flex:1;min-width:200px;padding:9px 11px;border:1.5px solid var(--line);border-radius:8px;font-family:inherit;font-size:13.5px" oninput="mRender()">
+          <input type="text" id="mSearch" placeholder="🔍 タイトル・説明・グループ・リンク先・IDで検索" style="flex:1;min-width:200px;padding:9px 11px;border:1.5px solid var(--line);border-radius:8px;font-family:inherit;font-size:13.5px" oninput="mRender()">
           <div id="mFilters">
             <button class="fpill on" data-f="all" onclick="mSetFilter('all')">すべて</button>
             <button class="fpill" data-f="html" onclick="mSetFilter('html')">HTML</button>
@@ -1974,6 +1989,15 @@ function mSetup(){
   drop.addEventListener('dragleave',function(){drop.classList.remove('drag');});
   drop.addEventListener('drop',function(e){e.preventDefault();drop.classList.remove('drag');if(e.dataTransfer.files&&e.dataTransfer.files.length)mUpload(e.dataTransfer.files[0]);});
   input.addEventListener('change',function(){if(input.files&&input.files.length)mUpload(input.files[0]);input.value='';});
+  // The link buttons on every row. Delegated, so a redraw needs no rewiring
+  // and no URL has to survive a trip through an inline handler.
+  var list=document.getElementById('mList');
+  if(list) list.addEventListener('click',function(e){
+    var b=e.target && e.target.closest ? e.target.closest('[data-copy],[data-editurl]') : null;
+    if(!b) return;
+    if(b.hasAttribute('data-copy')) mCopy(b.getAttribute('data-copy'), b.getAttribute('data-copylabel'));
+    else mEditUrl(b.getAttribute('data-editurl'));
+  });
 }
 
 // The blob listing is eventually consistent, so a freshly uploaded record can
@@ -2013,6 +2037,34 @@ function mThumb(v){
   return '';
 }
 
+/* The URL a customer is given. It is the record id on this site - never the
+   blob URL, never the link target - so it survives a retitle, a URL change and
+   a package replace. location.origin so a preview shows its own address. */
+function mShareUrl(id){ return location.origin + '/customer/media?id=' + encodeURIComponent(id); }
+
+function mCopy(txt, label){
+  function ok(){ toast((label || 'リンク') + 'をコピーしました'); }
+  function manual(){
+    var ta = document.createElement('textarea');
+    ta.value = txt; ta.style.position = 'fixed'; ta.style.top = '-1000px';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    var done = false; try{ done = document.execCommand('copy'); }catch(e){}
+    document.body.removeChild(ta);
+    done ? ok() : toast('コピーできませんでした。リンクを選択して手動でコピーしてください');
+  }
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(txt).then(ok, manual);
+  } else manual();
+}
+
+/* Open the editor with the URL box focused: the row's 修正 goes straight to the
+   field it names, rather than to a form the reader then has to scan. */
+function mEditUrl(id){
+  mEdit(id);
+  var box = document.getElementById('me_url');
+  if(box){ box.focus(); box.select(); }
+}
+
 function mRender(){
   var list=document.getElementById('mList');
   var q=(document.getElementById('mSearch').value||'').trim().toLowerCase();
@@ -2020,7 +2072,7 @@ function mRender(){
     var t=f.mediaType||'document';
     if(MFILTER==='draft'){ if(f.status!=='draft') return false; }
     else if(MFILTER!=='all' && t!==MFILTER) return false;
-    if(q&&![f.title,f.name,f.group,f.description].some(function(v){return String(v||'').toLowerCase().indexOf(q)>=0;})) return false;
+    if(q&&![f.title,f.name,f.group,f.description,f.url,f.id].some(function(v){return String(v||'').toLowerCase().indexOf(q)>=0;})) return false;
     return true;
   });
   document.getElementById('mCount').textContent=MITEMS.length+' 件';
@@ -2059,13 +2111,43 @@ function mRow(f,i,n){
     + '</div>'
     + '<div style="flex:1;min-width:0"><div class="pttl">'+esc(f.title||f.name)+' '+chips+'</div>'
     +   (f.description?'<div class="mdesc">'+esc(f.description)+'</div>':'')
-    +   '<div class="pmeta">'+meta.join(' ・ ')+'</div></div>'
+    +   '<div class="pmeta">'+meta.join(' ・ ')+'</div>'
+    +   mLinks(f)
+    + '</div>'
     + open
     + '<button class="btn btn-o" onclick="mEdit(\''+esc(f.id)+'\')">編集</button>'
     + (isHtml?'<button class="btn btn-o" onclick="mReplace(\''+esc(f.id)+'\')">置換</button>':'')
     + '<button class="btn btn-g" onclick="mToggle(\''+esc(f.id)+'\')">'+(f.status==='draft'?'公開':'非公開')+'</button>'
     + '<button class="btn btn-d" onclick="mDelete(\''+esc(f.id)+'\')">削除</button>'
     + '</div>';
+}
+
+/* Both links a record can have, on the row itself.
+
+   お客様用 is what goes in an e-mail. It is the same for every record type and
+   never changes, so it can be copied once and reused.
+
+   リンク先 exists only for an external record, and IS that record - so it is
+   shown in full, opens where it points, and has 修正 next to it. Changing it
+   does not change お客様用: the id is what was handed out. */
+function mLinks(f){
+  var share = mShareUrl(f.id);
+  var rows = '<div class="mlink"><b>お客様用</b>'
+    + '<code>' + esc(share) + '</code>'
+    + '<button type="button" class="lnkbtn" data-copy="' + esc(share) + '" data-copylabel="お客様用リンク">コピー</button>'
+    + '</div>';
+  if(f.mediaType === 'external'){
+    var dest = String(f.url || '');
+    rows += '<div class="mlink"><b>リンク先</b>'
+      + '<code>' + (dest
+          ? '<a href="' + esc(dest) + '" target="_blank" rel="noopener noreferrer">' + esc(dest) + '</a>'
+          : '<span style="color:#b91c1c">未設定</span>')
+      + '</code>'
+      + (dest ? '<button type="button" class="lnkbtn" data-copy="' + esc(dest) + '" data-copylabel="リンク先">コピー</button>' : '')
+      + '<button type="button" class="lnkbtn" data-editurl="' + esc(f.id) + '">修正</button>'
+      + '</div>';
+  }
+  return '<div class="mlinks">' + rows + '</div>';
 }
 
 /* Staff preview uses the same protected viewer the customer sees, so a draft is
@@ -2261,7 +2343,8 @@ function mEdit(id){
   var f=mFind(id); if(!f) return;
   document.getElementById('povTitle').textContent='メディアを編集';
   document.getElementById('povBody').innerHTML=
-     '<label class="f">ID<input type="text" value="'+esc(f.id)+'" readonly style="background:#f3f4f6;color:#6b7280"></label>'
+     '<label class="f">お客様用リンク<input type="text" value="'+esc(mShareUrl(f.id))+'" readonly onclick="this.select()" style="background:#f3f4f6;color:#374151">'
+    +'<span class="hint">ID: '+esc(f.id)+'　このURLは記録を編集しても変わりません。</span></label>'
     +'<label class="f">タイトル<input type="text" id="me_title" value="'+esc(f.title||f.name||'')+'"></label>'
     +'<label class="f">説明<textarea id="me_desc" style="min-height:70px">'+esc(f.description||'')+'</textarea></label>'
     +'<label class="f">カテゴリー / グループ<input type="text" id="me_group" list="pGroups" value="'+esc(f.group||'')+'"></label>'

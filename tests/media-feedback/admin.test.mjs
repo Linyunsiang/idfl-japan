@@ -195,6 +195,75 @@ await t('editing a record writes description and thumbnail through', async () =>
   assert.equal(rec.thumb, 'https://example.com/thumb.png');
 });
 
+await t('every row shows the link a customer is given, ready to copy', async () => {
+  const rows = [...d.querySelectorAll('.mrow')];
+  assert.ok(rows.length >= 3);
+  for(const r of rows){
+    const btn = r.querySelector('.lnkbtn[data-copy][data-copylabel="お客様用リンク"]');
+    assert.ok(btn, 'a row with no visible customer link: ' + r.querySelector('.pttl').textContent.slice(0, 30));
+    const url = btn.getAttribute('data-copy');
+    assert.ok(url.indexOf('/customer/media?id=') > 0, 'not a customer link: ' + url);
+    assert.ok(r.textContent.indexOf('お客様用') >= 0, 'the URL is labelled on the row, not only in the button');
+  }
+});
+
+await t('the copy target is the record id, not the blob or the link target', async () => {
+  const row = [...d.querySelectorAll('.mrow')].find(r => r.textContent.indexOf('GOTS 公式サイト') >= 0);
+  const share = row.querySelector('[data-copylabel="お客様用リンク"]').getAttribute('data-copy');
+  assert.equal(share.endsWith('/customer/media?id=' + seeded.linkId), true, share);
+  assert.equal(share.indexOf('global-standard'), -1, 'the customer link must not be the link target');
+  assert.equal(share.indexOf('protected-file'), -1, 'nor the blob URL');
+});
+
+await t('an external record shows where it points, and offers 修正 there', async () => {
+  const row = [...d.querySelectorAll('.mrow')].find(r => r.textContent.indexOf('GOTS 公式サイト') >= 0);
+  const dest = row.querySelector('.mlink a[target="_blank"]');
+  assert.ok(dest, 'the destination URL is not shown');
+  assert.equal(dest.getAttribute('href'), 'https://global-standard.org/');
+  assert.equal(dest.textContent, 'https://global-standard.org/', 'shown in full, not as a label');
+  assert.ok(row.querySelector('[data-editurl="' + seeded.linkId + '"]'), 'no 修正 next to the URL');
+});
+
+await t('a record that is not a link shows no リンク先 line', async () => {
+  const deck = [...d.querySelectorAll('.mrow')].find(r => r.textContent.indexOf('GOTS 8.0 スコープ4') >= 0);
+  assert.ok(deck.querySelector('[data-copylabel="お客様用リンク"]'), 'it still has a customer link');
+  assert.equal(deck.querySelector('[data-editurl]'), null);
+  assert.equal(deck.textContent.indexOf('リンク先'), -1);
+});
+
+await t('修正 opens the editor with the URL box focused', async () => {
+  const btn = d.querySelector('[data-editurl="' + seeded.linkId + '"]');
+  btn.dispatchEvent(new w.MouseEvent('click', { bubbles: true }));
+  await settle(4);
+  assert.equal($('#pov').className.indexOf('open') >= 0, true, 'the editor did not open');
+  const box = d.getElementById('me_url');
+  assert.ok(box, 'no URL box');
+  assert.equal(d.activeElement, box, 'the URL box is not focused');
+  w.pCloseModal();
+});
+
+await t('the editor shows the customer link too, read-only', async () => {
+  w.mEdit(seeded.linkId);
+  await settle(4);
+  const box = [...d.querySelectorAll('#povBody input')].find(i => i.value.indexOf('/customer/media?id=') >= 0);
+  assert.ok(box, 'the editor does not show the customer link');
+  assert.equal(box.readOnly, true, 'it must not look editable - the id is not a thing staff choose');
+  assert.ok(d.getElementById('povBody').textContent.indexOf(seeded.linkId) >= 0, 'the id itself is still shown');
+  w.pCloseModal();
+});
+
+await t('a record can be found by its link target', async () => {
+  d.getElementById('mSearch').value = 'global-standard.org';
+  w.mRender();
+  await settle(3);
+  const rows = [...d.querySelectorAll('.mrow')];
+  assert.equal(rows.length, 1, 'searching a URL should find exactly the record that points there');
+  assert.ok(rows[0].textContent.indexOf('GOTS 公式サイト') >= 0);
+  d.getElementById('mSearch').value = '';
+  w.mRender();
+  await settle(3);
+});
+
 await t('a link record can have its URL changed from this tab too', async () => {
   w.mEdit(seeded.linkId);
   await settle(4);
