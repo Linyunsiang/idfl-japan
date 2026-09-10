@@ -1,13 +1,14 @@
 // POST /.netlify/functions/protected-addlink (STAFF) { url, title, role:'staff'|'customer', group?, status?:'draft'|'published' }
 // Stores a role-gated external link (e.g. large file on Google Drive/Dropbox/OneDrive).
-const { getStore, connectLambda } = require('@netlify/blobs');
+const { getStore } = require('@netlify/blobs');
+const B = require('./_blobs');
 const A = require('./_auth');
 const crypto = require('crypto');
 const STORE='idfl-protected';
 function resp(code,obj){return {statusCode:code,headers:{'Content-Type':'application/json','Cache-Control':'no-store'},body:JSON.stringify(obj)};}
 function nowJst(){const d=new Date(Date.now()+9*3600*1000);return d.toISOString().replace('Z','+09:00');}
 exports.handler = async (event) => {
-  try{ connectLambda(event); }catch(e){}
+  B.connect(event);
   if(event.httpMethod!=='POST') return resp(405,{error:'method not allowed'});
   const origin=event.headers.origin||event.headers.referer||''; const host=event.headers.host||'';
   if(host&&origin&&origin.indexOf(host)<0) return resp(403,{error:'invalid origin'});
@@ -24,6 +25,9 @@ exports.handler = async (event) => {
   const id = Date.now().toString(36)+'-'+crypto.randomBytes(4).toString('hex');
   const ts = nowJst();
   const metadata = { kind:'link', role:targetRole, status, name:title, title, description:String(body.description||'').slice(0,600), group, thumb:String(body.thumb||'').slice(0,300), url, uploadedAt:ts, updatedAt:ts, uploadedBy:'staff' };
-  try{ await store.set(id, url, { metadata }); }catch(e){ return resp(502,{error:'保存に失敗しました'}); }
+  // Blob metadata travels in a 2 KB header, and the 600-character 説明 the
+  // form allows does not fit in it once it is Japanese. Say what to shorten.
+  const tooBig=B.metadataError(metadata); if(tooBig) return resp(413,{error:tooBig});
+  try{ await store.set(id, url, { metadata }); }catch(e){ return resp(502,{error:'保存に失敗しました: '+((e&&e.message)||'')}); }
   return resp(200,{ ok:true, id });
 };

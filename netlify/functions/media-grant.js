@@ -5,13 +5,14 @@
 // under. Requires a real session; the token can never grant more than the
 // session that asked for it, and never more than one media record.
 // ============================================================
-const { getStore, connectLambda } = require('@netlify/blobs');
+const { getStore } = require('@netlify/blobs');
+const B = require('./_blobs');
 const A = require('./_auth');
 const M = require('./_media');
 const S = require('./_stores');
 
 exports.handler = async (event) => {
-  try{ connectLambda(event); }catch(e){}
+  B.connect(event);
   const id = String((event.queryStringParameters || {}).id || '');
   if(!M.ID_RE.test(id) || id.indexOf('__') === 0) return M.json(400, { error: 'invalid id' });
   if(!process.env.SESSION_SECRET) return M.json(500, { error: 'サーバ設定エラー（環境変数未設定）' });
@@ -19,7 +20,7 @@ exports.handler = async (event) => {
   const role = A.roleFromCookies(event.headers.cookie) || 'PUBLIC';
   if(role !== 'CUSTOMER' && role !== 'STAFF') return M.json(401, { error: 'ログインが必要です' });
 
-  let store; try{ store = getStore(S.PROTECTED_STORE); }catch(e){ return M.json(500, { error: 'ストレージに接続できません' }); }
+  let store; try{ store = B.readStore(S.PROTECTED_STORE); }catch(e){ return M.json(500, { error: 'ストレージに接続できません' }); }
   let meta;
   try{ const m = await store.getMetadata(id); meta = (m && m.metadata) || null; }catch(e){ meta = null; }
   if(!meta || meta.kind !== 'html') return M.json(404, { error: '資料が見つかりません' });

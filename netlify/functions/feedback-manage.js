@@ -8,21 +8,22 @@
 // details) is never rewritten here - staff may reply, annotate internally,
 // move the status, publish an item to other customers, or delete it.
 // ============================================================
-const { getStore, connectLambda } = require('@netlify/blobs');
+const { getStore } = require('@netlify/blobs');
+const B = require('./_blobs');
 const A = require('./_auth');
 const M = require('./_media');
 const S = require('./_stores');
 const F = require('./_feedback');
 
 exports.handler = async (event) => {
-  try{ connectLambda(event); }catch(e){}
+  B.connect(event);
   if(event.httpMethod !== 'POST') return M.json(405, { error: 'method not allowed' });
   if(M.badOrigin(event)) return M.json(403, { error: 'invalid origin' });
   if(A.roleFromCookies(event.headers.cookie) !== 'STAFF') return M.json(403, { error: 'スタッフ権限が必要です' });
 
   let body; try{ body = JSON.parse(event.body || '{}'); }catch(e){ return M.json(400, { error: 'リクエストが不正です' }); }
 
-  let store; try{ store = getStore(S.feedbackStoreName()); }catch(e){ return M.json(500, { error: 'ストレージに接続できません' }); }
+  let store; try{ store = B.readStore(S.feedbackStoreName()); }catch(e){ return M.json(500, { error: 'ストレージに接続できません' }); }
 
   const action = body.action === 'delete' ? 'delete' : 'update';
   const v = F.validateManage(body);

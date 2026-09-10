@@ -81,6 +81,35 @@ function mediaTypeOf(meta){
   return 'document';
 }
 
+// The one shape a stored item is handed to a client in. protected-list builds
+// every row with it, and protected-update answers an edit with it, so a saved
+// row and a listed row can never disagree about what a record looks like.
+function recordOf(id, meta){
+  meta = meta || {};
+  return {
+    id,
+    kind: meta.kind || 'file',
+    url: (meta.kind === 'link' ? meta.url : undefined),
+    name: meta.name,
+    title: meta.title || meta.name,
+    group: meta.group || '',
+    role: meta.role,
+    status: meta.status === 'draft' ? 'draft' : 'published',
+    sizeLabel: meta.sizeLabel,
+    contentType: meta.contentType,
+    uploadedAt: meta.uploadedAt,
+    updatedAt: meta.updatedAt || meta.uploadedAt,
+    // Media Library fields. Derived where possible so existing records need
+    // no migration; a client that does not know the extra fields ignores them.
+    mediaType: mediaTypeOf(meta),
+    description: meta.description || '',
+    thumb: meta.thumb || '',
+    version: meta.version ? (parseInt(meta.version, 10) || 1) : undefined,
+    entry: meta.kind === 'html' ? (meta.entry || 'index.html') : undefined,
+    assetCount: meta.kind === 'html' ? (parseInt(meta.files, 10) || 0) : undefined,
+  };
+}
+
 function b64url(buf){ return Buffer.from(buf).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, ''); }
 
 // --------------------------------------------------------------------------
@@ -134,7 +163,7 @@ function badOrigin(event){
 }
 
 module.exports = {
-  ID_RE, MIME, RANGE_EXT, extOf, mimeFor, isHtmlPath, isRangePath, mediaTypeOf, mapPool,
+  ID_RE, MIME, RANGE_EXT, extOf, mimeFor, isHtmlPath, isRangePath, mediaTypeOf, recordOf, mapPool,
   signGrant, verifyGrant, GRANT_TTL,
   nowJst, human, newId, json, badOrigin, b64url,
 };

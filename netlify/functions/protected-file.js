@@ -1,14 +1,15 @@
 // GET /.netlify/functions/protected-file?id=xxx  -> serves a role-protected blob after session check
 // Re-verifies session role AND visibility (draft/published) server-side on every request.
-const { getStore, connectLambda } = require('@netlify/blobs');
+const { getStore } = require('@netlify/blobs');
+const B = require('./_blobs');
 const A = require('./_auth');
 const STORE='idfl-protected';
 function resp(code,obj){return {statusCode:code,headers:{'Content-Type':'application/json','Cache-Control':'no-store'},body:JSON.stringify(obj)};}
 exports.handler = async (event) => {
-  try{ connectLambda(event); }catch(e){}
+  B.connect(event);
   const id=((event.queryStringParameters||{}).id)||'';
   if(!/^[A-Za-z0-9_-]{1,64}$/.test(id) || id.indexOf('__')===0) return resp(400,{error:'invalid id'});
-  let store; try{ store=getStore(STORE); }catch(e){ return resp(500,{error:'storage unavailable'}); }
+  let store; try{ store=B.readStore(STORE); }catch(e){ return resp(500,{error:'storage unavailable'}); }
   let res; try{ res=await store.getWithMetadata(id,{type:'arrayBuffer'}); }catch(e){ return resp(500,{error:'read error'}); }
   if(!res || !res.data) return resp(404,{error:'not found'});
   const meta=res.metadata||{};

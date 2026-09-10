@@ -15,7 +15,8 @@
 //
 // Nothing here is ever written to the public repository.
 // ============================================================
-const { getStore, connectLambda } = require('@netlify/blobs');
+const { getStore } = require('@netlify/blobs');
+const B = require('./_blobs');
 const A = require('./_auth');
 const M = require('./_media');
 const P = require('./_package');
@@ -26,7 +27,7 @@ const MAX_UPLOAD_BYTES = 4 * 1024 * 1024;   // matches the sync-function request
 function human(b){ return M.human(b); }
 
 exports.handler = async (event) => {
-  try{ connectLambda(event); }catch(e){}
+  B.connect(event);
   if(event.httpMethod !== 'POST') return M.json(405, { error: 'method not allowed' });
   if(M.badOrigin(event)) return M.json(403, { error: 'invalid origin' });
   if(A.roleFromCookies(event.headers.cookie) !== 'STAFF') return M.json(403, { error: 'スタッフ権限が必要です' });
@@ -56,7 +57,7 @@ exports.handler = async (event) => {
 
   // --- write --------------------------------------------------------------
   let recStore, mediaStore;
-  try{ recStore = getStore(S.PROTECTED_STORE); mediaStore = getStore(S.mediaStoreName()); }
+  try{ recStore = B.readStore(S.PROTECTED_STORE); mediaStore = getStore(S.mediaStoreName()); }
   catch(e){ return M.json(500, { error: 'ストレージに接続できません' }); }
 
   const replaceId = String(body.replaceId || '');
@@ -104,6 +105,15 @@ exports.handler = async (event) => {
     updatedAt: ts,
     uploadedBy: 'staff',
   };
+
+  // Blob metadata travels in a 2 KB header, and the 600-character 説明 the
+  // form allows does not fit in it once it is Japanese. The package is already
+  // written at this point, so undo it rather than leave assets with no record.
+  const tooBig = B.metadataError(metadata);
+  if(tooBig){
+    await P.removeKeys(mediaStore, files.map(f => prefix + f.path));
+    return M.json(413, { error: tooBig });
+  }
 
   // The blob value is a small manifest; the record is the metadata.
   try{ await recStore.setJSON(id, { entry, version, files: files.map(f => f.path) }, { metadata }); }

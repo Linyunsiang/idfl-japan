@@ -1,6 +1,7 @@
 // POST /.netlify/functions/protected-upload  (STAFF session required)
 // Body: { filename, contentBase64, role:'staff'|'customer', title?, group?, status?:'draft'|'published' } -> Netlify Blobs
-const { getStore, connectLambda } = require('@netlify/blobs');
+const { getStore } = require('@netlify/blobs');
+const B = require('./_blobs');
 const A = require('./_auth');
 const CFG = require('./_config');
 const crypto = require('crypto');
@@ -12,7 +13,7 @@ function human(b){return b>=1048576?(b/1048576).toFixed(1)+' MB':Math.max(1,Math
 function nowJst(){const d=new Date(Date.now()+9*3600*1000);return d.toISOString().replace('Z','+09:00');}
 function magicOk(ext,buf){const t=CFG.TYPES[ext];if(!t)return false;const head=buf.slice(0,8).toString('hex').toLowerCase();return t.magic.some(s=>head.startsWith(s.toLowerCase()));}
 exports.handler = async (event) => {
-  try{ connectLambda(event); }catch(e){}
+  B.connect(event);
   if(event.httpMethod!=='POST') return resp(405,{error:'method not allowed'});
   const origin=event.headers.origin||event.headers.referer||''; const host=event.headers.host||'';
   if(host&&origin&&origin.indexOf(host)<0) return resp(403,{error:'invalid origin'});
@@ -35,6 +36,9 @@ exports.handler = async (event) => {
   const ab = buf.buffer.slice(buf.byteOffset, buf.byteOffset+buf.byteLength);
   const ts = nowJst();
   const metadata = { kind:'file', role:targetRole, status, name, title:String(body.title||name).slice(0,200), description:String(body.description||'').slice(0,600), group:String(body.group||'').slice(0,120), thumb:String(body.thumb||'').slice(0,300), contentType, size:buf.length, sizeLabel:human(buf.length), uploadedAt:ts, updatedAt:ts, uploadedBy:'staff' };
+  // Blob metadata travels in a 2 KB header, and the 600-character 説明 the
+  // form allows does not fit in it once it is Japanese. Say what to shorten.
+  const tooBig=B.metadataError(metadata); if(tooBig) return resp(413,{error:tooBig});
   try{ await store.set(id, ab, { metadata }); }catch(e){ return resp(502,{error:'保存に失敗しました: '+(e&&e.message||'')}); }
   return resp(200,{ ok:true, id, sizeLabel:human(buf.length) });
 };

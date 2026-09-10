@@ -9,7 +9,8 @@
 // idfl-feedback blob store. It never touches data/*.json, the repository, or
 // any response a customer can read.
 // ============================================================
-const { getStore, connectLambda } = require('@netlify/blobs');
+const { getStore } = require('@netlify/blobs');
+const B = require('./_blobs');
 const A = require('./_auth');
 const M = require('./_media');
 const S = require('./_stores');
@@ -17,7 +18,7 @@ const F = require('./_feedback');
 const N = require('./_notify');
 
 exports.handler = async (event) => {
-  try{ connectLambda(event); }catch(e){}
+  B.connect(event);
   if(event.httpMethod !== 'POST') return M.json(405, { error: 'method not allowed' });
   if(M.badOrigin(event)) return M.json(403, { error: 'invalid origin' });
 
@@ -39,7 +40,7 @@ exports.handler = async (event) => {
 
   // --- the media must exist and be visible to this session ----------------
   let recStore, fbStore;
-  try{ recStore = getStore(S.PROTECTED_STORE); fbStore = getStore(S.feedbackStoreName()); }
+  try{ recStore = B.readStore(S.PROTECTED_STORE); fbStore = B.readStore(S.feedbackStoreName()); }
   catch(e){ return M.json(500, { error: 'ストレージに接続できません' }); }
 
   let meta;

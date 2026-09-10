@@ -18,7 +18,8 @@
 // owned by the staff session that opened it, and swept after an hour. They are
 // never reachable by URL: only this function reads them, and only to assemble.
 // ============================================================
-const { getStore, connectLambda } = require('@netlify/blobs');
+const { getStore } = require('@netlify/blobs');
+const B = require('./_blobs');
 const crypto = require('crypto');
 const A = require('./_auth');
 const M = require('./_media');
@@ -46,7 +47,7 @@ const SESSION_TTL_MS = 60 * 60 * 1000;                     // one hour
 
 const SID_RE = /^[a-f0-9]{32}$/;
 
-function tempStore(){ return getStore(S.uploadStoreName()); }
+function tempStore(){ return B.readStore(S.uploadStoreName()); }
 const metaKey  = (sid) => 'up/' + sid + '/meta';
 const chunkKey = (sid, i) => 'up/' + sid + '/c/' + String(i).padStart(5, '0');
 
@@ -97,7 +98,7 @@ async function sweepExpired(store){
 }
 
 exports.handler = async (event) => {
-  try{ connectLambda(event); }catch(e){}
+  B.connect(event);
   if(event.httpMethod !== 'POST') return M.json(405, { error: 'method not allowed' });
   if(M.badOrigin(event)) return M.json(403, { error: 'invalid origin' });
   if(A.roleFromCookies(event.headers.cookie) !== 'STAFF') return M.json(403, { error: 'スタッフ権限が必要です' });
@@ -227,7 +228,7 @@ exports.handler = async (event) => {
     catch(e){ await sweep(store, sid); return M.json(400, { error: (e && e.message) || '取り込みに失敗しました' }); }
 
     let recStore, mediaStore;
-    try{ recStore = getStore(S.PROTECTED_STORE); mediaStore = getStore(S.mediaStoreName()); }
+    try{ recStore = B.readStore(S.PROTECTED_STORE); mediaStore = getStore(S.mediaStoreName()); }
     catch(e){ return M.json(500, { error: 'ストレージに接続できません' }); }
 
     const replaceId = s.meta.replaceId;
@@ -274,6 +275,15 @@ exports.handler = async (event) => {
       updatedAt: ts,
       uploadedBy: 'staff',
     };
+
+    // Blob metadata travels in a 2 KB header, and the 600-character 説明 the
+    // form allows does not fit in it once it is Japanese. The package is
+    // already written, so undo it rather than leave assets with no record.
+    const tooBig = B.metadataError(metadata);
+    if(tooBig){
+      await P.removeKeys(mediaStore, pkg.files.map(f => prefix + f.path));
+      return M.json(413, { error: tooBig });
+    }
 
     try{ await recStore.setJSON(id, { entry: pkg.entry, version, files: pkg.files.map(f => f.path) }, { metadata }); }
     catch(e){

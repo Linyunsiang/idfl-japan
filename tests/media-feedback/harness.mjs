@@ -43,14 +43,22 @@ export function setReadStale(ms, match){ READ_STALE_MS = ms || 0; READ_STALE_STO
 export function setListLag(ms, match){ LIST_LAG_MS = ms || 0; LIST_LAG_STORE = match || ''; }
 
 class MemStore {
-  constructor(name){ this.name = name; this.data = new Map(); }
-  _remember(k){ const prev = this.data.get(String(k)); if(prev) this.prev = (this.prev||new Map()).set(String(k), prev); }
+  // A strong view shares one `state` with the eventual one, so a write through
+  // either is seen by both - only the simulated lag differs.
+  constructor(name, state, strong){
+    this.name = name;
+    this.state = state || { data: new Map(), prev: new Map() };
+    this.strong = !!strong;
+  }
+  get data(){ return this.state.data; }
+  get prev(){ return this.state.prev; }
+  _remember(k){ const prev = this.data.get(String(k)); if(prev) this.state.prev.set(String(k), prev); }
   async set(key, value, opts){ this._remember(key); this.data.set(String(key), { buf: toBuffer(value), metadata: (opts && opts.metadata) || {}, at: Date.now() }); }
   async setJSON(key, value, opts){ this._remember(key); this.data.set(String(key), { buf: Buffer.from(JSON.stringify(value), 'utf8'), metadata: (opts && opts.metadata) || {}, json: true, at: Date.now() }); }
   _read(key){
     const cur = this.data.get(String(key));
     if(!cur) return cur;
-    const staleing = READ_STALE_MS > 0 && (!READ_STALE_STORE || this.name.indexOf(READ_STALE_STORE) >= 0);
+    const staleing = !this.strong && READ_STALE_MS > 0 && (!READ_STALE_STORE || this.name.indexOf(READ_STALE_STORE) >= 0);
     if(staleing && cur.at && Date.now() - cur.at < READ_STALE_MS){
       const old = this.prev && this.prev.get(String(key));
       if(old) return old;                       // the write has not landed for readers yet
@@ -65,9 +73,12 @@ class MemStore {
     if(type === 'arrayBuffer') return e.buf.buffer.slice(e.buf.byteOffset, e.buf.byteOffset + e.buf.byteLength);
     return e.buf.toString('utf8');
   }
-  async getMetadata(key){ const e = this.data.get(String(key)); return e ? { metadata: e.metadata } : null; }
+  // Metadata is read over the same cached edge as the bytes, so it goes stale
+  // the same way. Reading it straight out of the map hid the bug that made a
+  // staff edit look like it was never saved.
+  async getMetadata(key){ const e = this._read(key); return e ? { metadata: e.metadata } : null; }
   async getWithMetadata(key, opts){
-    const e = this.data.get(String(key));
+    const e = this._read(key);
     if(!e) return null;
     return { data: await this.get(key, opts), metadata: e.metadata };
   }
@@ -75,7 +86,7 @@ class MemStore {
   async list(opts){
     const prefix = (opts && opts.prefix) || '';
     const now = Date.now();
-    const lagging = LIST_LAG_MS > 0 && (!LIST_LAG_STORE || this.name.indexOf(LIST_LAG_STORE) >= 0);
+    const lagging = !this.strong && LIST_LAG_MS > 0 && (!LIST_LAG_STORE || this.name.indexOf(LIST_LAG_STORE) >= 0);
     const blobs = [];
     for(const [k, v] of this.data.entries()){
       if(k.indexOf(prefix) !== 0) continue;
@@ -88,13 +99,24 @@ class MemStore {
 
 export const blobsStub = {
   getStore(name){
-    const n = typeof name === 'string' ? name : (name && name.name);
+    const opts = typeof name === 'string' ? { name } : (name || {});
+    const n = opts.name;
     if(!STORES.has(n)) STORES.set(n, new MemStore(n));
-    return STORES.get(n);
+    const base = STORES.get(n);
+    if(opts.consistency !== 'strong') return base;
+    return new MemStore(n, base.state, true);
   },
   getDeployStore(name){ return blobsStub.getStore('deploy:' + name); },
   connectLambda(){ /* no-op */ },
+  setEnvironmentContext(){ /* no-op */ },
 };
+
+// _blobs.js reads this to decide whether strong reads are available. The real
+// runtime publishes the same shape; here it just has to be present and whole.
+process.env.NETLIFY_BLOBS_CONTEXT = Buffer.from(JSON.stringify({
+  siteID: 'test-site', token: 'test-token',
+  edgeURL: 'https://edge.test', uncachedEdgeURL: 'https://uncached.test',
+}), 'utf8').toString('base64');
 
 export function resetStores(){ STORES.clear(); }
 export function dumpStore(name){ const s = STORES.get(name); return s ? s.data : new Map(); }

@@ -24,7 +24,8 @@
 // also what makes the progress bar draggable: without Accept-Ranges the
 // browser can only play what it has already downloaded from the start.
 // ============================================================
-const { getStore, connectLambda } = require('@netlify/blobs');
+const { getStore } = require('@netlify/blobs');
+const B = require('./_blobs');
 const A = require('./_auth');
 const M = require('./_media');
 const S = require('./_stores');
@@ -108,7 +109,7 @@ function readParams(event){
 }
 
 exports.handler = async (event) => {
-  try{ connectLambda(event); }catch(e){}
+  B.connect(event);
   const q = readParams(event);
   const id = q.id;
   const token = q.token;
@@ -123,7 +124,7 @@ exports.handler = async (event) => {
 
   // --- record + visibility ------------------------------------------------
   let recStore, mediaStore;
-  try{ recStore = getStore(S.PROTECTED_STORE); mediaStore = getStore(S.mediaStoreName()); }
+  try{ recStore = B.readStore(S.PROTECTED_STORE); mediaStore = getStore(S.mediaStoreName()); }
   catch(e){ return deny(500, 'storage unavailable'); }
 
   let meta;

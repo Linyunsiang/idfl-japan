@@ -2,21 +2,22 @@
 // Two modes:
 //   1) Reorder:   { orderIds:[id,id,...] }            -> writes the display-order index (fast, no file rewrite)
 //   2) Edit meta: { id, title?, group?, role?, status?, url? } -> updates blob metadata WITHOUT re-uploading the file
-const { getStore, connectLambda } = require('@netlify/blobs');
+const B = require('./_blobs');
 const A = require('./_auth');
+const M = require('./_media');
 const STORE='idfl-protected';
 const ORDER_KEY='__order__';
 function resp(code,obj){return {statusCode:code,headers:{'Content-Type':'application/json','Cache-Control':'no-store'},body:JSON.stringify(obj)};}
 function nowJst(){const d=new Date(Date.now()+9*3600*1000);return d.toISOString().replace('Z','+09:00');}
 const IDRE=/^[A-Za-z0-9_-]{1,64}$/;
 exports.handler = async (event) => {
-  try{ connectLambda(event); }catch(e){}
+  B.connect(event);
   if(event.httpMethod!=='POST') return resp(405,{error:'method not allowed'});
   const origin=event.headers.origin||event.headers.referer||''; const host=event.headers.host||'';
   if(host&&origin&&origin.indexOf(host)<0) return resp(403,{error:'invalid origin'});
   if(A.roleFromCookies(event.headers.cookie)!=='STAFF') return resp(403,{error:'スタッフ権限が必要です'});
   let body; try{ body=JSON.parse(event.body||'{}'); }catch(e){ return resp(400,{error:'invalid request'}); }
-  let store; try{ store=getStore(STORE); }catch(e){ return resp(500,{error:'ストレージに接続できません'}); }
+  let store; try{ store=B.readStore(STORE); }catch(e){ return resp(500,{error:'ストレージに接続できません'}); }
 
   // --- Mode 1: reorder ---
   if(Array.isArray(body.orderIds)){
@@ -45,6 +46,13 @@ exports.handler = async (event) => {
     meta.url=url; newData=url;
   }
   meta.updatedAt=nowJst();
-  try{ await store.set(id, newData, { metadata:meta }); }catch(e){ return resp(502,{error:'更新に失敗しました'}); }
-  return resp(200,{ok:true, id});
+  // The 600-character ceiling above is what the form allows; this is what the
+  // store actually accepts. Refuse with a length the editor can act on rather
+  // than letting the client throw its own opaque error.
+  const tooBig=B.metadataError(meta); if(tooBig) return resp(413,{error:tooBig});
+  try{ await store.set(id, newData, { metadata:meta }); }catch(e){ return resp(502,{error:'更新に失敗しました: '+((e&&e.message)||'')}); }
+  // Hand back the saved record. Blobs reads are cached, so a client that
+  // re-listed here could be told its own edit never happened; answering with
+  // the row we just wrote lets the admin redraw from the truth.
+  return resp(200,{ok:true, id, item:M.recordOf(id, meta)});
 };

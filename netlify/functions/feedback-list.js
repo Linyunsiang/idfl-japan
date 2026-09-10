@@ -11,7 +11,8 @@
 // A customer is never handed the whole table, and never another customer's
 // identity - they share one access password, so the response is the boundary.
 // ============================================================
-const { getStore, connectLambda } = require('@netlify/blobs');
+const { getStore } = require('@netlify/blobs');
+const B = require('./_blobs');
 const A = require('./_auth');
 const M = require('./_media');
 const S = require('./_stores');
@@ -32,12 +33,12 @@ async function readAll(store, prefix){
 }
 
 exports.handler = async (event) => {
-  try{ connectLambda(event); }catch(e){}
+  B.connect(event);
   const role = A.roleFromCookies(event.headers.cookie) || 'PUBLIC';
   if(role !== 'CUSTOMER' && role !== 'STAFF') return M.json(401, { error: 'ログインが必要です' });
 
   const q = event.queryStringParameters || {};
-  let store; try{ store = getStore(S.feedbackStoreName()); }catch(e){ return M.json(200, { ok: true, role, items: [] }); }
+  let store; try{ store = B.readStore(S.feedbackStoreName()); }catch(e){ return M.json(200, { ok: true, role, items: [] }); }
 
   // ---------------------------------------------------------- staff: all
   if(String(q.scope || '') === 'all'){
@@ -54,7 +55,7 @@ exports.handler = async (event) => {
   // Visibility of the media itself is re-checked here too, so feedback can
   // never be used to probe a record the caller may not read.
   try{
-    const recStore = getStore(S.PROTECTED_STORE);
+    const recStore = B.readStore(S.PROTECTED_STORE);
     const m = await recStore.getMetadata(mediaId);
     const meta = (m && m.metadata) || null;
     if(!meta || !meta.role) return M.json(404, { error: '資料が見つかりません' });

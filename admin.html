@@ -1768,6 +1768,16 @@ function pSetFilter(f){ PFILTER=f; var el=document.getElementById('pFilters'); i
 function pReorderEnabled(){ var q=(document.getElementById('pSearch').value||'').trim(); return !q && PFILTER==='all'; }
 function pExt(n){return (String(n||'').split('.').pop()||'').toLowerCase();}
 function pFindFile(id){ for(var i=0;i<PFILES.length;i++) if(PFILES[i].id===id) return PFILES[i]; return null; }
+/* Splice in the row protected-update just wrote, and redraw from that.
+   Re-listing instead would ask a cached blobs read whether the edit landed,
+   and be told no - which is what made a save look like it had been thrown
+   away, and made the next save overwrite it with the stale values still on
+   screen. Returns false on an older deploy that answers without the row. */
+function pApplySaved(item){
+  if(!item||!item.id) return false;
+  for(var i=0;i<PFILES.length;i++) if(PFILES[i].id===item.id){ PFILES[i]=item; pFillDatalist(); pBuildView(); pRender(); return true; }
+  return false;
+}
 
 function pRender(){
   var list=document.getElementById('pList');
@@ -1882,7 +1892,7 @@ function pSaveEdit(id,isLink){
   var payload={ id:id, title:document.getElementById('pe_title').value, group:document.getElementById('pe_group').value, role:document.getElementById('pe_role').value, status:document.getElementById('pe_status').value };
   if(isLink){ var u=document.getElementById('pe_url').value.trim(); if(u) payload.url=u; }
   fetch('/.netlify/functions/protected-update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
-   .then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){ pCloseModal(); toast('更新しました'); pLoad(); } else { st.style.color='#b91c1c'; st.textContent='失敗: '+((j&&j.error)||''); } }).catch(function(){ st.style.color='#b91c1c'; st.textContent='通信エラー'; });
+   .then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){ pCloseModal(); toast('更新しました'); if(!pApplySaved(j.item)) pLoad(); } else { st.style.color='#b91c1c'; st.textContent='失敗: '+((j&&j.error)||''); } }).catch(function(){ st.style.color='#b91c1c'; st.textContent='通信エラー'; });
 }
 function pCloseModal(){ document.getElementById('pov').classList.remove('open'); }
 
@@ -1890,7 +1900,7 @@ function pToggle(id){
   var f=pFindFile(id); if(!f) return;
   var ns=f.status==='draft'?'published':'draft';
   fetch('/.netlify/functions/protected-update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:id,status:ns})})
-   .then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){ toast(ns==='published'?'公開しました':'非公開にしました'); pLoad(); } else { toast('失敗: '+((j&&j.error)||'')); } }).catch(function(){ toast('通信エラー'); });
+   .then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){ toast(ns==='published'?'公開しました':'非公開にしました'); if(!pApplySaved(j.item)) pLoad(); } else { toast('失敗: '+((j&&j.error)||'')); } }).catch(function(){ toast('通信エラー'); });
 }
 function pDelete(id){
   var f=pFindFile(id); if(!f) return;
@@ -1990,6 +2000,12 @@ function mLoad(){
 }
 function mSetFilter(f){ MFILTER=f; var el=document.getElementById('mFilters'); if(el) el.querySelectorAll('.fpill').forEach(function(b){b.classList.toggle('on',b.dataset.f===f);}); mRender(); }
 function mFind(id){ for(var i=0;i<MITEMS.length;i++) if(MITEMS[i].id===id) return MITEMS[i]; return null; }
+/* Same as pApplySaved, for the Media Library list. */
+function mApplySaved(item){
+  if(!item||!item.id) return false;
+  for(var i=0;i<MITEMS.length;i++) if(MITEMS[i].id===item.id){ MITEMS[i]=item; pFillDatalist(); mRender(); return true; }
+  return false;
+}
 function mThumb(v){
   var s=String(v||'').trim(); if(!s) return '';
   if(/^[A-Za-z0-9_-]{1,64}$/.test(s)) return '/.netlify/functions/protected-file?id='+encodeURIComponent(s)+'&inline=1';
@@ -2269,7 +2285,7 @@ function mSaveEdit(id){
     role:document.getElementById('me_role').value,
     status:document.getElementById('me_status').value };
   fetch('/.netlify/functions/protected-update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
-   .then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){ pCloseModal(); toast('保存しました'); mLoad(); } else toast((j&&j.error)||'保存に失敗しました'); })
+   .then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){ pCloseModal(); toast('保存しました'); if(!mApplySaved(j.item)) mLoad(); } else toast((j&&j.error)||'保存に失敗しました'); })
    .catch(function(){ toast('通信エラー'); });
 }
 
@@ -2277,7 +2293,7 @@ function mToggle(id){
   var f=mFind(id); if(!f) return;
   var next=f.status==='draft'?'published':'draft';
   fetch('/.netlify/functions/protected-update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({id:id,status:next})})
-   .then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){ toast(next==='draft'?'下書きにしました':'公開しました'); mLoad(); } else toast((j&&j.error)||'変更に失敗しました'); })
+   .then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){ toast(next==='draft'?'下書きにしました':'公開しました'); if(!mApplySaved(j.item)) mLoad(); } else toast((j&&j.error)||'変更に失敗しました'); })
    .catch(function(){ toast('通信エラー'); });
 }
 

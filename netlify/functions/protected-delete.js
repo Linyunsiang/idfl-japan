@@ -3,19 +3,20 @@
 // For an HTML presentation it also removes the package assets from the media store.
 // Customer feedback is deliberately KEPT (see protected-media-upload.js): losing
 // a customer's question because staff replaced a deck would be the wrong default.
-const { getStore, connectLambda } = require('@netlify/blobs');
+const { getStore } = require('@netlify/blobs');
+const B = require('./_blobs');
 const A = require('./_auth');
 const S = require('./_stores');
 const STORE=S.PROTECTED_STORE;
 const ORDER_KEY='__order__';
 function resp(code,obj){return {statusCode:code,headers:{'Content-Type':'application/json','Cache-Control':'no-store'},body:JSON.stringify(obj)};}
 exports.handler = async (event) => {
-  try{ connectLambda(event); }catch(e){}
+  B.connect(event);
   if(event.httpMethod!=='POST') return resp(405,{error:'method not allowed'});
   if(A.roleFromCookies(event.headers.cookie)!=='STAFF') return resp(403,{error:'スタッフ権限が必要です'});
   let body; try{ body=JSON.parse(event.body||'{}'); }catch(e){ return resp(400,{error:'invalid'}); }
   const id=String(body.id||''); if(!/^[A-Za-z0-9_-]{1,64}$/.test(id) || id.indexOf('__')===0) return resp(400,{error:'invalid id'});
-  let store; try{ store=getStore(STORE); }catch(e){ return resp(500,{error:'storage unavailable'}); }
+  let store; try{ store=B.readStore(STORE); }catch(e){ return resp(500,{error:'storage unavailable'}); }
   // Read the record first: an HTML package owns bytes in a second store.
   let meta=null; try{ const m=await store.getMetadata(id); meta=(m&&m.metadata)||null; }catch(e){}
   try{ await store.delete(id); }catch(e){ return resp(502,{error:'削除に失敗しました'}); }
