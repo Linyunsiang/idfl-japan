@@ -2267,6 +2267,12 @@ function mEdit(id){
     +'<label class="f">カテゴリー / グループ<input type="text" id="me_group" list="pGroups" value="'+esc(f.group||'')+'"></label>'
     +'<label class="f">サムネイル<input type="text" id="me_thumb" value="'+esc(f.thumb||'')+'" placeholder="画像資料のID、または https:// / /files/... のURL">'
     +'<span class="hint">「ダウンロード資料管理」に画像をアップロードし、そのIDを貼り付けると保護されたサムネイルとして表示されます。</span></label>'
+    // Only a link record has one, and it is the whole record: without this the
+    // URL could only be changed from the other tab, which is not discoverable.
+    +(f.kind==='link'
+      ? '<label class="f">リンクURL（https）<input type="text" id="me_url" value="'+esc(f.url||'')+'">'
+       +'<span class="hint">お客様には /customer/media 経由で開かれます。リンク先を差し替えても、お客様に配ったURLは変わりません。</span></label>'
+      : '')
     +'<div style="display:flex;gap:10px"><label class="f" style="flex:1">対象権限<select id="me_role"><option value="customer">お客様専用</option><option value="staff">スタッフ専用</option></select></label>'
     +'<label class="f" style="flex:1">公開状態<select id="me_status"><option value="published">公開</option><option value="draft">下書き</option></select></label></div>'
     +'<p class="hint">メディア種類: '+esc(MTYPE_JA[f.mediaType]||f.mediaType)+(f.version?('　バージョン: v'+esc(f.version)):'')+(f.entry?('　entry: '+esc(f.entry)):'')+'</p>';
@@ -2284,6 +2290,10 @@ function mSaveEdit(id){
     thumb:document.getElementById('me_thumb').value,
     role:document.getElementById('me_role').value,
     status:document.getElementById('me_status').value };
+  // Present only for a link record. An empty box leaves the stored URL alone
+  // rather than clearing it - a record with no link is of no use to anyone.
+  var mu=document.getElementById('me_url');
+  if(mu && mu.value.trim()) body.url=mu.value.trim();
   fetch('/.netlify/functions/protected-update',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)})
    .then(function(r){return r.json();}).then(function(j){ if(j&&j.ok){ pCloseModal(); toast('保存しました'); if(!mApplySaved(j.item)) mLoad(); } else toast((j&&j.error)||'保存に失敗しました'); })
    .catch(function(){ toast('通信エラー'); });

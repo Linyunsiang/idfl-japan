@@ -195,6 +195,48 @@ await t('editing a record writes description and thumbnail through', async () =>
   assert.equal(rec.thumb, 'https://example.com/thumb.png');
 });
 
+await t('a link record can have its URL changed from this tab too', async () => {
+  w.mEdit(seeded.linkId);
+  await settle(4);
+  const box = d.getElementById('me_url');
+  assert.ok(box, 'a link record must offer its URL - it IS the record');
+  assert.equal(box.value, 'https://global-standard.org/', 'the box opens on the stored URL');
+  box.value = 'https://global-standard.org/the-standard/';
+  d.getElementById('me_title').value = 'GOTS 公式サイト（規格本文）';
+  w.mSaveEdit(seeded.linkId);
+  await settle(30);
+  const j = JSON.parse((await invoke('protected-list', { headers: { cookie: cookieHeader(), host: 'localhost', origin: BASE } })).body);
+  const rec = j.files.find(f => f.id === seeded.linkId);
+  assert.equal(rec.url, 'https://global-standard.org/the-standard/');
+  assert.equal(rec.title, 'GOTS 公式サイト（規格本文）');
+  assert.equal(rec.description, '規格本文および最新の改訂情報（外部サイト）。', 'the fields not on this form are left alone');
+});
+
+await t('the id a customer was given still opens - a URL change is not a new record', async () => {
+  const r = await invoke('protected-file', {
+    httpMethod: 'GET', queryStringParameters: { id: seeded.linkId },
+    headers: { cookie: cookieHeader(), host: 'localhost', origin: BASE },
+  });
+  assert.equal(r.statusCode, 302);
+  assert.equal(r.headers.Location, 'https://global-standard.org/the-standard/');
+});
+
+await t('a URL that is not https is refused, and changes nothing', async () => {
+  w.mEdit(seeded.linkId);
+  await settle(4);
+  d.getElementById('me_url').value = 'http://global-standard.org/';
+  w.mSaveEdit(seeded.linkId);
+  await settle(30);
+  const j = JSON.parse((await invoke('protected-list', { headers: { cookie: cookieHeader(), host: 'localhost', origin: BASE } })).body);
+  assert.equal(j.files.find(f => f.id === seeded.linkId).url, 'https://global-standard.org/the-standard/');
+});
+
+await t('a non-link record is not offered a URL box', async () => {
+  w.mEdit(seeded.mediaId);
+  await settle(4);
+  assert.equal(d.getElementById('me_url'), null, 'an HTML package has no URL to change');
+});
+
 await t('publish / unpublish toggles the customer-visible state', async () => {
   w.mToggle(seeded.draftId);                       // draft -> published
   await settle(30);

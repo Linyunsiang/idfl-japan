@@ -48,14 +48,14 @@ export async function seedAll(pkgDir){
     }),
   });
 
-  await invoke('protected-addlink', {
+  const link = JSON.parse((await invoke('protected-addlink', {
     httpMethod: 'POST', headers: as,
     body: JSON.stringify({
       url: 'https://global-standard.org/', title: 'GOTS 公式サイト',
       description: '規格本文および最新の改訂情報（外部サイト）。', role: 'customer', group: 'IDFL Guide',
     }),
-  });
+  })).body);
 
   console.log('seeded: media=' + up.id + ' (v' + up.version + ', ' + up.files + ' files), draft=' + draft.id);
-  return { mediaId: up.id, draftId: draft.id };
+  return { mediaId: up.id, draftId: draft.id, linkId: link.id };
 }
