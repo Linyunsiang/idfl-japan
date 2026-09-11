@@ -1,5 +1,29 @@
 [
   {
+    "id": "company-1789105194742",
+    "companyName": "株式会社コテック",
+    "companyNameEnglish": "KOTEC CORPORATION",
+    "logo": "/files/mtwj3y9k-fbbl-.jpg",
+    "prefecture": "大阪府",
+    "region": "堺市",
+    "certificationTypes": [
+      "GRS"
+    ],
+    "officialWebsiteUrl": "https://www.kotec-corp.co.jp/index.htm",
+    "salesPageUrl": "https://www.kotec-corp.co.jp/products/index.htm",
+    "productCategories": "",
+    "certificateNumber": "",
+    "certificationYear": "",
+    "shortDescription": "コテックは長年、ボリカーボネートなどの樹脂リサイクル事業に従事しております。\n持続可能な社会の実現、温室効果ガス削減などを重視しているお客様へ、\n環境負荷の少ないリサイクル材(再生ペレット)を提供することで、\n環境への取り組みに貢献しています。\nまた、リサイクル材であっても、\n品質が悪ければ使用される製品の劣化により耐用年数が短くなり、\n結局はエコ·フレンドリーではありません。\n弊社が提供している原料はリサイクル材ではありますが、\n研究·開発にも力を入れており、バージン材と比較しても物性の低下が少ない、\n高品質なリサイクル材を提供しております。\n是非、サンプルをご自身の目で確認頂ければ幸いです。",
+    "promotionText": "",
+    "featured": false,
+    "published": true,
+    "createdAt": "2026-09-11T05:41:57.384Z",
+    "updatedAt": "2026-09-11T05:41:57.384Z",
+    "updatedBy": "admin",
+    "displayOrder": 0
+  },
+  {
     "id": "company-1785909116417",
     "companyName": "株式会社 近藤紡績所",
     "companyNameEnglish": "Kondo Cotton Spinning Co., Ltd",
@@ -22,7 +46,7 @@
     "createdAt": "2026-08-05T05:54:19.047Z",
     "updatedAt": "2026-08-05T05:57:47.067Z",
     "updatedBy": "admin",
-    "displayOrder": 0
+    "displayOrder": 1
   },
   {
     "id": "company-1785820007904",
@@ -50,7 +74,7 @@
     "createdAt": "2026-08-04T05:13:17.219Z",
     "updatedAt": "2026-08-04T05:27:04.740Z",
     "updatedBy": "admin",
-    "displayOrder": 1
+    "displayOrder": 2
   },
   {
     "id": "fcplanning-office",
@@ -71,7 +95,7 @@
     "promotionText": "",
     "featured": false,
     "published": true,
-    "displayOrder": 2,
+    "displayOrder": 3,
     "createdAt": "2026-07-22T02:07:15Z",
     "updatedAt": "2026-07-22T03:38:45.085Z",
     "updatedBy": "admin"
